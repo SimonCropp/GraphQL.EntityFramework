@@ -13,11 +13,12 @@ namespace EfCoreGraphQL
         {
             GraphTypeTypeRegistry.Register(typeof(Guid), typeof(GuidGraphType));
             GraphTypeTypeRegistry.Register(typeof(ulong), typeof(UlongGraphType));
-            Add< GuidGraphType>();
+            Add<GuidGraphType>();
             Add<UlongGraphType>();
         }
 
-        static void Add<T>() where T : ScalarGraphType, new()
+        static void Add<T>()
+            where T : ScalarGraphType, new()
         {
             entries.Add(typeof(T), new T());
         }

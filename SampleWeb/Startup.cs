@@ -26,6 +26,7 @@ public class Startup
                 var resolver = new FuncDependencyResolver(provider.GetService);
                 return new Schema(resolver);
             });
+        services.AddMvc();
     }
 
     public static IEnumerable<Type> GetGraphQlTypes()
@@ -37,8 +38,9 @@ public class Startup
                          typeof(IInputObjectGraphType).IsAssignableFrom(x)));
     }
 
-    public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder builder)
     {
-        app.UseGraphiQl();
+        builder.UseGraphiQl();
+        builder.UseMvc();
     }
 }

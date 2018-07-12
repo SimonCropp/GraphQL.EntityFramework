@@ -17,7 +17,7 @@ public class GraphQlController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] GraphQlQuery query, [FromServices]MyDataContext dataContext)
+    public async Task<IActionResult> Post([FromBody] GraphQlQuery query, [FromServices] MyDataContext dataContext)
     {
         if (query == null)
         {
