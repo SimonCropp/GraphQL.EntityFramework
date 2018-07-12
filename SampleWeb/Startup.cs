@@ -36,13 +36,9 @@ public class Startup
             services.AddSingleton(type);
         }
 
-        services.AddScoped<IDocumentExecuter, DocumentExecuter>();
-        services.AddScoped<ISchema>(
-            provider =>
-            {
-                var resolver = new FuncDependencyResolver(provider.GetService);
-                return new Schema(resolver);
-            });
+        services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+        services.AddSingleton<IDependencyResolver>(provider => new FuncDependencyResolver(provider.GetRequiredService));
+        services.AddSingleton<ISchema,Schema>();
         services.AddMvc();
     }
 
