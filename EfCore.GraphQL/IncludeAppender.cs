@@ -13,15 +13,15 @@ namespace EfCoreGraphQL
             return GetPaths(context.SubFields.Values);
         }
 
-        public static IQueryable<T> AddIncludes<T>(IQueryable<T> dbSet, ResolveFieldContext<T> context)
+        public static IQueryable<T> AddIncludes<T>(IQueryable<T> query, ResolveFieldContext<T> context)
             where T : class
         {
             foreach (var path in GetPaths(context))
             {
-                dbSet = dbSet.Include(path);
+                query = query.Include(path);
             }
 
-            return dbSet;
+            return query;
         }
 
         public static IEnumerable<string> GetPaths(IEnumerable<Field> fields)

@@ -1,32 +1,22 @@
 ﻿using System;
 using System.Threading.Tasks;
-using EfCore.InMemoryHelpers;
 using EfCoreGraphQL;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.EntityFrameworkCore;
 using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 
-public class IntegrationTests : TestBase
+public class WhereExpressionTests : TestBase
 {
     [Fact]
     public async Task Foo()
     {
-        var query = new Query(x => (MyDataContext) x.UserContext);
-        using (var dataContext = InMemoryContextBuilder.Build<MyDataContext>())
-        {
-            dataContext.AddRange(new TestEntity {Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Property = "Value"});
-            dataContext.SaveChanges();
+        var query = new Query();
+            new TestEntity {Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Property = "Value"};
 
             var schema = new Schema(new FuncDependencyResolver(x =>
             {
-                if (x == typeof(MyDataContext))
-                {
-                    return dataContext;
-                }
-
                 if (x == typeof(Query))
                 {
                     return query;
@@ -51,13 +41,16 @@ public class IntegrationTests : TestBase
             {
                 Schema = schema,
                 Query = "{ testEntities { id property } }",
-                UserContext = dataContext
             };
 
             var result = await documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);
             ObjectApprover.VerifyWithJson(result.Data);
         }
+
+    public WhereExpressionTests(ITestOutputHelper output) : base(output)
+    {
     }
+}
 
     public class Schema : GraphQL.Types.Schema
     {
@@ -65,21 +58,6 @@ public class IntegrationTests : TestBase
             base(resolver)
         {
             Query = resolver.Resolve<Query>();
-        }
-    }
-
-    public class MyDataContext : DbContext
-    {
-        public DbSet<TestEntity> TestEntities { get; set; }
-
-        public MyDataContext(DbContextOptions options) :
-            base(options)
-        {
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<TestEntity>();
         }
     }
 
@@ -91,7 +69,7 @@ public class IntegrationTests : TestBase
 
     public class Query : ObjectGraphType
     {
-        public Query(ResolveDataContext<MyDataContext> resolveDataContext)
+        public Query()
         {
             Field<ListGraphType<TestEntityType>>(
                 "testEntities",
@@ -112,7 +90,4 @@ public class IntegrationTests : TestBase
         }
     }
 
-    public IntegrationTests(ITestOutputHelper output) : base(output)
-    {
-    }
 }
