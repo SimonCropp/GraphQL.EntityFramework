@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>CS1591</NoWarn>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0</AssemblyVersion>
+    <AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
+    <Authors>Simon Cropp</Authors>
+    <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)) Simon Cropp. All rights reserved</Copyright>
+    <PackageTags>EntityFrameworkCore, EntityFramework, InMemory</PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/EfCore.GraphQL/master/icon.png</PackageIconUrl>
+    <PackageProjectUrl>http://github.com/SimonCropp/EfCore.GraphQL</PackageProjectUrl>
+    <PackageOutputPath>..\nugets</PackageOutputPath>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludePDBsInPackage</TargetsForTfmSpecificContentInPackage>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <Target Name="IncludePDBsInPackage" Condition="'$(IncludeBuildOutput)' != 'false'">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\$(AssemblyName).pdb" PackagePath="lib/$(TargetFramework)" />
+    </ItemGroup>
+  </Target>
+</Project>
