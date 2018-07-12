@@ -21,7 +21,7 @@ namespace EfCoreGraphQL
             where T : ScalarGraphType, new()
         {
             var value = new T();
-            registerInstance(typeof(T),value);
+            registerInstance?.Invoke(typeof(T), value);
             entries.Add(typeof(T), value);
         }
 
