@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -13,6 +13,16 @@
     <PackageReference Include="graphiql" Version="1.1.0" />
     <PackageReference Include="GraphQL" Version="2.0.0-alpha-938" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EfCore.GraphQL\EfCore.GraphQL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ApprovalUtilities">
+      <HintPath>..\..\..\Users\simon\.nuget\packages\approvalutilities\3.0.15\lib\net45\ApprovalUtilities.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

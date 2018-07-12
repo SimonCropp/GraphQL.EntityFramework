@@ -17,10 +17,15 @@ public class IntegrationTests : TestBase
         var query = new Query(x => (MyDataContext) x.UserContext);
         using (var dataContext = InMemoryContextBuilder.Build<MyDataContext>())
         {
-            dataContext.AddRange(new TestEntity {Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Property = "Value"});
+            var entity = new TestEntity
+            {
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                Property = "Value"
+            };
+            dataContext.AddRange(entity);
             dataContext.SaveChanges();
 
-            var schema = new Schema(new FuncDependencyResolver(x =>
+            var resolver = new FuncDependencyResolver(x =>
             {
                 if (x == typeof(MyDataContext))
                 {
@@ -43,7 +48,9 @@ public class IntegrationTests : TestBase
                 }
 
                 throw new Exception($"Could not resolve {x.FullName}");
-            }));
+            });
+
+            var schema = new Schema(resolver);
 
             var documentExecuter = new DocumentExecuter();
 

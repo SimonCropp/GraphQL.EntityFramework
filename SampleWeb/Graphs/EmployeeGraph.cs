@@ -1,10 +1,11 @@
 ﻿using GraphQL.Types;
 
-public class ParentGraph : ObjectGraphType<Parent>
+public class EmployeeGraph : ObjectGraphType<Employee>
 {
-    public ParentGraph()
+    public EmployeeGraph()
     {
         Field(x => x.Id);
         Field(x => x.Content);
+
     }
 }

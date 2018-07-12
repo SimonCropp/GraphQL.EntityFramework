@@ -7,20 +7,22 @@ namespace EfCoreGraphQL
 {
     public static class Scalar
     {
-        private static readonly Dictionary<Type, ScalarGraphType> entries = new Dictionary<Type, ScalarGraphType>() ;
+        static Dictionary<Type, ScalarGraphType> entries = new Dictionary<Type, ScalarGraphType>();
 
-        public static void Inject()
+        public static void Inject(Action<Type,ScalarGraphType> registerInstance = null)
         {
             GraphTypeTypeRegistry.Register(typeof(Guid), typeof(GuidGraphType));
             GraphTypeTypeRegistry.Register(typeof(ulong), typeof(UlongGraphType));
-            Add<GuidGraphType>();
-            Add<UlongGraphType>();
+            Add<GuidGraphType>(registerInstance);
+            Add<UlongGraphType>(registerInstance);
         }
 
-        static void Add<T>()
+        static void Add<T>(Action<Type, ScalarGraphType> registerInstance)
             where T : ScalarGraphType, new()
         {
-            entries.Add(typeof(T), new T());
+            var value = new T();
+            registerInstance(typeof(T),value);
+            entries.Add(typeof(T), value);
         }
 
         public static ScalarGraphType Build(Type type)

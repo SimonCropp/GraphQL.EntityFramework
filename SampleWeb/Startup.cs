@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EfCore.InMemoryHelpers;
+using EfCoreGraphQL;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
@@ -12,8 +13,24 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         var myDataContext = InMemoryContextBuilder.Build<MyDataContext>();
-        myDataContext.Add(new Parent());
+        var company = new Company
+        {
+            Content = "Company1"
+        };
+        var employee1 = new Employee
+        {
+            CompanyId = company.Id,
+            Content = "Employee1"
+        };
+        var employee2 = new Employee
+        {
+            CompanyId = company.Id,
+            Content = "Employee2"
+        };
+        myDataContext.AddRange(company, employee1, employee2);
+        myDataContext.SaveChanges();
         services.AddSingleton(myDataContext);
+        Scalar.Inject((type, instance) => { services.AddSingleton(type, instance); });
         foreach (var type in GetGraphQlTypes())
         {
             services.AddSingleton(type);
