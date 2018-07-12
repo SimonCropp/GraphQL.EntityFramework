@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfCore.GraphQL", "EfCore.Gr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{87DB4CC0-4AC3-4AC1-97FD-7C55D3B921D9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWeb", "SampleWeb\SampleWeb.csproj", "{C9103941-AC42-4F75-B3FD-E6251DFAB1AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{87DB4CC0-4AC3-4AC1-97FD-7C55D3B921D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87DB4CC0-4AC3-4AC1-97FD-7C55D3B921D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87DB4CC0-4AC3-4AC1-97FD-7C55D3B921D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9103941-AC42-4F75-B3FD-E6251DFAB1AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9103941-AC42-4F75-B3FD-E6251DFAB1AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9103941-AC42-4F75-B3FD-E6251DFAB1AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9103941-AC42-4F75-B3FD-E6251DFAB1AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
