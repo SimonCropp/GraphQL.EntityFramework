@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -22,6 +22,15 @@ namespace EfCoreGraphQL
 
         public static Expression<Func<T, bool>> BuildPredicate<T>(WhereExpression whereExpression)
         {
+            if (whereExpression.Comparison == Comparison.In)
+            {
+                return BuildIn<T>(whereExpression.Path,whereExpression.Values);
+            }
+            return BuildCompare<T>(whereExpression);
+        }
+
+        static Expression<Func<T, bool>> BuildCompare<T>(WhereExpression whereExpression)
+        {
             var parameter = Expression.Parameter(typeof(T));
             var left = AggregatePath(whereExpression.Path, parameter);
 
@@ -39,19 +48,13 @@ namespace EfCoreGraphQL
             return Expression.Lambda<Func<T, bool>>(body, parameter);
         }
 
-        public static Expression<Func<T, bool>> BuildInPredicate<T>(string propertyPath, IList value)
+      public static Expression<Func<T, bool>> BuildIn<T>(string propertyPath, IEnumerable<string> values)
         {
             var parameter = Expression.Parameter(typeof(T));
             var left = AggregatePath(propertyPath, parameter);
-            var listType = value.GetType();
-            var constant = Expression.Constant(value, listType);
-            var itemType = listType.GetGenericArguments()[0];
-            if (itemType != left.Type)
-            {
-                throw new Exception($"PropertyPath ({propertyPath}) and list type do not match. PropertyPath Type: {left.Type.FullName}. List Type: {itemType.FullName}.");
-            }
-
-            var inInfo = listType.GetMethod("Contains", new[] {itemType});
+            var objects = values.Select(x=> ConvertStringToType(x,left.Type)).ToList();
+            var constant = Expression.Constant(objects);
+            var inInfo = objects.GetType().GetMethod("Contains", new[] { left.Type });
             var body = Expression.Call(constant, inInfo, left);
             return Expression.Lambda<Func<T, bool>>(body, parameter);
         }
@@ -113,5 +116,23 @@ namespace EfCoreGraphQL
             return propertyPath.Split('.')
                 .Aggregate(parameter, Expression.PropertyOrField);
         }
+
+
+        //public static Expression<Func<T, bool>> BuildInForInstances<T>(string propertyPath, IList value)
+        //{
+        //    var parameter = Expression.Parameter(typeof(T));
+        //    var left = AggregatePath(propertyPath, parameter);
+        //    var listType = value.GetType();
+        //    var constant = Expression.Constant(value, listType);
+        //    var itemType = listType.GetGenericArguments()[0];
+        //    if (itemType != left.Type)
+        //    {
+        //        throw new Exception($"PropertyPath ({propertyPath}) and list type do not match. PropertyPath Type: {left.Type.FullName}. List Type: {itemType.FullName}.");
+        //    }
+
+        //    var inInfo = listType.GetMethod("Contains", new[] { itemType });
+        //    var body = Expression.Call(constant, inInfo, left);
+        //    return Expression.Lambda<Func<T, bool>>(body, parameter);
+        //}
     }
 }

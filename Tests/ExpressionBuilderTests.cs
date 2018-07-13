@@ -82,7 +82,7 @@ public class ExpressionBuilderTests
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildInPredicate<TargetForIn>("Member", new List<string> {"Value2"}))
+            .Where(ExpressionBuilder.BuildIn<TargetForIn>("Member", new List<string> {"Value2"}))
             .Single();
         Assert.Contains("Value2", result.Member);
     }

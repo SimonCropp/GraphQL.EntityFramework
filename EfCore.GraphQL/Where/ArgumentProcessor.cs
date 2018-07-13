@@ -25,7 +25,7 @@ namespace EfCoreGraphQL
         {
             foreach (var where in ExpressionContextExtractor.Read<T>(getArguments))
             {
-                var predicate = ExpressionBuilder.BuildPredicate<T>(@where);
+                var predicate = ExpressionBuilder.BuildPredicate<T>(where);
                 queryable = queryable.Where(predicate);
             }
 

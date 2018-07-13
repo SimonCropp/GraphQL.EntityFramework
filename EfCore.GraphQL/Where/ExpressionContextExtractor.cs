@@ -9,6 +9,14 @@ namespace EfCoreGraphQL
         //Portfolios(wheres: [{Member: "Title", Comparison: "Contains", Value: "Communications"}]) {
         public static IEnumerable<WhereExpression> Read<T>(Func<Type, string, object> getArgument)
         {
+            foreach (var whereExpression in WhereExpressions(getArgument))
+            {
+                yield return whereExpression;
+            }
+        }
+
+        private static IEnumerable<WhereExpression> WhereExpressions(Func<Type, string, object> getArgument)
+        {
             foreach (var expression in getArgument.ReadList<WhereExpression>("wheres"))
             {
                 yield return expression;

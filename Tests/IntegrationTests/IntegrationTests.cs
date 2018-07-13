@@ -36,8 +36,8 @@ public class IntegrationTests : TestBase
 { testEntities
   (wheres:
     [
-      {path: ""Property"", comparison: ""startsWith"", value: ""Valu""}
-      {path: ""Property"", comparison: ""endsWith"", value: ""ue3""}
+      {path: 'Property', comparison: 'startsWith"", value: 'Valu'}
+      {path: 'Property', comparison: 'endsWith"", value: 'ue3'}
     ]
   )
   {
@@ -68,7 +68,27 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where()
     {
-        var queryString = "{ testEntities (where: {path: \"Property\", comparison: \"==\", value: \"Value2\"}){ property } }";
+        var queryString = "{ testEntities (where: {path: 'Property', comparison: '==', value: 'Value2'}){ property } }";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
+    [Fact]
+    public async Task In()
+    {
+        var queryString = "{ testEntities (where: {path: 'Property', comparison: 'In', values: 'Value2'}){ property } }";
 
         var entity1 = new TestEntity
         {
@@ -87,6 +107,8 @@ public class IntegrationTests : TestBase
 
     static async Task<ExecutionResult> RunQuery(string queryString, params object[] entities)
     {
+        queryString = queryString.Replace("'", "\"");
+
         var query = new Query(x => (MyDataContext) x.UserContext);
         using (var dataContext = InMemoryContextBuilder.Build<MyDataContext>())
         {
