@@ -21,7 +21,7 @@ namespace EfCoreGraphQL
             Guard.AgainstNull(nameof(value), value);
             var trim = value.ToString().Trim('"');
             Guard.AgainstNullWhiteSpace(nameof(value), trim);
-            return ulong.Parse(trim);
+            return InnerParse(trim);
         }
 
         protected abstract T InnerParse(string value);
