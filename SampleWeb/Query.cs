@@ -5,14 +5,14 @@ public class Query : ObjectGraphType
 {
     public Query()
     {
-        this.AddEfListField<CompanyGraph, Company>("companies",
+        this.AddQueryField<CompanyGraph, Company>("companies",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
             });
 
-        this.AddEfListField<EmployeeGraph, Employee>("employees",
+        this.AddQueryField<EmployeeGraph, Employee>("employees",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;

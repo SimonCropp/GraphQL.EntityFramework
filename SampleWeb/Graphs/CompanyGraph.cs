@@ -7,15 +7,13 @@ public class CompanyGraph : ObjectGraphType<Company>
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        Field<ListGraphType<EmployeeGraph>>(
+        this.AddEnumerableField<Company, EmployeeGraph, Employee>(
             "employees",
-            arguments: ArgumentAppender.DefaultArguments,
             resolve: context =>
             {
-                var sourceEmployees = context
+                return context
                     .Source
                     .Employees;
-                return sourceEmployees.ApplyGraphQlArguments(context);
             });
     }
 }
