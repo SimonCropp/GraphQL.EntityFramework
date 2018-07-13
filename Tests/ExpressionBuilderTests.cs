@@ -27,7 +27,7 @@ public class ExpressionBuilderTests
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<Target>("Member.Length", "==", 2))
+            .Where(ExpressionBuilder.BuildPredicate<Target>("Member.Length", Comparison.Equal, 2))
             .Single();
         Assert.Equal("bb", result.Member);
     }
@@ -48,15 +48,15 @@ public class ExpressionBuilderTests
         };
 
         var resultFromString = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<TargetWithNullable>("Field", "==", "10"))
+            .Where(ExpressionBuilder.BuildPredicate<TargetWithNullable>("Field", Comparison.Equal, "10"))
             .Single();
         Assert.Equal(10, resultFromString.Field);
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<TargetWithNullable>("Field", "==", 10))
+            .Where(ExpressionBuilder.BuildPredicate<TargetWithNullable>("Field", Comparison.Equal, 10))
             .Single();
         Assert.Equal(10, result.Field);
         var nullResult = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<TargetWithNullable>("Field", "==", null))
+            .Where(ExpressionBuilder.BuildPredicate<TargetWithNullable>("Field", Comparison.Equal, null))
             .Single();
         Assert.Null(nullResult.Field);
     }
@@ -108,7 +108,7 @@ public class ExpressionBuilderTests
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<TargetWithField>("Field", "==", "Target2"))
+            .Where(ExpressionBuilder.BuildPredicate<TargetWithField>("Field", Comparison.Equal, "Target2"))
             .Single();
         Assert.Equal("Target2", result.Field);
     }
@@ -119,19 +119,19 @@ public class ExpressionBuilderTests
     }
 
     [Theory]
-    [InlineData("Name", "==", "Person 1", "Person 1")]
-    [InlineData("Name", "!=", "Person 2", "Person 1")]
-    [InlineData("Name", "Contains", "son 2", "Person 2")]
-    [InlineData("Name", "StartsWith", "Person 2", "Person 2")]
-    [InlineData("Name", "EndsWith", "son 2", "Person 2")]
-    [InlineData("Age", "==", "13", "Person 2")]
-    [InlineData("Age", "==", 13, "Person 2")]
-    [InlineData("Age", ">", 12, "Person 2")]
-    [InlineData("Age", "!=", 12, "Person 2")]
-    [InlineData("Age", ">=", 13, "Person 2")]
-    [InlineData("Age", "<", 13, "Person 1")]
-    [InlineData("Age", "<=", 12, "Person 1")]
-    public void Combos(string name, string expression, object value, string expectedName)
+    [InlineData("Name", Comparison.Equal, "Person 1", "Person 1")]
+    [InlineData("Name", Comparison.NotEqual, "Person 2", "Person 1")]
+    [InlineData("Name", Comparison.Contains, "son 2", "Person 2")]
+    [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2")]
+    [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2")]
+    [InlineData("Age", Comparison.Equal, "13", "Person 2")]
+    [InlineData("Age", Comparison.Equal, 13, "Person 2")]
+    [InlineData("Age", Comparison.GreaterThan, 12, "Person 2")]
+    [InlineData("Age", Comparison.NotEqual, 12, "Person 2")]
+    [InlineData("Age", Comparison.GreaterThanOrEqual,13, "Person 2")]
+    [InlineData("Age", Comparison.LessThan, 13, "Person 1")]
+    [InlineData("Age", Comparison.LessThanOrEqual, 12, "Person 1")]
+    public void Combos(string name, Comparison expression, object value, string expectedName)
     {
         var people = new List<Person>
         {

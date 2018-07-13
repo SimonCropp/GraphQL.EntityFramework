@@ -2,9 +2,9 @@
 
 namespace EfCoreGraphQL
 {
-    public class WhereExpressionGraphType : InputObjectGraphType<WhereExpression>
+    public class WhereExpressionGraph : InputObjectGraphType<WhereExpression>
     {
-        public WhereExpressionGraphType()
+        public WhereExpressionGraph()
         {
             Field(x => x.Path);
             Field(x => x.Comparison);

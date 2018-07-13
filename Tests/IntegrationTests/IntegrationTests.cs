@@ -36,8 +36,8 @@ public class IntegrationTests : TestBase
 { testEntities
   (wheres:
     [
-      {path: ""Property"", comparison: ""StartsWith"", value: ""Valu""}
-      {path: ""Property"", comparison: ""EndsWith"", value: ""ue3""}
+      {path: ""Property"", comparison: ""startsWith"", value: ""Valu""}
+      {path: ""Property"", comparison: ""endsWith"", value: ""ue3""}
     ]
   )
   {

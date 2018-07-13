@@ -5,8 +5,8 @@ namespace EfCoreGraphQL
 {
     public static class ArgumentAppender
     {
-        static QueryArgument<ListGraphType<WhereExpressionGraphType>> wheresArgument = new QueryArgument<ListGraphType<WhereExpressionGraphType>> { Name = "wheres" };
-        static QueryArgument<WhereExpressionGraphType> whereArgument = new QueryArgument<WhereExpressionGraphType> { Name = "where" };
+        static QueryArgument<ListGraphType<WhereExpressionGraph>> wheresArgument = new QueryArgument<ListGraphType<WhereExpressionGraph>> { Name = "wheres" };
+        static QueryArgument<WhereExpressionGraph> whereArgument = new QueryArgument<WhereExpressionGraph> { Name = "where" };
 
         public static readonly QueryArguments DefaultArguments = new QueryArguments(EnumerateArguments());
 

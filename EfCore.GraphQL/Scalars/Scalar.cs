@@ -34,6 +34,7 @@ namespace EfCoreGraphQL
 
         public static void Inject(Action<Type, ScalarGraphType> registerInstance)
         {
+            Initialize();
             foreach (var entry in entries)
             {
                 registerInstance(entry.Key, entry.Value);

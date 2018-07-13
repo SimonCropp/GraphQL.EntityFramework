@@ -7,7 +7,7 @@ namespace EfCoreGraphQL
 {
     public static class ExpressionBuilder
     {
-        public static Expression<Func<T, bool>> BuildPredicate<T>(string propertyPath, string comparison, object value)
+        public static Expression<Func<T, bool>> BuildPredicate<T>(string propertyPath, Comparison comparison, object value)
         {
             var parameter = Expression.Parameter(typeof(T));
             var left = AggregatePath(propertyPath, parameter);
@@ -77,29 +77,29 @@ namespace EfCoreGraphQL
             return Convert.ChangeType(value, type);
         }
 
-        static Expression MakeComparison(Expression left, string comparison, object value)
+        static Expression MakeComparison(Expression left, Comparison comparison, object value)
         {
             var constant = Expression.Constant(value, left.Type);
             switch (comparison)
             {
-                case "==":
+                case Comparison.Equal:
                     return Expression.MakeBinary(ExpressionType.Equal, left, constant);
-                case "!=":
+                case Comparison.NotEqual:
                     return Expression.MakeBinary(ExpressionType.NotEqual, left, constant);
-                case ">":
+                case Comparison.GreaterThan:
                     return Expression.MakeBinary(ExpressionType.GreaterThan, left, constant);
-                case ">=":
+                case Comparison.GreaterThanOrEqual:
                     return Expression.MakeBinary(ExpressionType.GreaterThanOrEqual, left, constant);
-                case "<":
+                case Comparison.LessThan:
                     return Expression.MakeBinary(ExpressionType.LessThan, left, constant);
-                case "<=":
+                case Comparison.LessThanOrEqual:
                     return Expression.MakeBinary(ExpressionType.LessThanOrEqual, left, constant);
-                case "Contains":
-                case "StartsWith":
-                case "EndsWith":
+                case Comparison.Contains:
+                case Comparison.StartsWith:
+                case Comparison.EndsWith:
                     if (value is string)
                     {
-                        return Expression.Call(left, comparison, Type.EmptyTypes, constant);
+                        return Expression.Call(left, comparison.ToString(), Type.EmptyTypes, constant);
                     }
 
                     throw new NotSupportedException($"Comparison operator '{comparison}' only supported on string.");
