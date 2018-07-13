@@ -3,9 +3,9 @@ using GraphQL.Types;
 
 namespace EfCoreGraphQL
 {
-    public abstract class NonNullableScalarGraph<T> : ScalarGraphType
+    public abstract class ScalarGraph<T> : ScalarGraphType
     {
-        public NonNullableScalarGraph()
+        public ScalarGraph()
         {
             Name = typeof(T).Name;
             Description = Name;

@@ -2,7 +2,7 @@
 
 namespace EfCoreGraphQL
 {
-    public class GuidGraph : NonNullableScalarGraph<Guid>
+    public class GuidGraph : ScalarGraph<Guid>
     {
         protected override Guid InnerParse(string value)
         {

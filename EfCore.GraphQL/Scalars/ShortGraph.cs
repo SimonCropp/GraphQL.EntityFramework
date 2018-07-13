@@ -1,6 +1,6 @@
 ﻿namespace EfCoreGraphQL
 {
-    public class ShortGraph : NonNullableScalarGraph<short>
+    public class ShortGraph : ScalarGraph<short>
     {
         protected override short InnerParse(string value)
         {
