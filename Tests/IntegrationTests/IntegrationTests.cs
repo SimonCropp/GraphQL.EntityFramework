@@ -30,11 +30,11 @@ public class IntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Wheres()
+    public async Task Where_multiple()
     {
         var queryString = @"
 { testEntities
-  (wheres:
+  (where:
     [
       {path: 'Property', comparison: 'startsWith"", value: 'Valu'}
       {path: 'Property', comparison: 'endsWith"", value: 'ue3'}
