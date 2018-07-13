@@ -24,7 +24,7 @@ namespace EfCoreGraphQL
         {
             if (whereExpression.Comparison == Comparison.In)
             {
-                return BuildIn<T>(whereExpression.Path,whereExpression.Values);
+                return BuildIn<T>(whereExpression.Path,whereExpression.Value);
             }
             return BuildCompare<T>(whereExpression);
         }
@@ -34,14 +34,15 @@ namespace EfCoreGraphQL
             var parameter = Expression.Parameter(typeof(T));
             var left = AggregatePath(whereExpression.Path, parameter);
 
+            var single = whereExpression.Value.Single();
             object value;
             if (left.Type == typeof(string))
             {
-                value = whereExpression.Value;
+                value = single;
             }
             else
             {
-                value = ConvertStringToType(whereExpression.Value, left.Type);
+                value = ConvertStringToType(single, left.Type);
             }
 
             var body = MakeComparison(left, whereExpression.Comparison, value);

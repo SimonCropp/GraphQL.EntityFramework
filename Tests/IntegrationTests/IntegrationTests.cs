@@ -88,7 +88,7 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task In()
     {
-        var queryString = "{ testEntities (where: {path: 'Property', comparison: 'In', values: 'Value2'}){ property } }";
+        var queryString = "{ testEntities (where: {path: 'Property', comparison: 'In', value: 'Value2'}){ property } }";
 
         var entity1 = new TestEntity
         {
