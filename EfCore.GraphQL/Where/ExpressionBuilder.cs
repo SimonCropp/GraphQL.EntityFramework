@@ -20,6 +20,25 @@ namespace EfCoreGraphQL
             return Expression.Lambda<Func<T, bool>>(body, parameter);
         }
 
+        public static Expression<Func<T, bool>> BuildPredicate<T>(WhereExpression whereExpression)
+        {
+            var parameter = Expression.Parameter(typeof(T));
+            var left = AggregatePath(whereExpression.Path, parameter);
+
+            object value;
+            if (left.Type == typeof(string))
+            {
+                value = whereExpression.Value;
+            }
+            else
+            {
+                value = ConvertStringToType(whereExpression.Value, left.Type);
+            }
+
+            var body = MakeComparison(left, whereExpression.Comparison, value);
+            return Expression.Lambda<Func<T, bool>>(body, parameter);
+        }
+
         public static Expression<Func<T, bool>> BuildInPredicate<T>(string propertyPath, IList value)
         {
             var parameter = Expression.Parameter(typeof(T));

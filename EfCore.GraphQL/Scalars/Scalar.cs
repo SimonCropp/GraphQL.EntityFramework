@@ -7,32 +7,54 @@ namespace EfCoreGraphQL
 {
     public static class Scalar
     {
-        static Dictionary<Type, ScalarGraphType> entries = new Dictionary<Type, ScalarGraphType>();
+        static Dictionary<Type, ScalarGraphType> entries;
+        static object locker = new object();
 
-        public static void Inject(Action<Type,ScalarGraphType> registerInstance = null)
+        public static void Initialize()
         {
-            GraphTypeTypeRegistry.Register(typeof(Guid), typeof(GuidGraphType));
-            GraphTypeTypeRegistry.Register(typeof(ulong), typeof(UlongGraphType));
-            Add<GuidGraphType>(registerInstance);
-            Add<UlongGraphType>(registerInstance);
+            if (entries != null)
+            {
+                return;
+            }
+
+            lock (locker)
+            {
+                if (entries != null)
+                {
+                    return;
+                }
+
+                entries = new Dictionary<Type, ScalarGraphType>();
+                GraphTypeTypeRegistry.Register(typeof(Guid), typeof(GuidGraphType));
+                GraphTypeTypeRegistry.Register(typeof(ulong), typeof(UlongGraphType));
+                Add<GuidGraphType>();
+                Add<UlongGraphType>();
+            }
         }
 
-        static void Add<T>(Action<Type, ScalarGraphType> registerInstance)
+        public static void Inject(Action<Type, ScalarGraphType> registerInstance)
+        {
+            foreach (var entry in entries)
+            {
+                registerInstance(entry.Key, entry.Value);
+            }
+        }
+
+        static void Add<T>()
             where T : ScalarGraphType, new()
         {
             var value = new T();
-            registerInstance?.Invoke(typeof(T), value);
             entries.Add(typeof(T), value);
         }
 
-        public static ScalarGraphType Build(Type type)
+        public static bool TryGet(Type type, out ScalarGraphType instance)
         {
-            if (entries.TryGetValue(type, out var entry))
+            if (entries.TryGetValue(type, out instance))
             {
-                return entry;
+                return true;
             }
 
-            throw new Exception($"Could not find ScalarGraphType: {type.FullName}");
+            return false;
         }
     }
 }

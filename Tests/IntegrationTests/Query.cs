@@ -8,10 +8,13 @@ public class Query : ObjectGraphType
     {
         Field<ListGraphType<TestEntityType>>(
             "testEntities",
+            arguments: ArgumentAppender.DefaultArguments,
             resolve: context =>
             {
                 var dataContext = resolveDataContext(context);
-                return dataContext.TestEntities.ToListAsync();
+                return dataContext.TestEntities
+                    .ApplyGraphQlArguments(context)
+                    .ToListAsync();
             });
     }
 }
