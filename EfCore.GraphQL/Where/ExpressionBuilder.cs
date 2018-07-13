@@ -24,8 +24,9 @@ namespace EfCoreGraphQL
         {
             if (whereExpression.Comparison == Comparison.In)
             {
-                return BuildIn<T>(whereExpression.Path,whereExpression.Value);
+                return BuildIn<T>(whereExpression.Path, whereExpression.Value);
             }
+
             return BuildCompare<T>(whereExpression);
         }
 
@@ -49,13 +50,13 @@ namespace EfCoreGraphQL
             return Expression.Lambda<Func<T, bool>>(body, parameter);
         }
 
-      public static Expression<Func<T, bool>> BuildIn<T>(string propertyPath, IEnumerable<string> values)
+        public static Expression<Func<T, bool>> BuildIn<T>(string propertyPath, IEnumerable<string> values)
         {
             var parameter = Expression.Parameter(typeof(T));
             var left = AggregatePath(propertyPath, parameter);
-            var objects = values.Select(x=> ConvertStringToType(x,left.Type)).ToList();
+            var objects = values.Select(x => ConvertStringToType(x, left.Type)).ToList();
             var constant = Expression.Constant(objects);
-            var inInfo = objects.GetType().GetMethod("Contains", new[] { left.Type });
+            var inInfo = objects.GetType().GetMethod("Contains", new[] {left.Type});
             var body = Expression.Call(constant, inInfo, left);
             return Expression.Lambda<Func<T, bool>>(body, parameter);
         }
@@ -117,7 +118,6 @@ namespace EfCoreGraphQL
             return propertyPath.Split('.')
                 .Aggregate(parameter, Expression.PropertyOrField);
         }
-
 
         //public static Expression<Func<T, bool>> BuildInForInstances<T>(string propertyPath, IList value)
         //{
