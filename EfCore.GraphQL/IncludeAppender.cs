@@ -13,7 +13,8 @@ namespace EfCoreGraphQL
         {
             return AddIncludes(query, context.SubFields);
         }
-        public static IQueryable<TItem> AddIncludes<TItem,TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+
+        public static IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
             where TItem : class
         {
             return AddIncludes(query, context.SubFields);
@@ -42,29 +43,46 @@ namespace EfCoreGraphQL
 
         static void AddField(List<string> list, Field field, string parentPath)
         {
-            string path;
-            var fieldName = field.Name;
-            fieldName = char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1);
-            if (parentPath == null)
-            {
-                path = fieldName;
-            }
-            else
-            {
-                path = $"{parentPath}.{fieldName}";
-            }
-
             var subFields = field.SelectionSet.Selections.OfType<Field>().ToList();
-            if (!subFields.Any())
+            if (IsConnectionNode(field))
             {
+                if (subFields.Any())
+                {
+                    foreach (var subField in subFields)
+                    {
+                        AddField(list, subField, parentPath);
+                    }
+                }
+
                 return;
             }
 
-            list.Add(path);
-            foreach (var subField in subFields)
+            var path = JoinWithParent(parentPath, field.Name);
+            if (subFields.Any())
             {
-                AddField(list, subField, path);
+                list.Add(path);
+                foreach (var subField in subFields)
+                {
+                    AddField(list, subField, path);
+                }
             }
+        }
+
+        static bool IsConnectionNode(Field field)
+        {
+            var name = field.Name;
+            return name == "edges" || name == "items" || name == "node";
+        }
+
+        static string JoinWithParent(string parentPath, string fieldName)
+        {
+            fieldName = char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1);
+            if (parentPath == null)
+            {
+                return fieldName;
+            }
+
+            return $"{parentPath}.{fieldName}";
         }
     }
 }
