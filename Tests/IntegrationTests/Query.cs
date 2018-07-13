@@ -6,7 +6,7 @@ public class Query : ObjectGraphType
 {
     public Query(ResolveDataContext<MyDataContext> resolveDataContext)
     {
-        Field<ListGraphType<TestEntityType>>(
+        Field<ListGraphType<TestEntityGraph>>(
             "testEntities",
             arguments: ArgumentAppender.DefaultArguments,
             resolve: context =>

@@ -66,7 +66,48 @@ public class IntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Where_null()
+    public async Task Where_with_nullable_properties1()
+    {
+        var queryString = "{ testEntities (where: {path: 'Nullable', comparison: '=='}){ id } }";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = null
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2",
+            Nullable = 10
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+    [Fact]
+    public async Task Where_with_nullable_properties2()
+    {
+        var queryString = "{ testEntities (where: {path: 'Nullable', comparison: '==', value: '10'}){ id } }";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = null
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2",
+            Nullable = 10
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
+    [Fact]
+    public async Task Where_null_comparison_value()
     {
         var queryString = "{ testEntities (where: {path: 'Property', comparison: '=='}){ id } }";
 
@@ -226,9 +267,9 @@ public class IntegrationTests : TestBase
                 return query;
             }
 
-            if (x == typeof(TestEntityType))
+            if (x == typeof(TestEntityGraph))
             {
-                return new TestEntityType();
+                return new TestEntityGraph();
             }
 
             if (Scalar.TryGet(x, out var scalar))
