@@ -1,30 +1,22 @@
-﻿using System.Linq;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using EfCoreGraphQL;
 
 public class Query : ObjectGraphType
 {
     public Query()
     {
-        Field<ListGraphType<CompanyGraph>>(
-            "companies",
-            arguments: ArgumentAppender.DefaultArguments,
+        this.AddEfListField<CompanyGraph, Company>("companies",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies
-                    .ApplyGraphQlArguments(context)
-                    .ToList();
+                return dataContext.Companies;
             });
-        Field<ListGraphType<EmployeeGraph>>(
-            "employees",
-            arguments: ArgumentAppender.DefaultArguments,
+
+        this.AddEfListField<EmployeeGraph, Employee>("employees",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Employees
-                    .ApplyGraphQlArguments(context)
-                    .ToList();
+                return dataContext.Employees;
             });
     }
 }

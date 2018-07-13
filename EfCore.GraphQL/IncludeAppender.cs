@@ -8,15 +8,20 @@ namespace EfCoreGraphQL
 {
     public static class IncludeAppender
     {
-        public static IEnumerable<string> GetPaths<T>(ResolveFieldContext<T> context)
+        public static IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, ResolveFieldContext<TItem> context)
+            where TItem : class
         {
-            return GetPaths(context.SubFields.Values);
+            return AddIncludes(query, context.SubFields);
+        }
+        public static IQueryable<TItem> AddIncludes<TItem,TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+            where TItem : class
+        {
+            return AddIncludes(query, context.SubFields);
         }
 
-        public static IQueryable<T> AddIncludes<T>(IQueryable<T> query, ResolveFieldContext<T> context)
-            where T : class
+        static IQueryable<T> AddIncludes<T>(IQueryable<T> query, IDictionary<string, Field> subFields) where T : class
         {
-            foreach (var path in GetPaths(context))
+            foreach (var path in GetPaths(subFields.Values))
             {
                 query = query.Include(path);
             }
@@ -38,13 +43,15 @@ namespace EfCoreGraphQL
         static void AddField(List<string> list, Field field, string parentPath)
         {
             string path;
+            var fieldName = field.Name;
+            fieldName = char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1);
             if (parentPath == null)
             {
-                path = field.Name;
+                path = fieldName;
             }
             else
             {
-                path = $"{parentPath}.{field.Name}";
+                path = $"{parentPath}.{fieldName}";
             }
 
             var subFields = field.SelectionSet.Selections.OfType<Field>().ToList();
