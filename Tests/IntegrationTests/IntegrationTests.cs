@@ -105,6 +105,26 @@ public class IntegrationTests : TestBase
         ObjectApprover.VerifyWithJson(result.Data);
     }
 
+    [Fact]
+    public async Task In_multiple()
+    {
+        var queryString = "{ testEntities (where: {path: 'Property', comparison: 'In', value: ['Value1', 'Value2']}){ property } }";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
     static async Task<ExecutionResult> RunQuery(string queryString, params object[] entities)
     {
         queryString = queryString.Replace("'", "\"");
