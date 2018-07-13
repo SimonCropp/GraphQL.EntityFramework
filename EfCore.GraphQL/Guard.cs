@@ -9,4 +9,11 @@ static class Guard
             throw new ArgumentNullException(argumentName);
         }
     }
+    public static void AgainstNullWhiteSpace(string argumentName, string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new ArgumentNullException(argumentName);
+        }
+    }
 }

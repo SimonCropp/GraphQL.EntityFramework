@@ -25,10 +25,11 @@ namespace EfCoreGraphQL
                 }
 
                 entries = new Dictionary<Type, ScalarGraphType>();
-                GraphTypeTypeRegistry.Register(typeof(Guid), typeof(GuidGraph));
-                GraphTypeTypeRegistry.Register(typeof(ulong), typeof(UlongGraph));
-                Add<GuidGraph>();
-                Add<UlongGraph>();
+                Add<GuidGraph>(typeof(Guid));
+                Add<UlongGraph>(typeof(ulong));
+                Add<UintGraph>(typeof(uint));
+                Add<UshortGraph>(typeof(ushort));
+                Add<ShortGraph>(typeof(short));
             }
         }
 
@@ -41,9 +42,10 @@ namespace EfCoreGraphQL
             }
         }
 
-        static void Add<T>()
+        static void Add<T>(Type type)
             where T : ScalarGraphType, new()
         {
+            GraphTypeTypeRegistry.Register(type, typeof(GuidGraph));
             var value = new T();
             entries.Add(typeof(T), value);
         }
