@@ -23,6 +23,7 @@ namespace EfCoreGraphQL
                 registerInstance(entry.Key, entry.Value);
             }
         }
+
         static void Add<T>()
             where T : GraphType, new()
         {
