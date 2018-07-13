@@ -16,7 +16,7 @@ namespace EfCoreGraphQL
             Add<ComparisonGraph>();
         }
 
-        public static void Inject(Action<Type, GraphType> registerInstance)
+        public static void RegisterInContainer(Action<Type, GraphType> registerInstance)
         {
             foreach (var entry in entries)
             {

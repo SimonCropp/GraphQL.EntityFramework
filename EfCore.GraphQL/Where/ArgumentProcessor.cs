@@ -30,15 +30,16 @@ namespace EfCoreGraphQL
                 items = items.Where(predicate);
             }
 
-            if (ExpressionContextExtractor.TryReadSkip(getArguments,out var skip))
+            if (ExpressionContextExtractor.TryReadSkip(getArguments, out var skip))
             {
                 items = items.Skip(skip);
             }
 
-            if (ExpressionContextExtractor.TryReadTake(getArguments,  out var take))
+            if (ExpressionContextExtractor.TryReadTake(getArguments, out var take))
             {
                 items = items.Take(take);
             }
+
             return items;
         }
 
@@ -64,6 +65,7 @@ namespace EfCoreGraphQL
                 var predicate = ExpressionBuilder.BuildPredicate<TItem>(where);
                 queryable = queryable.Where(predicate);
             }
+
             if (ExpressionContextExtractor.TryReadSkip(getArguments, out var skip))
             {
                 queryable = queryable.Skip(skip);

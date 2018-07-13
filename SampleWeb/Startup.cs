@@ -30,8 +30,9 @@ public class Startup
         myDataContext.AddRange(company, employee1, employee2);
         myDataContext.SaveChanges();
         services.AddSingleton(myDataContext);
-        Scalar.Inject((type, instance) => { services.AddSingleton(type, instance); });
-        ArgumentGraphs.Inject((type, instance) => { services.AddSingleton(type, instance); });
+
+        EfCoreGraphQLConventions.RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); });
+
         foreach (var type in GetGraphQlTypes())
         {
             services.AddSingleton(type);

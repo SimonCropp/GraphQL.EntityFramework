@@ -5,7 +5,7 @@ using GraphQL.Utilities;
 
 namespace EfCoreGraphQL
 {
-    public static class Scalar
+    public static class Scalars
     {
         static Dictionary<Type, ScalarGraphType> entries;
         static object locker = new object();
@@ -33,7 +33,7 @@ namespace EfCoreGraphQL
             }
         }
 
-        public static void Inject(Action<Type, ScalarGraphType> registerInstance)
+        public static void RegisterInContainer(Action<Type, ScalarGraphType> registerInstance)
         {
             Initialize();
             foreach (var entry in entries)
