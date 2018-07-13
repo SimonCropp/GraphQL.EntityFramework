@@ -134,7 +134,7 @@ public class IntegrationTests : TestBase
                 return scalar;
             }
 
-            if (ArgumentGraphTypes.TryGet(x, out var instance))
+            if (ArgumentGraphs.TryGet(x, out var instance))
             {
                 return instance;
             }

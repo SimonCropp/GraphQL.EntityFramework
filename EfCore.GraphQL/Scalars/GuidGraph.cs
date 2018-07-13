@@ -1,14 +1,15 @@
-﻿using GraphQL.Language.AST;
+﻿using System;
+using GraphQL.Language.AST;
 using GraphQL.Types;
 
 namespace EfCoreGraphQL
 {
-    public class UlongGraphType : ScalarGraphType
+    public class GuidGraph : ScalarGraphType
     {
-        public UlongGraphType()
+        public GuidGraph()
         {
-            Name = "ulong";
-            Description = "Unsigned Long.";
+            Name = "Guid";
+            Description = "Globally Unique Identifier.";
         }
 
         public override object Serialize(object value)
@@ -18,13 +19,13 @@ namespace EfCoreGraphQL
 
         public override object ParseValue(object value)
         {
-            var trim = value?.ToString().Trim('"');
-            if (string.IsNullOrWhiteSpace(trim))
+            var guid = value?.ToString().Trim('"');
+            if (string.IsNullOrWhiteSpace(guid))
             {
                 return null;
             }
 
-            return ulong.Parse(trim);
+            return Guid.Parse(guid);
         }
 
         public override object ParseLiteral(IValue value)

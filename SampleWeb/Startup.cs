@@ -31,7 +31,7 @@ public class Startup
         myDataContext.SaveChanges();
         services.AddSingleton(myDataContext);
         Scalar.Inject((type, instance) => { services.AddSingleton(type, instance); });
-        ArgumentGraphTypes.Inject((type, instance) => { services.AddSingleton(type, instance); });
+        ArgumentGraphs.Inject((type, instance) => { services.AddSingleton(type, instance); });
         foreach (var type in GetGraphQlTypes())
         {
             services.AddSingleton(type);

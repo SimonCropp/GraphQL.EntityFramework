@@ -25,10 +25,10 @@ namespace EfCoreGraphQL
                 }
 
                 entries = new Dictionary<Type, ScalarGraphType>();
-                GraphTypeTypeRegistry.Register(typeof(Guid), typeof(GuidGraphType));
-                GraphTypeTypeRegistry.Register(typeof(ulong), typeof(UlongGraphType));
-                Add<GuidGraphType>();
-                Add<UlongGraphType>();
+                GraphTypeTypeRegistry.Register(typeof(Guid), typeof(GuidGraph));
+                GraphTypeTypeRegistry.Register(typeof(ulong), typeof(UlongGraph));
+                Add<GuidGraph>();
+                Add<UlongGraph>();
             }
         }
 

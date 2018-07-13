@@ -5,11 +5,11 @@ using GraphQL.Utilities;
 
 namespace EfCoreGraphQL
 {
-    public static class ArgumentGraphTypes
+    public static class ArgumentGraphs
     {
         static Dictionary<Type, GraphType> entries = new Dictionary<Type, GraphType>();
 
-        static ArgumentGraphTypes()
+        static ArgumentGraphs()
         {
             GraphTypeTypeRegistry.Register(typeof(Comparison), typeof(ComparisonGraph));
             Add<WhereExpressionGraph>();

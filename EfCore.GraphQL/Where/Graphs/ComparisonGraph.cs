@@ -27,11 +27,11 @@ namespace EfCoreGraphQL
                 return literal;
             }
 
-            if (value.Value is string stringValue)
+            if (value is StringValue str)
             {
                 if (
-                    Enum.TryParse(stringValue, true, out Comparison comparison) ||
-                    comparisons.TryGetValue(stringValue, out comparison)
+                    Enum.TryParse(str.Value, true, out Comparison comparison) ||
+                    comparisons.TryGetValue(str.Value, out comparison)
                 )
                 {
                     return comparison;
