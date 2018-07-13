@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using EfCoreGraphQL;
+using GraphQL.Types;
 
 public class CompanyGraph : ObjectGraphType<Company>
 {
@@ -8,9 +9,13 @@ public class CompanyGraph : ObjectGraphType<Company>
         Field(x => x.Content);
         Field<ListGraphType<EmployeeGraph>>(
             "employees",
+            arguments: ArgumentAppender.DefaultArguments,
             resolve: context =>
             {
-                return context.Source.Employees;
+                var sourceEmployees = context
+                    .Source
+                    .Employees;
+                return sourceEmployees.ApplyGraphQlArguments(context);
             });
     }
 }

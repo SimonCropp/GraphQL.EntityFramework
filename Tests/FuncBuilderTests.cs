@@ -3,7 +3,7 @@ using System.Linq;
 using EfCoreGraphQL;
 using Xunit;
 
-public class ExpressionBuilderTests
+public class FuncBuilderTests
 {
     public class Target
     {
@@ -25,8 +25,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<Target>("Member.Length", Comparison.Equal, "2"))
+        var result = list
+            .Where(FuncBuilder<Target>.BuildPredicate("Member.Length", Comparison.Equal, "2"))
             .Single();
         Assert.Equal("bb", result.Member);
     }
@@ -46,12 +46,12 @@ public class ExpressionBuilderTests
             }
         };
 
-        var resultFromString = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<TargetWithNullable>("Field", Comparison.Equal, "10"))
+        var resultFromString = list
+            .Where(FuncBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, "10"))
             .Single();
         Assert.Equal(10, resultFromString.Field);
-        var nullResult = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<TargetWithNullable>("Field", Comparison.Equal, null))
+        var nullResult = list
+            .Where(FuncBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, null))
             .Single();
         Assert.Null(nullResult.Field);
     }
@@ -76,8 +76,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildIn<TargetForIn>("Member", new List<string> {"Value2"}))
+        var result = list
+            .Where(FuncBuilder<TargetForIn>.BuildIn("Member", new List<string> {"Value2"}))
             .Single();
         Assert.Contains("Value2", result.Member);
     }
@@ -102,8 +102,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<TargetWithField>("Field", Comparison.Equal, "Target2"))
+        var result = list
+            .Where(FuncBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Equal, "Target2"))
             .Single();
         Assert.Equal("Target2", result.Field);
     }
@@ -141,8 +141,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = people.AsQueryable()
-            .Where(ExpressionBuilder.BuildPredicate<Person>(name, expression, value))
+        var result = people
+            .Where(FuncBuilder<Person>.BuildPredicate(name, expression, value))
             .Single();
         Assert.Equal(expectedName, result.Name);
     }
