@@ -34,7 +34,7 @@ namespace EfCoreGraphQL
             var parameter = Expression.Parameter(typeof(T));
             var left = AggregatePath(whereExpression.Path, parameter);
 
-            var single = whereExpression.Value.Single();
+            var single = whereExpression.Value?.Single();
             object value;
             if (left.Type == typeof(string))
             {

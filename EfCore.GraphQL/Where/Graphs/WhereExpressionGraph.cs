@@ -8,7 +8,7 @@ namespace EfCoreGraphQL
         {
             Field(x => x.Path);
             Field(x => x.Comparison);
-            Field(x => x.Value);
+            Field(x => x.Value, true);
         }
     }
 }
