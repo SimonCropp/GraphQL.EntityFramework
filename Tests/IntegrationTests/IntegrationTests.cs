@@ -230,7 +230,7 @@ public class IntegrationTests : TestBase
     {
         queryString = queryString.Replace("'", "\"");
 
-        var query = new Query(x => (MyDataContext) x.UserContext);
+        var query = new Query();
         using (var dataContext = InMemoryContextBuilder.Build<MyDataContext>())
         {
             dataContext.AddRange(entities);

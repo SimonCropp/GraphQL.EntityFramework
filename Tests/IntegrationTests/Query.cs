@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 public class Query : ObjectGraphType
 {
-    public Query(ResolveDataContext<MyDataContext> resolveDataContext)
+    public Query()
     {
         Field<ListGraphType<TestEntityGraph>>(
             "testEntities",
             arguments: ArgumentAppender.DefaultArguments,
             resolve: context =>
             {
-                var dataContext = resolveDataContext(context);
+                var dataContext = (MyDataContext)context.UserContext;
                 return dataContext.TestEntities
                     .ApplyGraphQlArguments(context)
                     .ToListAsync();
