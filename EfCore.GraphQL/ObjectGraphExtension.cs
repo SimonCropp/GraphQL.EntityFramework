@@ -30,14 +30,7 @@ namespace EfCoreGraphQL
             string deprecationReason = null)
             where TGraphType : IGraphType where TReturnType : class
         {
-            if (arguments == null)
-            {
-                arguments = ArgumentAppender.DefaultArguments;
-            }
-            else
-            {
-                arguments.AddGraphQlArguments();
-            }
+            arguments = GetQueryArguments(arguments);
 
             var fieldType = new FieldType
             {
@@ -57,6 +50,18 @@ namespace EfCoreGraphQL
                     })
             };
             return graphType.AddField(fieldType);
+        }
+
+        static QueryArguments GetQueryArguments(QueryArguments arguments)
+        {
+            if (arguments == null)
+            {
+                return ArgumentAppender.DefaultArguments;
+            }
+
+            arguments.AddGraphQlArguments();
+
+            return arguments;
         }
     }
 }
