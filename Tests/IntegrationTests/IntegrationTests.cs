@@ -86,6 +86,46 @@ public class IntegrationTests : TestBase
     }
 
     [Fact]
+    public async Task Take()
+    {
+        var queryString = "{ testEntities (take: 1){ property } }";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
+    [Fact]
+    public async Task Skip()
+    {
+        var queryString = "{ testEntities (skip: 1){ property } }";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
+    [Fact]
     public async Task Where()
     {
         var queryString = "{ testEntities (where: {path: 'Property', comparison: '==', value: 'Value2'}){ property } }";
