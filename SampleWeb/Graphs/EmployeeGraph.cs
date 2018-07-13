@@ -6,6 +6,6 @@ public class EmployeeGraph : ObjectGraphType<Employee>
     {
         Field(x => x.Id);
         Field(x => x.Content);
-
+        Field(typeof(CompanyGraph), "company", null, null, x => x.Source.Company);
     }
 }
