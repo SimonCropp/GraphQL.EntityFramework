@@ -5,7 +5,7 @@ public class TestBase
 {
     static TestBase()
     {
-        Scalar.Initialize();
+        Scalars.Initialize();
     }
 
     public TestBase(ITestOutputHelper output)

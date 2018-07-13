@@ -272,7 +272,7 @@ public class IntegrationTests : TestBase
                 return new TestEntityGraph();
             }
 
-            if (Scalar.TryGet(x, out var scalar))
+            if (Scalars.TryGet(x, out var scalar))
             {
                 return scalar;
             }
