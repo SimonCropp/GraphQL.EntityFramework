@@ -7,7 +7,7 @@ namespace EfCoreGraphQL
     public static class ExpressionContextExtractor
     {
         //Portfolios(wheres: [{Member: "Title", Comparison: "Contains", Value: "Communications"}]) {
-        public static IEnumerable<WhereExpression> Read<T>(Func<Type,string,object> getArgument)
+        public static IEnumerable<WhereExpression> Read<T>(Func<Type, string, object> getArgument)
         {
             foreach (var expression in getArgument.ReadList<WhereExpression>("wheres"))
             {
@@ -33,6 +33,7 @@ namespace EfCoreGraphQL
             {
                 return Enumerable.Empty<T>();
             }
+
             return (T[]) argument;
         }
     }

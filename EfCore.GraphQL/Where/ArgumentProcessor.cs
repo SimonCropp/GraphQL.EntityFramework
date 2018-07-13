@@ -10,10 +10,12 @@ namespace EfCoreGraphQL
         {
             return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x));
         }
+
         public static IQueryable<T> ApplyGraphQlArguments<T>(this IQueryable<T> queryable, ResolveFieldContext context)
         {
             return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x));
         }
+
         public static IQueryable<T> ApplyGraphQlArguments<T>(this IQueryable<T> queryable, ResolveFieldContext<object> context)
         {
             return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x));
@@ -26,6 +28,7 @@ namespace EfCoreGraphQL
                 var predicate = ExpressionBuilder.BuildPredicate<T>(@where);
                 queryable = queryable.Where(predicate);
             }
+
             return queryable;
         }
     }
