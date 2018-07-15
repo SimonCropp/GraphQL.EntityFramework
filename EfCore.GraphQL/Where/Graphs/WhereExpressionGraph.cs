@@ -1,14 +1,11 @@
 ﻿using GraphQL.Types;
 
-namespace EfCoreGraphQL
+class WhereExpressionGraph : InputObjectGraphType<WhereExpression>
 {
-    public class WhereExpressionGraph : InputObjectGraphType<WhereExpression>
+    public WhereExpressionGraph()
     {
-        public WhereExpressionGraph()
-        {
-            Field(x => x.Path);
-            Field(x => x.Comparison);
-            Field(x => x.Value, true);
-        }
+        Field(x => x.Path);
+        Field(x => x.Comparison);
+        Field(x => x.Value, true);
     }
 }

@@ -1,9 +1,8 @@
-﻿namespace EfCoreGraphQL
+﻿using EfCoreGraphQL;
+
+class WhereExpression
 {
-    public class WhereExpression
-    {
-        public string Path { get; set; }
-        public Comparison Comparison { get; set; }
-        public string[] Value { get; set; }
-    }
+    public string Path { get; set; }
+    public Comparison Comparison { get; set; }
+    public string[] Value { get; set; }
 }

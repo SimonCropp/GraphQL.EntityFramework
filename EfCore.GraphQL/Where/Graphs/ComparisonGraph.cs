@@ -1,49 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using EfCoreGraphQL;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 
-namespace EfCoreGraphQL
+class ComparisonGraph : EnumerationGraphType<Comparison>
 {
-    public class ComparisonGraph : EnumerationGraphType<Comparison>
+    static Dictionary<string, Comparison> comparisons = new Dictionary<string, Comparison>();
+
+    static ComparisonGraph()
     {
-        static Dictionary<string, Comparison> comparisons = new Dictionary<string, Comparison>();
+        Add(Comparison.Equal, "==");
+        Add(Comparison.NotEqual, "!=");
+        Add(Comparison.GreaterThan, ">");
+        Add(Comparison.GreaterThanOrEqual, ">=");
+        Add(Comparison.LessThan, "<");
+        Add(Comparison.LessThanOrEqual, "<=");
+    }
 
-        static ComparisonGraph()
+    public override object ParseLiteral(IValue value)
+    {
+        var literal = base.ParseLiteral(value);
+        if (literal != null)
         {
-            Add(Comparison.Equal, "==");
-            Add(Comparison.NotEqual, "!=");
-            Add(Comparison.GreaterThan, ">");
-            Add(Comparison.GreaterThanOrEqual, ">=");
-            Add(Comparison.LessThan, "<");
-            Add(Comparison.LessThanOrEqual, "<=");
+            return literal;
         }
 
-        public override object ParseLiteral(IValue value)
+        if (value is StringValue str)
         {
-            var literal = base.ParseLiteral(value);
-            if (literal != null)
+            if (
+                Enum.TryParse(str.Value, true, out Comparison comparison) ||
+                comparisons.TryGetValue(str.Value, out comparison)
+            )
             {
-                return literal;
+                return comparison;
             }
-
-            if (value is StringValue str)
-            {
-                if (
-                    Enum.TryParse(str.Value, true, out Comparison comparison) ||
-                    comparisons.TryGetValue(str.Value, out comparison)
-                )
-                {
-                    return comparison;
-                }
-            }
-
-            return null;
         }
 
-        static void Add(Comparison comparison, string name)
-        {
-            comparisons[name] = comparison;
-        }
+        return null;
+    }
+
+    static void Add(Comparison comparison, string name)
+    {
+        comparisons[name] = comparison;
     }
 }

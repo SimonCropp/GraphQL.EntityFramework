@@ -45,19 +45,12 @@ namespace EfCoreGraphQL
         static void Add<T>(Type type)
             where T : ScalarGraphType, new()
         {
-            GraphTypeTypeRegistry.Register(type, typeof(GuidGraph));
-            var value = new T();
-            entries.Add(typeof(T), value);
-        }
-
-        public static bool TryGet(Type type, out ScalarGraphType instance)
-        {
-            if (entries.TryGetValue(type, out instance))
+            if (GraphTypeTypeRegistry.Get(type) == null)
             {
-                return true;
+                GraphTypeTypeRegistry.Register(type, typeof(GuidGraph));
+                var value = new T();
+                entries.Add(typeof(T), value);
             }
-
-            return false;
         }
     }
 }
