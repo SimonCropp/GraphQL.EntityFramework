@@ -48,7 +48,7 @@ Single where statements can be expressed:
 ```
 {
   entities 
-  (where: {path: 'Property', comparison: '==', value: 'the value'})
+  (where: {path: "Property", comparison: "==", value: "the value"})
   {
     property
   }
@@ -64,8 +64,8 @@ Multiple where statements can be expressed:
   entities
   (where:
     [
-      {path: 'Property', comparison: 'startsWith"", value: 'Valu'}
-      {path: 'Property', comparison: 'endsWith"", value: 'ue'}
+      {path: "Property", comparison: "startsWith"", value: "Valu"}
+      {path: "Property", comparison: "endsWith"", value: "ue"}
     ]
   )
   {
@@ -79,7 +79,7 @@ Multiple where statements can be expressed:
 ```c#
 {
   testEntities
-  (where: {path: 'Property', comparison: 'In', value: ['Value1', 'Value2']})
+  (where: {path: "Property", comparison: "In", value: ["Value1", "Value2"]})
   {
     property
   }
@@ -89,7 +89,7 @@ Multiple where statements can be expressed:
 ```
 {
   entities 
-  (where: {path: 'Property', comparison: '==', value: 'the value'})
+  (where: {path: "Property", comparison: "==", value: "the value"})
   {
     property
   }
