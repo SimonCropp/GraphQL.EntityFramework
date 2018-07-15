@@ -1,5 +1,4 @@
-﻿using EfCoreGraphQL;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 
 public class TestBase
 {

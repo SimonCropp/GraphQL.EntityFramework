@@ -1,5 +1,4 @@
 ﻿using System;
-using EfCoreGraphQL;
 using Xunit;
 
 public class TypeConverterTests
