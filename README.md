@@ -18,18 +18,7 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 
 ##### Supported Types
 
- * [String](https://docs.microsoft.com/en-us/dotnet/api/system.string)
- * [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid)
- * [Double](https://docs.microsoft.com/en-us/dotnet/api/system.double)
- * [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)
- * [Float](https://docs.microsoft.com/en-us/dotnet/api/system.float)
- * [Byte](https://docs.microsoft.com/en-us/dotnet/api/system.byte)
- * [Int16](https://docs.microsoft.com/en-us/dotnet/api/system.int16)
- * [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32)
- * [Int64](https://docs.microsoft.com/en-us/dotnet/api/system.int64)
- * [UInt16](https://docs.microsoft.com/en-us/dotnet/api/system.uint16)
- * [UInt32](https://docs.microsoft.com/en-us/dotnet/api/system.uint32)
- * [UInt64](https://docs.microsoft.com/en-us/dotnet/api/system.uint64)
+[String](https://docs.microsoft.com/en-us/dotnet/api/system.string), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid), [Double](https://docs.microsoft.com/en-us/dotnet/api/system.double), [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean), [Float](https://docs.microsoft.com/en-us/dotnet/api/system.float), [Byte](https://docs.microsoft.com/en-us/dotnet/api/system.byte), [Int16](https://docs.microsoft.com/en-us/dotnet/api/system.int16), [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32), [Int64](https://docs.microsoft.com/en-us/dotnet/api/system.int64), [UInt16](https://docs.microsoft.com/en-us/dotnet/api/system.uint16), [UInt32](https://docs.microsoft.com/en-us/dotnet/api/system.uint32), and [UInt64](https://docs.microsoft.com/en-us/dotnet/api/system.uint64).
 
 ##### Supported Comparions
 
