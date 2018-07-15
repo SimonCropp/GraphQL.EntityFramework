@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.Builders;
+using GraphQL.Types;
 
 namespace EfCoreGraphQL
 {
@@ -9,23 +10,30 @@ namespace EfCoreGraphQL
             {
                 Name = "where"
             };
+
         public static readonly QueryArgument<IntGraphType> SkipArgument =
             new QueryArgument<IntGraphType>
             {
                 Name = "skip"
             };
+
         public static readonly QueryArgument<IntGraphType> TakeArgument =
             new QueryArgument<IntGraphType>
             {
                 Name = "take"
             };
 
-        public static readonly QueryArguments DefaultArguments;
-
-        static ArgumentAppender()
+        public static void AddWhereArgument<TSourceType, TGraphType>(this ConnectionBuilder<TGraphType, TSourceType> builder)
+            where TGraphType : IGraphType
         {
-            DefaultArguments = new QueryArguments();
-            AddGraphQlArguments(DefaultArguments);
+            builder.Argument<ListGraphType<WhereExpressionGraph>>("where", null);
+        }
+
+        public static QueryArguments GetQueryArguments()
+        {
+            var arguments = new QueryArguments();
+            arguments.AddGraphQlArguments();
+            return arguments;
         }
 
         public static void AddGraphQlArguments(this QueryArguments arguments)

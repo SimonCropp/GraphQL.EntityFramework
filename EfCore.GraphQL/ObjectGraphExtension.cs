@@ -1,19 +1,22 @@
-﻿using GraphQL.Types;
+﻿using System.Collections.Generic;
+using System.Linq;
+using GraphQL.Types.Relay.DataObjects;
 
 namespace EfCoreGraphQL
 {
     public static partial class ObjectGraphExtension
     {
-        static QueryArguments GetQueryArguments(QueryArguments arguments)
+        static List<Edge<TReturnType>> BuildEdges<TReturnType>(IEnumerable<TReturnType> result, int skip)
+            where TReturnType : class
         {
-            if (arguments == null)
-            {
-                return ArgumentAppender.DefaultArguments;
-            }
-
-            arguments.AddGraphQlArguments();
-
-            return arguments;
+            return result
+                .Select((item, index) =>
+                    new Edge<TReturnType>
+                    {
+                        Cursor = (index + skip).ToString(),
+                        Node = item
+                    })
+                .ToList();
         }
     }
 }

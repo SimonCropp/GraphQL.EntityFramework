@@ -11,14 +11,11 @@ namespace EfCoreGraphQL
             this ObjectGraphType graphType,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturnType>> resolve,
-            string includeName = null,
-            string description = null,
-            QueryArguments arguments = null,
-            string deprecationReason = null)
+            string includeName = null)
             where TGraphType : IGraphType
             where TReturnType : class
         {
-            var field = BuildEnumerableField<object, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason, includeName);
+            var field = BuildEnumerableField<object, TGraphType, TReturnType>(name, resolve, includeName);
             return graphType.AddField(field);
         }
 
@@ -26,14 +23,11 @@ namespace EfCoreGraphQL
             this ObjectGraphType<TSourceType> graphType,
             string name,
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
-            string includeName = null,
-            string description = null,
-            QueryArguments arguments = null,
-            string deprecationReason = null)
+            string includeName = null)
             where TGraphType : IGraphType
             where TReturnType : class
         {
-            var field = BuildEnumerableField<TSourceType, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason, includeName);
+            var field = BuildEnumerableField<TSourceType, TGraphType, TReturnType>(name, resolve,  includeName);
             return graphType.AddField(field);
         }
 
@@ -41,22 +35,15 @@ namespace EfCoreGraphQL
             string name,
             Func<ResolveFieldContext<TSourceType>,
             IEnumerable<TReturnType>> resolve,
-            string description,
-            QueryArguments arguments,
-            string deprecationReason,
             string includeName)
             where TGraphType : IGraphType
             where TReturnType : class
         {
-            arguments = GetQueryArguments(arguments);
-
             var field = new FieldType
             {
                 Name = name,
-                Description = description,
-                DeprecationReason = deprecationReason,
                 Type = typeof(ListGraphType<TGraphType>),
-                Arguments = arguments,
+                Arguments = ArgumentAppender.GetQueryArguments(),
                 Resolver = new FuncFieldResolver<TSourceType, IEnumerable<TReturnType>>(
                     context =>
                     {

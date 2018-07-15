@@ -1,23 +1,26 @@
 ﻿using EfCoreGraphQL;
 using GraphQL.Types;
-using Microsoft.EntityFrameworkCore;
 
 public class Query : ObjectGraphType
 {
     public Query()
     {
-        Field<ListGraphType<TestEntityGraph>>(
-            "testEntities",
-            arguments: ArgumentAppender.DefaultArguments,
+        this.AddQueryField<TestEntityGraph, TestEntity>(
+            name: "testEntities",
             resolve: context =>
             {
-                var dataContext = (MyDataContext)context.UserContext;
-
-                var query = dataContext.Set<TestEntity>();
-
-                return query
-                    .ApplyGraphQlArguments(context)
-                    .ToListAsync();
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.TestEntities;
             });
+
+        this.AddQueryConnectionField<TestEntityGraph, TestEntity>(
+            name: "testEntitiesConnection",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.TestEntities;
+            },
+            includeName: "TestEntities"
+        );
     }
 }
