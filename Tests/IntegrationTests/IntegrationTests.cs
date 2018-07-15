@@ -217,7 +217,13 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where()
     {
-        var queryString = "{ testEntities (where: {path: 'Property', comparison: '==', value: 'Value2'}){ property } }";
+        var queryString = @"
+{
+  testEntities (where: {path: 'Property', comparison: '==', value: 'Value2'})
+  {
+    property
+  }
+}";
 
         var entity1 = new TestEntity
         {
