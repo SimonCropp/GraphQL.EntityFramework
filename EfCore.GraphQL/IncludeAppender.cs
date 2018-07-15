@@ -95,13 +95,30 @@ namespace EfCoreGraphQL
         {
             if (fieldType != null)
             {
-                if (fieldType.Metadata.TryGetValue("IncludeName", out var fieldNameObject))
+                if (fieldType.TryGetIncludeMetadata(out var fieldName))
                 {
-                    return (string) fieldNameObject;
+                    return fieldName;
                 }
             }
 
             return char.ToUpperInvariant(field.Name[0]) + field.Name.Substring(1);
+        }
+
+        public static void SetIncludeMetadata(this FieldType fieldType, string value)
+        {
+            fieldType.Metadata["IncludeName"] = value;
+        }
+        static bool TryGetIncludeMetadata(this FieldType fieldType, out string  value)
+        {
+            //TODO: use a better name
+            if (fieldType.Metadata.TryGetValue("IncludeName", out var fieldNameObject))
+            {
+                value=(string)fieldNameObject;
+                return true;
+            }
+
+            value = null;
+            return false;
         }
     }
 }
