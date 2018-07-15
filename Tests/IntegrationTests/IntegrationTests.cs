@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EfCore.InMemoryHelpers;
-using EfCoreGraphQL;
+using GraphQL.EntityFramework;
 using GraphQL;
 using GraphQL.Types.Relay;
 using Microsoft.Extensions.DependencyInjection;

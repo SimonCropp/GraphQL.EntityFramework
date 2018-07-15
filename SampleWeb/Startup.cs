@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EfCore.InMemoryHelpers;
-using EfCoreGraphQL;
+using GraphQL.EntityFramework;
 using GraphQL;
 using GraphQL.Types;
 using GraphQL.Types.Relay;

@@ -2,7 +2,7 @@
 using System.Linq;
 using GraphQL.Types.Relay.DataObjects;
 
-namespace EfCoreGraphQL
+namespace GraphQL.EntityFramework
 {
     public static partial class ObjectGraphExtension
     {

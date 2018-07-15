@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using EfCoreGraphQL;
+using GraphQL.EntityFramework;
 using Xunit;
 
 public class FuncBuilderTests

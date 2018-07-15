@@ -1,4 +1,4 @@
-﻿namespace EfCoreGraphQL
+﻿namespace GraphQL.EntityFramework
 {
     public enum Comparison
     {

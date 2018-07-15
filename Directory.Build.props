@@ -12,8 +12,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)) Simon Cropp. All rights reserved</Copyright>
     <PackageTags>EntityFrameworkCore, EntityFramework, GraphQL</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/EfCore.GraphQL/master/icon.png</PackageIconUrl>
-    <PackageProjectUrl>http://github.com/SimonCropp/EfCore.GraphQL</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/GraphQL.EntityFramework/master/icon.png</PackageIconUrl>
+    <PackageProjectUrl>http://github.com/SimonCropp/GraphQL.EntityFramework</PackageProjectUrl>
     <PackageOutputPath>..\nugets</PackageOutputPath>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludePDBsInPackage</TargetsForTfmSpecificContentInPackage>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>

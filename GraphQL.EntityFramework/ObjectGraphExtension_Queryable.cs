@@ -1,40 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.EntityFrameworkCore;
 
-namespace EfCoreGraphQL
+namespace GraphQL.EntityFramework
 {
     public static partial class ObjectGraphExtension
     {
-        public static FieldType AddEnumerableField<TGraphType, TReturnType>(
+        public static FieldType AddQueryField<TGraphType, TReturnType>(
             this ObjectGraphType graphType,
             string name,
-            Func<ResolveFieldContext<object>, IEnumerable<TReturnType>> resolve,
+            Func<ResolveFieldContext<object>, IQueryable<TReturnType>> resolve,
             string includeName = null)
             where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
-            var field = BuildEnumerableField<object, TGraphType, TReturnType>(name, resolve, includeName);
+            var field = BuildQueryField<object, TGraphType, TReturnType>(name, resolve,   includeName);
             return graphType.AddField(field);
         }
 
-        public static FieldType AddEnumerableField<TSourceType, TGraphType, TReturnType>(
-            this ObjectGraphType<TSourceType> graphType,
+        public static FieldType AddQueryField<TSourceType, TGraphType, TReturnType>(
+            this ObjectGraphType graphType,
             string name,
-            Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSourceType>, IQueryable<TReturnType>> resolve,
             string includeName = null)
             where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
-            var field = BuildEnumerableField<TSourceType, TGraphType, TReturnType>(name, resolve,  includeName);
+            var field = BuildQueryField<TSourceType, TGraphType, TReturnType>(name, resolve,   includeName);
             return graphType.AddField(field);
         }
 
-        static FieldType BuildEnumerableField<TSourceType, TGraphType, TReturnType>(
+        static FieldType BuildQueryField<TSourceType, TGraphType, TReturnType>(
             string name,
-            Func<ResolveFieldContext<TSourceType>,
-            IEnumerable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSourceType>, IQueryable<TReturnType>> resolve,
             string includeName)
             where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
@@ -44,14 +45,18 @@ namespace EfCoreGraphQL
                 Name = name,
                 Type = typeof(ListGraphType<TGraphType>),
                 Arguments = ArgumentAppender.GetQueryArguments(),
-                Resolver = new FuncFieldResolver<TSourceType, IEnumerable<TReturnType>>(
-                    context =>
+                Resolver = new AsyncFieldResolver<TSourceType, List<TReturnType>>(
+                    async context =>
                     {
                         var returnTypes = resolve(context);
-                        return returnTypes
-                            .ApplyGraphQlArguments(context);
+                        return await
+                            IncludeAppender.AddIncludes(returnTypes, context)
+                                .ApplyGraphQlArguments(context)
+                                .ToListAsync()
+                                .ConfigureAwait(false);
                     })
             };
+
             field.SetIncludeMetadata(includeName);
             return field;
         }

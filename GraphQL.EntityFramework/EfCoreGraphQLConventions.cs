@@ -2,7 +2,7 @@
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EfCoreGraphQL
+namespace GraphQL.EntityFramework
 {
     public static class EfCoreGraphQLConventions
     {

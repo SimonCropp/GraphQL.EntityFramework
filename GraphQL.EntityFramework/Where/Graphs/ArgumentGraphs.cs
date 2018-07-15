@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using EfCoreGraphQL;
+using GraphQL.EntityFramework;
 using GraphQL.Types;
 using GraphQL.Utilities;
 

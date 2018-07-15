@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using GraphQL.Builders;
 using GraphQL.Types;
 
-namespace EfCoreGraphQL
+namespace GraphQL.EntityFramework
 {
     public class EfObjectGraphType<TSourceType >: ObjectGraphType<TSourceType>
     {

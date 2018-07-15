@@ -1,4 +1,4 @@
-﻿using EfCoreGraphQL;
+﻿using GraphQL.EntityFramework;
 
 class WhereExpression
 {

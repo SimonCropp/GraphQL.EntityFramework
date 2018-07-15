@@ -1,5 +1,5 @@
 ﻿using GraphQL.Types;
-using EfCoreGraphQL;
+using GraphQL.EntityFramework;
 
 public class Query : ObjectGraphType
 {

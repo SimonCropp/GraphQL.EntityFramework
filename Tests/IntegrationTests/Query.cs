@@ -1,4 +1,4 @@
-﻿using EfCoreGraphQL;
+﻿using GraphQL.EntityFramework;
 using GraphQL.Types;
 
 public class Query : ObjectGraphType
