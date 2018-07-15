@@ -18,7 +18,7 @@ namespace EfCoreGraphQL
             where TGraphType : IGraphType
             where TReturnType : class
         {
-            var field = BuildEnumerableField<object, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason);
+            var field = BuildEnumerableField<object, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason, includeName);
             return graphType.AddField(field);
         }
 
@@ -26,13 +26,14 @@ namespace EfCoreGraphQL
             this ObjectGraphType<TSourceType> graphType,
             string name,
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
+            string includeName = null,
             string description = null,
             QueryArguments arguments = null,
             string deprecationReason = null)
             where TGraphType : IGraphType
             where TReturnType : class
         {
-            var field = BuildEnumerableField<TSourceType, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason);
+            var field = BuildEnumerableField<TSourceType, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason, includeName);
             return graphType.AddField(field);
         }
 
@@ -42,7 +43,8 @@ namespace EfCoreGraphQL
             IEnumerable<TReturnType>> resolve,
             string description,
             QueryArguments arguments,
-            string deprecationReason)
+            string deprecationReason,
+            string includeName)
             where TGraphType : IGraphType
             where TReturnType : class
         {
@@ -63,6 +65,7 @@ namespace EfCoreGraphQL
                             .ApplyGraphQlArguments(context);
                     })
             };
+            field.SetIncludeMetadata(includeName);
             return field;
         }
     }

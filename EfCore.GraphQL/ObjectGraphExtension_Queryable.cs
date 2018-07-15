@@ -44,7 +44,7 @@ namespace EfCoreGraphQL
             Func<ResolveFieldContext<TSourceType>, IQueryable<TReturnType>> resolve,
             string description,
             QueryArguments arguments,
-            string deprecationReason, 
+            string deprecationReason,
             string includeName)
             where TGraphType : IGraphType
             where TReturnType : class
@@ -70,10 +70,7 @@ namespace EfCoreGraphQL
                     })
             };
 
-            if (includeName != null)
-            {
-                field.SetIncludeMetadata(includeName);
-            }
+            field.SetIncludeMetadata(includeName);
             return field;
         }
     }

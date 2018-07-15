@@ -106,7 +106,10 @@ namespace EfCoreGraphQL
 
         public static void SetIncludeMetadata(this FieldType fieldType, string value)
         {
-            fieldType.Metadata["IncludeName"] = value;
+            if (value != null)
+            {
+                fieldType.Metadata["IncludeName"] = value;
+            }
         }
         static bool TryGetIncludeMetadata(this FieldType fieldType, out string  value)
         {
