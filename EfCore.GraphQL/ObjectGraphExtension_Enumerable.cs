@@ -12,7 +12,7 @@ namespace EfCoreGraphQL
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturnType>> resolve,
             string includeName = null)
-            where TGraphType : IGraphType
+            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
             var field = BuildEnumerableField<object, TGraphType, TReturnType>(name, resolve, includeName);
@@ -24,7 +24,7 @@ namespace EfCoreGraphQL
             string name,
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
             string includeName = null)
-            where TGraphType : IGraphType
+            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
             var field = BuildEnumerableField<TSourceType, TGraphType, TReturnType>(name, resolve,  includeName);
@@ -36,7 +36,7 @@ namespace EfCoreGraphQL
             Func<ResolveFieldContext<TSourceType>,
             IEnumerable<TReturnType>> resolve,
             string includeName)
-            where TGraphType : IGraphType
+            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
             var field = new FieldType

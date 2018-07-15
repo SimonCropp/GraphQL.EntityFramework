@@ -9,13 +9,12 @@ namespace EfCoreGraphQL
 {
     public static partial class ObjectGraphExtension
     {
-        //todo: add a where to make TGraphType and match TReturnType
         public static FieldType AddQueryField<TGraphType, TReturnType>(
             this ObjectGraphType graphType,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturnType>> resolve,
             string includeName = null)
-            where TGraphType : IGraphType
+            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
             var field = BuildQueryField<object, TGraphType, TReturnType>(name, resolve,   includeName);
@@ -27,7 +26,7 @@ namespace EfCoreGraphQL
             string name,
             Func<ResolveFieldContext<TSourceType>, IQueryable<TReturnType>> resolve,
             string includeName = null)
-            where TGraphType : IGraphType
+            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
             var field = BuildQueryField<TSourceType, TGraphType, TReturnType>(name, resolve,   includeName);
@@ -38,7 +37,7 @@ namespace EfCoreGraphQL
             string name,
             Func<ResolveFieldContext<TSourceType>, IQueryable<TReturnType>> resolve,
             string includeName)
-            where TGraphType : IGraphType
+            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
             var field = new FieldType

@@ -15,7 +15,7 @@ namespace EfCoreGraphQL
             Func<ResolveFieldContext<object>, IEnumerable<TReturnType>> resolve,
             string includeName = null,
             int pageSize = 10)
-            where TGraphType : IGraphType
+            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
             var connection = BuildEnumerableConnectionField<object, TGraphType, TReturnType>(name, resolve, includeName, pageSize);
@@ -29,7 +29,7 @@ namespace EfCoreGraphQL
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
             string includeName = null,
             int pageSize = 10)
-            where TGraphType : IGraphType
+            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
             var connection = BuildEnumerableConnectionField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName, pageSize);
@@ -42,7 +42,7 @@ namespace EfCoreGraphQL
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
             string includeName,
             int pageSize)
-            where TGraphType : IGraphType
+            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
             where TReturnType : class
         {
             var builder = ConnectionBuilder.Create<TGraphType, TSourceType>();
