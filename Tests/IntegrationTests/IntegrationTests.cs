@@ -35,7 +35,8 @@ public class IntegrationTests : TestBase
     public async Task Where_multiple()
     {
         var queryString = @"
-{ testEntities
+{
+  testEntities
   (where:
     [
       {path: 'Property', comparison: 'startsWith"", value: 'Valu'}
@@ -131,7 +132,13 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Take()
     {
-        var queryString = "{ testEntities (take: 1){ property } }";
+        var queryString = @"
+{
+  testEntities (take: 1)
+  {
+    property
+  }
+}";
 
         var entity1 = new TestEntity
         {
@@ -151,7 +158,13 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Skip()
     {
-        var queryString = "{ testEntities (skip: 1){ property } }";
+        var queryString = @"
+{
+  testEntities (skip: 1)
+  {
+    property
+  }
+}";
 
         var entity1 = new TestEntity
         {

@@ -14,6 +14,8 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 
 ### Arguments
 
+The argumetns supported are `where`, `skip` and `take`.
+
 #### Where
 
 ##### Supported Types
@@ -35,6 +37,8 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 
 ##### Single
 
+Single where statements can be expressed:
+
 ```
 {
   entities 
@@ -47,9 +51,11 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 
 ##### Multiple
 
+Multiple where statements can be expressed:
+
 ```
 {
-  testEntities
+  entities
   (where:
     [
       {path: 'Property', comparison: 'startsWith"", value: 'Valu'}
@@ -62,20 +68,116 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 }
 ```
 
-#####
-
+Where statements are and'ed together and executed in order
 
 
 #### Take
 
+[Queryable.Take](https://msdn.microsoft.com/en-us/library/bb300906(v=vs.110).aspx) or 
+[Enumerable.Take](https://msdn.microsoft.com/en-us/library/bb503062.aspx) can be used as follows:
+
+```
+{
+  entities (take: 1)
+  {
+    property
+  }
+}
+```
+
+
+
 #### Skip
 
+[Queryable.Skip](https://msdn.microsoft.com/en-us/library/bb357513.aspx) or 
+[Enumerable.Skip](https://msdn.microsoft.com/en-us/library/bb358985.aspx) can be used as follows:
 
-The main entry point is `InMemoryContextBuilder` which can be used to build an in-memory context.
+```
+{
+  entities (skip: 1)
+  {
+    property
+  }
+}
+```
 
 
+## Defining Graphs
 
-###
+### Fields
+
+#### Root Query
+
+```c#
+public class Query : ObjectGraphType
+{
+    public Query()
+    {
+        this.AddQueryField<CompanyGraph, Company>(
+            name: "companies",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.Companies;
+            });
+        }
+    }
+}
+```
+
+#### Typed Graph
+
+```c#
+public class CompanyGraph : EfObjectGraphType<Company>
+{
+    public CompanyGraph()
+    {
+        AddEnumerableField< EmployeeGraph, Employee>(
+            name: "employees",
+            resolve: context => context.Source.Employees);
+    }
+}
+```
+
+### Connections
+
+#### Root Query
+
+```c#
+using GraphQL.Types;
+using GraphQL.EntityFramework;
+
+public class Query : ObjectGraphType
+{
+    public Query()
+    {
+        this.AddQueryConnectionField<CompanyGraph, Company>(
+            name: "companiesConnection",
+            includeName: "Companies",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext)context.UserContext;
+                return dataContext.Companies;
+            });
+    }
+}
+```
+
+#### Typed Graph
+
+```c#
+public class CompanyGraph : EfObjectGraphType<Company>
+{
+    public CompanyGraph()
+    {
+        AddEnumerableConnectionField<EmployeeGraph, Employee>(
+            name: "employeesConnection",
+            resolve: context => context.Source.Employees,
+            includeName: "Employees");
+    }
+}
+```
+
 
 ## Icon
 

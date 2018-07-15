@@ -7,11 +7,11 @@ public class CompanyGraph : EfObjectGraphType<Company>
         Field(x => x.Id);
         Field(x => x.Content);
         AddEnumerableField< EmployeeGraph, Employee>(
-            "employees",
+            name: "employees",
             resolve: context => context.Source.Employees);
         AddEnumerableConnectionField<EmployeeGraph, Employee>(
-            "employeesConnection",
+            name: "employeesConnection",
             resolve: context => context.Source.Employees,
-            "Employees");
+            includeName: "Employees");
     }
 }
