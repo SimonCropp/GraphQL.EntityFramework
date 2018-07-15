@@ -13,13 +13,14 @@ namespace EfCoreGraphQL
             this ObjectGraphType graphType,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturnType>> resolve,
+            string includeName = null,
             string description = null,
             QueryArguments arguments = null,
             string deprecationReason = null)
             where TGraphType : IGraphType
             where TReturnType : class
         {
-            var field = BuildEnumerableField<object, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason);
+            var field = BuildEnumerableField<object, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason, includeName);
             return graphType.AddField(field);
         }
 
@@ -27,21 +28,22 @@ namespace EfCoreGraphQL
             this ObjectGraphType<TSourceType> graphType,
             string name,
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
+            string includeName = null,
             string description = null,
             QueryArguments arguments = null,
             string deprecationReason = null)
             where TGraphType : IGraphType
             where TReturnType : class
         {
-            var field = BuildEnumerableField<TSourceType, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason);
+            var field = BuildEnumerableField<TSourceType, TGraphType, TReturnType>(name, resolve, description, arguments, deprecationReason, includeName);
             return graphType.AddField(field);
         }
 
-        static FieldType BuildEnumerableField<TSourceType, TGraphType, TReturnType>(string name, Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve, string description, QueryArguments arguments, string deprecationReason) where TGraphType : IGraphType where TReturnType : class
+        static FieldType BuildEnumerableField<TSourceType, TGraphType, TReturnType>(string name, Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve, string description, QueryArguments arguments, string deprecationReason, string includeName) where TGraphType : IGraphType where TReturnType : class
         {
             arguments = GetQueryArguments(arguments);
 
-            return new FieldType
+            var field = new FieldType
             {
                 Name = name,
                 Description = description,
@@ -56,6 +58,12 @@ namespace EfCoreGraphQL
                             .ApplyGraphQlArguments(context);
                     })
             };
+            if (includeName != null)
+            {
+                //TODO: use a better name
+                field.Metadata["IncludeName"] = includeName;
+            }
+            return field;
         }
 
         public static FieldType AddQueryField<TGraphType, TReturnType>(

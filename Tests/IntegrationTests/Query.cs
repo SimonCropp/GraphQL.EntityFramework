@@ -12,7 +12,10 @@ public class Query : ObjectGraphType
             resolve: context =>
             {
                 var dataContext = (MyDataContext)context.UserContext;
-                return dataContext.TestEntities
+
+                var query = dataContext.Set<TestEntity>();
+
+                return query
                     .ApplyGraphQlArguments(context)
                     .ToListAsync();
             });

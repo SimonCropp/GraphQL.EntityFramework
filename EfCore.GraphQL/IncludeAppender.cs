@@ -8,21 +8,16 @@ namespace EfCoreGraphQL
 {
     public static class IncludeAppender
     {
-        public static IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, ResolveFieldContext<TItem> context)
-            where TItem : class
-        {
-            return AddIncludes(query, context.SubFields);
-        }
-
         public static IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
             where TItem : class
         {
-            return AddIncludes(query, context.SubFields);
+            return AddIncludes(query, context.FieldDefinition, context.SubFields.Values);
         }
 
-        static IQueryable<T> AddIncludes<T>(IQueryable<T> query, IDictionary<string, Field> subFields) where T : class
+        static IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields)
+            where T : class
         {
-            foreach (var path in GetPaths(subFields.Values))
+            foreach (var path in GetPaths(fieldType, subFields))
             {
                 query = query.Include(path);
             }
@@ -30,43 +25,53 @@ namespace EfCoreGraphQL
             return query;
         }
 
-        public static IEnumerable<string> GetPaths(IEnumerable<Field> fields)
+        public static IEnumerable<string> GetPaths(FieldType fieldType, ICollection<Field> fields)
         {
             var list = new List<string>();
-            foreach (var field in fields)
-            {
-                AddField(list, field, null);
-            }
 
+            var complexGraph= fieldType.GetComplexGraph();
+            ProcessSubFields(list, null, fields, complexGraph);
             return list;
         }
 
-        static void AddField(List<string> list, Field field, string parentPath)
+        static void AddField(List<string> list, Field field, string parentPath, FieldType fieldType)
         {
+            if (!fieldType.TryGetComplexGraph(out var complexGraph))
+            {
+                return;
+            }
+
             var subFields = field.SelectionSet.Selections.OfType<Field>().ToList();
             if (IsConnectionNode(field))
             {
                 if (subFields.Any())
                 {
-                    foreach (var subField in subFields)
-                    {
-                        AddField(list, subField, parentPath);
-                    }
+                    ProcessSubFields(list, parentPath, subFields, complexGraph);
                 }
 
                 return;
             }
 
-            var path = JoinWithParent(parentPath, field.Name);
+            var path = GetPath(parentPath, field, fieldType);
             if (subFields.Any())
             {
                 list.Add(path);
-                foreach (var subField in subFields)
+                ProcessSubFields(list, path, subFields, complexGraph);
+            }
+        }
+
+        static void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph)
+        {
+            foreach (var subField in subFields)
+            {
+                var single = complexGraph.Fields.SingleOrDefault(x => x.Name == subField.Name);
+                if (single != null)
                 {
-                    AddField(list, subField, path);
+                    AddField(list, subField, parentPath, single);
                 }
             }
         }
+
 
         static bool IsConnectionNode(Field field)
         {
@@ -74,15 +79,29 @@ namespace EfCoreGraphQL
             return name == "edges" || name == "items" || name == "node";
         }
 
-        static string JoinWithParent(string parentPath, string fieldName)
+        static string GetPath(string parentPath, Field field, FieldType fieldType)
         {
-            fieldName = char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1);
+            var fieldName = GetFieldName(field, fieldType);
+
             if (parentPath == null)
             {
                 return fieldName;
             }
 
             return $"{parentPath}.{fieldName}";
+        }
+
+        static string GetFieldName(Field field, FieldType fieldType)
+        {
+            if (fieldType != null)
+            {
+                if (fieldType.Metadata.TryGetValue("IncludeName", out var fieldNameObject))
+                {
+                    return (string) fieldNameObject;
+                }
+            }
+
+            return char.ToUpperInvariant(field.Name[0]) + field.Name.Substring(1);
         }
     }
 }
