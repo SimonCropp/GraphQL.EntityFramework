@@ -20,7 +20,8 @@ static class ComplexGraphResolver
         complexGraph = null;
         return false;
     }
-    internal static  IComplexGraphType GetComplexGraph(this FieldType fieldType)
+
+    internal static IComplexGraphType GetComplexGraph(this FieldType fieldType)
     {
         var graphType = fieldType.ResolvedType;
         if (graphType is ListGraphType)
@@ -33,6 +34,6 @@ static class ComplexGraphResolver
             return type;
         }
 
-        throw new Exception();
+        throw new Exception($"Could not find resolve a {nameof(IComplexGraphType)} for {fieldType.GetType().FullName}.");
     }
 }
