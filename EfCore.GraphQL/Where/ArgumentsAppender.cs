@@ -3,19 +3,19 @@ using GraphQL.Types;
 
 static class ArgumentAppender
 {
-    public static readonly QueryArgument<ListGraphType<WhereExpressionGraph>> WhereArgument =
+    static QueryArgument<ListGraphType<WhereExpressionGraph>> whereArgument =
         new QueryArgument<ListGraphType<WhereExpressionGraph>>
         {
             Name = "where"
         };
 
-    public static readonly QueryArgument<IntGraphType> SkipArgument =
+    static QueryArgument<IntGraphType> skipArgument =
         new QueryArgument<IntGraphType>
         {
             Name = "skip"
         };
 
-    public static readonly QueryArgument<IntGraphType> TakeArgument =
+    static QueryArgument<IntGraphType> takeArgument =
         new QueryArgument<IntGraphType>
         {
             Name = "take"
@@ -29,15 +29,11 @@ static class ArgumentAppender
 
     public static QueryArguments GetQueryArguments()
     {
-        var arguments = new QueryArguments();
-        arguments.AddGraphQlArguments();
-        return arguments;
-    }
-
-    public static void AddGraphQlArguments(this QueryArguments arguments)
-    {
-        arguments.Add(WhereArgument);
-        arguments.Add(SkipArgument);
-        arguments.Add(TakeArgument);
+        return new QueryArguments
+        {
+            whereArgument,
+            skipArgument,
+            takeArgument
+        };
     }
 }

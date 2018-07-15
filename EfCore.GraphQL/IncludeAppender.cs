@@ -70,7 +70,6 @@ static class IncludeAppender
         }
     }
 
-
     static bool IsConnectionNode(Field field)
     {
         var name = field.Name;
