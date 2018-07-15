@@ -18,6 +18,10 @@ The argumetns supported are `where`, `skip` and `take`.
 
 #### Where
 
+##### Property Path
+
+All where statemnts requer a `path`. This is a full path to a, possible nested, property. Eg a property at the root level could be `Address`, while a nested property could be `Address.Street`.  No null checking of nested  values is done.
+
 ##### Supported Types
 
 [String](https://docs.microsoft.com/en-us/dotnet/api/system.string), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid), [Double](https://docs.microsoft.com/en-us/dotnet/api/system.double), [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean), [Float](https://docs.microsoft.com/en-us/dotnet/api/system.float), [Byte](https://docs.microsoft.com/en-us/dotnet/api/system.byte), [Int16](https://docs.microsoft.com/en-us/dotnet/api/system.int16), [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32), [Int64](https://docs.microsoft.com/en-us/dotnet/api/system.int64), [UInt16](https://docs.microsoft.com/en-us/dotnet/api/system.uint16), [UInt32](https://docs.microsoft.com/en-us/dotnet/api/system.uint32), and [UInt64](https://docs.microsoft.com/en-us/dotnet/api/system.uint64).
@@ -33,7 +37,9 @@ The argumetns supported are `where`, `skip` and `take`.
  * `Contains`: Only works with `string`
  * `StartsWith`: Only works with `string`
  * `EndsWith`: Only works with `string`
- * `In`
+ * `In`: Check if a member existsing in a given collection of values.
+
+Case of comaprison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
 
 ##### Single
 
@@ -62,6 +68,28 @@ Multiple where statements can be expressed:
       {path: 'Property', comparison: 'endsWith"", value: 'ue'}
     ]
   )
+  {
+    property
+  }
+}
+```
+
+##### Where In
+
+```c#
+{
+  testEntities
+  (where: {path: 'Property', comparison: 'In', value: ['Value1', 'Value2']})
+  {
+    property
+  }
+}
+```
+
+```
+{
+  entities 
+  (where: {path: 'Property', comparison: '==', value: 'the value'})
   {
     property
   }
@@ -181,4 +209,4 @@ public class CompanyGraph : EfObjectGraphType<Company>
 
 ## Icon
 
-<a href="https://thenounproject.com/term/20database/1631008/" target="_blank">memory</a> designed by H Alberto Gongora from [The Noun Project](https://thenounproject.com)
+<a href="https://thenounproject.com/term/database/1631008/" target="_blank">memory</a> designed by H Alberto Gongora from [The Noun Project](https://thenounproject.com)
