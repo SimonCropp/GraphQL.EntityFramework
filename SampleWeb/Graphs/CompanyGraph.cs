@@ -1,16 +1,15 @@
 ﻿using EfCoreGraphQL;
-using GraphQL.Types;
 
-public class CompanyGraph : ObjectGraphType<Company>
+public class CompanyGraph : EfObjectGraphType<Company>
 {
     public CompanyGraph()
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        this.AddEnumerableField<Company, EmployeeGraph, Employee>(
+        AddEnumerableField< EmployeeGraph, Employee>(
             "employees",
             resolve: context => context.Source.Employees);
-        this.AddEnumerableConnectionField<Company, EmployeeGraph, Employee>(
+        AddEnumerableConnectionField<EmployeeGraph, Employee>(
             "employeesConnection",
             resolve: context => context.Source.Employees,
             "Employees");
