@@ -292,7 +292,7 @@ public class IntegrationTests : TestBase
             services.AddSingleton(query);
             services.AddSingleton<TestEntityGraph>();
 
-            EfCoreGraphQLConventions.RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); });
+            EfCoreGraphQLConventions.RegisterInContainer(services);
             using (var provider = services.BuildServiceProvider())
             using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
             {

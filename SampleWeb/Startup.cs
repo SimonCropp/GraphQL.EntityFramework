@@ -39,7 +39,7 @@ public class Startup
         myDataContext.SaveChanges();
         services.AddSingleton(myDataContext);
 
-        EfCoreGraphQLConventions.RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); });
+        EfCoreGraphQLConventions.RegisterInContainer(services);
 
         foreach (var type in GetGraphQlTypes())
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using GraphQL.Types;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EfCoreGraphQL
 {
@@ -9,6 +10,10 @@ namespace EfCoreGraphQL
         {
             Scalars.RegisterInContainer(registerInstance);
             ArgumentGraphs.RegisterInContainer(registerInstance);
+        }
+        public static void RegisterInContainer(IServiceCollection services)
+        {
+            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); });
         }
     }
 }
