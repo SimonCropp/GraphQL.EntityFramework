@@ -2,6 +2,7 @@
 
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
 
+
 ## NuGet [![NuGet Status](http://img.shields.io/nuget/v/GraphQL.EntityFramework.svg?longCache=true&style=flat)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
 
 https://nuget.org/packages/GraphQL.EntityFramework/
@@ -16,15 +17,19 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 
 The argumetns supported are `where`, `skip` and `take`.
 
+
 #### Where
+
 
 ##### Property Path
 
 All where statemnts requer a `path`. This is a full path to a, possible nested, property. Eg a property at the root level could be `Address`, while a nested property could be `Address.Street`.  No null checking of nested  values is done.
 
+
 ##### Supported Types
 
 [String](https://docs.microsoft.com/en-us/dotnet/api/system.string), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid), [Double](https://docs.microsoft.com/en-us/dotnet/api/system.double), [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean), [Float](https://docs.microsoft.com/en-us/dotnet/api/system.float), [Byte](https://docs.microsoft.com/en-us/dotnet/api/system.byte),  [Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal), [Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal), [Int16](https://docs.microsoft.com/en-us/dotnet/api/system.int16), [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32), [Int64](https://docs.microsoft.com/en-us/dotnet/api/system.int64), [UInt16](https://docs.microsoft.com/en-us/dotnet/api/system.uint16), [UInt32](https://docs.microsoft.com/en-us/dotnet/api/system.uint32), and [UInt64](https://docs.microsoft.com/en-us/dotnet/api/system.uint64).
+
 
 ##### Supported Comparions
 
@@ -39,7 +44,8 @@ All where statemnts requer a `path`. This is a full path to a, possible nested, 
  * `EndsWith`: Only works with `string`
  * `In`: Check if a member existsing in a given collection of values.
 
-Case of comaprison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
+Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
+
 
 ##### Single
 
@@ -47,13 +53,14 @@ Single where statements can be expressed:
 
 ```
 {
-  entities 
+  entities
   (where: {path: "Property", comparison: "==", value: "the value"})
   {
     property
   }
 }
 ```
+
 
 ##### Multiple
 
@@ -74,6 +81,7 @@ Multiple where statements can be expressed:
 }
 ```
 
+
 ##### Where In
 
 ```c#
@@ -88,7 +96,7 @@ Multiple where statements can be expressed:
 
 ```
 {
-  entities 
+  entities
   (where: {path: "Property", comparison: "==", value: "the value"})
   {
     property
@@ -101,7 +109,7 @@ Where statements are and'ed together and executed in order
 
 #### Take
 
-[Queryable.Take](https://msdn.microsoft.com/en-us/library/bb300906(v=vs.110).aspx) or 
+[Queryable.Take](https://msdn.microsoft.com/en-us/library/bb300906(v=vs.110).aspx) or
 [Enumerable.Take](https://msdn.microsoft.com/en-us/library/bb503062.aspx) can be used as follows:
 
 ```
@@ -114,10 +122,9 @@ Where statements are and'ed together and executed in order
 ```
 
 
-
 #### Skip
 
-[Queryable.Skip](https://msdn.microsoft.com/en-us/library/bb357513.aspx) or 
+[Queryable.Skip](https://msdn.microsoft.com/en-us/library/bb357513.aspx) or
 [Enumerable.Skip](https://msdn.microsoft.com/en-us/library/bb358985.aspx) can be used as follows:
 
 ```
@@ -132,7 +139,9 @@ Where statements are and'ed together and executed in order
 
 ## Defining Graphs
 
+
 ### Fields
+
 
 #### Root Query
 
@@ -153,6 +162,7 @@ public class Query : ObjectGraphType
 }
 ```
 
+
 #### Typed Graph
 
 ```c#
@@ -160,21 +170,20 @@ public class CompanyGraph : EfObjectGraphType<Company>
 {
     public CompanyGraph()
     {
-        AddEnumerableField< EmployeeGraph, Employee>(
+        AddEnumerableField<EmployeeGraph, Employee>(
             name: "employees",
             resolve: context => context.Source.Employees);
     }
 }
 ```
 
+
 ### Connections
+
 
 #### Root Query
 
 ```c#
-using GraphQL.Types;
-using GraphQL.EntityFramework;
-
 public class Query : ObjectGraphType
 {
     public Query()
@@ -190,6 +199,7 @@ public class Query : ObjectGraphType
     }
 }
 ```
+
 
 #### Typed Graph
 

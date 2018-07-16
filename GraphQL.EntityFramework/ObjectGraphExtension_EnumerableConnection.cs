@@ -9,43 +9,43 @@ namespace GraphQL.EntityFramework
 {
     public static partial class ObjectGraphExtension
     {
-        public static ConnectionBuilder<TGraphType, object> AddEnumerableConnectionField<TGraphType, TReturnType>(
-            this ObjectGraphType graphType,
+        public static ConnectionBuilder<TGraph, object> AddEnumerableConnectionField<TGraph, TReturn>(
+            this ObjectGraphType graph,
             string name,
-            Func<ResolveFieldContext<object>, IEnumerable<TReturnType>> resolve,
+            Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             string includeName = null,
             int pageSize = 10)
-            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
-            where TReturnType : class
+            where TGraph : ObjectGraphType<TReturn>, IGraphType
+            where TReturn : class
         {
-            var connection = BuildEnumerableConnectionField<object, TGraphType, TReturnType>(name, resolve, includeName, pageSize);
-            graphType.AddField(connection.FieldType);
+            var connection = BuildEnumerableConnectionField<object, TGraph, TReturn>(name, resolve, includeName, pageSize);
+            graph.AddField(connection.FieldType);
             return connection;
         }
 
-        public static ConnectionBuilder<TGraphType, TSourceType> AddEnumerableConnectionField<TSourceType, TGraphType, TReturnType>(
-            this ObjectGraphType<TSourceType> graphType,
+        public static ConnectionBuilder<TGraph, TSource> AddEnumerableConnectionField<TSource, TGraph, TReturn>(
+            this ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName = null,
             int pageSize = 10)
-            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
-            where TReturnType : class
+            where TGraph : ObjectGraphType<TReturn>, IGraphType
+            where TReturn : class
         {
-            var connection = BuildEnumerableConnectionField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName, pageSize);
-            graphType.AddField(connection.FieldType);
+            var connection = BuildEnumerableConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
+            graph.AddField(connection.FieldType);
             return connection;
         }
 
-        static ConnectionBuilder<TGraphType, TSourceType> BuildEnumerableConnectionField<TSourceType, TGraphType, TReturnType>(
+        static ConnectionBuilder<TGraph, TSource> BuildEnumerableConnectionField<TSource, TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName,
             int pageSize)
-            where TGraphType : ObjectGraphType<TReturnType>, IGraphType
-            where TReturnType : class
+            where TGraph : ObjectGraphType<TReturn>, IGraphType
+            where TReturn : class
         {
-            var builder = ConnectionBuilder.Create<TGraphType, TSourceType>();
+            var builder = ConnectionBuilder.Create<TGraph, TSource>();
             builder.Name(name);
             builder.AddWhereArgument();
             builder.FieldType.SetIncludeMetadata(includeName);
@@ -59,7 +59,7 @@ namespace GraphQL.EntityFramework
 
                 page = page.ApplyGraphQlArguments(context);
 
-                return new Connection<TReturnType>
+                return new Connection<TReturn>
                 {
                     TotalCount = totalCount,
                     PageInfo = new PageInfo

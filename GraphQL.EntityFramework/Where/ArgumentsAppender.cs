@@ -21,8 +21,8 @@ static class ArgumentAppender
             Name = "take"
         };
 
-    public static void AddWhereArgument<TSourceType, TGraphType>(this ConnectionBuilder<TGraphType, TSourceType> builder)
-        where TGraphType : IGraphType
+    public static void AddWhereArgument<TSource, TGraph>(this ConnectionBuilder<TGraph, TSource> builder)
+        where TGraph : IGraphType
     {
         builder.Argument<ListGraphType<WhereExpressionGraph>>("where", null);
     }

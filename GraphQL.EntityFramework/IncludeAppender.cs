@@ -101,6 +101,17 @@ static class IncludeAppender
         return char.ToUpperInvariant(field.Name[0]) + field.Name.Substring(1);
     }
 
+    public static Dictionary<string, object> GetIncludeMetadata(string value)
+    {
+        var metadata = new Dictionary<string, object>();
+        if (value != null)
+        {
+            metadata["IncludeName"] = value;
+        }
+
+        return metadata;
+    }
+
     public static void SetIncludeMetadata(this FieldType fieldType, string value)
     {
         if (value != null)
