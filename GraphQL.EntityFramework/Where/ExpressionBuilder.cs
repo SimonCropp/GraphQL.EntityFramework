@@ -85,7 +85,7 @@ static class ExpressionBuilder<T>
 
     static Expression<Func<T, bool>> BuildStringIn(string[] array, PropertyAccessor propertyAccessor, StringComparison stringComparison)
     {
-        var itemValue = Expression.Parameter(typeof(string), "item");
+        var itemValue = Expression.Parameter(typeof(string));
         var equalsBody = Expression.Call(null, StringMethodCache.Equal, itemValue, propertyAccessor.Left, Expression.Constant(stringComparison));
         var itemEvaluate = Expression.Lambda<Func<string, bool>>(equalsBody, itemValue);
         var anyBody = Expression.Call(null, StringMethodCache.Any, Expression.Constant(array), itemEvaluate);
