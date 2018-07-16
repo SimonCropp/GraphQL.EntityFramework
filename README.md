@@ -170,7 +170,7 @@ public class CompanyGraph : EfObjectGraphType<Company>
 {
     public CompanyGraph()
     {
-        AddEnumerableField<EmployeeGraph, Employee>(
+        AddListField<EmployeeGraph, Employee>(
             name: "employees",
             resolve: context => context.Source.Employees);
     }
@@ -208,7 +208,7 @@ public class CompanyGraph : EfObjectGraphType<Company>
 {
     public CompanyGraph()
     {
-        AddEnumerableConnectionField<EmployeeGraph, Employee>(
+        AddListConnectionField<EmployeeGraph, Employee>(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
             includeName: "Employees");

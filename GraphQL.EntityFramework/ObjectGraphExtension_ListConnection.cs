@@ -9,7 +9,7 @@ namespace GraphQL.EntityFramework
 {
     public static partial class ObjectGraphExtension
     {
-        public static ConnectionBuilder<TGraph, object> AddEnumerableConnectionField<TGraph, TReturn>(
+        public static ConnectionBuilder<TGraph, object> AddListConnectionField<TGraph, TReturn>(
             this ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
@@ -18,12 +18,12 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildEnumerableConnectionField<object, TGraph, TReturn>(name, resolve, includeName, pageSize);
+            var connection = BuildListConnectionField<object, TGraph, TReturn>(name, resolve, includeName, pageSize);
             graph.AddField(connection.FieldType);
             return connection;
         }
 
-        public static ConnectionBuilder<TGraph, TSource> AddEnumerableConnectionField<TSource, TGraph, TReturn>(
+        public static ConnectionBuilder<TGraph, TSource> AddListConnectionField<TSource, TGraph, TReturn>(
             this ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
@@ -32,12 +32,12 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildEnumerableConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
+            var connection = BuildListConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
             graph.AddField(connection.FieldType);
             return connection;
         }
 
-        static ConnectionBuilder<TGraph, TSource> BuildEnumerableConnectionField<TSource, TGraph, TReturn>(
+        static ConnectionBuilder<TGraph, TSource> BuildListConnectionField<TSource, TGraph, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName,

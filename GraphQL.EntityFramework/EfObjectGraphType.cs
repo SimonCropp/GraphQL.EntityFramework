@@ -7,34 +7,34 @@ namespace GraphQL.EntityFramework
 {
     public class EfObjectGraphType<TSourceType> : ObjectGraphType<TSourceType>
     {
-        protected ConnectionBuilder<TGraphType, TSourceType> AddEnumerableConnectionField<TGraphType, TReturnType>(
+        protected ConnectionBuilder<TGraphType, TSourceType> AddListConnectionField<TGraphType, TReturnType>(
             string name,
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
             string includeName)
             where TGraphType : ObjectGraphType<TReturnType>
             where TReturnType : class
         {
-            return this.AddEnumerableConnectionField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName);
+            return this.AddListConnectionField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName);
         }
 
-        protected FieldType AddEnumerableField<TGraphType, TReturnType>(
+        protected FieldType AddListField<TGraphType, TReturnType>(
             string name,
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
             string includeName = null)
             where TGraphType : ObjectGraphType<TReturnType>
             where TReturnType : class
         {
-            return this.AddEnumerableField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName);
+            return this.AddListField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName);
         }
 
-        protected FieldType AddEnumerableField<TReturnType>(
+        protected FieldType AddListField<TReturnType>(
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
             string includeName = null)
             where TReturnType : class
         {
-            return ObjectGraphExtension.AddEnumerableField(this, graphType, name, resolve, includeName);
+            return ObjectGraphExtension.AddListField(this, graphType, name, resolve, includeName);
         }
     }
 }
