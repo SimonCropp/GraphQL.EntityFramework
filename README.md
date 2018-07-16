@@ -15,10 +15,12 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 
 ### Arguments
 
-The argumetns supported are `where`, `skip` and `take`.
+The arguments supported are `where`, `skip` and `take`.
 
 
 #### Where
+
+Where statements are [and'ed](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/conditional-and-operator) together and executed in order.
 
 
 ##### Property Path
@@ -31,7 +33,7 @@ All where statemnts requer a `path`. This is a full path to a, possible nested, 
 [String](https://docs.microsoft.com/en-us/dotnet/api/system.string), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid), [Double](https://docs.microsoft.com/en-us/dotnet/api/system.double), [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean), [Float](https://docs.microsoft.com/en-us/dotnet/api/system.float), [Byte](https://docs.microsoft.com/en-us/dotnet/api/system.byte), [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime), [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset), [Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal), [Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal), [Int16](https://docs.microsoft.com/en-us/dotnet/api/system.int16), [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32), [Int64](https://docs.microsoft.com/en-us/dotnet/api/system.int64), [UInt16](https://docs.microsoft.com/en-us/dotnet/api/system.uint16), [UInt32](https://docs.microsoft.com/en-us/dotnet/api/system.uint32), and [UInt64](https://docs.microsoft.com/en-us/dotnet/api/system.uint64).
 
 
-##### Supported Comparions
+##### Supported Comparisons
 
  * `Equal`: alias `==`
  * `NotEqual`: alias `!=`
@@ -42,7 +44,7 @@ All where statemnts requer a `path`. This is a full path to a, possible nested, 
  * `Contains`: Only works with `string`
  * `StartsWith`: Only works with `string`
  * `EndsWith`: Only works with `string`
- * `In`: Check if a member existsing in a given collection of values.
+ * `In`: Check if a member existing in a given collection of values.
 
 Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
 
@@ -94,6 +96,26 @@ Multiple where statements can be expressed:
 }
 ```
 
+##### Case Sensitivity
+
+All string comparrisons are, by default, done using [StringComparison.OrdinalIgnoreCase](https://msdn.microsoft.com/en-us/library/system.stringcomparison.aspx). A different StringComparison can be used via the `case` attribute.
+
+```
+{
+  entities
+  (where: {path: "Property", comparison: "endsWith", value: "the value", case: "Ordinal"})
+  {
+    property
+  }
+}
+```
+
+
+
+##### Single
+
+Single where statements can be expressed:
+
 ```
 {
   entities
@@ -103,8 +125,6 @@ Multiple where statements can be expressed:
   }
 }
 ```
-
-Where statements are and'ed together and executed in order
 
 
 #### Take
