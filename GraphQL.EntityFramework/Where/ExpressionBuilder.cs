@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using GraphQL.EntityFramework;
@@ -84,13 +83,49 @@ static class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.Parameter);
     }
 
-    static Expression<Func<T, bool>> BuildStringIn(string[] values, PropertyAccessor propertyAccessor, StringComparison stringComparison)
+    private sealed class c__DisplayClass0_0
     {
-        var constant = Expression.Constant(values.ToList());
-        var inInfo = typeof(List<string>).GetMethod("Contains", new[] {typeof(string)});
-        var body = Expression.Call(constant, inInfo, propertyAccessor.Left);
-        return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.Parameter);
-    }
+        public string[] array;
+
+    public StringComparison stringComparison;
+}
+
+private static Expression<Func<Foo, bool>> InExpression(string[] array, StringComparison stringComparison)
+{
+         c__DisplayClass0_0 c__DisplayClass0_ = new <> c__DisplayClass0_0();
+         c__DisplayClass0_.array = array;
+         c__DisplayClass0_.stringComparison = stringComparison;
+    ParameterExpression parameterExpression = Expression.Parameter(typeof(Foo), "x");
+    MethodInfo method = (MethodInfo)MethodBase.GetMethodFromHandle((RuntimeMethodHandle)/*OpCode not supported: LdMemberToken*/);
+    Expression[] obj = new Expression[2];
+    obj[0] = Expression.Field(Expression.Constant(<> c__DisplayClass0_, typeof(c__DisplayClass0_0)), FieldInfo.GetFieldFromHandle((RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/));
+    ParameterExpression parameterExpression2 = Expression.Parameter(typeof(string), "y");
+    MethodInfo method2 = (MethodInfo)MethodBase.GetMethodFromHandle((RuntimeMethodHandle)/*OpCode not supported: LdMemberToken*/);
+    Expression[] obj2 = new Expression[3];
+    obj2[0] = Expression.Property(parameterExpression, (MethodInfo)MethodBase.GetMethodFromHandle((RuntimeMethodHandle)/*OpCode not supported: LdMemberToken*/));
+    obj2[1] = parameterExpression2;
+    obj2[2] = Expression.Field(Expression.Constant(<> c__DisplayClass0_, typeof( c__DisplayClass0_0)), FieldInfo.GetFieldFromHandle((RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/));
+    MethodCallExpression body = Expression.Call(null, method2, obj2);
+    ParameterExpression[] obj3 = new ParameterExpression[1];
+    obj3[0] = parameterExpression2;
+    obj[1] = Expression.Lambda<Func<string, bool>>((Expression)body, obj3);
+    MethodCallExpression body2 = Expression.Call(null, method, obj);
+    ParameterExpression[] obj4 = new ParameterExpression[1];
+    obj4[0] = parameterExpression;
+    return Expression.Lambda<Func<Foo, bool>>((Expression)body2, obj4);
+}
+
+
+static Expression<Func<T, bool>> BuildStringIn(string[] array, PropertyAccessor propertyAccessor, StringComparison stringComparison)
+{
+    ParameterExpression parameterExpression2 = Expression.Parameter(typeof(string), "y");
+        var equalsBody = Expression.Call(null, StringMethodCache.Equal, propertyAccessor.Left, parameterExpression2, Expression.Constant(stringComparison));
+
+    var expression = Expression.Lambda<Func<string, bool>>(equalsBody, propertyAccessor.Parameter);
+    var anyBody = Expression.Call(null, StringMethodCache.Any, Expression.Constant(array), expression);
+
+    return Expression.Lambda<Func<T, bool>>(anyBody);
+}
 
     static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison stringComparison)
     {
@@ -149,4 +184,18 @@ static class ExpressionBuilder<T>
         public ParameterExpression Parameter;
         public Expression Left;
     }
+
+    public class C
+    {
+        static Expression<Func<Foo, bool>> InExpression(string[] array, StringComparison stringComparison)
+        {
+            return x => Enumerable.Any<string>(array, y => string.Equals(x.Id, y, stringComparison));
+        }
+    }
+
+    class Foo
+    {
+        public string Id { get; set; }
+    }
+
 }
