@@ -81,11 +81,11 @@ static class FuncBuilder<T>
             case Comparison.NotEqual:
                 return !string.Equals(propertyValue, value, stringComparison);
             case Comparison.Contains:
-                return propertyValue.IndexOf(value, stringComparison) >= 0;
+                return propertyValue?.IndexOf(value, stringComparison) >= 0;
             case Comparison.StartsWith:
-                return propertyValue.StartsWith(value, stringComparison);
+                return propertyValue != null && propertyValue.StartsWith(value, stringComparison);
             case Comparison.EndsWith:
-                return propertyValue.EndsWith(value, stringComparison);
+                return propertyValue != null && propertyValue.EndsWith(value, stringComparison);
         }
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }

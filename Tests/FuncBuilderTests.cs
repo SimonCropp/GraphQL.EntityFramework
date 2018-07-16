@@ -89,6 +89,27 @@ public class FuncBuilderTests
     }
 
     [Fact]
+    public void Contains()
+    {
+        var list = new List<TargetWithField>
+        {
+            new TargetWithField
+            {
+                Field = "Target1"
+            },
+            new TargetWithField
+            {
+                Field = "Target2"
+            },
+            new TargetWithField()
+        };
+
+        var result = list
+            .Where(FuncBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Contains, new[] {"Target2"}))
+            .Single();
+        Assert.Equal("Target2", result.Field);
+    }
+    [Fact]
     public void Field()
     {
         var list = new List<TargetWithField>

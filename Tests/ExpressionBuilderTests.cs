@@ -109,6 +109,28 @@ public class ExpressionBuilderTests
         Assert.Equal("Target2", result.Field);
     }
 
+    [Fact]
+    public void Contains()
+    {
+        var list = new List<TargetWithField>
+        {
+            new TargetWithField
+            {
+                Field = "Target1"
+            },
+            new TargetWithField
+            {
+                Field = "Target2"
+            },
+            new TargetWithField()
+        };
+
+        var result = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Contains, new[] {"Target2"}))
+            .Single();
+        Assert.Equal("Target2", result.Field);
+    }
+
     public class TargetWithField
     {
         public string Field;

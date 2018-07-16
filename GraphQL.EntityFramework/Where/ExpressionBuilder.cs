@@ -96,6 +96,7 @@ static class ExpressionBuilder<T>
     {
         var valueConstant = Expression.Constant(value, typeof(string));
         var comparisonConstant = Expression.Constant(stringComparison, typeof(StringComparison));
+        var nullCheck = Expression.NotEqual(left, Expression.Constant(null, typeof(object)));
         switch (comparison)
         {
             case Comparison.Equal:
@@ -104,12 +105,15 @@ static class ExpressionBuilder<T>
                 var notEqualsCall = Expression.Call(StringMethodCache.Equal, left, valueConstant, comparisonConstant);
                 return Expression.Not(notEqualsCall);
             case Comparison.StartsWith:
-                return Expression.Call(left, StringMethodCache.StartsWith, valueConstant, comparisonConstant);
+                var startsWithExpression = Expression.Call(left, StringMethodCache.StartsWith, valueConstant, comparisonConstant);
+                return Expression.AndAlso(nullCheck, startsWithExpression);
             case Comparison.EndsWith:
-                return Expression.Call(left, StringMethodCache.EndsWith, valueConstant, comparisonConstant);
+                var endsWithExpression = Expression.Call(left, StringMethodCache.EndsWith, valueConstant, comparisonConstant);
+                return Expression.AndAlso(nullCheck, endsWithExpression);
             case Comparison.Contains:
-                var call = Expression.Call(left, StringMethodCache.IndexOf, valueConstant, comparisonConstant);
-                return Expression.NotEqual(call, Expression.Constant(-1));
+                var indexOfExpression = Expression.Call(left, StringMethodCache.IndexOf, valueConstant, comparisonConstant);
+                var notEqualExpression = Expression.NotEqual(indexOfExpression, Expression.Constant(-1));
+                return Expression.AndAlso(nullCheck, notEqualExpression);
         }
 
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
