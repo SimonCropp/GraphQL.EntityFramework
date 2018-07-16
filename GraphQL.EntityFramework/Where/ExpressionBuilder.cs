@@ -6,51 +6,36 @@ using GraphQL.EntityFramework;
 
 static class ExpressionBuilder
 {
-    public static Expression<Func<T, bool>> BuildPredicate<T>(string propertyPath, Comparison comparison, string value)
+    public static Expression<Func<T, bool>> BuildPredicate<T>(WhereExpression where)
+    {
+        if (where.Comparison == Comparison.In)
+        {
+            return BuildIn<T>(where.Path, where.Value);
+        }
+
+        string value = null;
+        if (where.Value != null)
+        {
+            value = where.Value.Single();
+        }
+        return BuildPredicate<T>(where.Path, where.Comparison, value);
+    }
+
+    public static Expression<Func<T, bool>> BuildPredicate<T>(string path, Comparison comparison, string expressionValue)
     {
         var parameter = Expression.Parameter(typeof(T));
-        var left = AggregatePath(propertyPath, parameter);
+        var left = AggregatePath(path, parameter);
         object valueObject;
         if (left.Type == typeof(string))
         {
-            valueObject = value;
+            valueObject = expressionValue;
         }
         else
         {
-            valueObject = TypeConverter.ConvertStringToType(value, left.Type);
+            valueObject = TypeConverter.ConvertStringToType(expressionValue, left.Type);
         }
 
         var body = MakeComparison(left, comparison, valueObject);
-        return Expression.Lambda<Func<T, bool>>(body, parameter);
-    }
-
-    public static Expression<Func<T, bool>> BuildPredicate<T>(WhereExpression whereExpression)
-    {
-        if (whereExpression.Comparison == Comparison.In)
-        {
-            return BuildIn<T>(whereExpression.Path, whereExpression.Value);
-        }
-
-        return BuildCompare<T>(whereExpression);
-    }
-
-    static Expression<Func<T, bool>> BuildCompare<T>(WhereExpression whereExpression)
-    {
-        var parameter = Expression.Parameter(typeof(T));
-        var left = AggregatePath(whereExpression.Path, parameter);
-
-        var single = whereExpression.Value?.Single();
-        object value;
-        if (left.Type == typeof(string))
-        {
-            value = single;
-        }
-        else
-        {
-            value = TypeConverter.ConvertStringToType(single, left.Type);
-        }
-
-        var body = MakeComparison(left, whereExpression.Comparison, value);
         return Expression.Lambda<Func<T, bool>>(body, parameter);
     }
 
@@ -64,7 +49,6 @@ static class ExpressionBuilder
         var body = Expression.Call(constant, inInfo, left);
         return Expression.Lambda<Func<T, bool>>(body, parameter);
     }
-
 
     static Expression MakeComparison(Expression left, Comparison comparison, object value)
     {

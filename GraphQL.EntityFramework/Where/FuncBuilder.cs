@@ -7,14 +7,16 @@ using GraphQL.EntityFramework;
 
 static class FuncBuilder<T>
 {
-    public static Func<T, bool> BuildPredicate(WhereExpression whereExpression)
+    static ConcurrentDictionary<string, PropertyAccessor> funcs = new ConcurrentDictionary<string, PropertyAccessor>();
+
+    public static Func<T, bool> BuildPredicate(WhereExpression where)
     {
-        if (whereExpression.Comparison == Comparison.In)
+        if (where.Comparison == Comparison.In)
         {
-            return BuildIn(whereExpression.Path, whereExpression.Value);
+            return BuildIn(where.Path, where.Value);
         }
 
-        return BuildPredicate(whereExpression.Path, whereExpression.Comparison, whereExpression.Value.Single());
+        return BuildPredicate(where.Path, where.Comparison, where.Value.Single());
     }
 
     class PropertyAccessor
@@ -22,8 +24,6 @@ static class FuncBuilder<T>
         public Func<T, object> Func;
         public Type Type;
     }
-
-    static ConcurrentDictionary<string, PropertyAccessor> funcs = new ConcurrentDictionary<string, PropertyAccessor>();
 
     public static Func<T, bool> BuildIn(string propertyPath, IEnumerable<string> values)
     {
@@ -41,8 +41,8 @@ static class FuncBuilder<T>
         return target =>
         {
             var propertyValue = propertyFunc.Func(target);
-
-            return values.Select(x => TypeConverter.ConvertStringToType(x, propertyFunc.Type)).Any(x => x == propertyValue);
+            return values.Select(x => TypeConverter.ConvertStringToType(x, propertyFunc.Type))
+                .Any(x => x == propertyValue);
         };
     }
 
@@ -111,7 +111,6 @@ static class FuncBuilder<T>
                 throw new ArgumentOutOfRangeException(nameof(comparison), comparison, null);
         }
     }
-
 
     static int Compare(object a, object b)
     {
