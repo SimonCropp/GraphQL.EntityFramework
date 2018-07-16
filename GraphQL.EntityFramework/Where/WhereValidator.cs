@@ -11,6 +11,11 @@ static class WhereValidator
         {
             throw new Exception($"Cannot perform {comparison} on {propertyType.FullName}.");
         }
+
+        if (@case != null)
+        {
+            throw new Exception($"Cannot use {nameof(StringComparison)} when comparing {propertyType.FullName}." );
+        }
     }
 
     public static void ValidateString(Comparison comparison, StringComparison? @case)

@@ -27,7 +27,7 @@ public class ExpressionBuilderTests
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder<Target>.BuildPredicate2("Member.Length", Comparison.Equal, new[] {"2"}))
+            .Where(ExpressionBuilder<Target>.BuildPredicate("Member.Length", Comparison.Equal, new[] {"2"}))
             .Single();
         Assert.Equal("bb", result.Member);
     }
@@ -48,11 +48,11 @@ public class ExpressionBuilderTests
         };
 
         var resultFromString = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate2("Field", Comparison.Equal, new[] {"10"}))
+            .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, new[] {"10"}))
             .Single();
         Assert.Equal(10, resultFromString.Field);
         var nullResult = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate2("Field", Comparison.Equal, null))
+            .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, null))
             .Single();
         Assert.Null(nullResult.Field);
     }
@@ -78,7 +78,7 @@ public class ExpressionBuilderTests
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetForIn>.BuildPredicate2("Member", Comparison.In, new[] {"Value2"}))
+            .Where(ExpressionBuilder<TargetForIn>.BuildPredicate("Member", Comparison.In, new[] {"Value2"}))
             .Single();
         Assert.Contains("Value2", result.Member);
     }
@@ -104,7 +104,7 @@ public class ExpressionBuilderTests
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetWithField>.BuildPredicate2("Field", Comparison.Equal, new[] {"Target2"}))
+            .Where(ExpressionBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Equal, new[] {"Target2"}))
             .Single();
         Assert.Equal("Target2", result.Field);
     }
@@ -147,7 +147,7 @@ public class ExpressionBuilderTests
         };
 
         var result = people.AsQueryable()
-            .Where(ExpressionBuilder<Person>.BuildPredicate2(name, expression, new[] {value}, stringComparison))
+            .Where(ExpressionBuilder<Person>.BuildPredicate(name, expression, new[] {value}, stringComparison))
             .Single();
         Assert.Equal(expectedName, result.Name);
     }

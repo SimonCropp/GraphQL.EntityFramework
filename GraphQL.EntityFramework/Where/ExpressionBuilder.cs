@@ -10,10 +10,10 @@ static class ExpressionBuilder<T>
 
     public static Expression<Func<T, bool>> BuildPredicate(WhereExpression where)
     {
-        return BuildPredicate2(where.Path, where.Comparison, where.Value, where.Case);
+        return BuildPredicate(where.Path, where.Comparison, where.Value, where.Case);
     }
 
-    public static Expression<Func<T, bool>> BuildPredicate2(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
+    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
         var propertyFunc = GetPropertyFunc(path);
         var parameter = Expression.Parameter(typeof(T));
