@@ -28,13 +28,13 @@ namespace GraphQL.EntityFramework
         }
 
         protected FieldType AddEnumerableField<TReturnType>(
+            Type graphType,
             string name,
             Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
-            Type graphType,
             string includeName = null)
             where TReturnType : class
         {
-            return this.AddEnumerableField(graphType, name, resolve, includeName);
+            return ObjectGraphExtension.AddEnumerableField(this, graphType, name, resolve, includeName);
         }
     }
 }
