@@ -24,8 +24,8 @@ public class TypeConverterTests
     [Fact]
     public void ConvertStringToDatetime()
     {
-        var dateTime = DateTime.Now.Date;
-        var value = dateTime.ToString();
+        var dateTime = DateTime.UtcNow.Date;
+        var value = dateTime.ToString("o");
         var result = TypeConverter.ConvertStringToType(value, typeof(DateTime));
         Assert.Equal(dateTime, result);
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.EntityFramework;
 using Xunit;
@@ -122,9 +123,10 @@ public class FuncBuilderTests
     [InlineData("Age", Comparison.Equal, "13", "Person 2")]
     [InlineData("Age", Comparison.GreaterThan, "12", "Person 2")]
     [InlineData("Age", Comparison.NotEqual, "12", "Person 2")]
-    [InlineData("Age", Comparison.GreaterThanOrEqual,"13", "Person 2")]
+    [InlineData("Age", Comparison.GreaterThanOrEqual, "13", "Person 2")]
     [InlineData("Age", Comparison.LessThan, "13", "Person 1")]
     [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1")]
+    [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1")]
     public void Combos(string name, Comparison expression, string value, string expectedName)
     {
         var people = new List<Person>
@@ -132,12 +134,14 @@ public class FuncBuilderTests
             new Person
             {
                 Name = "Person 1",
-                Age = 12
+                Age = 12,
+                DateOfBirth = new DateTime(2001, 10, 10, 10, 10, 10, DateTimeKind.Utc)
             },
             new Person
             {
                 Name = "Person 2",
-                Age = 13
+                Age = 13,
+                DateOfBirth = new DateTime(2000, 10, 10, 10, 10, 10, DateTimeKind.Utc)
             }
         };
 
@@ -151,5 +155,6 @@ public class FuncBuilderTests
     {
         public string Name { get; set; }
         public int Age { get; set; }
+        public DateTime DateOfBirth { get; set; }
     }
 }
