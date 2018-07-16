@@ -23,15 +23,15 @@ static class ExpressionBuilder<T>
         if (left.Type == typeof(string))
         {
             WhereValidator.ValidateString(comparison, stringComparison);
-            //var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
+            var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
             if (comparison == Comparison.In)
             {
-                return BuildStringIn(values, propertyFunc);
+                return BuildStringIn(values, propertyFunc, stringComparisonValue);
             }
             else
             {
                 var value = values?.Single();
-                return BuildStringCompare(comparison, value, propertyFunc);
+                return BuildStringCompare(comparison, value, propertyFunc, stringComparisonValue);
             }
         }
         else
@@ -49,9 +49,9 @@ static class ExpressionBuilder<T>
         }
     }
 
-    static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, PropertyAccessor propertyAccessor)
+    static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, PropertyAccessor propertyAccessor, StringComparison stringComparison)
     {
-        var body = MakeStringComparison(propertyAccessor.Left, comparison, value);
+        var body = MakeStringComparison(propertyAccessor.Left, comparison, value, stringComparison);
         return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.Parameter);
     }
 
@@ -84,7 +84,7 @@ static class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.Parameter);
     }
 
-    static Expression<Func<T, bool>> BuildStringIn(string[] values, PropertyAccessor propertyAccessor)
+    static Expression<Func<T, bool>> BuildStringIn(string[] values, PropertyAccessor propertyAccessor, StringComparison stringComparison)
     {
         var constant = Expression.Constant(values.ToList());
         var inInfo = typeof(List<string>).GetMethod("Contains", new[] {typeof(string)});
@@ -92,20 +92,25 @@ static class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.Parameter);
     }
 
-    static Expression MakeStringComparison(Expression left, Comparison comparison, string value)
+    static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison stringComparison)
     {
-        var constant = Expression.Constant(value, left.Type);
+        var valueConstant = Expression.Constant(value, typeof(string));
+        var comparisonConstant = Expression.Constant(stringComparison, typeof(StringComparison));
+        //TODO: cache methods
         switch (comparison)
         {
             case Comparison.Equal:
-                return Expression.MakeBinary(ExpressionType.Equal, left, constant);
+                return Expression.Call(StringMethodCache.Equal, left, valueConstant, comparisonConstant);
             case Comparison.NotEqual:
-                return Expression.MakeBinary(ExpressionType.NotEqual, left, constant);
-            case Comparison.GreaterThan:
-            case Comparison.Contains:
+                var notEqualsCall = Expression.Call(StringMethodCache.Equal, left, valueConstant, comparisonConstant);
+                return Expression.Not(notEqualsCall);
             case Comparison.StartsWith:
+                return Expression.Call(left, StringMethodCache.StartsWith, valueConstant, comparisonConstant);
             case Comparison.EndsWith:
-                return Expression.Call(left, comparison.ToString(), Type.EmptyTypes, constant);
+                return Expression.Call(left, StringMethodCache.EndsWith, valueConstant, comparisonConstant);
+            case Comparison.Contains:
+                var call = Expression.Call(left, StringMethodCache.IndexOf, valueConstant, comparisonConstant);
+                return Expression.NotEqual(call, Expression.Constant(-1));
         }
 
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
