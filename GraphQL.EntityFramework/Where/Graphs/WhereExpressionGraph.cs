@@ -6,6 +6,7 @@ class WhereExpressionGraph : InputObjectGraphType<WhereExpression>
     {
         Field(x => x.Path);
         Field(x => x.Comparison);
+        Field(x => x.Case, true);
         Field(x => x.Value, true);
     }
 }

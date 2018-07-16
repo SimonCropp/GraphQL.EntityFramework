@@ -11,54 +11,43 @@ static class FuncBuilder<T>
 
     public static Func<T, bool> BuildPredicate(WhereExpression where)
     {
-        if (where.Comparison == Comparison.In)
-        {
-            return BuildIn(where.Path, where.Value);
-        }
-
-        return BuildPredicate(where.Path, where.Comparison, where.Value.Single());
+        return BuildPredicate(where.Path, where.Comparison, where.Value,where.Case);
     }
 
-    class PropertyAccessor
+    public static Func<T, bool> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
-        public Func<T, object> Func;
-        public Type Type;
-    }
-
-    public static Func<T, bool> BuildIn(string propertyPath, IEnumerable<string> values)
-    {
-        var propertyFunc = GetPropertyFunc(propertyPath);
+        var propertyFunc = GetPropertyFunc(path);
 
         if (propertyFunc.Type == typeof(string))
         {
-            return target =>
+            WhereValidator.ValidateString(comparison, stringComparison);
+            var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
+            if (comparison == Comparison.In)
             {
-                var propertyValue = (string) propertyFunc.Func(target);
-                return values.Contains(propertyValue);
-            };
+                return BuildStringIn(propertyFunc, values, stringComparisonValue);
+            }
+            else
+            {
+                var value = values?.Single();
+                return target => BuildStringCompare(comparison, value, propertyFunc, target, stringComparisonValue);
+            }
         }
-
-        return target =>
+        else
         {
-            var propertyValue = propertyFunc.Func(target);
-            return values.Select(x => TypeConverter.ConvertStringToType(x, propertyFunc.Type))
-                .Any(x => x == propertyValue);
-        };
+            WhereValidator.ValidateObject(propertyFunc.Type, comparison, stringComparison);
+            if (comparison == Comparison.In)
+            {
+                return BuildObjectIn(propertyFunc, values);
+            }
+            else
+            {
+                var value = values?.Single();
+                return target => BuildObjectCompare(comparison, value, propertyFunc, target);
+            }
+        }
     }
 
-    public static Func<T, bool> BuildPredicate(string propertyPath, Comparison comparison, string value)
-    {
-        var propertyFunc = GetPropertyFunc(propertyPath);
-
-        if (propertyFunc.Type == typeof(string))
-        {
-            return target => BuildStringCompare(comparison, value, propertyFunc, target);
-        }
-
-        return target => BuildCompare(comparison, value, propertyFunc, target);
-    }
-
-    static bool BuildCompare(Comparison comparison, string value, PropertyAccessor propertyFunc, T target)
+    static bool BuildObjectCompare(Comparison comparison, string value, PropertyAccessor propertyFunc, T target)
     {
         var propertyValue = propertyFunc.Func(target);
         var typedValue = TypeConverter.ConvertStringToType(value, propertyFunc.Type);
@@ -78,38 +67,27 @@ static class FuncBuilder<T>
                 return compare <= 0;
             case Comparison.LessThan:
                 return compare < 0;
-            case Comparison.Contains:
-            case Comparison.StartsWith:
-            case Comparison.EndsWith:
-                throw new Exception($"Cannot perform {comparison} on {propertyFunc.Type}.");
-            default:
-                throw new ArgumentOutOfRangeException(nameof(comparison), comparison, null);
         }
+        throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }
 
-    static bool BuildStringCompare(Comparison comparison, string value, PropertyAccessor propertyFunc, T x)
+    static bool BuildStringCompare(Comparison comparison, string value, PropertyAccessor propertyFunc, T x, StringComparison stringComparison)
     {
         var propertyValue = (string) propertyFunc.Func(x);
         switch (comparison)
         {
             case Comparison.Equal:
-                return propertyValue == value;
+                return string.Equals(propertyValue, value, stringComparison);
             case Comparison.NotEqual:
-                return propertyValue != value;
+                return !string.Equals(propertyValue, value, stringComparison);
             case Comparison.Contains:
-                return propertyValue.Contains(value);
+                return propertyValue.IndexOf(value, stringComparison) >= 0;
             case Comparison.StartsWith:
-                return propertyValue.StartsWith(value);
+                return propertyValue.StartsWith(value, stringComparison);
             case Comparison.EndsWith:
-                return propertyValue.EndsWith(value);
-            case Comparison.GreaterThan:
-            case Comparison.GreaterThanOrEqual:
-            case Comparison.LessThanOrEqual:
-            case Comparison.LessThan:
-                throw new Exception($"Cannot perform {comparison} on string.");
-            default:
-                throw new ArgumentOutOfRangeException(nameof(comparison), comparison, null);
+                return propertyValue.EndsWith(value, stringComparison);
         }
+        throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }
 
     static int Compare(object a, object b)
@@ -152,5 +130,30 @@ static class FuncBuilder<T>
     {
         return propertyPath.Split('.')
             .Aggregate(parameter, Expression.PropertyOrField);
+    }
+
+    static Func<T, bool> BuildObjectIn(PropertyAccessor property, IEnumerable<string> values)
+    {
+        return target =>
+        {
+            var propertyValue = property.Func(target);
+            return values.Select(x => TypeConverter.ConvertStringToType(x, property.Type))
+                .Any(x => x == propertyValue);
+        };
+    }
+
+    static Func<T, bool> BuildStringIn(PropertyAccessor property, string[] values, StringComparison stringComparison)
+    {
+        return target =>
+        {
+            var propertyValue = (string)property.Func(target);
+            return values.Any(x => string.Equals(x, propertyValue, stringComparison));
+        };
+    }
+
+    class PropertyAccessor
+    {
+        public Func<T, object> Func;
+        public Type Type;
     }
 }

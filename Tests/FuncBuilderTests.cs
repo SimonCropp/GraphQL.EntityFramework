@@ -27,7 +27,7 @@ public class FuncBuilderTests
         };
 
         var result = list
-            .Where(FuncBuilder<Target>.BuildPredicate("Member.Length", Comparison.Equal, "2"))
+            .Where(FuncBuilder<Target>.BuildPredicate("Member.Length", Comparison.Equal, new[] {"2"}))
             .Single();
         Assert.Equal("bb", result.Member);
     }
@@ -48,7 +48,7 @@ public class FuncBuilderTests
         };
 
         var resultFromString = list
-            .Where(FuncBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, "10"))
+            .Where(FuncBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, new[] {"10"}))
             .Single();
         Assert.Equal(10, resultFromString.Field);
         var nullResult = list
@@ -78,7 +78,7 @@ public class FuncBuilderTests
         };
 
         var result = list
-            .Where(FuncBuilder<TargetForIn>.BuildIn("Member", new List<string> {"Value2"}))
+            .Where(FuncBuilder<TargetForIn>.BuildPredicate("Member",Comparison.In, new[] {"Value2"}))
             .Single();
         Assert.Contains("Value2", result.Member);
     }
@@ -104,7 +104,7 @@ public class FuncBuilderTests
         };
 
         var result = list
-            .Where(FuncBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Equal, "Target2"))
+            .Where(FuncBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Equal, new[] {"Target2"}))
             .Single();
         Assert.Equal("Target2", result.Field);
     }
@@ -115,19 +115,20 @@ public class FuncBuilderTests
     }
 
     [Theory]
-    [InlineData("Name", Comparison.Equal, "Person 1", "Person 1")]
-    [InlineData("Name", Comparison.NotEqual, "Person 2", "Person 1")]
-    [InlineData("Name", Comparison.Contains, "son 2", "Person 2")]
-    [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2")]
-    [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2")]
-    [InlineData("Age", Comparison.Equal, "13", "Person 2")]
-    [InlineData("Age", Comparison.GreaterThan, "12", "Person 2")]
-    [InlineData("Age", Comparison.NotEqual, "12", "Person 2")]
-    [InlineData("Age", Comparison.GreaterThanOrEqual, "13", "Person 2")]
-    [InlineData("Age", Comparison.LessThan, "13", "Person 1")]
-    [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1")]
-    [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1")]
-    public void Combos(string name, Comparison expression, string value, string expectedName)
+    [InlineData("Name", Comparison.Equal, "Person 1", "Person 1", null)]
+    [InlineData("Name", Comparison.NotEqual, "Person 2", "Person 1", null)]
+    [InlineData("Name", Comparison.Contains, "son 2", "Person 2", null)]
+    [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2", null)]
+    [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2", null)]
+    [InlineData("Name", Comparison.EndsWith, "person 2", "Person 2", null)]
+    [InlineData("Age", Comparison.Equal, "13", "Person 2", null)]
+    [InlineData("Age", Comparison.GreaterThan, "12", "Person 2", null)]
+    [InlineData("Age", Comparison.NotEqual, "12", "Person 2", null)]
+    [InlineData("Age", Comparison.GreaterThanOrEqual, "13", "Person 2", null)]
+    [InlineData("Age", Comparison.LessThan, "13", "Person 1", null)]
+    [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1", null)]
+    [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1", null)]
+    public void Combos(string name, Comparison expression, string value, string expectedName, StringComparison? stringComparison)
     {
         var people = new List<Person>
         {
@@ -146,7 +147,7 @@ public class FuncBuilderTests
         };
 
         var result = people
-            .Where(FuncBuilder<Person>.BuildPredicate(name, expression, value))
+            .Where(FuncBuilder<Person>.BuildPredicate(name, expression, new[] {value},stringComparison))
             .Single();
         Assert.Equal(expectedName, result.Name);
     }

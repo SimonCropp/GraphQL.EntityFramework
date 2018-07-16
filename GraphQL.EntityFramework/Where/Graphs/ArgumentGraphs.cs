@@ -11,6 +11,8 @@ static class ArgumentGraphs
     static ArgumentGraphs()
     {
         GraphTypeTypeRegistry.Register(typeof(Comparison), typeof(ComparisonGraph));
+        GraphTypeTypeRegistry.Register(typeof(StringComparison), typeof(StringComparisonGraph));
+        Add<StringComparisonGraph>();
         Add<WhereExpressionGraph>();
         Add<ComparisonGraph>();
     }
