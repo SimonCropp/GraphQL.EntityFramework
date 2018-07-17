@@ -22,30 +22,30 @@ static class ConnectionConverter
         return ApplyConnectionContext(list, first, after, last, before);
     }
 
-    public static async Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, int? after, int? last, int? before)
+    public static  Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, int? after, int? last, int? before)
         where TReturn : class
     {
-        // do count prior to any paging. skip/take etc
-        var totalCount = await list.CountAsync().ConfigureAwait(false);
-
         if (last == null)
         {
-            return await First(list, first.GetValueOrDefault(0), after, before, totalCount).ConfigureAwait(false);
+            return First(list, first.GetValueOrDefault(0), after, before);
         }
-        return await Last(list, last.Value, after, before, totalCount).ConfigureAwait(false);
-
+        return Last(list, last.Value, after, before);
     }
 
-    static async Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before, int totalCount) where TReturn : class
+    static Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before) where TReturn : class
     {
-        return await FirstAfter(list, first, after, totalCount);
+        if (before == null)
+        {
+            return FirstAfter(list, first, after.GetValueOrDefault(0));
+        }
+        return FirstBefore(list, first, before.Value);
     }
 
-    private static async Task<Connection<TReturn>> FirstAfter<TReturn>(IQueryable<TReturn> list, int first, int? after, int totalCount) where TReturn : class
+    static async Task<Connection<TReturn>> FirstAfter<TReturn>(IQueryable<TReturn> list, int first, int after) where TReturn : class
     {
+        var totalCount = await list.CountAsync().ConfigureAwait(false);
         var take = first;
-        var page = list.Take(take);
-        var skip = after.GetValueOrDefault(0);
+        var page = list.Skip(after).Take(take);
 
         var result = await page
             .ToListAsync()
@@ -54,7 +54,37 @@ static class ConnectionConverter
             .Select((item, index) =>
                 new Edge<TReturn>
                 {
-                    Cursor = (index + skip).ToString(),
+                    Cursor = (index + after).ToString(),
+                    Node = item
+                })
+            .ToList();
+        return new Connection<TReturn>
+        {
+            TotalCount = totalCount,
+            PageInfo = new PageInfo
+            {
+                HasNextPage = totalCount > take + after,
+                HasPreviousPage = after > 0,
+                StartCursor = after.ToString(),
+                EndCursor = Math.Min(totalCount, take - 1 + after).ToString(),
+            },
+            Edges = edges
+        };
+    }
+    static async Task<Connection<TReturn>> FirstBefore<TReturn>(IQueryable<TReturn> list, int first, int before) where TReturn : class
+    {
+        var totalCount = await list.CountAsync().ConfigureAwait(false);
+        var take = first;
+        var page = list.Reverse().Skip(before).Take(first);
+
+        var result = await page
+            .ToListAsync()
+            .ConfigureAwait(false);
+        var edges = result
+            .Select((item, index) =>
+                new Edge<TReturn>
+                {
+                    Cursor = (index + before).ToString(),
                     Node = item
                 })
             .ToList();
@@ -71,40 +101,54 @@ static class ConnectionConverter
             Edges = edges
         };
     }
-    private static async Task<Connection<TReturn>> FirstBefore<TReturn>(IQueryable<TReturn> list, int first, int before, int totalCount) where TReturn : class
-    {
-        var take = first;
-        var page = list.Take(take);
-        var skip = after.GetValueOrDefault(0);
 
-        var result = await page
-            .ToListAsync()
-            .ConfigureAwait(false);
-        var edges = result
-            .Select((item, index) =>
-                new Edge<TReturn>
-                {
-                    Cursor = (index + skip).ToString(),
-                    Node = item
-                })
-            .ToList();
-        return new Connection<TReturn>
-        {
-            TotalCount = totalCount,
-            PageInfo = new PageInfo
-            {
-                HasNextPage = totalCount > take + skip,
-                HasPreviousPage = skip > 0,
-                StartCursor = skip.ToString(),
-                EndCursor = Math.Min(totalCount, take - 1 + skip).ToString(),
-            },
-            Edges = edges
-        };
-    }
-
-    static async Task<Connection<TReturn>> Last<TReturn>(IQueryable<TReturn> list, int last, int? after, int? before, int totalCount)
+    static Task<Connection<TReturn>> Last<TReturn>(IQueryable<TReturn> list, int last, int? after, int? before)
         where TReturn : class
     {
+        if (before == null)
+        {
+            return LastAfter(list, last, after.GetValueOrDefault(0));
+        }
+        return LastBefore(list, last, before.Value);
+    }
+
+    static async Task<Connection<TReturn>> LastBefore<TReturn>(IQueryable<TReturn> list, int last, int before)
+        where TReturn : class
+    {
+        var totalCount = await list.CountAsync().ConfigureAwait(false);
+        var take = last;
+        var page = list.Take(take);
+        var skip = after.GetValueOrDefault(0);
+
+        var beforeValue = before.Value;
+        var result = await page
+            .ToListAsync()
+            .ConfigureAwait(false);
+        var edges = result
+            .Select((item, index) =>
+                new Edge<TReturn>
+                {
+                    Cursor = (index + skip).ToString(),
+                    Node = item
+                })
+            .ToList();
+        return new Connection<TReturn>
+        {
+            TotalCount = totalCount,
+            PageInfo = new PageInfo
+            {
+                HasNextPage = totalCount > take + skip,
+                HasPreviousPage = skip > 0,
+                StartCursor = skip.ToString(),
+                EndCursor = Math.Min(totalCount, take - 1 + skip).ToString(),
+            },
+            Edges = edges
+        };
+    }
+    static async Task<Connection<TReturn>> LastAfter<TReturn>(IQueryable<TReturn> list, int last, int after)
+        where TReturn : class
+    {
+        var totalCount = await list.CountAsync().ConfigureAwait(false);
         var take = last;
         var page = list.Take(take);
         var skip = after.GetValueOrDefault(0);
