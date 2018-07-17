@@ -3,7 +3,7 @@
   "PageInfo": {
     "HasNextPage": true,
     "StartCursor": "0",
-    "EndCursor": "1"
+    "EndCursor": "2"
   },
   "Edges": [
     {
@@ -13,10 +13,15 @@
     {
       "Cursor": "1",
       "Node": "b"
+    },
+    {
+      "Cursor": "2",
+      "Node": "c"
     }
   ],
   "Items": [
     "a",
-    "b"
+    "b",
+    "c"
   ]
 }

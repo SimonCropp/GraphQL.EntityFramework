@@ -1,0 +1,27 @@
+﻿{
+  "testEntitiesConnection": {
+    "totalCount": 8,
+    "edges": [
+      {
+        "cursor": "1",
+        "node": {
+          "property": "Value1"
+        }
+      },
+      {
+        "cursor": "2",
+        "node": {
+          "property": "Value2"
+        }
+      }
+    ],
+    "items": [
+      {
+        "property": "Value1"
+      },
+      {
+        "property": "Value2"
+      }
+    ]
+  }
+}

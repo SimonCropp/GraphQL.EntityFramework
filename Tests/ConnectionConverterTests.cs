@@ -7,7 +7,14 @@ using Xunit;
 public class ConnectionConverterTests
 {
     [Theory]
-    [InlineData(2, null, null,null)]
+    [InlineData(2, null, null, null)]
+    [InlineData(2, 1, null, null)]
+    [InlineData(3, null, null, null)]
+    [InlineData(3, 1, null, null)]
+    [InlineData(10, null, null, null)]
+    [InlineData(10, 1, null, null)]
+    [InlineData(11, null, null, null)]
+    [InlineData(11, 1, null, null)]
     public async Task Run(int? first, int? after, int? last, int? before)
     {
         NamerFactory.AdditionalInformation = $"first_{first}_after_{after}_last_{last}_before_{before}";
