@@ -69,7 +69,14 @@ namespace GraphQL.EntityFramework
                         StartCursor = skip.ToString(),
                         EndCursor = Math.Min(totalCount, skip + take).ToString(),
                     },
-                    Edges = BuildEdges(page, skip)
+                    Edges = page
+                        .Select((item, index) =>
+                            new Edge<TReturn>
+                            {
+                                Cursor = (index + skip).ToString(),
+                                Node = item
+                            })
+                        .ToList()
                 };
             });
             return builder;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EfCore.InMemoryHelpers;
 using GraphQL.EntityFramework;
@@ -180,9 +182,8 @@ public class IntegrationTests : TestBase
         var result = await RunQuery(queryString, entity1, entity2);
         ObjectApprover.VerifyWithJson(result.Data);
     }
-
     [Fact]
-    public async Task Where_Connection()
+    public async Task Connection_first_page()
     {
         var queryString = @"
 {
@@ -201,30 +202,22 @@ public class IntegrationTests : TestBase
 }
 
 ";
+        var entities = BuildEntities(8);
 
-        var entity1 = new TestEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            Property = "Value1"
-        };
-        var entity2 = new TestEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Property = "Value2"
-        };
-        var entity3 = new TestEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
-            Property = "Value3"
-        };
-        var entity4 = new TestEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
-            Property = "Value4"
-        };
-
-        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4);
+        var result = await RunQuery(queryString, entities.ToArray());
         ObjectApprover.VerifyWithJson(result.Data);
+    }
+
+    static IEnumerable<TestEntity> BuildEntities(uint length)
+    {
+        for (var index = 0; index < length; index++)
+        {
+            yield return new TestEntity
+            {
+                Id = Guid.Parse("00000000-0000-0000-0000-00000000000" + index),
+                Property = "Value" + index
+            };
+        }
     }
 
     [Fact]
@@ -357,7 +350,7 @@ public class IntegrationTests : TestBase
         ObjectApprover.VerifyWithJson(result.Data);
     }
 
-    static async Task<ExecutionResult> RunQuery(string queryString, params object[] entities)
+    static async Task<ExecutionResult> RunQuery(string queryString, params TestEntity[] entities)
     {
         queryString = queryString.Replace("'", "\"");
 

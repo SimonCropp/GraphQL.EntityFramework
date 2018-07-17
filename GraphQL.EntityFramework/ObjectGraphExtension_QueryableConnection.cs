@@ -2,8 +2,6 @@
 using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
-using GraphQL.Types.Relay.DataObjects;
-using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
@@ -46,37 +44,21 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var builder = ConnectionBuilder.Create<TGraph, TSource>();
+            builder.PageSize(pageSize);
+            //todo:
+            //builder.Bidirectional();
             builder.Name(name);
             builder.AddWhereArgument();
             builder.FieldType.SetIncludeMetadata(includeName);
-            builder.ResolveAsync(async context =>
+            builder.Resolve(connectionContext =>
             {
-                var list = resolve(context);
-                var totalCount = await list.CountAsync().ConfigureAwait(false);
-                var skip = context.First.GetValueOrDefault(0);
-                var take = context.PageSize.GetValueOrDefault(pageSize);
-                var page = list.Skip(skip).Take(take);
-
-                page = IncludeAppender.AddIncludes(page, context)
-                    .ApplyGraphQlArguments(context);
-
-                var result = await page
-                    .ToListAsync()
-                    .ConfigureAwait(false);
-                return new Connection<TReturn>
-                {
-                    TotalCount = totalCount,
-                    PageInfo = new PageInfo
-                    {
-                        HasNextPage = true,
-                        HasPreviousPage = false,
-                        StartCursor = skip.ToString(),
-                        EndCursor = Math.Min(totalCount, skip + take).ToString(),
-                    },
-                    Edges = BuildEdges(result, skip)
-                };
+                var list = resolve(connectionContext);
+                list = IncludeAppender.AddIncludes(list, connectionContext)
+                    .ApplyGraphQlArguments(connectionContext);
+                return ConnectionConverter.ApplyConnectionContext(list, connectionContext.First, connectionContext.After, connectionContext.Last, connectionContext.Before);
             });
             return builder;
         }
+
     }
 }
