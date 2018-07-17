@@ -55,7 +55,12 @@ namespace GraphQL.EntityFramework
                 var list = resolve(connectionContext);
                 list = IncludeAppender.AddIncludes(list, connectionContext)
                     .ApplyGraphQlArguments(connectionContext);
-                return ConnectionConverter.ApplyConnectionContext(list, connectionContext.First, connectionContext.After, connectionContext.Last, connectionContext.Before);
+                return ConnectionConverter.ApplyConnectionContext(
+                    list,
+                    connectionContext.First,
+                    connectionContext.After,
+                    connectionContext.Last,
+                    connectionContext.Before);
             });
             return builder;
         }

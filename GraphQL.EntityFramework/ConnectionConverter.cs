@@ -7,6 +7,65 @@ using Microsoft.EntityFrameworkCore;
 
 static class ConnectionConverter
 {
+    public static Connection<TReturn> ApplyConnectionContext<TReturn>(List<TReturn> list, int? first, string afterString, int? last, string beforeString)
+        where TReturn : class
+    {
+        Parse(afterString, beforeString, out var after, out var before);
+        return ApplyConnectionContext(list, first, after, last, before);
+    }
+
+    public static Connection<TReturn> ApplyConnectionContext<TReturn>(List<TReturn> list, int? first, int? after, int? last, int? before)
+        where TReturn : class
+    {
+        if (last == null)
+        {
+            return First(list, first.GetValueOrDefault(0), after, before, list.Count);
+        }
+
+        return Last(list, last.Value, after, before, list.Count);
+    }
+
+    static Connection<TReturn> First<TReturn>(List<TReturn> list, int first, int? after, int? before, int count)
+        where TReturn : class
+    {
+        int skip;
+        if (before == null)
+        {
+            skip = after.GetValueOrDefault(0);
+        }
+        else
+        {
+            skip = Math.Max(before.Value - first, 0);
+        }
+
+        return Range(list, skip, first, count);
+    }
+
+    static Connection<TReturn> Last<TReturn>(List<TReturn> list, int last, int? after, int? before, int count)
+        where TReturn : class
+    {
+        int skip;
+        if (after == null)
+        {
+            // last before
+            skip = before.GetValueOrDefault(count) - last;
+        }
+        else
+        {
+            // last after
+            skip = after.Value + 1;
+        }
+
+        return Range(list, skip, take: last, count, true);
+    }
+
+    static Connection<TReturn> Range<TReturn>(List<TReturn> list, int skip, int take, int count, bool reverse = false)
+        where TReturn : class
+    {
+        var page = list.Skip(skip).Take(take).ToList();
+        return Build(skip, take, count, reverse, page);
+    }
+
     public static Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, string afterString, int? last, string beforeString)
         where TReturn : class
     {
