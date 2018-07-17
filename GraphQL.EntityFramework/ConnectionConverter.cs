@@ -26,7 +26,8 @@ static class ConnectionConverter
         return await Last(list, last.Value, after, before, count).ConfigureAwait(false);
     }
 
-    static Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before, int count) where TReturn : class
+    static Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before, int count)
+        where TReturn : class
     {
         int skip;
         if (before == null)
@@ -70,7 +71,8 @@ static class ConnectionConverter
         return Build(skip, take, count, reverse, result);
     }
 
-    static Connection<TReturn> Build<TReturn>(int skip, int take, int count, bool reverse, List<TReturn> result) where TReturn : class
+    static Connection<TReturn> Build<TReturn>(int skip, int take, int count, bool reverse, List<TReturn> result)
+        where TReturn : class
     {
         var edges = result
             .Select((item, index) =>
