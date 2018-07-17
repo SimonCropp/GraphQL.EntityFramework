@@ -18,12 +18,12 @@ public class ConnectionConverterTests
     [InlineData(11, null, null, null)]
     [InlineData(11, 1, null, null)]
 
-    ////first after
+    //first after
     [InlineData(2, null, null, 2)]
     [InlineData(3, null, null, 2)]
     [InlineData(2, null, null, 3)]
 
-    ////last before
+    //last before
     [InlineData(null, null, 2, null)]
     [InlineData(null, null, 2, 8)]
 
