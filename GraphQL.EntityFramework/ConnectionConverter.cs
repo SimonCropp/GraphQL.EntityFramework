@@ -57,27 +57,27 @@ static class ConnectionConverter
     static Task<Connection<TReturn>> Last<TReturn>(IQueryable<TReturn> list, int last, int? after, int? before, int count)
         where TReturn : class
     {
-        if (before == null)
+        if (after == null)
         {
-            // last after
+            // last before
             return Range(
                 list,
-                skip: after.GetValueOrDefault(-1)+1,
+                skip: before.GetValueOrDefault(count) -last,
                 take: last,
                 count,
                 true);
         }
 
-        // last before
+        // last after
         return Range(
             list,
-            skip: Math.Max(before.Value - last, 0),
+            skip: after.Value + 1,
             take: last,
             count,
             true);
     }
 
-    static async Task<Connection<TReturn>> Range<TReturn>(IQueryable<TReturn> list, int skip, int take, int totalCount, bool reverse=false)
+    static async Task<Connection<TReturn>> Range<TReturn>(IQueryable<TReturn> list, int skip, int take, int totalCount, bool reverse = false)
         where TReturn : class
     {
         var page = list.Skip(skip).Take(take);
