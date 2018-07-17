@@ -1,0 +1,23 @@
+﻿{
+  "TotalCount": 10,
+  "PageInfo": {
+    "HasNextPage": true,
+    "HasPreviousPage": true,
+    "StartCursor": "6",
+    "EndCursor": "7"
+  },
+  "Edges": [
+    {
+      "Cursor": "7",
+      "Node": "h"
+    },
+    {
+      "Cursor": "6",
+      "Node": "g"
+    }
+  ],
+  "Items": [
+    "h",
+    "g"
+  ]
+}
