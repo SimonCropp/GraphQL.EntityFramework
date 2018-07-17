@@ -8,14 +8,12 @@ using Microsoft.EntityFrameworkCore;
 static class ConnectionConverter
 {
     public static Connection<TReturn> ApplyConnectionContext<TReturn>(List<TReturn> list, int? first, string afterString, int? last, string beforeString)
-        where TReturn : class
     {
         Parse(afterString, beforeString, out var after, out var before);
         return ApplyConnectionContext(list, first, after, last, before);
     }
 
     public static Connection<TReturn> ApplyConnectionContext<TReturn>(List<TReturn> list, int? first, int? after, int? last, int? before)
-        where TReturn : class
     {
         if (last == null)
         {
@@ -26,7 +24,6 @@ static class ConnectionConverter
     }
 
     static Connection<TReturn> First<TReturn>(List<TReturn> list, int first, int? after, int? before, int count)
-        where TReturn : class
     {
         int skip;
         if (before == null)
@@ -42,7 +39,6 @@ static class ConnectionConverter
     }
 
     static Connection<TReturn> Last<TReturn>(List<TReturn> list, int last, int? after, int? before, int count)
-        where TReturn : class
     {
         int skip;
         if (after == null)
@@ -60,21 +56,18 @@ static class ConnectionConverter
     }
 
     static Connection<TReturn> Range<TReturn>(List<TReturn> list, int skip, int take, int count, bool reverse = false)
-        where TReturn : class
     {
         var page = list.Skip(skip).Take(take).ToList();
         return Build(skip, take, count, reverse, page);
     }
 
     public static Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, string afterString, int? last, string beforeString)
-        where TReturn : class
     {
         Parse(afterString, beforeString, out var after, out var before);
         return ApplyConnectionContext(list, first, after, last, before);
     }
 
     public static async Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, int? after, int? last, int? before)
-        where TReturn : class
     {
         var count = await list.CountAsync().ConfigureAwait(false);
         if (last == null)
@@ -86,7 +79,6 @@ static class ConnectionConverter
     }
 
     static Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before, int count)
-        where TReturn : class
     {
         int skip;
         if (before == null)
@@ -102,7 +94,6 @@ static class ConnectionConverter
     }
 
     static Task<Connection<TReturn>> Last<TReturn>(IQueryable<TReturn> list, int last, int? after, int? before, int count)
-        where TReturn : class
     {
         int skip;
         if (after == null)
@@ -120,7 +111,6 @@ static class ConnectionConverter
     }
 
     static async Task<Connection<TReturn>> Range<TReturn>(IQueryable<TReturn> list, int skip, int take, int count, bool reverse = false)
-        where TReturn : class
     {
         var page = list.Skip(skip).Take(take);
 
@@ -131,7 +121,6 @@ static class ConnectionConverter
     }
 
     static Connection<TReturn> Build<TReturn>(int skip, int take, int count, bool reverse, List<TReturn> result)
-        where TReturn : class
     {
         var edges = result
             .Select((item, index) =>
