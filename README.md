@@ -24,8 +24,6 @@ Arguments are executed in that order.
 
 Queries entities by id. Currently the only supported identity member (property or field) name is `Id`.
 
-The id filter will be applied before the where filter.
-
 
 ##### Supported Types
 
