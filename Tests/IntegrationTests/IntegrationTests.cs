@@ -249,6 +249,57 @@ public class IntegrationTests : TestBase
     }
 
     [Fact]
+    public async Task OrderBy()
+    {
+        var queryString = @"
+{
+  testEntities (orderBy: {path: 'Property'})
+  {
+    property
+  }
+}";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(queryString, entity2,entity1);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
+    [Fact]
+    public async Task OrderByDescending()
+    {
+        var queryString = @"
+{
+  testEntities (orderBy: {path: 'Property', descending: true})
+  {
+    property
+  }
+}";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+    [Fact]
     public async Task Where()
     {
         var queryString = @"

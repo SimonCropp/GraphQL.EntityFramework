@@ -63,6 +63,25 @@ public class ExpressionBuilderTests
     }
 
     [Fact]
+    public void PropertyExpression()
+    {
+        var target = new TargetForPropertyExpression
+        {
+            Member = "Value1"
+        };
+
+        var result = ExpressionBuilder<TargetForPropertyExpression>.BuildPropertyExpression("Member")
+            .Compile()
+            .Invoke(target);
+        Assert.Equal("Value1", result);
+    }
+
+    public class TargetForPropertyExpression
+    {
+        public string Member;
+    }
+
+    [Fact]
     public void InList()
     {
         var list = new List<TargetForIn>
@@ -87,6 +106,7 @@ public class ExpressionBuilderTests
     {
         public string Member;
     }
+
     [Fact]
     public void InGuidList()
     {
@@ -103,7 +123,7 @@ public class ExpressionBuilderTests
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] { "00000000-0000-0000-0000-000000000002" }))
+            .Where(ExpressionBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] {"00000000-0000-0000-0000-000000000002"}))
             .Single();
         Assert.Same(list[1], result);
     }
@@ -171,7 +191,7 @@ public class ExpressionBuilderTests
     [InlineData("Age", Comparison.Equal, "13", "Person 2", null)]
     [InlineData("Age", Comparison.GreaterThan, "12", "Person 2", null)]
     [InlineData("Age", Comparison.NotEqual, "12", "Person 2", null)]
-    [InlineData("Age", Comparison.GreaterThanOrEqual,"13", "Person 2", null)]
+    [InlineData("Age", Comparison.GreaterThanOrEqual, "13", "Person 2", null)]
     [InlineData("Age", Comparison.LessThan, "13", "Person 1", null)]
     [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1", null)]
     [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1", null)]

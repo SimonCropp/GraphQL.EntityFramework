@@ -13,6 +13,11 @@ static class FuncBuilder<T>
     {
         return BuildPredicate(where.Path, where.Comparison, where.Value,where.Case);
     }
+    public static Func<T, object> BuildPropertyExpression(string path)
+    {
+        var propertyFunc = GetPropertyFunc(path);
+        return propertyFunc.Func;
+    }
 
     public static Func<T, bool> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {

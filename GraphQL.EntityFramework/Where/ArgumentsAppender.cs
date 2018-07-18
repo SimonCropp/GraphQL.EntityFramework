@@ -8,6 +8,13 @@ static class ArgumentAppender
         {
             Name = "where"
         };
+
+    static QueryArgument<ListGraphType<OrderByGraph>> orderByArgument =
+        new QueryArgument<ListGraphType<OrderByGraph>>
+        {
+            Name = "orderBy"
+        };
+
     static QueryArgument<ListGraphType<StringGraphType>> idArgument =
         new QueryArgument<ListGraphType<StringGraphType>>
         {
@@ -30,6 +37,7 @@ static class ArgumentAppender
         where TGraph : IGraphType
     {
         builder.Argument<ListGraphType<WhereExpressionGraph>>("where", null);
+        builder.Argument<ListGraphType<OrderByGraph>>("orderBy", null);
         builder.Argument<ListGraphType<StringGraphType>>("ids", null);
     }
 
@@ -38,6 +46,7 @@ static class ArgumentAppender
         return new QueryArguments
         {
             idArgument,
+            orderByArgument,
             whereArgument,
             skipArgument,
             takeArgument

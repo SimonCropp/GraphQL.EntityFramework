@@ -13,27 +13,68 @@ static partial class ArgumentProcessor
 
     static IEnumerable<TItem> ApplyToAll<TItem>(this IEnumerable<TItem> items, Func<Type, string, object> getArguments)
     {
-        if (ExpressionContextExtractor.TryReadId(getArguments, out var values))
+        if (ArgumentReader.TryReadId(getArguments, out var values))
         {
             var predicate = FuncBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
             items = items.Where(predicate);
         }
-        foreach (var where in ExpressionContextExtractor.ReadWhere(getArguments))
+
+        foreach (var where in ArgumentReader.ReadWhere(getArguments))
         {
             var predicate = FuncBuilder<TItem>.BuildPredicate(where);
             items = items.Where(predicate);
         }
 
-        if (ExpressionContextExtractor.TryReadSkip(getArguments, out var skip))
+        items = Order(items, getArguments);
+
+        if (ArgumentReader.TryReadSkip(getArguments, out var skip))
         {
             items = items.Skip(skip);
         }
 
-        if (ExpressionContextExtractor.TryReadTake(getArguments, out var take))
+        if (ArgumentReader.TryReadTake(getArguments, out var take))
         {
             items = items.Take(take);
         }
 
         return items;
+    }
+
+    static IEnumerable<TItem> Order<TItem>(IEnumerable<TItem> queryable, Func<Type, string, object> getArguments)
+    {
+        var items = queryable.ToList();
+        var orderBys = ArgumentReader.ReadOrderBy(getArguments).ToList();
+        IOrderedEnumerable<TItem> ordered;
+        if (orderBys.Any())
+        {
+            var orderBy = orderBys.First();
+            var property = FuncBuilder<TItem>.BuildPropertyExpression(orderBy.Path);
+            if (orderBy.Descending)
+            {
+                ordered = items.OrderByDescending(property);
+            }
+            else
+            {
+                ordered = items.OrderBy(property);
+            }
+        }
+        else
+        {
+            return items;
+        }
+        foreach (var orderBy in orderBys.Skip(1))
+        {
+            var property = FuncBuilder<TItem>.BuildPropertyExpression(orderBy.Path);
+            if (orderBy.Descending)
+            {
+                ordered = ordered.ThenByDescending(property);
+            }
+            else
+            {
+                ordered = ordered.ThenBy(property);
+            }
+        }
+
+        return ordered;
     }
 }

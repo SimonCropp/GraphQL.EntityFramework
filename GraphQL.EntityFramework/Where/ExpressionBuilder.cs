@@ -13,6 +13,14 @@ static class ExpressionBuilder<T>
         return BuildPredicate(where.Path, where.Comparison, where.Value, where.Case);
     }
 
+    public static Expression<Func<T, object>> BuildPropertyExpression(string path)
+    {
+        var propertyFunc = GetPropertyFunc(path);
+        var propAsObject = Expression.Convert(propertyFunc.Left, typeof(object));
+
+        return Expression.Lambda<Func<T, object>>(propAsObject, propertyFunc.SourceParameter);
+    }
+
     public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
         var propertyFunc = GetPropertyFunc(path);
@@ -49,14 +57,14 @@ static class ExpressionBuilder<T>
     static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, PropertyAccessor propertyAccessor, StringComparison stringComparison)
     {
         var body = MakeStringComparison(propertyAccessor.Left, comparison, value, stringComparison);
-        return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.Parameter);
+        return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.SourceParameter);
     }
 
     static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string expressionValue, PropertyAccessor propertyAccessor)
     {
         var valueObject = TypeConverter.ConvertStringToType(expressionValue, propertyAccessor.Type);
         var body = MakeObjectComparison(propertyAccessor.Left, comparison, valueObject);
-        return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.Parameter);
+        return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.SourceParameter);
     }
 
     static PropertyAccessor GetPropertyFunc(string propertyPath)
@@ -67,7 +75,7 @@ static class ExpressionBuilder<T>
             var aggregatePath = AggregatePath(x, parameter);
             return new PropertyAccessor
             {
-                Parameter = parameter,
+                SourceParameter = parameter,
                 Left = aggregatePath,
                 Type = aggregatePath.Type
             };
@@ -76,11 +84,11 @@ static class ExpressionBuilder<T>
 
     static Expression<Func<T, bool>> BuildObjectIn(string[] values, PropertyAccessor propertyAccessor)
     {
-        var objects =TypeConverter.ConvertStringsToList(values, propertyAccessor.Type);
+        var objects = TypeConverter.ConvertStringsToList(values, propertyAccessor.Type);
         var constant = Expression.Constant(objects);
         var inInfo = objects.GetType().GetMethod("Contains", new[] {propertyAccessor.Type});
         var body = Expression.Call(constant, inInfo, propertyAccessor.Left);
-        return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.Parameter);
+        return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.SourceParameter);
     }
 
     static Expression<Func<T, bool>> BuildStringIn(string[] array, PropertyAccessor propertyAccessor, StringComparison stringComparison)
@@ -89,7 +97,7 @@ static class ExpressionBuilder<T>
         var equalsBody = Expression.Call(null, StringMethodCache.Equal, itemValue, propertyAccessor.Left, Expression.Constant(stringComparison));
         var itemEvaluate = Expression.Lambda<Func<string, bool>>(equalsBody, itemValue);
         var anyBody = Expression.Call(null, StringMethodCache.Any, Expression.Constant(array), itemEvaluate);
-        return Expression.Lambda<Func<T, bool>>(anyBody, propertyAccessor.Parameter);
+        return Expression.Lambda<Func<T, bool>>(anyBody, propertyAccessor.SourceParameter);
     }
 
     static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison stringComparison)
@@ -149,7 +157,7 @@ static class ExpressionBuilder<T>
 
     class PropertyAccessor
     {
-        public ParameterExpression Parameter;
+        public ParameterExpression SourceParameter;
         public Expression Left;
         public Type Type;
     }

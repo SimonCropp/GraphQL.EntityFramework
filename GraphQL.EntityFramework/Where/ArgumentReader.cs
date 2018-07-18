@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 
-static class ExpressionContextExtractor
+static class ArgumentReader
 {
     public static IEnumerable<WhereExpression> ReadWhere(Func<Type, string, object> getArgument)
     {
-        foreach (var expression in getArgument.ReadList<WhereExpression>("where"))
-        {
-            yield return expression;
-        }
+        return getArgument.ReadList<WhereExpression>("where");
+    }
+
+    public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object> getArgument)
+    {
+        return getArgument.ReadList<OrderBy>("orderBy");
     }
 
     public static bool TryReadId(Func<Type, string, object> getArgument, out string[] expression)

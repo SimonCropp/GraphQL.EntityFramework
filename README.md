@@ -15,7 +15,45 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 
 ### Arguments
 
-The arguments supported are `where`, `skip` and `take`.
+The arguments supported are `ids`, `where`, `orderBy` , `skip`, and `take`.
+
+Arguments are executed in that order.
+
+
+#### Ids
+
+Queries entities by id. Currently the only supported identity member (property or field) name is `Id`.
+
+The id filter will be applied before the where filter.
+
+
+##### Supported Types
+
+[String](https://docs.microsoft.com/en-us/dotnet/api/system.string), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid), [Double](https://docs.microsoft.com/en-us/dotnet/api/system.double), [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean), [Float](https://docs.microsoft.com/en-us/dotnet/api/system.float), [Byte](https://docs.microsoft.com/en-us/dotnet/api/system.byte), [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime), [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset), [Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal), [Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal), [Int16](https://docs.microsoft.com/en-us/dotnet/api/system.int16), [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32), [Int64](https://docs.microsoft.com/en-us/dotnet/api/system.int64), [UInt16](https://docs.microsoft.com/en-us/dotnet/api/system.uint16), [UInt32](https://docs.microsoft.com/en-us/dotnet/api/system.uint32), and [UInt64](https://docs.microsoft.com/en-us/dotnet/api/system.uint64).
+
+
+##### Single
+
+```
+{
+  entities (ids: "00000000-0000-0000-0000-000000000001")
+  {
+    property
+  }
+}
+```
+
+
+##### Multiple
+
+```
+{
+  entities (ids: ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"])
+  {
+    property
+  }
+}
+```
 
 
 #### Where
@@ -126,24 +164,14 @@ Single where statements can be expressed:
 }
 ```
 
-
-#### Ids
-
-Queries entities by id. Currently the only supported identity member (property or field) name is `Id`.
-
-The id filter will be applied before the where filter.
+#### OrderBy
 
 
-##### Supported Types
-
-Same as Where
-
-
-##### Single
+##### Ascending
 
 ```
 {
-  entities (ids: "00000000-0000-0000-0000-000000000001")
+  entities (orderBy: {path: "Property"})
   {
     property
   }
@@ -151,17 +179,16 @@ Same as Where
 ```
 
 
-##### Multiple
+##### Descending
 
 ```
 {
-  entities (ids: ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"])
+  entities (orderBy: {path: "Property", descending: true})
   {
     property
   }
 }
 ```
-
 
 #### Take
 
