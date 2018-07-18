@@ -127,6 +127,61 @@ Single where statements can be expressed:
 ```
 
 
+#### Id
+
+Queries entities by id.
+
+The id filter will be applied before the where filter.
+
+
+##### Member
+
+The name of the identity member (property or field). Defaults to `Id`.
+
+
+##### Supported Types
+
+Same as Where
+
+
+##### Single
+
+```
+{
+  entities (id: {value: '00000000-0000-0000-0000-000000000001'})
+  {
+    property
+  }
+}
+```
+
+
+##### Multiple
+
+```
+{
+  entities (id: {
+    value: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002']
+    })
+  {
+    property
+  }
+}
+```
+
+
+##### Explicit Member
+
+```
+{
+  entities (id: {member: 'Id', value: '00000000-0000-0000-0000-000000000001'})
+  {
+    property
+  }
+}
+```
+
+
 #### Take
 
 [Queryable.Take](https://msdn.microsoft.com/en-us/library/bb300906(v=vs.110).aspx) or
