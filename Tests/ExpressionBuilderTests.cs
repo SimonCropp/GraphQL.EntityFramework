@@ -87,6 +87,31 @@ public class ExpressionBuilderTests
     {
         public string Member;
     }
+    [Fact]
+    public void InGuidList()
+    {
+        var list = new List<TargetForInGuid>
+        {
+            new TargetForInGuid
+            {
+                Member = Guid.Parse("00000000-0000-0000-0000-000000000001")
+            },
+            new TargetForInGuid
+            {
+                Member = Guid.Parse("00000000-0000-0000-0000-000000000002")
+            }
+        };
+
+        var result = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] { "00000000-0000-0000-0000-000000000002" }))
+            .Single();
+        Assert.Same(list[1], result);
+    }
+
+    public class TargetForInGuid
+    {
+        public Guid Member;
+    }
 
     [Fact]
     public void Field()

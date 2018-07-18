@@ -136,6 +136,12 @@ static class FuncBuilder<T>
     {
         return target =>
         {
+            if (property.Type == typeof(Guid))
+            {
+                var guidValue = (Guid)property.Func(target);
+                return values.Select(Guid.Parse)
+                    .Any(x => x == guidValue);
+            }
             var propertyValue = property.Func(target);
             return values.Select(x => TypeConverter.ConvertStringToType(x, property.Type))
                 .Any(x => x == propertyValue);

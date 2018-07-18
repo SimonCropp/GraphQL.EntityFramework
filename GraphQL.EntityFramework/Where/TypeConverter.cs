@@ -1,8 +1,20 @@
 ﻿using System;
+using System.Linq;
 using GraphQL;
 
 static class TypeConverter
 {
+    public static object ConvertStringsToList(string[] values, Type type)
+    {
+        if (type == typeof(Guid))
+        {
+            return values.Select(Guid.Parse).ToList();
+        }
+        //todo: implement other type to prevent boxing on contains expression
+
+        return values.Select(x => ConvertStringToType(x, type)).ToList();
+    }
+
     public static object ConvertStringToType(string value, Type type)
     {
         if (type == typeof(DateTime))

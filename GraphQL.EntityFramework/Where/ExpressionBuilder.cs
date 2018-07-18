@@ -76,7 +76,7 @@ static class ExpressionBuilder<T>
 
     static Expression<Func<T, bool>> BuildObjectIn(string[] values, PropertyAccessor propertyAccessor)
     {
-        var objects = values.Select(x => TypeConverter.ConvertStringToType(x, propertyAccessor.Type)).ToList();
+        var objects =TypeConverter.ConvertStringsToList(values, propertyAccessor.Type);
         var constant = Expression.Constant(objects);
         var inInfo = objects.GetType().GetMethod("Contains", new[] {propertyAccessor.Type});
         var body = Expression.Call(constant, inInfo, propertyAccessor.Left);

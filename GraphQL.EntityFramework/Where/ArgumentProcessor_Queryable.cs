@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GraphQL.EntityFramework;
 using GraphQL.Types;
 
 static partial class ArgumentProcessor
@@ -11,7 +12,17 @@ static partial class ArgumentProcessor
 
     static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
     {
-        foreach (var where in ExpressionContextExtractor.ReadWhere<TItem>(getArguments))
+        if (ExpressionContextExtractor.TryReadId(getArguments, out var idExpression))
+        {
+            var member = idExpression.Member;
+            if (member == null)
+            {
+                member = "Id";
+            }
+            var predicate = ExpressionBuilder<TItem>.BuildPredicate(member, Comparison.In, idExpression.Value);
+            queryable = queryable.Where(predicate);
+        }
+        foreach (var where in ExpressionContextExtractor.ReadWhere(getArguments))
         {
             var predicate = ExpressionBuilder<TItem>.BuildPredicate(where);
             queryable = queryable.Where(predicate);

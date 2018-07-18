@@ -4,13 +4,22 @@ using System.Linq;
 
 static class ExpressionContextExtractor
 {
-    //Portfolios(where: [{path: "Title", Comparison: "Contains", Value: "Communications"}]) {
-    public static IEnumerable<WhereExpression> ReadWhere<T>(Func<Type, string, object> getArgument)
+    public static IEnumerable<WhereExpression> ReadWhere(Func<Type, string, object> getArgument)
     {
         foreach (var expression in getArgument.ReadList<WhereExpression>("where"))
         {
             yield return expression;
         }
+    }
+
+    public static bool TryReadId(Func<Type, string, object> getArgument, out IdExpression expression)
+    {
+        if (getArgument.TryRead("id", out expression))
+        {
+            //TODO: validate
+            return true;
+        }
+        return false;
     }
 
     public static bool TryReadSkip(Func<Type, string, object> getArgument, out int skip)

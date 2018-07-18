@@ -8,6 +8,11 @@ static class ArgumentAppender
         {
             Name = "where"
         };
+    static QueryArgument<IdExpressionGraph> idArgument =
+        new QueryArgument<IdExpressionGraph>
+        {
+            Name = "id"
+        };
 
     static QueryArgument<IntGraphType> skipArgument =
         new QueryArgument<IntGraphType>
@@ -25,12 +30,14 @@ static class ArgumentAppender
         where TGraph : IGraphType
     {
         builder.Argument<ListGraphType<WhereExpressionGraph>>("where", null);
+        builder.Argument<IdExpressionGraph>("id", null);
     }
 
     public static QueryArguments GetQueryArguments()
     {
         return new QueryArguments
         {
+            idArgument,
             whereArgument,
             skipArgument,
             takeArgument

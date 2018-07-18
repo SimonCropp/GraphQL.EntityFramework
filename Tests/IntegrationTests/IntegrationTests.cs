@@ -90,6 +90,7 @@ public class IntegrationTests : TestBase
         var result = await RunQuery(queryString, entity1, entity2);
         ObjectApprover.VerifyWithJson(result.Data);
     }
+
     [Fact]
     public async Task Where_with_nullable_properties2()
     {
@@ -182,6 +183,7 @@ public class IntegrationTests : TestBase
         var result = await RunQuery(queryString, entity1, entity2);
         ObjectApprover.VerifyWithJson(result.Data);
     }
+
     [Fact]
     public async Task Connection_first_page()
     {
@@ -297,6 +299,91 @@ public class IntegrationTests : TestBase
         var result = await RunQuery(queryString, entity1, entity2);
         ObjectApprover.VerifyWithJson(result.Data);
     }
+
+    [Fact]
+    public async Task Id()
+    {
+        var queryString = @"
+{
+  testEntities (id: {value: '00000000-0000-0000-0000-000000000001'})
+  {
+    property
+  }
+}";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
+    [Fact]
+    public async Task Id_explicit_path()
+    {
+        var queryString = @"
+{
+  testEntities (id: {member: 'Id', value: '00000000-0000-0000-0000-000000000001'})
+  {
+    property
+  }
+}";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
+    [Fact]
+    public async Task Id_multiple()
+    {
+        var queryString = @"
+{
+  testEntities
+  (id: {value: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002']})
+  {
+    property
+  }
+}";
+
+        var entity1 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+        var entity3 = new TestEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Property = "Value3"
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2, entity3);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
     [Fact]
     public async Task In()
     {

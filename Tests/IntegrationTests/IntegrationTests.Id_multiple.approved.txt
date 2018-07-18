@@ -1,0 +1,10 @@
+﻿{
+  "testEntities": [
+    {
+      "property": "Value1"
+    },
+    {
+      "property": "Value2"
+    }
+  ]
+}
