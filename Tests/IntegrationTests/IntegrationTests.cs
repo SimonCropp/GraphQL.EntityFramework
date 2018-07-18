@@ -305,7 +305,7 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (id: '00000000-0000-0000-0000-000000000001')
+  testEntities (ids: '00000000-0000-0000-0000-000000000001')
   {
     property
   }
@@ -332,7 +332,7 @@ public class IntegrationTests : TestBase
         var queryString = @"
 {
   testEntities
-  (id: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
+  (ids: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
   {
     property
   }

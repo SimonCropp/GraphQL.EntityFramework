@@ -127,7 +127,7 @@ Single where statements can be expressed:
 ```
 
 
-#### Id
+#### Ids
 
 Queries entities by id. Currently the only supported identity member (property or field) name is `Id`.
 
@@ -143,7 +143,7 @@ Same as Where
 
 ```
 {
-  entities (id: "00000000-0000-0000-0000-000000000001")
+  entities (ids: "00000000-0000-0000-0000-000000000001")
   {
     property
   }
@@ -155,7 +155,7 @@ Same as Where
 
 ```
 {
-  entities (id: ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"])
+  entities (ids: ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"])
   {
     property
   }
