@@ -129,14 +129,9 @@ Single where statements can be expressed:
 
 #### Id
 
-Queries entities by id.
+Queries entities by id. Currently the only supported identity member (property or field) name is `Id`.
 
 The id filter will be applied before the where filter.
-
-
-##### Member
-
-The name of the identity member (property or field). Defaults to `Id`.
 
 
 ##### Supported Types
@@ -148,7 +143,7 @@ Same as Where
 
 ```
 {
-  entities (id: {value: "00000000-0000-0000-0000-000000000001"})
+  entities (id: "00000000-0000-0000-0000-000000000001")
   {
     property
   }
@@ -160,9 +155,7 @@ Same as Where
 
 ```
 {
-  entities (id: {
-    value: ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"]
-    })
+  entities (id: ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"])
   {
     property
   }

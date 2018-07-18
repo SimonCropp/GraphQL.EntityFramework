@@ -14,7 +14,6 @@ static class ArgumentGraphs
         GraphTypeTypeRegistry.Register(typeof(StringComparison), typeof(StringComparisonGraph));
         Add<StringComparisonGraph>();
         Add<WhereExpressionGraph>();
-        Add<IdExpressionGraph>();
         Add<ComparisonGraph>();
     }
 

@@ -8,8 +8,8 @@ static class ArgumentAppender
         {
             Name = "where"
         };
-    static QueryArgument<IdExpressionGraph> idArgument =
-        new QueryArgument<IdExpressionGraph>
+    static QueryArgument<ListGraphType<StringGraphType>> idArgument =
+        new QueryArgument<ListGraphType<StringGraphType>>
         {
             Name = "id"
         };
@@ -30,7 +30,7 @@ static class ArgumentAppender
         where TGraph : IGraphType
     {
         builder.Argument<ListGraphType<WhereExpressionGraph>>("where", null);
-        builder.Argument<IdExpressionGraph>("id", null);
+        builder.Argument<ListGraphType<StringGraphType>>("id", null);
     }
 
     public static QueryArguments GetQueryArguments()

@@ -12,14 +12,18 @@ static class ExpressionContextExtractor
         }
     }
 
-    public static bool TryReadId(Func<Type, string, object> getArgument, out IdExpression expression)
+    public static bool TryReadId(Func<Type, string, object> getArgument, out string[] expression)
     {
-        if (getArgument.TryRead("id", out expression))
+        var argument = (string[])getArgument(typeof(string[]), "id");
+        if (argument == null)
         {
-            //TODO: validate
-            return true;
+            expression = null;
+            return false;
         }
-        return false;
+
+        expression = argument;
+
+        return true;
     }
 
     public static bool TryReadSkip(Func<Type, string, object> getArgument, out int skip)

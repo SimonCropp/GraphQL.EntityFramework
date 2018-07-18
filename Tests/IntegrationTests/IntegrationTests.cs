@@ -305,33 +305,7 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (id: {value: '00000000-0000-0000-0000-000000000001'})
-  {
-    property
-  }
-}";
-
-        var entity1 = new TestEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            Property = "Value1"
-        };
-        var entity2 = new TestEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Property = "Value2"
-        };
-
-        var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
-    }
-
-    [Fact]
-    public async Task Id_explicit_path()
-    {
-        var queryString = @"
-{
-  testEntities (id: {member: 'Id', value: '00000000-0000-0000-0000-000000000001'})
+  testEntities (id: '00000000-0000-0000-0000-000000000001')
   {
     property
   }
@@ -358,7 +332,7 @@ public class IntegrationTests : TestBase
         var queryString = @"
 {
   testEntities
-  (id: {value: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002']})
+  (id: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
   {
     property
   }
