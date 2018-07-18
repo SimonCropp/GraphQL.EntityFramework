@@ -98,7 +98,7 @@ Multiple where statements can be expressed:
 
 ##### Case Sensitivity
 
-All string comparrisons are, by default, done using [StringComparison.OrdinalIgnoreCase](https://msdn.microsoft.com/en-us/library/system.stringcomparison.aspx). A different StringComparison can be used via the `case` attribute.
+All string comparisons are, by default, done using [StringComparison.OrdinalIgnoreCase](https://msdn.microsoft.com/en-us/library/system.stringcomparison.aspx). A different StringComparison can be used via the `case` attribute.
 
 ```
 {
@@ -203,6 +203,9 @@ public class CompanyGraph : EfObjectGraphType<Company>
 
 #### Root Query
 
+
+##### Graph Type
+
 ```c#
 public class Query : ObjectGraphType
 {
@@ -220,6 +223,79 @@ public class Query : ObjectGraphType
 }
 ```
 
+
+##### Request
+
+```
+{
+  companiesConnection(first: 2, after: "1") {
+    totalCount
+    edges {
+      node {
+        id
+        content
+        employees {
+          id
+          content
+        }
+      }
+      cursor
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+  }
+}
+```
+
+
+##### Response
+
+```json
+{
+  "data": {
+    "companiesConnection": {
+      "totalCount": 4,
+      "edges": [
+        {
+          "node": {
+            "id": "bd042865-db68-4cdb-ad6c-b67cd3ad9602",
+            "content": "Company1",
+            "employees": [
+              {
+                "id": "b373d722-0ca5-4616-b074-d862367d1405",
+                "content": "Employee1"
+              },
+              {
+                "id": "66e4dbed-aeb4-4ba2-87db-e10d0d17255c",
+                "content": "Employee2"
+              }
+            ]
+          },
+          "cursor": "1"
+        },
+        {
+          "node": {
+            "id": "d663e248-9d9f-4327-88da-7fd8f9e3fedb",
+            "content": "Company3",
+            "employees": []
+          },
+          "cursor": "2"
+        }
+      ],
+      "pageInfo": {
+        "startCursor": "1",
+        "endCursor": "2",
+        "hasPreviousPage": true,
+        "hasNextPage": true
+      }
+    }
+  }
+}
+```
 
 #### Typed Graph
 
