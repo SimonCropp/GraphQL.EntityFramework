@@ -72,7 +72,7 @@ static class IncludeAppender
 
     static bool IsConnectionNode(Field field)
     {
-        var name = field.Name;
+        var name = field.Name.ToLowerInvariant();
         return name == "edges" || name == "items" || name == "node";
     }
 
