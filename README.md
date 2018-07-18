@@ -163,18 +163,6 @@ Same as Where
 ```
 
 
-##### Explicit Member
-
-```
-{
-  entities (id: {member: "Id", value: "00000000-0000-0000-0000-000000000001"})
-  {
-    property
-  }
-}
-```
-
-
 #### Take
 
 [Queryable.Take](https://msdn.microsoft.com/en-us/library/bb300906(v=vs.110).aspx) or
