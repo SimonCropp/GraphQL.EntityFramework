@@ -30,12 +30,28 @@ static class ArgumentReader
 
     public static bool TryReadSkip(Func<Type, string, object> getArgument, out int skip)
     {
-        return getArgument.TryRead("skip", out skip);
+        var result = getArgument.TryRead("skip", out skip);
+        if (result)
+        {
+            if (skip < 0)
+            {
+                throw new ErrorException("Skip cannot be less than 0.");
+            }
+        }
+        return result;
     }
 
     public static bool TryReadTake(Func<Type, string, object> getArgument, out int take)
     {
-        return getArgument.TryRead("take", out take);
+        var result = getArgument.TryRead("take", out take);
+        if (result)
+        {
+            if (take < 0)
+            {
+                throw new ErrorException("Take cannot be less than 0.");
+            }
+        }
+        return result;
     }
 
     static IEnumerable<T> ReadList<T>(this Func<Type, string, object> getArgument, string name)
