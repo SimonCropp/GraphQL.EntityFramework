@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
@@ -11,13 +12,15 @@ namespace GraphQL.EntityFramework
             this ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            IEnumerable<QueryArgument> arguments = null,
             string includeName = null,
             int pageSize = 10)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             var connection = BuildQueryConnectionField<object, TGraph, TReturn>(name, resolve, includeName, pageSize);
-            graph.AddField(connection.FieldType);
+            var field = graph.AddField(connection.FieldType);
+            field.AddWhereArgument(arguments);
             return connection;
         }
 
@@ -25,13 +28,15 @@ namespace GraphQL.EntityFramework
             this ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            IEnumerable<QueryArgument> arguments = null,
             string includeName = null,
             int pageSize = 10)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
-            graph.AddField(connection.FieldType);
+            var field = graph.AddField(connection.FieldType);
+            field.AddWhereArgument(arguments);
             return connection;
         }
 
@@ -39,13 +44,15 @@ namespace GraphQL.EntityFramework
             this ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            IEnumerable<QueryArgument> arguments = null,
             string includeName = null,
             int pageSize = 10)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
-            graph.AddField(connection.FieldType);
+            var field = graph.AddField(connection.FieldType);
+            field.AddWhereArgument(arguments);
             return connection;
         }
 
@@ -62,7 +69,6 @@ namespace GraphQL.EntityFramework
             //todo:
             //builder.Bidirectional();
             builder.Name(name);
-            builder.AddWhereArgument();
             builder.FieldType.SetIncludeMetadata(includeName);
             builder.ResolveAsync(async context =>
             {

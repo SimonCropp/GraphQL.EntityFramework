@@ -1,4 +1,4 @@
-﻿using GraphQL.Builders;
+﻿using System.Collections.Generic;
 using GraphQL.Types;
 
 static class ArgumentAppender
@@ -33,17 +33,21 @@ static class ArgumentAppender
             Name = "take"
         };
 
-    public static void AddWhereArgument<TSource, TGraph>(this ConnectionBuilder<TGraph, TSource> builder)
-        where TGraph : IGraphType
+    public static void AddWhereArgument(this FieldType field, IEnumerable<QueryArgument> extra)
     {
-        builder.Argument<ListGraphType<WhereExpressionGraph>>("where", null);
-        builder.Argument<ListGraphType<OrderByGraph>>("orderBy", null);
-        builder.Argument<ListGraphType<StringGraphType>>("ids", null);
+        var arguments = field.Arguments;
+        arguments.Add(whereArgument);
+        arguments.Add(orderByArgument);
+        arguments.Add(idArgument);
+        if (extra != null)
+        {
+            arguments.AddRange(extra);
+        }
     }
 
-    public static QueryArguments GetQueryArguments()
+    public static QueryArguments GetQueryArguments(IEnumerable<QueryArgument> extra)
     {
-        return new QueryArguments
+        var arguments = new QueryArguments
         {
             idArgument,
             orderByArgument,
@@ -51,5 +55,10 @@ static class ArgumentAppender
             skipArgument,
             takeArgument
         };
+        if (extra != null)
+        {
+            arguments.AddRange(extra);
+        }
+        return arguments;
     }
 }

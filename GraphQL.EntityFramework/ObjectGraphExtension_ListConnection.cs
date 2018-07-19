@@ -12,13 +12,15 @@ namespace GraphQL.EntityFramework
             this ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
+            IEnumerable<QueryArgument> arguments = null,
             string includeName = null,
             int pageSize = 10)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             var connection = BuildListConnectionField<object, TGraph, TReturn>(name, resolve, includeName, pageSize);
-            graph.AddField(connection.FieldType);
+            var field = graph.AddField(connection.FieldType);
+            field.AddWhereArgument(arguments);
             return connection;
         }
 
@@ -26,13 +28,15 @@ namespace GraphQL.EntityFramework
             this ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            IEnumerable<QueryArgument> arguments = null,
             string includeName = null,
             int pageSize = 10)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             var connection = BuildListConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
-            graph.AddField(connection.FieldType);
+            var field = graph.AddField(connection.FieldType);
+            field.AddWhereArgument(arguments);
             return connection;
         }
 
@@ -47,7 +51,6 @@ namespace GraphQL.EntityFramework
             var builder = ConnectionBuilder.Create<TGraph, TSource>();
             builder.PageSize(pageSize);
             builder.Name(name);
-            builder.AddWhereArgument();
             builder.FieldType.SetIncludeMetadata(includeName);
             builder.Resolve(context =>
             {
