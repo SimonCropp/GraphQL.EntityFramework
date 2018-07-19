@@ -35,6 +35,20 @@ namespace GraphQL.EntityFramework
             return connection;
         }
 
+        public static ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TSource, TGraph, TReturn>(
+            this ObjectGraphType<TSource> graph,
+            string name,
+            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            string includeName = null,
+            int pageSize = 10)
+            where TGraph : ObjectGraphType<TReturn>, IGraphType
+            where TReturn : class
+        {
+            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
+            graph.AddField(connection.FieldType);
+            return connection;
+        }
+
         static ConnectionBuilder<TGraph, TSource> BuildQueryConnectionField<TSource, TGraph, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
@@ -64,6 +78,5 @@ namespace GraphQL.EntityFramework
             });
             return builder;
         }
-
     }
 }

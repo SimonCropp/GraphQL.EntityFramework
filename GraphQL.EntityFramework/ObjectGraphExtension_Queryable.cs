@@ -22,6 +22,18 @@ namespace GraphQL.EntityFramework
         }
 
         public static FieldType AddQueryField<TSource, TReturn>(
+            this ObjectGraphType<TSource> graph,
+            Type graphType,
+            string name,
+            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            string includeName = null)
+            where TReturn : class
+        {
+            var field = BuildQueryField(graphType, name, resolve, includeName);
+            return graph.AddField(field);
+        }
+
+        public static FieldType AddQueryField<TSource, TReturn>(
             this ObjectGraphType graph,
             Type graphType,
             string name,
@@ -58,6 +70,18 @@ namespace GraphQL.EntityFramework
 
         public static FieldType AddQueryField<TSource, TGraph, TReturn>(
             this ObjectGraphType graph,
+            string name,
+            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            string includeName = null)
+            where TGraph : ObjectGraphType<TReturn>, IGraphType
+            where TReturn : class
+        {
+            var field = BuildQueryField<TSource, TGraph, TReturn>(name, resolve, includeName);
+            return graph.AddField(field);
+        }
+
+        public static FieldType AddQueryField<TSource, TGraph, TReturn>(
+            this ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             string includeName = null)
