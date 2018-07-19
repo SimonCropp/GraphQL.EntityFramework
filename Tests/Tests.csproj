@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="EfCore.InMemoryHelpers" Version="1.1.3" />
-    <PackageReference Include="GraphQL" Version="2.0.0-alpha-938" />
+    <PackageReference Include="GraphQL" Version="2.0.0-alpha-947" />
     <PackageReference Include="ApprovalTests" Version="3.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.1" />
     <PackageReference Include="ObjectApproval" Version="2.2.0" />
