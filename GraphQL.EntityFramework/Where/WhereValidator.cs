@@ -9,12 +9,12 @@ static class WhereValidator
             comparison == Comparison.StartsWith ||
             comparison == Comparison.EndsWith)
         {
-            throw new Exception($"Cannot perform {comparison} on {propertyType.FullName}.");
+            throw new ErrorException($"Cannot perform {comparison} on {propertyType.FullName}.");
         }
 
         if (@case != null)
         {
-            throw new Exception($"Cannot use {nameof(StringComparison)} when comparing {propertyType.FullName}." );
+            throw new ErrorException($"Cannot use {nameof(StringComparison)} when comparing {propertyType.FullName}." );
         }
     }
 
@@ -25,7 +25,7 @@ static class WhereValidator
             comparison == Comparison.LessThanOrEqual ||
             comparison == Comparison.LessThan)
         {
-            throw new Exception($"Cannot perform {comparison} on a String.");
+            throw new ErrorException($"Cannot perform {comparison} on a String.");
         }
     }
 }
