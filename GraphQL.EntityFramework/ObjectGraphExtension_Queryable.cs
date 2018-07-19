@@ -120,11 +120,19 @@ namespace GraphQL.EntityFramework
                     async context =>
                     {
                         var returnTypes = resolve(context);
-                        return await
-                            IncludeAppender.AddIncludes(returnTypes, context)
-                                .ApplyGraphQlArguments(context)
-                                .ToListAsync()
-                                .ConfigureAwait(false);
+                        try
+                        {
+                            return await
+                                IncludeAppender.AddIncludes(returnTypes, context)
+                                    .ApplyGraphQlArguments(context)
+                                    .ToListAsync()
+                                    .ConfigureAwait(false);
+                        }
+                        catch (ErrorException exception)
+                        {
+                            context.Errors.Add(new ExecutionError(exception.Message));
+                            throw;
+                        }
                     })
             };
         }

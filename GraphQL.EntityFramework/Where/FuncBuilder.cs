@@ -118,7 +118,7 @@ static class FuncBuilder<T>
         return funcs.GetOrAdd(propertyPath, x =>
         {
             var parameter = Expression.Parameter(typeof(T));
-            var left = AggregatePath(x, parameter);
+            var left = ExpressionBuilder<T>.AggregatePath(x, parameter);
 
             var converted = Expression.Convert(left, typeof(object));
             var compile = Expression.Lambda<Func<T, object>>(converted, parameter).Compile();
@@ -129,12 +129,6 @@ static class FuncBuilder<T>
                 Type = left.Type
             };
         });
-    }
-
-    static Expression AggregatePath(string propertyPath, Expression parameter)
-    {
-        return propertyPath.Split('.')
-            .Aggregate(parameter, Expression.PropertyOrField);
     }
 
     static Func<T, bool> BuildObjectIn(PropertyAccessor property, IEnumerable<string> values)

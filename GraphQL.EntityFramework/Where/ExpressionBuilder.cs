@@ -149,10 +149,17 @@ static class ExpressionBuilder<T>
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }
 
-    static Expression AggregatePath(string propertyPath, Expression parameter)
+    internal static Expression AggregatePath(string path, Expression parameter)
     {
-        return propertyPath.Split('.')
-            .Aggregate(parameter, Expression.PropertyOrField);
+        try
+        {
+            return path.Split('.')
+                .Aggregate(parameter, Expression.PropertyOrField);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new ErrorException($"Failed to create a member expression. Type: {typeof(T).FullName}, Path: {path}. Error: {exception.Message}");
+        }
     }
 
     class PropertyAccessor

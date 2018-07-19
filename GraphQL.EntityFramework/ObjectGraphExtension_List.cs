@@ -94,8 +94,16 @@ namespace GraphQL.EntityFramework
                     context =>
                     {
                         var returnTypes = resolve(context);
-                        return returnTypes
-                            .ApplyGraphQlArguments(context);
+                        try
+                        {
+                            return returnTypes
+                                .ApplyGraphQlArguments(context);
+                        }
+                        catch (ErrorException exception)
+                        {
+                            context.Errors.Add(new ExecutionError(exception.Message));
+                            throw;
+                        }
                     })
             };
         }

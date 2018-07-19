@@ -49,18 +49,27 @@ namespace GraphQL.EntityFramework
             builder.Name(name);
             builder.AddWhereArgument();
             builder.FieldType.SetIncludeMetadata(includeName);
-            builder.Resolve(connectionContext =>
+            builder.Resolve(context =>
             {
-                var page = resolve(connectionContext)
-                    .ApplyGraphQlArguments(connectionContext)
-                    .ToList();
+                var enumerable = resolve(context);
+                try
+                {
+                    var page = enumerable
+                        .ApplyGraphQlArguments(context)
+                        .ToList();
 
-                return ConnectionConverter.ApplyConnectionContext(
-                    page,
-                    connectionContext.First,
-                    connectionContext.After,
-                    connectionContext.Last,
-                    connectionContext.Before);
+                    return ConnectionConverter.ApplyConnectionContext(
+                        page,
+                        context.First,
+                        context.After,
+                        context.Last,
+                        context.Before);
+                }
+                catch (ErrorException exception)
+                {
+                    context.Errors.Add(new ExecutionError(exception.Message));
+                    throw;
+                }
             });
             return builder;
         }
