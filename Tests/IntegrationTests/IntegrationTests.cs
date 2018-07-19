@@ -480,6 +480,7 @@ public class IntegrationTests : TestBase
             services.AddSingleton(query);
             services.AddSingleton<TestEntityGraph>();
 
+            EfCoreGraphQLConventions.RegisterConnectionTypesInContainer(services);
             EfCoreGraphQLConventions.RegisterInContainer(services);
             using (var provider = services.BuildServiceProvider())
             using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))

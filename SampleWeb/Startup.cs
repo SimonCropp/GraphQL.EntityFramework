@@ -5,7 +5,6 @@ using EfCore.InMemoryHelpers;
 using GraphQL.EntityFramework;
 using GraphQL;
 using GraphQL.Types;
-using GraphQL.Types.Relay;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,13 +12,6 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        //TODO:
-        services.AddTransient(typeof(ConnectionType<>));
-        services.AddTransient(typeof(EdgeType<>));
-        services.AddTransient<PageInfoType>();
-
-
-
         var myDataContext = InMemoryContextBuilder.Build<MyDataContext>();
         var company1 = new Company
         {
@@ -56,6 +48,7 @@ public class Startup
         myDataContext.SaveChanges();
         services.AddSingleton(myDataContext);
 
+        EfCoreGraphQLConventions.RegisterConnectionTypesInContainer(services);
         EfCoreGraphQLConventions.RegisterInContainer(services);
 
         foreach (var type in GetGraphQlTypes())
