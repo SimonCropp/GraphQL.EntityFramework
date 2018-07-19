@@ -6,66 +6,66 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public class EfObjectGraphType<TSourceType> : ObjectGraphType<TSourceType>
+    public class EfObjectGraphType<TSource> : ObjectGraphType<TSource>
     {
-        protected ConnectionBuilder<TGraphType, TSourceType> AddListConnectionField<TGraphType, TReturnType>(
+        protected ConnectionBuilder<TGraph, TSource> AddListConnectionField<TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName = null,
             int pageSize = 10)
-            where TGraphType : ObjectGraphType<TReturnType>
-            where TReturnType : class
+            where TGraph : ObjectGraphType<TReturn>
+            where TReturn : class
         {
-            return this.AddListConnectionField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName, pageSize);
+            return this.AddListConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
         }
 
-        protected FieldType AddListField<TGraphType, TReturnType>(
+        protected FieldType AddListField<TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName = null)
-            where TGraphType : ObjectGraphType<TReturnType>
-            where TReturnType : class
+            where TGraph : ObjectGraphType<TReturn>
+            where TReturn : class
         {
-            return this.AddListField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName);
+            return this.AddListField<TSource, TGraph, TReturn>(name, resolve, includeName);
         }
 
-        protected FieldType AddListField<TReturnType>(
+        protected FieldType AddListField<TReturn>(
             Type graphType,
             string name,
-            Func<ResolveFieldContext<TSourceType>, IEnumerable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName = null)
-            where TReturnType : class
+            where TReturn : class
         {
             return ObjectGraphExtension.AddListField(this, graphType, name, resolve, includeName);
         }
 
-        protected ConnectionBuilder<TGraphType, TSourceType> AddQueryConnectionField<TGraphType, TReturnType>(
+        protected ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSourceType>, IQueryable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             string includeName = null,
             int pageSize = 10)
-            where TGraphType : ObjectGraphType<TReturnType>
-            where TReturnType : class
+            where TGraph : ObjectGraphType<TReturn>
+            where TReturn : class
         {
-            return this.AddQueryConnectionField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName, pageSize);
+            return this.AddQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
         }
 
-        protected FieldType AddQueryField<TGraphType, TReturnType>(
+        protected FieldType AddQueryField<TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSourceType>, IQueryable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             string includeName = null)
-            where TGraphType : ObjectGraphType<TReturnType>
-            where TReturnType : class
+            where TGraph : ObjectGraphType<TReturn>
+            where TReturn : class
         {
-            return this.AddQueryField<TSourceType, TGraphType, TReturnType>(name, resolve, includeName);
+            return this.AddQueryField<TSource, TGraph, TReturn>(name, resolve, includeName);
         }
 
-        protected FieldType AddQueryField<TReturnType>(
+        protected FieldType AddQueryField<TReturn>(
             Type graphType,
             string name,
-            Func<ResolveFieldContext<TSourceType>, IQueryable<TReturnType>> resolve,
+            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             string includeName = null)
-            where TReturnType : class
+            where TReturn : class
         {
             return ObjectGraphExtension.AddQueryField(this, graphType, name, resolve, includeName);
         }
