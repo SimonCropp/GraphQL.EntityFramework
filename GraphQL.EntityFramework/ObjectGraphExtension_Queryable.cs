@@ -128,7 +128,7 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, List<TReturn>>(
                     context =>
                     {
-                        return ExecuteQuery(name, listGraphType, context.Errors, () =>
+                        return ExecuteAsyncQuery(name, listGraphType, context.Errors, () =>
                         {
                             var returnTypes = resolve(context);
                             return returnTypes.AddIncludes(context)

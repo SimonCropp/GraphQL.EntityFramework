@@ -30,6 +30,24 @@ namespace GraphQL.EntityFramework
             }
         }
 
+        static async Task<TResult> ExecuteAsyncQuery<TResult>(string fieldName, Type graph, ExecutionErrors errors, Func<Task<TResult>> func)
+        {
+            try
+            {
+                return await func().ConfigureAwait(false);
+            }
+            catch (ErrorException exception)
+            {
+                AddError(fieldName, graph, errors, exception.Message);
+                throw;
+            }
+            catch (Exception)
+            {
+                AddError(fieldName, graph, errors);
+                throw;
+            }
+        }
+
         static async Task<object> ExecuteConnection<TResult>(string fieldName, Type graph, ExecutionErrors errors, Func<Task<TResult>> func)
         {
             try
