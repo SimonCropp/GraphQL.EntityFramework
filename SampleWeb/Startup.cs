@@ -48,8 +48,8 @@ public class Startup
         myDataContext.SaveChanges();
         services.AddSingleton(myDataContext);
 
-        EfCoreGraphQLConventions.RegisterConnectionTypesInContainer(services);
-        EfCoreGraphQLConventions.RegisterInContainer(services);
+        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
+        EfGraphQLConventions.RegisterInContainer(services, myDataContext);
 
         foreach (var type in GetGraphQlTypes())
         {

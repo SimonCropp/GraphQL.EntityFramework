@@ -3,7 +3,7 @@ using GraphQL.Types;
 
 public class Query : ObjectGraphType
 {
-    public Query()
+    public Query(EfGraphQLService efGraphQlService)
     {
         this.AddQueryField<TestEntityGraph, TestEntity>(
             name: "testEntities",
@@ -11,7 +11,8 @@ public class Query : ObjectGraphType
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.TestEntities;
-            });
+            },
+            efGraphQlService: efGraphQlService);
 
         this.AddQueryConnectionField<TestEntityGraph, TestEntity>(
             name: "testEntitiesConnection",
@@ -20,7 +21,7 @@ public class Query : ObjectGraphType
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.TestEntities;
             },
-            includeName: "TestEntities"
-        );
+            includeName: "TestEntities",
+            efGraphQlService: efGraphQlService);
     }
 }

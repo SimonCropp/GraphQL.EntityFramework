@@ -2,7 +2,7 @@
 
 public class CompanyGraph : EfObjectGraphType<Company>
 {
-    public CompanyGraph()
+    public CompanyGraph(EfGraphQLService graphQlService) : base(graphQlService)
     {
         Field(x => x.Id);
         Field(x => x.Content);

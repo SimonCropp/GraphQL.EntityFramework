@@ -10,6 +10,7 @@ namespace GraphQL.EntityFramework
     {
         public static ConnectionBuilder<TGraph, object> AddListConnectionField<TGraph, TReturn>(
             this ObjectGraphType graph,
+            EfGraphQLService efGraphQlService,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -18,7 +19,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildListConnectionField<object, TGraph, TReturn>(name, resolve, includeName, pageSize);
+            var connection = BuildListConnectionField<object, TGraph, TReturn>(efGraphQlService, name, resolve, includeName, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -26,6 +27,7 @@ namespace GraphQL.EntityFramework
 
         public static ConnectionBuilder<TGraph, TSource> AddListConnectionField<TSource, TGraph, TReturn>(
             this ObjectGraphType<TSource> graph,
+            EfGraphQLService efGraphQlService,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -34,13 +36,14 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildListConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
+            var connection = BuildListConnectionField<TSource, TGraph, TReturn>(efGraphQlService, name, resolve, includeName, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
         }
 
         static ConnectionBuilder<TGraph, TSource> BuildListConnectionField<TSource, TGraph, TReturn>(
+            EfGraphQLService efGraphQlService,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName,
@@ -51,7 +54,7 @@ namespace GraphQL.EntityFramework
             var builder = ConnectionBuilder.Create<TGraph, TSource>();
             builder.PageSize(pageSize);
             builder.Name(name);
-            builder.FieldType.SetIncludeMetadata(includeName);
+            IncludeAppender.SetIncludeMetadata(builder.FieldType, includeName);
             builder.Resolve(context =>
             {
                 return ExecuteQuery(name, typeof(TGraph), context.Errors, () =>

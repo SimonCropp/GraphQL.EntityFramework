@@ -3,7 +3,7 @@ using GraphQL.EntityFramework;
 
 public class Query : ObjectGraphType
 {
-    public Query()
+    public Query(EfGraphQLService efGraphQlService)
     {
         this.AddQueryField<CompanyGraph, Company>(
             name: "companies",
@@ -11,7 +11,8 @@ public class Query : ObjectGraphType
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
-            });
+            },
+            efGraphQlService: efGraphQlService);
 
         this.AddQueryConnectionField<CompanyGraph, Company>(
             name: "companiesConnection",
@@ -20,7 +21,8 @@ public class Query : ObjectGraphType
             {
                 var dataContext = (MyDataContext)context.UserContext;
                 return dataContext.Companies;
-            });
+            },
+            efGraphQlService: efGraphQlService);
 
         this.AddQueryField<EmployeeGraph, Employee>(
             name: "employees",
@@ -28,7 +30,8 @@ public class Query : ObjectGraphType
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
-            });
+            },
+            efGraphQlService: efGraphQlService);
 
 
         this.AddQueryConnectionField<EmployeeGraph, Employee>(
@@ -38,6 +41,7 @@ public class Query : ObjectGraphType
             {
                 var dataContext = (MyDataContext)context.UserContext;
                 return dataContext.Employees;
-            });
+            },
+            efGraphQlService: efGraphQlService);
     }
 }

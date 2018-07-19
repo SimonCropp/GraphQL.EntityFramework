@@ -1,21 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
-static class IncludeAppender
+class IncludeAppender
 {
-    public static IQueryable<TItem> AddIncludes<TItem, TSource>(this IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+    Dictionary<Type, List<string>> navigations;
+
+    public IncludeAppender(Dictionary<Type, List<string>> navigations)
+    {
+        this.navigations = navigations;
+    }
+    public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
         where TItem : class
     {
-        return AddIncludes(query, context.FieldDefinition, context.SubFields.Values);
+        var type = typeof(TItem);
+        var navigationProperty = navigations[type];
+        return AddIncludes(query, context.FieldDefinition, context.SubFields.Values, navigationProperty);
     }
 
-    static IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields)
+    IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, List<string> navigationProperty)
         where T : class
     {
-        foreach (var path in GetPaths(fieldType, subFields))
+        foreach (var path in GetPaths(fieldType, subFields, navigationProperty))
         {
             query = query.Include(path);
         }
@@ -23,17 +32,22 @@ static class IncludeAppender
         return query;
     }
 
-    public static IEnumerable<string> GetPaths(FieldType fieldType, ICollection<Field> fields)
+    IEnumerable<string> GetPaths(FieldType fieldType, ICollection<Field> fields, List<string> navigationProperty)
     {
         var list = new List<string>();
 
         var complexGraph = fieldType.GetComplexGraph();
-        ProcessSubFields(list, null, fields, complexGraph);
+        ProcessSubFields(list, null, fields, complexGraph, navigationProperty);
         return list;
     }
 
-    static void AddField(List<string> list, Field field, string parentPath, FieldType fieldType)
+    void AddField(List<string> list, Field field, string parentPath, FieldType fieldType)
     {
+        if (!navigations.TryGetValue(fieldType.Type, out var navigationProperties))
+        {
+            return;
+
+        }
         if (!fieldType.TryGetComplexGraph(out var complexGraph))
         {
             return;
@@ -44,7 +58,7 @@ static class IncludeAppender
         {
             if (subFields.Any())
             {
-                ProcessSubFields(list, parentPath, subFields, complexGraph);
+                ProcessSubFields(list, parentPath, subFields, complexGraph, navigationProperties);
             }
 
             return;
@@ -54,14 +68,18 @@ static class IncludeAppender
         if (subFields.Any())
         {
             list.Add(path);
-            ProcessSubFields(list, path, subFields, complexGraph);
+            ProcessSubFields(list, path, subFields, complexGraph, navigationProperties);
         }
     }
 
-    static void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph)
+    void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<string> navigationProperties)
     {
         foreach (var subField in subFields)
         {
+            if (!navigationProperties.Contains(subField.Name))
+            {
+                continue;
+            }
             var single = complexGraph.Fields.SingleOrDefault(x => x.Name == subField.Name);
             if (single != null)
             {
@@ -92,7 +110,7 @@ static class IncludeAppender
     {
         if (fieldType != null)
         {
-            if (fieldType.TryGetIncludeMetadata(out var fieldName))
+            if (TryGetIncludeMetadata(fieldType,out var fieldName))
             {
                 return fieldName;
             }
@@ -112,7 +130,7 @@ static class IncludeAppender
         return metadata;
     }
 
-    public static void SetIncludeMetadata(this FieldType fieldType, string value)
+    public static void SetIncludeMetadata(FieldType fieldType, string value)
     {
         if (value != null)
         {
@@ -120,7 +138,7 @@ static class IncludeAppender
         }
     }
 
-    static bool TryGetIncludeMetadata(this FieldType fieldType, out string value)
+    static bool TryGetIncludeMetadata(FieldType fieldType, out string value)
     {
         //TODO: use a better name
         if (fieldType.Metadata.TryGetValue("IncludeName", out var fieldNameObject))

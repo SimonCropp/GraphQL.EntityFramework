@@ -466,7 +466,6 @@ public class IntegrationTests : TestBase
     {
         queryString = queryString.Replace("'", "\"");
 
-        var query = new Query();
         using (var dataContext = InMemoryContextBuilder.Build<MyDataContext>())
         {
             dataContext.AddRange(entities);
@@ -477,11 +476,11 @@ public class IntegrationTests : TestBase
             services.AddTransient(typeof(EdgeType<>));
             services.AddTransient<PageInfoType>();
             services.AddSingleton(dataContext);
-            services.AddSingleton(query);
+            services.AddSingleton< Query>();
             services.AddSingleton<TestEntityGraph>();
 
-            EfCoreGraphQLConventions.RegisterConnectionTypesInContainer(services);
-            EfCoreGraphQLConventions.RegisterInContainer(services);
+            EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
+            EfGraphQLConventions.RegisterInContainer(services, dataContext);
             using (var provider = services.BuildServiceProvider())
             using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
             {
