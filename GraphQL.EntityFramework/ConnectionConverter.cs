@@ -61,7 +61,7 @@ static class ConnectionConverter
         return Build(skip, take, count, reverse, page);
     }
 
-    public static Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, string afterString, int? last, string beforeString)
+    public static Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(this IQueryable<TReturn> list, int? first, string afterString, int? last, string beforeString)
     {
         Parse(afterString, beforeString, out var after, out var before);
         return ApplyConnectionContext(list, first, after, last, before);

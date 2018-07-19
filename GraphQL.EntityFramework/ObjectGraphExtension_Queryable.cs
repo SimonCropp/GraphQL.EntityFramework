@@ -18,7 +18,7 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildQueryField(graphType, name, resolve, arguments,includeName);
+            var field = BuildQueryField(graphType, name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildQueryField(graphType, name, resolve, arguments,includeName);
+            var field = BuildQueryField(graphType, name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
@@ -126,22 +126,15 @@ namespace GraphQL.EntityFramework
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(includeName),
                 Resolver = new AsyncFieldResolver<TSource, List<TReturn>>(
-                    async context =>
+                    context =>
                     {
-                        var returnTypes = resolve(context);
-                        try
+                        return ExecuteQuery(name, listGraphType, context.Errors, () =>
                         {
-                            return await
-                                IncludeAppender.AddIncludes(returnTypes, context)
+                            var returnTypes = resolve(context);
+                            return returnTypes.AddIncludes(context)
                                     .ApplyGraphQlArguments(context)
-                                    .ToListAsync()
-                                    .ConfigureAwait(false);
-                        }
-                        catch (ErrorException exception)
-                        {
-                            context.Errors.Add(new ExecutionError(exception.Message));
-                            throw;
-                        }
+                                    .ToListAsync();
+                        });
                     })
             };
         }

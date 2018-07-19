@@ -72,23 +72,15 @@ namespace GraphQL.EntityFramework
             builder.FieldType.SetIncludeMetadata(includeName);
             builder.ResolveAsync(async context =>
             {
-                var list = resolve(context);
-                try
+                return await ExecuteConnection(name, typeof(TGraph), context.Errors, () =>
                 {
-                    list = IncludeAppender.AddIncludes(list, context)
-                        .ApplyGraphQlArguments(context);
-                    return await ConnectionConverter.ApplyConnectionContext(
-                        list,
-                        context.First,
-                        context.After,
-                        context.Last,
-                        context.Before);
-                }
-                catch (ErrorException exception)
-                {
-                    context.Errors.Add(new ExecutionError(exception.Message));
-                    throw;
-                }
+                    return resolve(context).AddIncludes(context)
+                        .ApplyGraphQlArguments(context)
+                        .ApplyConnectionContext(context.First,
+                            context.After,
+                            context.Last,
+                            context.Before);
+                });
             });
             return builder;
         }

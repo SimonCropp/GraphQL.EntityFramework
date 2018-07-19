@@ -54,9 +54,9 @@ namespace GraphQL.EntityFramework
             builder.FieldType.SetIncludeMetadata(includeName);
             builder.Resolve(context =>
             {
-                var enumerable = resolve(context);
-                try
+                return ExecuteQuery(name, typeof(TGraph), context.Errors, () =>
                 {
+                    var enumerable = resolve(context);
                     var page = enumerable
                         .ApplyGraphQlArguments(context)
                         .ToList();
@@ -67,12 +67,7 @@ namespace GraphQL.EntityFramework
                         context.After,
                         context.Last,
                         context.Before);
-                }
-                catch (ErrorException exception)
-                {
-                    context.Errors.Add(new ExecutionError(exception.Message));
-                    throw;
-                }
+                });
             });
             return builder;
         }

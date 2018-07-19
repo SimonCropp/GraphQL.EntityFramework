@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 static class IncludeAppender
 {
-    public static IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+    public static IQueryable<TItem> AddIncludes<TItem, TSource>(this IQueryable<TItem> query, ResolveFieldContext<TSource> context)
         where TItem : class
     {
         return AddIncludes(query, context.FieldDefinition, context.SubFields.Values);
