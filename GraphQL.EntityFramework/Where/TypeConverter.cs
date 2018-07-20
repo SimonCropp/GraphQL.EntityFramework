@@ -1,18 +1,49 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using GraphQL;
 
 static class TypeConverter
 {
-    public static object ConvertStringsToList(string[] values, Type type)
+    public static IList ConvertStringsToList(string[] values, Type type)
     {
         if (type == typeof(Guid))
         {
             return values.Select(Guid.Parse).ToList();
         }
-        //todo: implement other type to prevent boxing on contains expression
-
-        return values.Select(x => ConvertStringToType(x, type)).ToList();
+        if (type == typeof(int))
+        {
+            return values.Select(int.Parse).ToList();
+        }
+        if (type == typeof(short))
+        {
+            return values.Select(short.Parse).ToList();
+        }
+        if (type == typeof(long))
+        {
+            return values.Select(long.Parse).ToList();
+        }
+        if (type == typeof(uint))
+        {
+            return values.Select(uint.Parse).ToList();
+        }
+        if (type == typeof(ushort))
+        {
+            return values.Select(ushort.Parse).ToList();
+        }
+        if (type == typeof(ulong))
+        {
+            return values.Select(ulong.Parse).ToList();
+        }
+        if (type == typeof(DateTime))
+        {
+            return values.Select(DateTime.Parse).ToList();
+        }
+        if (type == typeof(DateTimeOffset))
+        {
+            return values.Select(DateTimeOffset.Parse).ToList();
+        }
+        throw new Exception($"Could not convert strings to {type.FullName} ");
     }
 
     public static object ConvertStringToType(string value, Type type)

@@ -63,6 +63,31 @@ public class FuncBuilderTests
     }
 
     [Fact]
+    public void InIntList()
+    {
+        var list = new List<TargetForInInt>
+        {
+            new TargetForInInt
+            {
+                Member = 1
+            },
+            new TargetForInInt
+            {
+                Member = 2
+            }
+        };
+
+        var result = list
+            .Where(FuncBuilder<TargetForInInt>.BuildPredicate("Member",Comparison.In, new[] {"2"}))
+            .Single();
+        Assert.Equal(2, result.Member);
+    }
+
+    public class TargetForInInt
+    {
+        public int Member;
+    }
+    [Fact]
     public void InList()
     {
         var list = new List<TargetForIn>
@@ -80,7 +105,7 @@ public class FuncBuilderTests
         var result = list
             .Where(FuncBuilder<TargetForIn>.BuildPredicate("Member",Comparison.In, new[] {"Value2"}))
             .Single();
-        Assert.Contains("Value2", result.Member);
+        Assert.Equal("Value2", result.Member);
     }
 
     public class TargetForIn

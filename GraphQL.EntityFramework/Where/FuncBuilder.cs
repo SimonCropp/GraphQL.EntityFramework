@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using GraphQL.EntityFramework;
@@ -131,19 +130,68 @@ static class FuncBuilder<T>
         });
     }
 
-    static Func<T, bool> BuildObjectIn(PropertyAccessor property, IEnumerable<string> values)
+    static Func<T, bool> BuildObjectIn(PropertyAccessor property, string[] values)
     {
         return target =>
         {
-            if (property.Type == typeof(Guid))
-            {
-                var guidValue = (Guid)property.Func(target);
-                return values.Select(Guid.Parse)
-                    .Any(x => x == guidValue);
-            }
+            var type = property.Type;
             var propertyValue = property.Func(target);
-            return values.Select(x => TypeConverter.ConvertStringToType(x, property.Type))
-                .Any(x => x == propertyValue);
+
+            if (type == typeof(Guid))
+            {
+                var value = (Guid)propertyValue;
+                return values.Select(Guid.Parse)
+                    .Any(x => x == value);
+            }
+            if (type == typeof(int))
+            {
+                var value = (int)propertyValue;
+                return values.Select(int.Parse)
+                    .Any(x => x == value);
+            }
+            if (type == typeof(short))
+            {
+                var value = (short)propertyValue;
+                return values.Select(short.Parse)
+                    .Any(x => x == value);
+            }
+            if (type == typeof(long))
+            {
+                var value = (long)propertyValue;
+                return values.Select(long.Parse)
+                    .Any(x => x == value);
+            }
+            if (type == typeof(uint))
+            {
+                var value = (uint)propertyValue;
+                return values.Select(uint.Parse)
+                    .Any(x => x == value);
+            }
+            if (type == typeof(ushort))
+            {
+                var value = (ushort)propertyValue;
+                return values.Select(ushort.Parse)
+                    .Any(x => x == value);
+            }
+            if (type == typeof(ulong))
+            {
+                var value = (ulong)propertyValue;
+                return values.Select(ulong.Parse)
+                    .Any(x => x == value);
+            }
+            if (type == typeof(DateTime))
+            {
+                var value = (DateTime)propertyValue;
+                return values.Select(DateTime.Parse)
+                    .Any(x => x == value);
+            }
+            if (type == typeof(DateTimeOffset))
+            {
+                var value = (DateTimeOffset)propertyValue;
+                return values.Select(DateTimeOffset.Parse)
+                    .Any(x => x == value);
+            }
+            throw new Exception($"Could not convert strings to {type.FullName} ");
         };
     }
 

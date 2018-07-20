@@ -99,7 +99,7 @@ public class ExpressionBuilderTests
         var result = list.AsQueryable()
             .Where(ExpressionBuilder<TargetForIn>.BuildPredicate("Member", Comparison.In, new[] {"Value2"}))
             .Single();
-        Assert.Contains("Value2", result.Member);
+        Assert.Equal("Value2", result.Member);
     }
 
     public class TargetForIn
@@ -107,6 +107,31 @@ public class ExpressionBuilderTests
         public string Member;
     }
 
+    [Fact]
+    public void InIntList()
+    {
+        var list = new List<TargetForInInt>
+        {
+            new TargetForInInt
+            {
+                Member = 1
+            },
+            new TargetForInInt
+            {
+                Member = 2
+            }
+        };
+
+        var result = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.In, new[] { "2" }))
+            .Single();
+        Assert.Equal(2, result.Member);
+    }
+
+    public class TargetForInInt
+    {
+        public int Member;
+    }
     [Fact]
     public void InGuidList()
     {
