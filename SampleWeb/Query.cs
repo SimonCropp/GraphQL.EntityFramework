@@ -5,43 +5,29 @@ public class Query : ObjectGraphType
 {
     public Query(EfGraphQLService efGraphQlService)
     {
-        this.AddQueryField<CompanyGraph, Company>(
-            name: "companies",
-            resolve: context =>
-            {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies;
-            },
-            efGraphQlService: efGraphQlService);
+        efGraphQlService.AddQueryField<CompanyGraph, Company>(this, name: "companies", resolve: context =>
+        {
+            var dataContext = (MyDataContext) context.UserContext;
+            return dataContext.Companies;
+        });
 
-        this.AddQueryConnectionField<CompanyGraph, Company>(
-            name: "companiesConnection",
-            includeName: "Companies",
-            resolve: context =>
-            {
-                var dataContext = (MyDataContext)context.UserContext;
-                return dataContext.Companies;
-            },
-            efGraphQlService: efGraphQlService);
+        efGraphQlService.AddQueryConnectionField<CompanyGraph, Company>(this, name: "companiesConnection", includeName: "Companies", resolve: context =>
+        {
+            var dataContext = (MyDataContext)context.UserContext;
+            return dataContext.Companies;
+        });
 
-        this.AddQueryField<EmployeeGraph, Employee>(
-            name: "employees",
-            resolve: context =>
-            {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Employees;
-            },
-            efGraphQlService: efGraphQlService);
+        efGraphQlService.AddQueryField<EmployeeGraph, Employee>(this, name: "employees", resolve: context =>
+        {
+            var dataContext = (MyDataContext) context.UserContext;
+            return dataContext.Employees;
+        });
 
 
-        this.AddQueryConnectionField<EmployeeGraph, Employee>(
-            name: "employeesConnection",
-            includeName: "Employees",
-            resolve: context =>
-            {
-                var dataContext = (MyDataContext)context.UserContext;
-                return dataContext.Employees;
-            },
-            efGraphQlService: efGraphQlService);
+        efGraphQlService.AddQueryConnectionField<EmployeeGraph, Employee>(this, name: "employeesConnection", includeName: "Employees", resolve: context =>
+        {
+            var dataContext = (MyDataContext)context.UserContext;
+            return dataContext.Employees;
+        });
     }
 }

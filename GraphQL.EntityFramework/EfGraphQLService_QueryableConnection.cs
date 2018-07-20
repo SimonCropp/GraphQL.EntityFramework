@@ -6,11 +6,10 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public static partial class ObjectGraphExtension
+    public partial class EfGraphQLService
     {
-        public static ConnectionBuilder<TGraph, object> AddQueryConnectionField<TGraph, TReturn>(
-            this ObjectGraphType graph,
-            EfGraphQLService efGraphQlService,
+        public ConnectionBuilder<TGraph, object> AddQueryConnectionField<TGraph, TReturn>(
+            ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -19,15 +18,14 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildQueryConnectionField<object, TGraph, TReturn>(efGraphQlService,name, resolve, includeName, pageSize);
+            var connection = BuildQueryConnectionField<object, TGraph, TReturn>(name, resolve, includeName, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
         }
 
-        public static ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TSource, TGraph, TReturn>(
-            this ObjectGraphType graph,
-            EfGraphQLService efGraphQlService,
+        public ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TSource, TGraph, TReturn>(
+            ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -36,15 +34,14 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(efGraphQlService, name, resolve, includeName, pageSize);
+            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>( name, resolve, includeName, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
         }
 
-        public static ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TSource, TGraph, TReturn>(
-            this ObjectGraphType<TSource> graph,
-            EfGraphQLService efGraphQlService,
+        public ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TSource, TGraph, TReturn>(
+            ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -53,14 +50,13 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(efGraphQlService, name, resolve, includeName, pageSize);
+            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>( name, resolve, includeName, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
         }
 
-        static ConnectionBuilder<TGraph, TSource> BuildQueryConnectionField<TSource, TGraph, TReturn>(
-            EfGraphQLService efGraphQlService,
+        ConnectionBuilder<TGraph, TSource> BuildQueryConnectionField<TSource, TGraph, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             string includeName,
@@ -76,9 +72,9 @@ namespace GraphQL.EntityFramework
             IncludeAppender.SetIncludeMetadata(builder.FieldType, includeName);
             builder.ResolveAsync(async context =>
             {
-                return await ExecuteConnection(name, typeof(TGraph), context.Errors, () =>
+                return await ExecuteWrapper.ExecuteConnection(name, typeof(TGraph), context.Errors, () =>
                 {
-                    return efGraphQlService.IncludeAppender.AddIncludes(resolve(context),context)
+                    return includeAppender.AddIncludes(resolve(context),context)
                         .ApplyGraphQlArguments(context)
                         .ApplyConnectionContext(context.First,
                             context.After,

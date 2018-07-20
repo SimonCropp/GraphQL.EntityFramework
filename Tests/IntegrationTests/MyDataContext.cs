@@ -2,7 +2,8 @@
 
 public class MyDataContext : DbContext
 {
-    public DbSet<TestEntity> TestEntities { get; set; }
+    public DbSet<ParentEntity> ParentEntities { get; set; }
+    public DbSet<ChildEntity> ChildEntities { get; set; }
 
     public MyDataContext(DbContextOptions options) :
         base(options)
@@ -11,6 +12,10 @@ public class MyDataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TestEntity>();
+        modelBuilder.Entity<ParentEntity>()
+            .HasMany(c => c.Children)
+            .WithOne(e => e.Parent)
+            .IsRequired();
+        modelBuilder.Entity<ChildEntity>();
     }
 }

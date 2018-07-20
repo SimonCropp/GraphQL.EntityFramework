@@ -41,13 +41,8 @@ class IncludeAppender
         return list;
     }
 
-    void AddField(List<string> list, Field field, string parentPath, FieldType fieldType)
+    void AddField(List<string> list, Field field, string parentPath, FieldType fieldType, List<string> parentNavigationProperties)
     {
-        if (!navigations.TryGetValue(fieldType.Type, out var navigationProperties))
-        {
-            return;
-
-        }
         if (!fieldType.TryGetComplexGraph(out var complexGraph))
         {
             return;
@@ -58,17 +53,17 @@ class IncludeAppender
         {
             if (subFields.Any())
             {
-                ProcessSubFields(list, parentPath, subFields, complexGraph, navigationProperties);
+                ProcessSubFields(list, parentPath, subFields, complexGraph, parentNavigationProperties);
             }
 
             return;
         }
 
-        var path = GetPath(parentPath, field, fieldType);
-        if (subFields.Any())
+        if (parentNavigationProperties.Contains(field.Name))
         {
+            var path = GetPath(parentPath, field, fieldType);
             list.Add(path);
-            ProcessSubFields(list, path, subFields, complexGraph, navigationProperties);
+            ProcessSubFields(list, path, subFields, complexGraph, navigations[fieldType.Type]);
         }
     }
 
@@ -76,14 +71,10 @@ class IncludeAppender
     {
         foreach (var subField in subFields)
         {
-            if (!navigationProperties.Contains(subField.Name))
-            {
-                continue;
-            }
             var single = complexGraph.Fields.SingleOrDefault(x => x.Name == subField.Name);
             if (single != null)
             {
-                AddField(list, subField, parentPath, single);
+                AddField(list, subField, parentPath, single, navigationProperties);
             }
         }
     }

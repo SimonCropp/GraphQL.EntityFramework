@@ -5,23 +5,21 @@ public class Query : ObjectGraphType
 {
     public Query(EfGraphQLService efGraphQlService)
     {
-        this.AddQueryField<TestEntityGraph, TestEntity>(
-            name: "testEntities",
+        efGraphQlService.AddQueryField<ParentGraph, ParentEntity>(this,
+            name: "parentEntities",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.TestEntities;
-            },
-            efGraphQlService: efGraphQlService);
+                return dataContext.ParentEntities;
+            });
 
-        this.AddQueryConnectionField<TestEntityGraph, TestEntity>(
-            name: "testEntitiesConnection",
+        efGraphQlService.AddQueryConnectionField<ParentGraph, ParentEntity>(this,
+            name: "parentEntitiesConnection",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.TestEntities;
+                return dataContext.ParentEntities;
             },
-            includeName: "TestEntities",
-            efGraphQlService: efGraphQlService);
+            includeName: "Parents");
     }
 }

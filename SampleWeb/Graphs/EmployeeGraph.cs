@@ -1,8 +1,8 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.EntityFramework;
 
-public class EmployeeGraph : ObjectGraphType<Employee>
+public class EmployeeGraph : EfObjectGraphType<Employee>
 {
-    public EmployeeGraph()
+    public EmployeeGraph(EfGraphQLService graphQlService) : base(graphQlService)
     {
         Field(x => x.Id);
         Field(x => x.Content);

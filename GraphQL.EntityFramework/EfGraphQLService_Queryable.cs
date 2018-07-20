@@ -7,11 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    public static partial class ObjectGraphExtension
+    public partial class EfGraphQLService
     {
-        public static FieldType AddQueryField<TReturn>(
-            this ObjectGraphType graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddQueryField<TReturn>(
+            ObjectGraphType graph,
             Type graphType,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
@@ -19,13 +18,12 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildQueryField(efGraphQlService, graphType, name, resolve, arguments, includeName);
+            var field = BuildQueryField( graphType, name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
-        public static FieldType AddQueryField<TSource, TReturn>(
-            this ObjectGraphType<TSource> graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddQueryField<TSource, TReturn>(
+            ObjectGraphType<TSource> graph,
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
@@ -33,13 +31,12 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildQueryField(efGraphQlService,graphType, name, resolve, arguments, includeName);
+            var field = BuildQueryField(graphType, name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
-        public static FieldType AddQueryField<TSource, TReturn>(
-            this ObjectGraphType graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddQueryField<TSource, TReturn>(
+            ObjectGraphType graph,
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
@@ -47,12 +44,11 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildQueryField(efGraphQlService, graphType, name, resolve, arguments, includeName);
+            var field = BuildQueryField( graphType, name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
-        static FieldType BuildQueryField<TSource, TReturn>(
-            EfGraphQLService efGraphQlService,
+        FieldType BuildQueryField<TSource, TReturn>(
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
@@ -61,12 +57,11 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var listGraphType = MakeListGraphType(graphType);
-            return BuildQueryField(efGraphQlService, name, resolve, arguments, includeName, listGraphType);
+            return BuildQueryField( name, resolve, arguments, includeName, listGraphType);
         }
 
-        public static FieldType AddQueryField<TGraph, TReturn>(
-            this ObjectGraphType graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddQueryField<TGraph, TReturn>(
+            ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -74,13 +69,12 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildQueryField<object, TGraph, TReturn>(efGraphQlService, name, resolve, arguments, includeName);
+            var field = BuildQueryField<object, TGraph, TReturn>( name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
-        public static FieldType AddQueryField<TSource, TGraph, TReturn>(
-            this ObjectGraphType graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddQueryField<TSource, TGraph, TReturn>(
+            ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -88,13 +82,12 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildQueryField<TSource, TGraph, TReturn>(efGraphQlService, name, resolve, arguments, includeName);
+            var field = BuildQueryField<TSource, TGraph, TReturn>( name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
-        public static FieldType AddQueryField<TSource, TGraph, TReturn>(
-            this ObjectGraphType<TSource> graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddQueryField<TSource, TGraph, TReturn>(
+            ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -102,12 +95,11 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildQueryField<TSource, TGraph, TReturn>(efGraphQlService, name, resolve, arguments, includeName);
+            var field = BuildQueryField<TSource, TGraph, TReturn>( name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
-        static FieldType BuildQueryField<TSource, TGraph, TReturn>(
-            EfGraphQLService efGraphQlService,
+        FieldType BuildQueryField<TSource, TGraph, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments,
@@ -116,11 +108,10 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var listGraphType = MakeListGraphType(typeof(TGraph));
-            return BuildQueryField(efGraphQlService,name, resolve, arguments, includeName, listGraphType);
+            return BuildQueryField(name, resolve, arguments, includeName, listGraphType);
         }
 
-        static FieldType BuildQueryField<TSource, TReturn>(
-            EfGraphQLService efGraphQlService,
+         FieldType BuildQueryField<TSource, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments,
@@ -137,10 +128,10 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, List<TReturn>>(
                     context =>
                     {
-                        return ExecuteAsyncQuery(name, listGraphType, context.Errors, () =>
+                        return ExecuteWrapper.ExecuteAsyncQuery(name, listGraphType, context.Errors, () =>
                         {
                             var returnTypes = resolve(context);
-                            return efGraphQlService.IncludeAppender.AddIncludes(returnTypes,context)
+                            return includeAppender.AddIncludes(returnTypes,context)
                                     .ApplyGraphQlArguments(context)
                                     .ToListAsync();
                         });

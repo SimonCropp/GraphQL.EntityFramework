@@ -16,14 +16,14 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Foo()
     {
-        var queryString = "{ testEntities { id property } }";
+        var queryString = "{ parentEntities { id property } }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -38,7 +38,7 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities
+  parentEntities
   (where:
     [
       {path: 'Property', comparison: 'startsWith"", value: 'Valu'}
@@ -50,17 +50,17 @@ public class IntegrationTests : TestBase
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
-        var entity3 = new TestEntity
+        var entity3 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value3"
@@ -73,14 +73,14 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where_with_nullable_properties1()
     {
-        var queryString = "{ testEntities (where: {path: 'Nullable', comparison: '=='}){ id } }";
+        var queryString = "{ parentEntities (where: {path: 'Nullable', comparison: '=='}){ id } }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = null
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2",
@@ -94,14 +94,14 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where_with_nullable_properties2()
     {
-        var queryString = "{ testEntities (where: {path: 'Nullable', comparison: '==', value: '10'}){ id } }";
+        var queryString = "{ parentEntities (where: {path: 'Nullable', comparison: '==', value: '10'}){ id } }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = null
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2",
@@ -115,14 +115,14 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where_null_comparison_value()
     {
-        var queryString = "{ testEntities (where: {path: 'Property', comparison: '=='}){ id } }";
+        var queryString = "{ parentEntities (where: {path: 'Property', comparison: '=='}){ id } }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = null
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -137,18 +137,18 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (take: 1)
+  parentEntities (take: 1)
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -163,18 +163,18 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (skip: 1)
+  parentEntities (skip: 1)
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -189,7 +189,7 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntitiesConnection(first:2, after: '1') {
+  parentEntitiesConnection(first:2, after: '1') {
     totalCount
     edges {
       cursor
@@ -210,11 +210,11 @@ public class IntegrationTests : TestBase
         ObjectApprover.VerifyWithJson(result.Data);
     }
 
-    static IEnumerable<TestEntity> BuildEntities(uint length)
+    static IEnumerable<ParentEntity> BuildEntities(uint length)
     {
         for (var index = 0; index < length; index++)
         {
-            yield return new TestEntity
+            yield return new ParentEntity
             {
                 Id = Guid.Parse("00000000-0000-0000-0000-00000000000" + index),
                 Property = "Value" + index
@@ -227,18 +227,18 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (where: {path: 'Property', comparison: '==', value: 'Value2', case: 'Ordinal' })
+  parentEntities (where: {path: 'Property', comparison: '==', value: 'Value2', case: 'Ordinal' })
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -253,18 +253,18 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (orderBy: {path: 'Property'})
+  parentEntities (orderBy: {path: 'Property'})
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -279,18 +279,18 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (orderBy: {path: 'Property', descending: true})
+  parentEntities (orderBy: {path: 'Property', descending: true})
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -304,18 +304,18 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (where: {path: 'Property', comparison: '==', value: 'value2'})
+  parentEntities (where: {path: 'Property', comparison: '==', value: 'value2'})
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -330,18 +330,18 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (where: {path: 'Property', comparison: 'In', value: 'Value2', case: 'Ordinal' })
+  parentEntities (where: {path: 'Property', comparison: 'In', value: 'Value2', case: 'Ordinal' })
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -356,18 +356,18 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (ids: '00000000-0000-0000-0000-000000000001')
+  parentEntities (ids: '00000000-0000-0000-0000-000000000001')
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -382,24 +382,24 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities
+  parentEntities
   (ids: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
-        var entity3 = new TestEntity
+        var entity3 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value3"
@@ -414,18 +414,18 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities (where: {path: 'Property', comparison: 'In', value: 'value2'})
+  parentEntities (where: {path: 'Property', comparison: 'In', value: 'value2'})
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -440,19 +440,19 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  testEntities
+  parentEntities
   (where: {path: 'Property', comparison: 'In', value: ['Value1', 'Value2']})
   {
     property
   }
 }";
 
-        var entity1 = new TestEntity
+        var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new TestEntity
+        var entity2 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -462,7 +462,117 @@ public class IntegrationTests : TestBase
         ObjectApprover.VerifyWithJson(result.Data);
     }
 
-    static async Task<ExecutionResult> RunQuery(string queryString, params TestEntity[] entities)
+
+    [Fact]
+    public async Task Connection_parent_child()
+    {
+        var queryString = @"
+{
+  parentEntitiesConnection(first:2, after: '1') {
+    totalCount
+    edges {
+      cursor
+      node {
+        property
+        children
+        {
+          property
+        }
+      }
+    }
+    items {
+      property
+      children
+      {
+        property
+      }
+    }
+  }
+}
+
+";
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+        var entity3 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Property = "Value3"
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
+            Property = "Value5"
+        };
+        entity4.Children.Add(entity5);
+
+        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+    [Fact]
+    public async Task Parent_child()
+    {
+        var queryString = @"
+{
+  parentEntities
+  {
+    property
+    children
+    {
+      property
+    }
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+        var entity3 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Property = "Value3"
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
+            Property = "Value4"
+        };
+        var entity5= new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
+            Property = "Value5"
+        };
+        entity4.Children.Add(entity5);
+
+        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.VerifyWithJson(result.Data);
+    }
+
+    static async Task<ExecutionResult> RunQuery(string queryString, params object[] entities)
     {
         queryString = queryString.Replace("'", "\"");
 
@@ -477,7 +587,8 @@ public class IntegrationTests : TestBase
             services.AddTransient<PageInfoType>();
             services.AddSingleton(dataContext);
             services.AddSingleton< Query>();
-            services.AddSingleton<TestEntityGraph>();
+            services.AddSingleton<ChildGraph>();
+            services.AddSingleton<ParentGraph>();
 
             EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
             EfGraphQLConventions.RegisterInContainer(services, dataContext);

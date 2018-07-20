@@ -1,5 +1,5 @@
 ﻿{
-  "testEntities": [
+  "parentEntities": [
     {
       "property": "Value2"
     }

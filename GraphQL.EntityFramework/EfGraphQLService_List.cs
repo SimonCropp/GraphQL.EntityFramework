@@ -5,11 +5,10 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public static partial class ObjectGraphExtension
+    public partial class EfGraphQLService
     {
-        public static FieldType AddListField<TGraph, TReturn>(
-            this ObjectGraphType graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddListField<TGraph, TReturn>(
+            ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -17,13 +16,12 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildListField<object, TGraph, TReturn>(efGraphQlService, name, resolve, includeName, arguments);
+            var field = BuildListField<object, TGraph, TReturn>( name, resolve, includeName, arguments);
             return graph.AddField(field);
         }
 
-        public static FieldType AddListField<TSource, TReturn>(
-            this ObjectGraphType<TSource> graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddListField<TSource, TReturn>(
+            ObjectGraphType<TSource> graph,
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
@@ -31,13 +29,12 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildListField(efGraphQlService, graphType, name, resolve, includeName, arguments);
+            var field = BuildListField( graphType, name, resolve, includeName, arguments);
             return graph.AddField(field);
         }
 
-        public static FieldType AddListField<TReturn>(
-            this ObjectGraphType graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddListField<TReturn>(
+            ObjectGraphType graph,
             Type graphType,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
@@ -45,12 +42,11 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildListField(efGraphQlService, graphType, name, resolve, includeName, arguments);
+            var field = BuildListField( graphType, name, resolve, includeName, arguments);
             return graph.AddField(field);
         }
 
-        static FieldType BuildListField<TSource, TReturn>(
-            EfGraphQLService efGraphQlService,
+        FieldType BuildListField<TSource, TReturn>(
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
@@ -59,12 +55,11 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var listGraphType = MakeListGraphType(graphType);
-            return BuildListField(efGraphQlService, name, resolve, includeName, listGraphType, arguments);
+            return BuildListField( name, resolve, includeName, listGraphType, arguments);
         }
 
-        public static FieldType AddListField<TSource, TGraph, TReturn>(
-            this ObjectGraphType<TSource> graph,
-            EfGraphQLService efGraphQlService,
+        public FieldType AddListField<TSource, TGraph, TReturn>(
+            ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -72,12 +67,11 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildListField<TSource, TGraph, TReturn>(efGraphQlService, name, resolve, includeName, arguments);
+            var field = BuildListField<TSource, TGraph, TReturn>( name, resolve, includeName, arguments);
             return graph.AddField(field);
         }
 
-        static FieldType BuildListField<TSource, TGraph, TReturn>(
-            EfGraphQLService efGraphQlService,
+        FieldType BuildListField<TSource, TGraph, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName,
@@ -86,11 +80,10 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var listGraphType = typeof(ListGraphType<TGraph>);
-            return BuildListField(efGraphQlService, name, resolve, includeName, listGraphType, arguments);
+            return BuildListField( name, resolve, includeName, listGraphType, arguments);
         }
 
-        static FieldType BuildListField<TSource, TReturn>(
-            EfGraphQLService efGraphQlService,
+         FieldType BuildListField<TSource, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName,
@@ -107,11 +100,10 @@ namespace GraphQL.EntityFramework
                 Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
                     context =>
                     {
-                        return ExecuteQuery(name, listGraphType, context.Errors, () =>
+                        return ExecuteWrapper.ExecuteQuery(name, listGraphType, context.Errors, () =>
                         {
                             var returnTypes = resolve(context);
-                            return returnTypes
-                                .ApplyGraphQlArguments(context);
+                            return returnTypes.ApplyGraphQlArguments(context);
                         });
                     })
             };
