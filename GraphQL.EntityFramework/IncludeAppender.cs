@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 class IncludeAppender
 {
-    Dictionary<Type, List<string>> navigations;
+    Dictionary<Type, Dictionary<string, Type>> navigations;
 
-    public IncludeAppender(Dictionary<Type, List<string>> navigations)
+    public IncludeAppender(Dictionary<Type, Dictionary<string, Type>> navigations)
     {
         this.navigations = navigations;
     }
@@ -21,7 +21,7 @@ class IncludeAppender
         return AddIncludes(query, context.FieldDefinition, context.SubFields.Values, navigationProperty);
     }
 
-    IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, List<string> navigationProperty)
+    IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, Dictionary<string, Type> navigationProperty)
         where T : class
     {
         foreach (var path in GetPaths(fieldType, subFields, navigationProperty))
@@ -32,7 +32,7 @@ class IncludeAppender
         return query;
     }
 
-    IEnumerable<string> GetPaths(FieldType fieldType, ICollection<Field> fields, List<string> navigationProperty)
+    IEnumerable<string> GetPaths(FieldType fieldType, ICollection<Field> fields, Dictionary<string, Type> navigationProperty)
     {
         var list = new List<string>();
 
@@ -41,7 +41,7 @@ class IncludeAppender
         return list;
     }
 
-    void AddField(List<string> list, Field field, string parentPath, FieldType fieldType, List<string> parentNavigationProperties)
+    void AddField(List<string> list, Field field, string parentPath, FieldType fieldType, Dictionary<string, Type> parentNavigationProperties)
     {
         if (!fieldType.TryGetComplexGraph(out var complexGraph))
         {
@@ -59,15 +59,15 @@ class IncludeAppender
             return;
         }
 
-        if (parentNavigationProperties.Contains(field.Name))
+        if (parentNavigationProperties.TryGetValue(field.Name, out var propertyType))
         {
             var path = GetPath(parentPath, field, fieldType);
             list.Add(path);
-            ProcessSubFields(list, path, subFields, complexGraph, navigations[fieldType.Type]);
+            ProcessSubFields(list, path, subFields, complexGraph, navigations[propertyType]);
         }
     }
 
-    void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<string> navigationProperties)
+    void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, Dictionary<string, Type> navigationProperties)
     {
         foreach (var subField in subFields)
         {

@@ -229,9 +229,9 @@ Single where statements can be expressed:
 ```c#
 public class Query : ObjectGraphType
 {
-    public Query()
+    public Query(EfGraphQLService graphQlService)
     {
-        this.AddQueryField<CompanyGraph, Company>(
+        graphQlService.AddQueryField<CompanyGraph, Company>(
             name: "companies",
             resolve: context =>
             {
@@ -249,7 +249,7 @@ public class Query : ObjectGraphType
 ```c#
 public class CompanyGraph : EfObjectGraphType<Company>
 {
-    public CompanyGraph()
+    public CompanyGraph(EfGraphQLService graphQlService) : base(graphQlService)
     {
         AddListField<EmployeeGraph, Employee>(
             name: "employees",
@@ -270,9 +270,9 @@ public class CompanyGraph : EfObjectGraphType<Company>
 ```c#
 public class Query : ObjectGraphType
 {
-    public Query()
+    public Query(EfGraphQLService graphQlService) : base(graphQlService)
     {
-        this.AddQueryConnectionField<CompanyGraph, Company>(
+        graphQlService.AddQueryConnectionField<CompanyGraph, Company>(
             name: "companiesConnection",
             includeName: "Companies",
             resolve: context =>
@@ -363,7 +363,7 @@ public class Query : ObjectGraphType
 ```c#
 public class CompanyGraph : EfObjectGraphType<Company>
 {
-    public CompanyGraph()
+    public CompanyGraph(EfGraphQLService graphQlService) : base(graphQlService)
     {
         AddListConnectionField<EmployeeGraph, Employee>(
             name: "employeesConnection",

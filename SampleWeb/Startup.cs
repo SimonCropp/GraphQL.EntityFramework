@@ -6,7 +6,6 @@ using GraphQL.EntityFramework;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 public class Startup

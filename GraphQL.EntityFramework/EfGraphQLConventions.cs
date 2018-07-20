@@ -30,12 +30,12 @@ namespace GraphQL.EntityFramework
             services.AddSingleton<PageInfoType>();
         }
 
-        static Dictionary<Type, List<string>> GetNavigationProperties(DbContext dbContext)
+        static Dictionary<Type, Dictionary<string, Type>> GetNavigationProperties(DbContext dbContext)
         {
-            var dictionary = new Dictionary<Type, List<string>>();
+            var dictionary = new Dictionary<Type, Dictionary<string, Type>>();
             foreach (var entity in dbContext.Model.GetEntityTypes())
             {
-                dictionary.Add(entity.ClrType, entity.GetNavigations().Select(x => x.Name).ToList());
+                dictionary.Add(entity.ClrType, entity.GetNavigations().ToDictionary(x => x.Name,y=>y.ClrType));
             }
             return dictionary;
         }
