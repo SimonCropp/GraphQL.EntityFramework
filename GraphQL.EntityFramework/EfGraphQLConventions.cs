@@ -35,7 +35,7 @@ namespace GraphQL.EntityFramework
             var dictionary = new Dictionary<Type, Dictionary<string, Type>>();
             foreach (var entity in dbContext.Model.GetEntityTypes())
             {
-                dictionary.Add(entity.ClrType, entity.GetNavigations().ToDictionary(x => x.Name, y => y.ForeignKey.DeclaringEntityType.ClrType));
+                dictionary.Add(entity.ClrType, entity.GetNavigations().ToDictionary(x => x.Name, y => y.ForeignKey.DeclaringEntityType.ClrType, StringComparer.OrdinalIgnoreCase));
             }
 
             return dictionary;
