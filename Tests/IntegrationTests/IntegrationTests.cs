@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EfCore.InMemoryHelpers;
 using GraphQL.EntityFramework;
 using GraphQL;
 using GraphQL.Types.Relay;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ObjectApproval;
 using Xunit;
@@ -13,6 +13,19 @@ using Xunit.Abstractions;
 
 public class IntegrationTests : TestBase
 {
+    static IntegrationTests()
+    {
+        using (var dataContext = BuildDataContext())
+        {
+       //     dataContext.Database.EnsureDeleted();
+            dataContext.Database.EnsureCreated();
+        }
+    }
+
+    public IntegrationTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     [Fact]
     public async Task Foo()
     {
@@ -270,7 +283,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity2,entity1);
+        var result = await RunQuery(queryString, entity2, entity1);
         ObjectApprover.VerifyWithJson(result.Data);
     }
 
@@ -299,6 +312,7 @@ public class IntegrationTests : TestBase
         var result = await RunQuery(queryString, entity1, entity2);
         ObjectApprover.VerifyWithJson(result.Data);
     }
+
     [Fact]
     public async Task Where()
     {
@@ -524,6 +538,7 @@ public class IntegrationTests : TestBase
 
         ObjectApprover.VerifyWithJson(result.Data);
     }
+
     [Fact]
     public async Task Parent_child()
     {
@@ -547,12 +562,14 @@ public class IntegrationTests : TestBase
         var entity2 = new ChildEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Property = "Value2"
+            Property = "Value2",
+            Parent = entity1
         };
         var entity3 = new ChildEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
-            Property = "Value3"
+            Property = "Value3",
+            Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
@@ -561,10 +578,11 @@ public class IntegrationTests : TestBase
             Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
             Property = "Value4"
         };
-        var entity5= new ChildEntity
+        var entity5 = new ChildEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
-            Property = "Value5"
+            Property = "Value5",
+            Parent = entity4
         };
         entity4.Children.Add(entity5);
 
@@ -574,19 +592,25 @@ public class IntegrationTests : TestBase
 
     static async Task<ExecutionResult> RunQuery(string queryString, params object[] entities)
     {
-        queryString = queryString.Replace("'", "\"");
+        Purge();
 
-        using (var dataContext = InMemoryContextBuilder.Build<MyDataContext>())
+        using (var dataContext = BuildDataContext())
         {
             dataContext.AddRange(entities);
             dataContext.SaveChanges();
+        }
+
+        queryString = queryString.Replace("'", "\"");
+
+        using (var dataContext = BuildDataContext())
+        {
             var services = new ServiceCollection();
 
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddTransient<PageInfoType>();
             services.AddSingleton(dataContext);
-            services.AddSingleton< Query>();
+            services.AddSingleton<Query>();
             services.AddSingleton<ChildGraph>();
             services.AddSingleton<ParentGraph>();
 
@@ -609,7 +633,21 @@ public class IntegrationTests : TestBase
         }
     }
 
-    public IntegrationTests(ITestOutputHelper output) : base(output)
+    static void Purge()
     {
+        using (var dataContext = BuildDataContext())
+        {
+            dataContext.ChildEntities.RemoveRange(dataContext.ChildEntities);
+            dataContext.ParentEntities.RemoveRange(dataContext.ParentEntities);
+            dataContext.SaveChanges();
+        }
+    }
+
+    static MyDataContext BuildDataContext()
+    {
+        var builder = new DbContextOptionsBuilder<MyDataContext>();
+        var connection = @"Data Source=.\SQLExpress;Database=GraphQLEntityFrameworkTests; Integrated Security=True;Max Pool Size=100";
+        builder.UseSqlServer(connection);
+        return new MyDataContext(builder.Options);
     }
 }
