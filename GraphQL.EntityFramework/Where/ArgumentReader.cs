@@ -74,7 +74,6 @@ static class ArgumentReader
             return false;
         }
 
-
         value = (T) argument;
         return true;
     }

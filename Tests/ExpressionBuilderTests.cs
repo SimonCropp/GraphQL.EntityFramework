@@ -212,7 +212,7 @@ public class ExpressionBuilderTests
     [InlineData("Name", Comparison.Contains, "son 2", "Person 2", null)]
     [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2", null)]
     [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2", null)]
-    [InlineData("Name", Comparison.EndsWith, "person 2", "Person 2", null)]
+    [InlineData("Name", Comparison.EndsWith, "person 2", "Person 2", StringComparison.OrdinalIgnoreCase)]
     [InlineData("Age", Comparison.Equal, "13", "Person 2", null)]
     [InlineData("Age", Comparison.GreaterThan, "12", "Person 2", null)]
     [InlineData("Age", Comparison.NotEqual, "12", "Person 2", null)]

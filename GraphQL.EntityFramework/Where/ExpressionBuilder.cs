@@ -29,15 +29,14 @@ static class ExpressionBuilder<T>
         if (propertyFunc.Type == typeof(string))
         {
             WhereValidator.ValidateString(comparison, stringComparison);
-            var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
             if (comparison == Comparison.In)
             {
-                return BuildStringIn(values, propertyFunc, stringComparisonValue);
+                return BuildStringIn(values, propertyFunc, stringComparison);
             }
             else
             {
                 var value = values?.Single();
-                return BuildStringCompare(comparison, value, propertyFunc, stringComparisonValue);
+                return BuildStringCompare(comparison, value, propertyFunc, stringComparison);
             }
         }
         else
@@ -55,7 +54,7 @@ static class ExpressionBuilder<T>
         }
     }
 
-    static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, PropertyAccessor propertyAccessor, StringComparison stringComparison)
+    static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, PropertyAccessor propertyAccessor, StringComparison? stringComparison)
     {
         var body = MakeStringComparison(propertyAccessor.Left, comparison, value, stringComparison);
         return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.SourceParameter);
@@ -92,39 +91,72 @@ static class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.SourceParameter);
     }
 
-    static Expression<Func<T, bool>> BuildStringIn(string[] array, PropertyAccessor propertyAccessor, StringComparison stringComparison)
+    static Expression<Func<T, bool>> BuildStringIn(string[] array, PropertyAccessor propertyAccessor, StringComparison? stringComparison)
     {
         var itemValue = Expression.Parameter(typeof(string));
-        var equalsBody = Expression.Call(null, StringMethodCache.Equal, itemValue, propertyAccessor.Left, Expression.Constant(stringComparison));
+        MethodCallExpression equalsBody;
+        if (stringComparison == null)
+        {
+            equalsBody = Expression.Call(null, StringMethodCache.Equal, itemValue, propertyAccessor.Left);
+        }
+        else
+        {
+            equalsBody = Expression.Call(null, StringMethodCache.EqualComparison, itemValue, propertyAccessor.Left, Expression.Constant(stringComparison));
+        }
         var itemEvaluate = Expression.Lambda<Func<string, bool>>(equalsBody, itemValue);
         var anyBody = Expression.Call(null, StringMethodCache.Any, Expression.Constant(array), itemEvaluate);
         return Expression.Lambda<Func<T, bool>>(anyBody, propertyAccessor.SourceParameter);
     }
 
-    static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison stringComparison)
+    static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison? stringComparison)
     {
         var valueConstant = Expression.Constant(value, typeof(string));
-        var comparisonConstant = Expression.Constant(stringComparison, typeof(StringComparison));
         var nullCheck = Expression.NotEqual(left, Expression.Constant(null, typeof(object)));
-        switch (comparison)
+        if (stringComparison == null)
         {
-            case Comparison.Equal:
-                return Expression.Call(StringMethodCache.Equal, left, valueConstant, comparisonConstant);
-            case Comparison.Like:
-                return Expression.Call(null, StringMethodCache.Like, Expression.Constant(EF.Functions), left, valueConstant);
-            case Comparison.NotEqual:
-                var notEqualsCall = Expression.Call(StringMethodCache.Equal, left, valueConstant, comparisonConstant);
-                return Expression.Not(notEqualsCall);
-            case Comparison.StartsWith:
-                var startsWithExpression = Expression.Call(left, StringMethodCache.StartsWith, valueConstant, comparisonConstant);
-                return Expression.AndAlso(nullCheck, startsWithExpression);
-            case Comparison.EndsWith:
-                var endsWithExpression = Expression.Call(left, StringMethodCache.EndsWith, valueConstant, comparisonConstant);
-                return Expression.AndAlso(nullCheck, endsWithExpression);
-            case Comparison.Contains:
-                var indexOfExpression = Expression.Call(left, StringMethodCache.IndexOf, valueConstant, comparisonConstant);
-                var notEqualExpression = Expression.NotEqual(indexOfExpression, Expression.Constant(-1));
-                return Expression.AndAlso(nullCheck, notEqualExpression);
+            switch (comparison)
+            {
+                case Comparison.Equal:
+                    return Expression.Call(StringMethodCache.Equal, left, valueConstant);
+                case Comparison.Like:
+                    return Expression.Call(null, StringMethodCache.Like, Expression.Constant(EF.Functions), left, valueConstant);
+                case Comparison.NotEqual:
+                    var notEqualsCall = Expression.Call(StringMethodCache.Equal, left, valueConstant);
+                    return Expression.Not(notEqualsCall);
+                case Comparison.StartsWith:
+                    var startsWithExpression = Expression.Call(left, StringMethodCache.StartsWith, valueConstant);
+                    return Expression.AndAlso(nullCheck, startsWithExpression);
+                case Comparison.EndsWith:
+                    var endsWithExpression = Expression.Call(left, StringMethodCache.EndsWith, valueConstant);
+                    return Expression.AndAlso(nullCheck, endsWithExpression);
+                case Comparison.Contains:
+                    var indexOfExpression = Expression.Call(left, StringMethodCache.IndexOf, valueConstant);
+                    var notEqualExpression = Expression.NotEqual(indexOfExpression, Expression.Constant(-1));
+                    return Expression.AndAlso(nullCheck, notEqualExpression);
+            }
+        }
+        else
+        {
+            var comparisonConstant = Expression.Constant(stringComparison, typeof(StringComparison));
+            switch (comparison)
+            {
+                case Comparison.Equal:
+                    return Expression.Call(StringMethodCache.EqualComparison, left, valueConstant, comparisonConstant);
+                case Comparison.NotEqual:
+                    var notEqualsCall = Expression.Call(StringMethodCache.EqualComparison, left, valueConstant, comparisonConstant);
+                    return Expression.Not(notEqualsCall);
+                case Comparison.StartsWith:
+                    var startsWithExpression = Expression.Call(left, StringMethodCache.StartsWithComparison, valueConstant, comparisonConstant);
+                    return Expression.AndAlso(nullCheck, startsWithExpression);
+                case Comparison.EndsWith:
+                    var endsWithExpression = Expression.Call(left, StringMethodCache.EndsWithComparison, valueConstant, comparisonConstant);
+                    return Expression.AndAlso(nullCheck, endsWithExpression);
+                case Comparison.Contains:
+                    var indexOfExpression = Expression.Call(left, StringMethodCache.IndexOfComparison, valueConstant, comparisonConstant);
+                    var notEqualExpression = Expression.NotEqual(indexOfExpression, Expression.Constant(-1));
+                    return Expression.AndAlso(nullCheck, notEqualExpression);
+            }
+
         }
 
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");

@@ -136,7 +136,7 @@ Multiple where statements can be expressed:
 
 ##### Case Sensitivity
 
-All string comparisons are, by default, done using [StringComparison.OrdinalIgnoreCase](https://msdn.microsoft.com/en-us/library/system.stringcomparison.aspx). A different StringComparison can be used via the `case` attribute.
+All string comparisons are, by default, done using no [StringComparison](https://msdn.microsoft.com/en-us/library/system.stringcomparison.aspx). A custom StringComparison can be used via the `case` attribute.
 
 ```
 {
