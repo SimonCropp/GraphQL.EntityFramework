@@ -43,7 +43,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2, entity3);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class IntegrationTests : TestBase
         var entities = BuildEntities(8);
 
         var result = await RunQuery(queryString, entities.ToArray());
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     static IEnumerable<ParentEntity> BuildEntities(uint length)
@@ -258,7 +258,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -284,7 +284,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity2, entity1);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -310,7 +310,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -336,7 +336,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -362,7 +362,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -388,7 +388,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -420,7 +420,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2, entity3);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -446,7 +446,7 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -473,9 +473,8 @@ public class IntegrationTests : TestBase
         };
 
         var result = await RunQuery(queryString, entity1, entity2);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
-
 
     [Fact]
     public async Task Connection_parent_child()
@@ -536,7 +535,7 @@ public class IntegrationTests : TestBase
 
         var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
 
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
@@ -587,10 +586,10 @@ public class IntegrationTests : TestBase
         entity4.Children.Add(entity5);
 
         var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
-        ObjectApprover.VerifyWithJson(result.Data);
+        ObjectApprover.VerifyWithJson(result);
     }
 
-    static async Task<ExecutionResult> RunQuery(string queryString, params object[] entities)
+    static async Task<object> RunQuery(string queryString, params object[] entities)
     {
         Purge();
 
@@ -628,7 +627,13 @@ public class IntegrationTests : TestBase
                     UserContext = dataContext
                 };
 
-                return await documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);
+                var executionResult = await documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);
+
+                if (executionResult.Errors != null && executionResult.Errors.Any())
+                {
+                    throw new AggregateException(executionResult.Errors);
+                }
+                return executionResult.Data;
             }
         }
     }
