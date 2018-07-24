@@ -11,6 +11,7 @@
         Contains,
         StartsWith,
         EndsWith,
-        In
+        In,
+        Like
     }
 }

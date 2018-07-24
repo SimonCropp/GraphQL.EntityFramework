@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 
 static class StringMethodCache
 {
     public static MethodInfo Any;
-
+    public static MethodInfo Like = typeof(DbFunctionsExtensions).GetMethod("Like", new[] { typeof(DbFunctions), typeof(string), typeof(string) });
     public static MethodInfo Equal = typeof(string).GetMethod("Equals", new[] {typeof(string), typeof(string), typeof(StringComparison)});
     public static MethodInfo StartsWith = typeof(string).GetMethod("StartsWith", new[] {typeof(string), typeof(StringComparison)});
     public static MethodInfo IndexOf = typeof(string).GetMethod("IndexOf", new[] {typeof(string), typeof(StringComparison)});

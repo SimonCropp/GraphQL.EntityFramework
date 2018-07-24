@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
 using GraphQL.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 
 static class ExpressionBuilder<T>
 {
@@ -109,6 +110,8 @@ static class ExpressionBuilder<T>
         {
             case Comparison.Equal:
                 return Expression.Call(StringMethodCache.Equal, left, valueConstant, comparisonConstant);
+            case Comparison.Like:
+                return Expression.Call(null, StringMethodCache.Like, Expression.Constant(EF.Functions), left, valueConstant);
             case Comparison.NotEqual:
                 var notEqualsCall = Expression.Call(StringMethodCache.Equal, left, valueConstant, comparisonConstant);
                 return Expression.Not(notEqualsCall);

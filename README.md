@@ -80,7 +80,8 @@ All where statements require a `path`. This is a full path to a, possible nested
  * `Contains`: Only works with `string`
  * `StartsWith`: Only works with `string`
  * `EndsWith`: Only works with `string`
- * `In`: Check if a member existing in a given collection of values.
+ * `In`: Check if a member existing in a given collection of values.`
+* `Like`: Performs a SQL Like by using `EF.Functions.Like`.
 
 Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
 
@@ -132,6 +133,7 @@ Multiple where statements can be expressed:
 }
 ```
 
+
 ##### Case Sensitivity
 
 All string comparisons are, by default, done using [StringComparison.OrdinalIgnoreCase](https://msdn.microsoft.com/en-us/library/system.stringcomparison.aspx). A different StringComparison can be used via the `case` attribute.
@@ -147,7 +149,6 @@ All string comparisons are, by default, done using [StringComparison.OrdinalIgno
 ```
 
 
-
 ##### Single
 
 Single where statements can be expressed:
@@ -161,6 +162,7 @@ Single where statements can be expressed:
   }
 }
 ```
+
 
 #### OrderBy
 
@@ -187,6 +189,7 @@ Single where statements can be expressed:
   }
 }
 ```
+
 
 #### Take
 
