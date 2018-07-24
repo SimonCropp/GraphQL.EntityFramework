@@ -10,8 +10,9 @@ static class FuncBuilder<T>
 
     public static Func<T, bool> BuildPredicate(WhereExpression where)
     {
-        return BuildPredicate(where.Path, where.Comparison, where.Value,where.Case);
+        return BuildPredicate(where.Path, where.Comparison, where.Value, where.Case);
     }
+
     public static Func<T, object> BuildPropertyExpression(string path)
     {
         var propertyFunc = GetPropertyFunc(path);
@@ -72,6 +73,7 @@ static class FuncBuilder<T>
             case Comparison.LessThan:
                 return compare < 0;
         }
+
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }
 
@@ -91,6 +93,7 @@ static class FuncBuilder<T>
             case Comparison.EndsWith:
                 return propertyValue != null && propertyValue.EndsWith(value, stringComparison);
         }
+
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }
 
@@ -139,58 +142,67 @@ static class FuncBuilder<T>
 
             if (type == typeof(Guid))
             {
-                var value = (Guid)propertyValue;
+                var value = (Guid) propertyValue;
                 return values.Select(Guid.Parse)
                     .Any(x => x == value);
             }
+
             if (type == typeof(int))
             {
-                var value = (int)propertyValue;
+                var value = (int) propertyValue;
                 return values.Select(int.Parse)
                     .Any(x => x == value);
             }
+
             if (type == typeof(short))
             {
-                var value = (short)propertyValue;
+                var value = (short) propertyValue;
                 return values.Select(short.Parse)
                     .Any(x => x == value);
             }
+
             if (type == typeof(long))
             {
-                var value = (long)propertyValue;
+                var value = (long) propertyValue;
                 return values.Select(long.Parse)
                     .Any(x => x == value);
             }
+
             if (type == typeof(uint))
             {
-                var value = (uint)propertyValue;
+                var value = (uint) propertyValue;
                 return values.Select(uint.Parse)
                     .Any(x => x == value);
             }
+
             if (type == typeof(ushort))
             {
-                var value = (ushort)propertyValue;
+                var value = (ushort) propertyValue;
                 return values.Select(ushort.Parse)
                     .Any(x => x == value);
             }
+
             if (type == typeof(ulong))
             {
-                var value = (ulong)propertyValue;
+                var value = (ulong) propertyValue;
                 return values.Select(ulong.Parse)
                     .Any(x => x == value);
             }
+
             if (type == typeof(DateTime))
             {
-                var value = (DateTime)propertyValue;
+                var value = (DateTime) propertyValue;
                 return values.Select(DateTime.Parse)
                     .Any(x => x == value);
             }
+
             if (type == typeof(DateTimeOffset))
             {
-                var value = (DateTimeOffset)propertyValue;
+                var value = (DateTimeOffset) propertyValue;
                 return values.Select(DateTimeOffset.Parse)
                     .Any(x => x == value);
             }
+
             throw new Exception($"Could not convert strings to {type.FullName} ");
         };
     }
@@ -199,7 +211,7 @@ static class FuncBuilder<T>
     {
         return target =>
         {
-            var propertyValue = (string)property.Func(target);
+            var propertyValue = (string) property.Func(target);
             return values.Any(x => string.Equals(x, propertyValue, stringComparison));
         };
     }
