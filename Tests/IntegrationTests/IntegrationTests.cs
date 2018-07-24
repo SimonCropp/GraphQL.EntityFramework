@@ -646,8 +646,7 @@ public class IntegrationTests : TestBase
     static MyDataContext BuildDataContext()
     {
         var builder = new DbContextOptionsBuilder<MyDataContext>();
-        var connection = @"Data Source=.\SQLExpress;Database=GraphQLEntityFrameworkTests; Integrated Security=True;Max Pool Size=100";
-        builder.UseSqlServer(connection);
+        builder.UseSqlServer(Connection.ConnectionString);
         return new MyDataContext(builder.Options);
     }
 }
