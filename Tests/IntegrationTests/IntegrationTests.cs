@@ -631,6 +631,10 @@ public class IntegrationTests : TestBase
 
                 if (executionResult.Errors != null && executionResult.Errors.Any())
                 {
+                    if (executionResult.Errors.Count == 1)
+                    {
+                        throw executionResult.Errors.First();
+                    }
                     throw new AggregateException(executionResult.Errors);
                 }
                 return executionResult.Data;
