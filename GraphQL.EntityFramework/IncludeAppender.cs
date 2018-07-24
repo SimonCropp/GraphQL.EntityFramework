@@ -13,6 +13,7 @@ class IncludeAppender
     {
         this.navigations = navigations;
     }
+
     public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
         where TItem : class
     {
@@ -101,7 +102,7 @@ class IncludeAppender
     {
         if (fieldType != null)
         {
-            if (TryGetIncludeMetadata(fieldType,out var fieldName))
+            if (TryGetIncludeMetadata(fieldType, out var fieldName))
             {
                 return fieldName;
             }

@@ -12,10 +12,7 @@ public class MyDataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ParentEntity>()
-            .HasMany(c => c.Children)
-            .WithOne(e => e.Parent)
-            .IsRequired();
+        modelBuilder.Entity<ParentEntity>();
         modelBuilder.Entity<ChildEntity>();
     }
 }
