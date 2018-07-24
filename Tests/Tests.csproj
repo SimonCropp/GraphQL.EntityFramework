@@ -13,7 +13,6 @@
     <PackageReference Include="ApprovalTests" Version="3.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.1" />
     <PackageReference Include="ObjectApproval" Version="2.2.0" />
-    <PackageReference Include="NUnit" Version="3.10.1" />
     <PackageReference Include="Xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
   </ItemGroup>
