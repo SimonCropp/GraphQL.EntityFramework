@@ -63,19 +63,30 @@ class IncludeAppender
         }
 
         var fieldName = GetFieldName(field, fieldType);
+        var single = fieldType.ResolvedType.GetType().BaseType.GetGenericArguments().Single();
 
-        var propertyType = parentNavigationProperties.SingleOrDefault(x => string.Equals(x.PropertyName, field.Name, StringComparison.OrdinalIgnoreCase));
-        if (propertyType == null)
-        {
-            propertyType = parentNavigationProperties.SingleOrDefault(x => string.Equals(x.PropertyName, fieldName, StringComparison.OrdinalIgnoreCase));
-        }
+        //var propertyType = parentNavigationProperties.SingleOrDefault(x => string.Equals(x.PropertyName, field.Name, StringComparison.OrdinalIgnoreCase));
+        //if (propertyType == null)
+        //{
+        //    propertyType = WalkNavigationPropertiesForPropertyType(parentNavigationProperties, fieldName);
+        //}
 
-        if (propertyType!= null)
+        //if (propertyType!= null)
         {
             var path = GetPath(parentPath, field, fieldType);
             list.Add(path);
-            ProcessSubFields(list, path, subFields, complexGraph, navigations[propertyType.PropertyType]);
+            ProcessSubFields(list, path, subFields, complexGraph, navigations[single]);
         }
+    }
+
+    private static Navigation WalkNavigationPropertiesForPropertyType(List<Navigation> parentNavigationProperties, string fieldName)
+    {
+        Navigation propertyType = null;
+        foreach (var node in fieldName.Split('.'))
+        {
+        propertyType = parentNavigationProperties.SingleOrDefault(x => string.Equals(x.PropertyName, node, StringComparison.OrdinalIgnoreCase));
+        }
+        return propertyType;
     }
 
     void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<Navigation> navigationProperties)

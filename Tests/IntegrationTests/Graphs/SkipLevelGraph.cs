@@ -7,6 +7,7 @@ public class SkipLevelGraph : EfObjectGraphType<Level1Entity>
         Field(x => x.Id);
         AddNavigationField<Level3Graph, Level3Entity>(
             name: "level3Entity",
-            resolve: context => context.Source.Level2Entity.Level3Entity,includeName: "Level2Entity");
+            resolve: context => context.Source.Level2Entity.Level3Entity,
+            includeName: "Level2Entity.Level3Entity");
     }
 }
