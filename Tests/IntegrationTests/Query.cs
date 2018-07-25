@@ -28,6 +28,7 @@ public class Query : ObjectGraphType
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ParentEntities;
             });
+
         efGraphQlService.AddQueryConnectionField<ChildGraph, ChildEntity>(this,
             name: "childEntitiesConnection",
             resolve: context =>

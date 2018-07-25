@@ -60,7 +60,9 @@ class IncludeAppender
             return;
         }
 
-        if (parentNavigationProperties.TryGetValue(field.Name, out var propertyType))
+        var fieldName = GetFieldName(field, fieldType);
+        if (parentNavigationProperties.TryGetValue(field.Name, out var propertyType)||
+            parentNavigationProperties.TryGetValue(fieldName, out propertyType))
         {
             var path = GetPath(parentPath, field, fieldType);
             list.Add(path);
