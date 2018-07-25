@@ -62,7 +62,7 @@ class IncludeAppender
             return;
         }
 
-       if (ComplexGraphResolver.TryGetEntityTypeForField(fieldType,out var entityType))
+       if (fieldType.TryGetEntityTypeForField(out var entityType))
         {
             var path = GetPath(parentPath, field, fieldType);
             list.Add(path);
