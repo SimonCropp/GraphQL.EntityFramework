@@ -906,14 +906,19 @@ public class IntegrationTests : TestBase
     {
         using (var dataContext = BuildDataContext())
         {
-            dataContext.Level1Entities.RemoveRange(dataContext.Level1Entities);
-            dataContext.Level2Entities.RemoveRange(dataContext.Level2Entities);
-            dataContext.Level3Entities.RemoveRange(dataContext.Level3Entities);
-            dataContext.ChildEntities.RemoveRange(dataContext.ChildEntities);
-            dataContext.ParentEntities.RemoveRange(dataContext.ParentEntities);
-            dataContext.WithNullableEntities.RemoveRange(dataContext.WithNullableEntities);
+            Purge(dataContext.Level1Entities);
+            Purge(dataContext.Level2Entities);
+            Purge(dataContext.Level3Entities);
+            Purge(dataContext.ChildEntities);
+            Purge(dataContext.ParentEntities);
+            Purge(dataContext.WithNullableEntities);
             dataContext.SaveChanges();
         }
+    }
+
+    static void Purge<T>(DbSet<T> dbSet) where T : class
+    {
+        dbSet.RemoveRange(dbSet);
     }
 
     static MyDataContext BuildDataContext()
