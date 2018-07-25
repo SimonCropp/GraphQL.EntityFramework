@@ -33,6 +33,37 @@ public class ExpressionBuilderTests
     }
 
     [Fact]
+    public void Nullable_requiring_parse()
+    {
+        var guid = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var list = new List<TargetWithNullableRequiringParse>
+        {
+            new TargetWithNullableRequiringParse
+            {
+                Field = null
+            },
+            new TargetWithNullableRequiringParse
+            {
+                Field = guid
+            }
+        };
+
+        var resultFromString = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] { guid.ToString() }))
+            .Single();
+        Assert.Equal(guid, resultFromString.Field);
+        var nullResult = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, null))
+            .Single();
+        Assert.Null(nullResult.Field);
+    }
+
+    public class TargetWithNullableRequiringParse
+    {
+        public Guid? Field;
+    }
+
+    [Fact]
     public void Nullable()
     {
         var list = new List<TargetWithNullable>

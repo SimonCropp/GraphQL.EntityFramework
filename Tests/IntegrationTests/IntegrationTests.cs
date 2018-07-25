@@ -609,6 +609,7 @@ public class IntegrationTests : TestBase
         var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
+
     [Fact]
     public async Task Child_parent()
     {
@@ -657,6 +658,51 @@ public class IntegrationTests : TestBase
         entity4.Children.Add(entity5);
 
         var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.VerifyWithJson(result);
+    }
+
+
+    [Fact]
+    public async Task With_null_navigation_property()
+    {
+        var queryString = @"
+{
+  childEntities(where: {path: 'ParentId', comparison: '==', value: '00000000-0000-0000-0000-000000000001'})
+  {
+    property
+    parent
+    {
+      property
+    }
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity5 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
+            Property = "Value5",
+        };
+
+        var result = await RunQuery(queryString, entity1, entity2, entity3, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
