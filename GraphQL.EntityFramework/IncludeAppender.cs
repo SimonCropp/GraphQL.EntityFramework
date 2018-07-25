@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL.EntityFramework;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
 class IncludeAppender
 {
-    Dictionary<Type, Dictionary<string, Type>> navigations;
+    Dictionary<Type, List<Navigation>> navigations;
 
-    public IncludeAppender(Dictionary<Type, Dictionary<string, Type>> navigations)
+    public IncludeAppender(Dictionary<Type, List<Navigation>> navigations)
     {
         this.navigations = navigations;
     }
@@ -22,10 +23,10 @@ class IncludeAppender
         return AddIncludes(query, context.FieldDefinition, context.SubFields.Values, navigationProperty);
     }
 
-    IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, Dictionary<string, Type> navigationProperty)
+    IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, List<Navigation> navigationProperties)
         where T : class
     {
-        foreach (var path in GetPaths(fieldType, subFields, navigationProperty))
+        foreach (var path in GetPaths(fieldType, subFields, navigationProperties))
         {
             query = query.Include(path);
         }
@@ -33,7 +34,7 @@ class IncludeAppender
         return query;
     }
 
-    IEnumerable<string> GetPaths(FieldType fieldType, ICollection<Field> fields, Dictionary<string, Type> navigationProperty)
+    IEnumerable<string> GetPaths(FieldType fieldType, ICollection<Field> fields, List<Navigation> navigationProperty)
     {
         var list = new List<string>();
 
@@ -42,7 +43,7 @@ class IncludeAppender
         return list;
     }
 
-    void AddField(List<string> list, Field field, string parentPath, FieldType fieldType, Dictionary<string, Type> parentNavigationProperties)
+    void AddField(List<string> list, Field field, string parentPath, FieldType fieldType, List<Navigation> parentNavigationProperties)
     {
         if (!fieldType.TryGetComplexGraph(out var complexGraph))
         {
@@ -61,16 +62,22 @@ class IncludeAppender
         }
 
         var fieldName = GetFieldName(field, fieldType);
-        if (parentNavigationProperties.TryGetValue(field.Name, out var propertyType)||
-            parentNavigationProperties.TryGetValue(fieldName, out propertyType))
+
+        var propertyType = parentNavigationProperties.SingleOrDefault(x => string.Equals(x.PropertyName, field.Name, StringComparison.OrdinalIgnoreCase));
+        if (propertyType == null)
+        {
+            propertyType = parentNavigationProperties.SingleOrDefault(x => string.Equals(x.PropertyName, fieldName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (propertyType!= null)
         {
             var path = GetPath(parentPath, field, fieldType);
             list.Add(path);
-            ProcessSubFields(list, path, subFields, complexGraph, navigations[propertyType]);
+            ProcessSubFields(list, path, subFields, complexGraph, navigations[propertyType.PropertyType]);
         }
     }
 
-    void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, Dictionary<string, Type> navigationProperties)
+    void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<Navigation> navigationProperties)
     {
         foreach (var subField in subFields)
         {

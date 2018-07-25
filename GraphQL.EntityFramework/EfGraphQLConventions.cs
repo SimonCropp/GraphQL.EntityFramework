@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphQL.EntityFramework
@@ -30,15 +32,38 @@ namespace GraphQL.EntityFramework
             services.AddSingleton<PageInfoType>();
         }
 
-        static Dictionary<Type, Dictionary<string, Type>> GetNavigationProperties(DbContext dbContext)
+        static Dictionary<Type, List<Navigation>> GetNavigationProperties(DbContext dbContext)
         {
-            var dictionary = new Dictionary<Type, Dictionary<string, Type>>();
+            var dictionary = new Dictionary<Type, List<Navigation>>();
             foreach (var entity in dbContext.Model.GetEntityTypes())
             {
-                dictionary.Add(entity.ClrType, entity.GetNavigations().ToDictionary(x => x.Name, y => y.ForeignKey.DeclaringEntityType.ClrType, StringComparer.OrdinalIgnoreCase));
+                var navigations = entity.GetNavigations();
+                var value = navigations
+                    .Select(
+                        x => new Navigation
+                        {
+                            PropertyName = x.Name,
+                            PropertyType = GetNavigationType(x)
+                        })
+                    .ToList();
+                dictionary.Add(entity.ClrType, value);
             }
 
             return dictionary;
+        }
+
+        static Type GetNavigationType(INavigation navigation)
+        {
+            var navigationType = navigation.ClrType;
+            var collectionType = navigationType.GetInterfaces()
+                .SingleOrDefault(x => x.IsGenericType &&
+                                      x.GetGenericTypeDefinition() == typeof(ICollection<>));
+            if (collectionType == null)
+            {
+                return navigationType;
+            }
+
+            return collectionType.GetGenericArguments().Single();
         }
 
         public static void RegisterConnectionTypesInContainer(Action<Type> register)
@@ -47,5 +72,11 @@ namespace GraphQL.EntityFramework
             register(typeof(EdgeType<>));
             register(typeof(PageInfoType));
         }
+    }
+    [DebuggerDisplay("PropertyName = {PropertyName}, PropertyType = {PropertyType}")]
+    public class Navigation
+    {
+        public string PropertyName;
+        public Type PropertyType;
     }
 }

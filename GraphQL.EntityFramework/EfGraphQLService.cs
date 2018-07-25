@@ -6,7 +6,7 @@ namespace GraphQL.EntityFramework
 {
     public partial class EfGraphQLService
     {
-        public EfGraphQLService(Dictionary<Type, Dictionary<string, Type>> navigations)
+        public EfGraphQLService(Dictionary<Type, List<Navigation>> navigations)
         {
             includeAppender = new IncludeAppender(navigations);
         }

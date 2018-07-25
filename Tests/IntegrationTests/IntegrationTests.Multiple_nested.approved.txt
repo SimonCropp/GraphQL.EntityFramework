@@ -1,0 +1,11 @@
+﻿{
+  "level1Entities": [
+    {
+      "level2Entity": {
+        "level3Entity": {
+          "property": "Value"
+        }
+      }
+    }
+  ]
+}
