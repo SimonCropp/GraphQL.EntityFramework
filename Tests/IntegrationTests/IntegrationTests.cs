@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ObjectApproval;
@@ -886,16 +887,19 @@ public class IntegrationTests : TestBase
             var services = new ServiceCollection();
 
             services.AddSingleton<Query>();
-            services.AddSingleton<WithNullableGraph>();
-            services.AddSingleton<SkipLevelGraph>();
-            services.AddSingleton<Level1Graph>();
-            services.AddSingleton<Level2Graph>();
-            services.AddSingleton<Level3Graph>();
-            services.AddSingleton<ParentGraph>();
-            services.AddSingleton<ChildGraph>();
+            foreach (var type in GetGraphQlTypes())
+            {
+                services.AddSingleton(type);
+            }
 
             return await QueryExecutor.ExecuteQuery(queryString, services, dataContext);
         }
+    }
+    static IEnumerable<Type> GetGraphQlTypes()
+    {
+        return typeof(IntegrationTests).Assembly
+            .GetTypes()
+            .Where(x => !x.IsAbstract && typeof(GraphType).IsAssignableFrom(x));
     }
 
     static void Purge()
