@@ -1,7 +1,5 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
-[Table("IntegrationTestsLevel1Entity")]
 public class Level1Entity
 {
     public Guid Id { get; set; }
