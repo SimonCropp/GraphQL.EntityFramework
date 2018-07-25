@@ -277,7 +277,6 @@ public class Query : ObjectGraphType
     {
         graphQlService.AddQueryConnectionField<CompanyGraph, Company>(
             name: "companiesConnection",
-            includeName: "Companies",
             resolve: context =>
             {
                 var dataContext = (MyDataContext)context.UserContext;

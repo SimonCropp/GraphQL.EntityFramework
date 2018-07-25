@@ -11,7 +11,7 @@ public class Query : ObjectGraphType
             return dataContext.Companies;
         });
 
-        efGraphQlService.AddQueryConnectionField<CompanyGraph, Company>(this, name: "companiesConnection", includeName: "Companies", resolve: context =>
+        efGraphQlService.AddQueryConnectionField<CompanyGraph, Company>(this, name: "companiesConnection", resolve: context =>
         {
             var dataContext = (MyDataContext)context.UserContext;
             return dataContext.Companies;
@@ -24,7 +24,7 @@ public class Query : ObjectGraphType
         });
 
 
-        efGraphQlService.AddQueryConnectionField<EmployeeGraph, Employee>(this, name: "employeesConnection", includeName: "Employees", resolve: context =>
+        efGraphQlService.AddQueryConnectionField<EmployeeGraph, Employee>(this, name: "employeesConnection", resolve: context =>
         {
             var dataContext = (MyDataContext)context.UserContext;
             return dataContext.Employees;

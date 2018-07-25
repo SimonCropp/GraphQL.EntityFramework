@@ -27,15 +27,13 @@ public class Query : ObjectGraphType
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ParentEntities;
-            },
-            includeName: "Parents");
+            });
         efGraphQlService.AddQueryConnectionField<ChildGraph, ChildEntity>(this,
             name: "childEntitiesConnection",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ChildEntities;
-            },
-            includeName: "Children");
+            });
     }
 }
