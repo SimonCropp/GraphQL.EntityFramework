@@ -3,6 +3,7 @@
 public class MyDataContext : DbContext
 {
     public DbSet<ParentEntity> ParentEntities { get; set; }
+    public DbSet<WithNullableEntity> WithNullableEntities { get; set; }
     public DbSet<ChildEntity> ChildEntities { get; set; }
     public DbSet<Level1Entity> Level1Entities { get; set; }
     public DbSet<Level2Entity> Level2Entities { get; set; }
@@ -15,6 +16,7 @@ public class MyDataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<WithNullableEntity>();
         modelBuilder.Entity<ParentEntity>();
         modelBuilder.Entity<ChildEntity>();
         modelBuilder.Entity<Level1Entity>();

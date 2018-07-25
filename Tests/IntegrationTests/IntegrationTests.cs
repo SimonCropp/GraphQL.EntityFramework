@@ -82,17 +82,15 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where_with_nullable_properties1()
     {
-        var queryString = "{ parentEntities (where: {path: 'Nullable', comparison: '=='}){ id } }";
+        var queryString = "{ withNullableEntities (where: {path: 'Nullable', comparison: '=='}){ id } }";
 
-        var entity1 = new ParentEntity
+        var entity1 = new WithNullableEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            Property = null
         };
-        var entity2 = new ParentEntity
+        var entity2 = new WithNullableEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Property = "Value2",
             Nullable = 10
         };
 
@@ -103,17 +101,15 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where_with_nullable_properties2()
     {
-        var queryString = "{ parentEntities (where: {path: 'Nullable', comparison: '==', value: '10'}){ id } }";
+        var queryString = "{ withNullableEntities (where: {path: 'Nullable', comparison: '==', value: '10'}){ id } }";
 
-        var entity1 = new ParentEntity
+        var entity1 = new WithNullableEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            Property = null
         };
-        var entity2 = new ParentEntity
+        var entity2 = new WithNullableEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Property = "Value2",
             Nullable = 10
         };
 
@@ -890,6 +886,7 @@ public class IntegrationTests : TestBase
             var services = new ServiceCollection();
 
             services.AddSingleton<Query>();
+            services.AddSingleton<WithNullableGraph>();
             services.AddSingleton<SkipLevelGraph>();
             services.AddSingleton<Level1Graph>();
             services.AddSingleton<Level2Graph>();
@@ -910,6 +907,7 @@ public class IntegrationTests : TestBase
             dataContext.Level3Entities.RemoveRange(dataContext.Level3Entities);
             dataContext.ChildEntities.RemoveRange(dataContext.ChildEntities);
             dataContext.ParentEntities.RemoveRange(dataContext.ParentEntities);
+            dataContext.WithNullableEntities.RemoveRange(dataContext.WithNullableEntities);
             dataContext.SaveChanges();
         }
     }

@@ -20,6 +20,14 @@ public class Query : ObjectGraphType
                 return dataContext.Level1Entities;
             });
 
+        efGraphQlService.AddQueryField<WithNullableGraph, WithNullableEntity>(this,
+            name: "withNullableEntities",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.WithNullableEntities;
+            });
+
         efGraphQlService.AddQueryField<ParentGraph, ParentEntity>(this,
             name: "parentEntities",
             resolve: context =>

@@ -6,7 +6,6 @@ public class ParentGraph : EfObjectGraphType<ParentEntity>
     {
         Field(x => x.Id);
         Field(x => x.Property);
-        Field(x => x.Nullable,true);
         AddNavigationField<ChildGraph, ChildEntity>(
             name: "children",
             resolve: context => context.Source.Children);
