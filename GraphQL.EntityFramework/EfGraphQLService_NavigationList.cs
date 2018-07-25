@@ -7,7 +7,7 @@ namespace GraphQL.EntityFramework
 {
     public partial class EfGraphQLService
     {
-        public FieldType AddListField<TGraph, TReturn>(
+        public FieldType AddNavigationField<TGraph, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
@@ -16,11 +16,11 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildListField<object, TGraph, TReturn>( name, resolve, includeName, arguments);
+            var field = BuildNavigationField<object, TGraph, TReturn>(name, resolve, includeName, arguments);
             return graph.AddField(field);
         }
 
-        public FieldType AddListField<TSource, TReturn>(
+        public FieldType AddNavigationField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             Type graphType,
             string name,
@@ -29,11 +29,11 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildListField( graphType, name, resolve, includeName, arguments);
+            var field = BuildNavigationField(graphType, name, resolve, includeName, arguments);
             return graph.AddField(field);
         }
 
-        public FieldType AddListField<TReturn>(
+        public FieldType AddNavigationField<TReturn>(
             ObjectGraphType graph,
             Type graphType,
             string name,
@@ -42,11 +42,11 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildListField( graphType, name, resolve, includeName, arguments);
+            var field = BuildNavigationField(graphType, name, resolve, includeName, arguments);
             return graph.AddField(field);
         }
 
-        FieldType BuildListField<TSource, TReturn>(
+        FieldType BuildNavigationField<TSource, TReturn>(
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
@@ -55,10 +55,10 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var listGraphType = MakeListGraphType(graphType);
-            return BuildListField( name, resolve, includeName, listGraphType, arguments);
+            return BuildNavigationField(name, resolve, includeName, listGraphType, arguments);
         }
 
-        public FieldType AddListField<TSource, TGraph, TReturn>(
+        public FieldType AddNavigationField<TSource, TGraph, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
@@ -67,11 +67,11 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildListField<TSource, TGraph, TReturn>( name, resolve, includeName, arguments);
+            var field = BuildNavigationField<TSource, TGraph, TReturn>(name, resolve, includeName, arguments);
             return graph.AddField(field);
         }
 
-        FieldType BuildListField<TSource, TGraph, TReturn>(
+        FieldType BuildNavigationField<TSource, TGraph, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName,
@@ -80,10 +80,10 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var listGraphType = typeof(ListGraphType<TGraph>);
-            return BuildListField( name, resolve, includeName, listGraphType, arguments);
+            return BuildNavigationField(name, resolve, includeName, listGraphType, arguments);
         }
 
-         FieldType BuildListField<TSource, TReturn>(
+        FieldType BuildNavigationField<TSource, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             string includeName,

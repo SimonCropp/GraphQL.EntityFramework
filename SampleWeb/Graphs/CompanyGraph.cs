@@ -6,10 +6,10 @@ public class CompanyGraph : EfObjectGraphType<Company>
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        AddListField< EmployeeGraph, Employee>(
+        AddNavigationField< EmployeeGraph, Employee>(
             name: "employees",
             resolve: context => context.Source.Employees);
-        AddListConnectionField<EmployeeGraph, Employee>(
+        AddNavigationConnectionField<EmployeeGraph, Employee>(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
             includeName: "Employees");

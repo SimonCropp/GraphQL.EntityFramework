@@ -7,10 +7,10 @@ public class ParentGraph : EfObjectGraphType<ParentEntity>
         Field(x => x.Id);
         Field(x => x.Property);
         Field(x => x.Nullable,true);
-        AddListField<ChildGraph, ChildEntity>(
+        AddNavigationField<ChildGraph, ChildEntity>(
             name: "children",
             resolve: context => context.Source.Children);
-        AddListConnectionField<ChildGraph, ChildEntity>(
+        AddNavigationConnectionField<ChildGraph, ChildEntity>(
             name: "childrenConnection",
             resolve: context => context.Source.Children,
             includeName: "Children");

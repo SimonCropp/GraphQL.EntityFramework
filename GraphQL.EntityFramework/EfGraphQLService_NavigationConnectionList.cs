@@ -8,7 +8,7 @@ namespace GraphQL.EntityFramework
 {
     public partial class EfGraphQLService
     {
-        public ConnectionBuilder<TGraph, object> AddListConnectionField<TGraph, TReturn>(
+        public ConnectionBuilder<TGraph, object> AddNavigationConnectionField<TGraph, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
@@ -24,7 +24,7 @@ namespace GraphQL.EntityFramework
             return connection;
         }
 
-        public ConnectionBuilder<TGraph, TSource> AddListConnectionField<TSource, TGraph, TReturn>(
+        public ConnectionBuilder<TGraph, TSource> AddNavigationConnectionField<TSource, TGraph, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,

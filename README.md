@@ -368,7 +368,7 @@ public class CompanyGraph : EfObjectGraphType<Company>
 {
     public CompanyGraph(EfGraphQLService graphQlService) : base(graphQlService)
     {
-        AddListConnectionField<EmployeeGraph, Employee>(
+        AddNavigationConnectionField<EmployeeGraph, Employee>(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
             includeName: "Employees");

@@ -13,6 +13,14 @@ public class Query : ObjectGraphType
                 return dataContext.ParentEntities;
             });
 
+        efGraphQlService.AddQueryField<ChildGraph, ChildEntity>(this,
+            name: "childEntities",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.ChildEntities;
+            });
+
         efGraphQlService.AddQueryConnectionField<ParentGraph, ParentEntity>(this,
             name: "parentEntitiesConnection",
             resolve: context =>
@@ -21,5 +29,13 @@ public class Query : ObjectGraphType
                 return dataContext.ParentEntities;
             },
             includeName: "Parents");
+        efGraphQlService.AddQueryConnectionField<ChildGraph, ChildEntity>(this,
+            name: "childEntitiesConnection",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.ChildEntities;
+            },
+            includeName: "Children");
     }
 }

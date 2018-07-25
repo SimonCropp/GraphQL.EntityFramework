@@ -561,6 +561,57 @@ public class IntegrationTests : TestBase
     }
 
     [Fact]
+    public async Task Child_parent()
+    {
+        var queryString = @"
+{
+  childEntities
+  {
+    property
+    parent
+    {
+      property
+    }
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
+            Property = "Value5",
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.VerifyWithJson(result);
+    }
+
+    [Fact]
     public async Task Parent_child()
     {
         var queryString = @"
