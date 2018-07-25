@@ -1,0 +1,43 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using GraphQL;
+using GraphQL.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
+static internal class QueryExecutor
+{
+    public static async Task<object> ExecuteQuery(string queryString, ServiceCollection services, DbContext dataContext)
+    {
+        queryString = queryString.Replace("'", "\"");
+        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
+        EfGraphQLConventions.RegisterInContainer(services, dataContext);
+        using (var provider = services.BuildServiceProvider())
+        using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
+        {
+            var documentExecuter = new DocumentExecuter();
+
+            var executionOptions = new ExecutionOptions
+            {
+                Schema = schema,
+                Query = queryString,
+                UserContext = dataContext
+            };
+
+            var executionResult = await documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);
+
+            if (executionResult.Errors != null && executionResult.Errors.Any())
+            {
+                if (executionResult.Errors.Count == 1)
+                {
+                    throw executionResult.Errors.First();
+                }
+
+                throw new AggregateException(executionResult.Errors);
+            }
+
+            return executionResult.Data;
+        }
+    }
+}

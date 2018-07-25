@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
+[Table("IntegrationTestsParentEntity")]
 public class ParentEntity
 {
     public ParentEntity()

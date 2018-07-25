@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.EntityFramework;
-using GraphQL;
-using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ObjectApproval;
@@ -17,7 +14,6 @@ public class IntegrationTests : TestBase
     {
         using (var dataContext = BuildDataContext())
         {
-       //     dataContext.Database.EnsureDeleted();
             dataContext.Database.EnsureCreated();
         }
     }
@@ -625,46 +621,15 @@ public class IntegrationTests : TestBase
             dataContext.SaveChanges();
         }
 
-        queryString = queryString.Replace("'", "\"");
-
         using (var dataContext = BuildDataContext())
         {
             var services = new ServiceCollection();
 
-            services.AddTransient(typeof(ConnectionType<>));
-            services.AddTransient(typeof(EdgeType<>));
-            services.AddTransient<PageInfoType>();
-            services.AddSingleton(dataContext);
             services.AddSingleton<Query>();
             services.AddSingleton<ChildGraph>();
             services.AddSingleton<ParentGraph>();
 
-            EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
-            EfGraphQLConventions.RegisterInContainer(services, dataContext);
-            using (var provider = services.BuildServiceProvider())
-            using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
-            {
-                var documentExecuter = new DocumentExecuter();
-
-                var executionOptions = new ExecutionOptions
-                {
-                    Schema = schema,
-                    Query = queryString,
-                    UserContext = dataContext
-                };
-
-                var executionResult = await documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);
-
-                if (executionResult.Errors != null && executionResult.Errors.Any())
-                {
-                    if (executionResult.Errors.Count == 1)
-                    {
-                        throw executionResult.Errors.First();
-                    }
-                    throw new AggregateException(executionResult.Errors);
-                }
-                return executionResult.Data;
-            }
+            return await QueryExecutor.ExecuteQuery(queryString, services, dataContext);
         }
     }
 
