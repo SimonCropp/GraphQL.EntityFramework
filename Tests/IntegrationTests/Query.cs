@@ -5,6 +5,13 @@ public class Query : ObjectGraphType
 {
     public Query(EfGraphQLService efGraphQlService)
     {
+        efGraphQlService.AddQueryField<SkipLevelGraph, Level1Entity>(this,
+            name: "skipLevel",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.Level1Entities;
+            });
         efGraphQlService.AddQueryField<Level1Graph, Level1Entity>(this,
             name: "level1Entities",
             resolve: context =>

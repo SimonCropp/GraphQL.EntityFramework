@@ -26,7 +26,8 @@ class IncludeAppender
     IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, List<Navigation> navigationProperties)
         where T : class
     {
-        foreach (var path in GetPaths(fieldType, subFields, navigationProperties))
+        var paths = GetPaths(fieldType, subFields, navigationProperties).ToList();
+        foreach (var path in paths)
         {
             query = query.Include(path);
         }

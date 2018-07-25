@@ -609,6 +609,41 @@ public class IntegrationTests : TestBase
         var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
+
+    [Fact]
+    public async Task Skip_level()
+    {
+        var queryString = @"
+{
+  skipLevel
+  {
+    level3Entity
+    {
+      property
+    }
+  }
+}";
+
+        var level3 = new Level3Entity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Property = "Value"
+        };
+        var level2 = new Level2Entity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Level3Entity = level3
+        };
+        var level1 = new Level1Entity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Level2Entity = level2
+        };
+
+        var result = await RunQuery(queryString, level1, level2, level3);
+        ObjectApprover.VerifyWithJson(result);
+    }
+
     [Fact]
     public async Task Multiple_nested()
     {
@@ -645,6 +680,7 @@ public class IntegrationTests : TestBase
         var result = await RunQuery(queryString, level1, level2, level3);
         ObjectApprover.VerifyWithJson(result);
     }
+
     [Fact]
     public async Task Null_on_nested()
     {
@@ -854,6 +890,7 @@ public class IntegrationTests : TestBase
             var services = new ServiceCollection();
 
             services.AddSingleton<Query>();
+            services.AddSingleton<SkipLevelGraph>();
             services.AddSingleton<Level1Graph>();
             services.AddSingleton<Level2Graph>();
             services.AddSingleton<Level3Graph>();
