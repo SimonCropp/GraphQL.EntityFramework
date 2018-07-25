@@ -149,14 +149,14 @@ All string comparisons are, by default, done using no [StringComparison](https:/
 ```
 
 
-##### Single
+##### Null
 
-Single where statements can be expressed:
+Null can be expressed by omitting the `value`:
 
 ```
 {
   entities
-  (where: {path: "Property", comparison: "==", value: "the value"})
+  (where: {path: "Property", comparison: "=="})
   {
     property
   }
