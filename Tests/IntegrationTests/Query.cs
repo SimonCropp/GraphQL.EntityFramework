@@ -28,6 +28,14 @@ public class Query : ObjectGraphType
                 return dataContext.WithNullableEntities;
             });
 
+        efGraphQlService.AddQueryField<WithMisNamedQueryParentGraph, WithMisNamedQueryParentEntity>(this,
+            name: "misNamed",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.WithMisNamedQueryParentEntities;
+            });
+
         efGraphQlService.AddQueryField<ParentGraph, ParentEntity>(this,
             name: "parentEntities",
             resolve: context =>

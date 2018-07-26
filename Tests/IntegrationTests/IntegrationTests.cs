@@ -822,6 +822,51 @@ public class IntegrationTests : TestBase
     }
 
     [Fact]
+    public async Task MisNamedQuery()
+    {
+        var queryString = @"
+{
+  misNamed
+  {
+    misNamedChildren
+    {
+      id
+    }
+  }
+}";
+
+        var entity1 = new WithMisNamedQueryParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001")
+        };
+        var entity2 = new WithMisNamedQueryChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Parent = entity1
+        };
+        var entity3 = new WithMisNamedQueryChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new WithMisNamedQueryParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000004")
+        };
+        var entity5 = new WithMisNamedQueryChildEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.VerifyWithJson(result);
+    }
+
+    [Fact]
     public async Task Parent_child()
     {
         var queryString = @"
@@ -911,6 +956,8 @@ public class IntegrationTests : TestBase
             Purge(dataContext.Level3Entities);
             Purge(dataContext.ChildEntities);
             Purge(dataContext.ParentEntities);
+            Purge(dataContext.WithMisNamedQueryChildEntities);
+            Purge(dataContext.WithMisNamedQueryParentEntities);
             Purge(dataContext.WithNullableEntities);
             dataContext.SaveChanges();
         }

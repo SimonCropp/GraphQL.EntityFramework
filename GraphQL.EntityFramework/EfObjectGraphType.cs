@@ -75,34 +75,31 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            string includeName = null,
             int pageSize = 10)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddQueryConnectionField<TSource, TGraph, TReturn>(this, name, resolve, arguments, includeName, pageSize);
+            return efGraphQlService.AddQueryConnectionField<TSource, TGraph, TReturn>(this, name, resolve, arguments, pageSize);
         }
 
         protected FieldType AddQueryField<TGraph, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null,
-            string includeName = null)
+            IEnumerable<QueryArgument> arguments = null)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField<TSource, TGraph, TReturn>(this, name, resolve, arguments, includeName);
+            return efGraphQlService.AddQueryField<TSource, TGraph, TReturn>(this, name, resolve, arguments);
         }
 
         protected FieldType AddQueryField<TReturn>(
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null,
-            string includeName = null)
+            IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField(this, graphType, name, resolve, arguments, includeName);
+            return efGraphQlService.AddQueryField(this, graphType, name, resolve, arguments);
         }
     }
 }

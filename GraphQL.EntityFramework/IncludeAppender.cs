@@ -64,6 +64,10 @@ class IncludeAppender
 
        if (fieldType.TryGetEntityTypeForField(out var entityType))
         {
+            if (GetSkipMetadata(fieldType))
+            {
+                return;
+            }
             var path = GetPath(parentPath, field, fieldType);
             list.Add(path);
             ProcessSubFields(list, path, subFields, complexGraph, navigations[entityType]);
@@ -113,7 +117,7 @@ class IncludeAppender
         return char.ToUpperInvariant(field.Name[0]) + field.Name.Substring(1);
     }
 
-    public static Dictionary<string, object> GetIncludeMetadata(string value)
+    public static Dictionary<string, object> GetIncludeMetadata(string value, bool skip = false)
     {
         var metadata = new Dictionary<string, object>();
         if (value != null)
@@ -121,15 +125,34 @@ class IncludeAppender
             metadata["IncludeName"] = value;
         }
 
+        if (skip)
+        {
+            metadata["Skip"] = true;
+        }
+
         return metadata;
     }
 
+    public static void SetSkipMetadata(FieldType fieldType)
+    {
+        fieldType.Metadata["Skip"] = true;
+    }
     public static void SetIncludeMetadata(FieldType fieldType, string value)
     {
         if (value != null)
         {
             fieldType.Metadata["IncludeName"] = value;
         }
+    }
+
+    static bool GetSkipMetadata(FieldType fieldType)
+    {
+        if (fieldType.Metadata.TryGetValue("Skip", out var fieldNameObject))
+        {
+            return (bool) fieldNameObject;
+        }
+
+        return false;
     }
 
     static bool TryGetIncludeMetadata(FieldType fieldType, out string value)
