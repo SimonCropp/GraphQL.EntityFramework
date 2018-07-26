@@ -128,7 +128,7 @@ class IncludeAppender
 
         if (skip)
         {
-            metadata["_EF_Skip"] = true;
+            metadata["_EF_SkipNode"] = true;
         }
 
         return metadata;
@@ -136,7 +136,7 @@ class IncludeAppender
 
     public static void SetSkipMetadata(FieldType fieldType)
     {
-        fieldType.Metadata["_EF_Skip"] = true;
+        fieldType.Metadata["_EF_SkipNode"] = true;
     }
 
     public static void SetIncludeMetadata(FieldType fieldType, string value)
