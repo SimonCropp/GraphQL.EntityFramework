@@ -62,12 +62,13 @@ class IncludeAppender
             return;
         }
 
-       if (fieldType.TryGetEntityTypeForField(out var entityType))
+        if (fieldType.TryGetEntityTypeForField(out var entityType))
         {
             if (GetSkipMetadata(fieldType))
             {
                 return;
             }
+
             var path = GetPath(parentPath, field, fieldType);
             list.Add(path);
             ProcessSubFields(list, path, subFields, complexGraph, navigations[entityType]);
@@ -122,12 +123,12 @@ class IncludeAppender
         var metadata = new Dictionary<string, object>();
         if (value != null)
         {
-            metadata["IncludeName"] = value;
+            metadata["_EF_IncludeName"] = value;
         }
 
         if (skip)
         {
-            metadata["Skip"] = true;
+            metadata["_EF_Skip"] = true;
         }
 
         return metadata;
@@ -135,19 +136,20 @@ class IncludeAppender
 
     public static void SetSkipMetadata(FieldType fieldType)
     {
-        fieldType.Metadata["Skip"] = true;
+        fieldType.Metadata["_EF_Skip"] = true;
     }
+
     public static void SetIncludeMetadata(FieldType fieldType, string value)
     {
         if (value != null)
         {
-            fieldType.Metadata["IncludeName"] = value;
+            fieldType.Metadata["_EF_IncludeName"] = value;
         }
     }
 
     static bool GetSkipMetadata(FieldType fieldType)
     {
-        if (fieldType.Metadata.TryGetValue("Skip", out var fieldNameObject))
+        if (fieldType.Metadata.TryGetValue("_EF_SkipNode", out var fieldNameObject))
         {
             return (bool) fieldNameObject;
         }
@@ -157,8 +159,7 @@ class IncludeAppender
 
     static bool TryGetIncludeMetadata(FieldType fieldType, out string value)
     {
-        //TODO: use a better name
-        if (fieldType.Metadata.TryGetValue("IncludeName", out var fieldNameObject))
+        if (fieldType.Metadata.TryGetValue("_EF_IncludeName", out var fieldNameObject))
         {
             value = (string) fieldNameObject;
             return true;
