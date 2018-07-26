@@ -70,12 +70,17 @@ namespace GraphQL.EntityFramework
             //builder.Bidirectional();
             builder.Name(name);
             IncludeAppender.SetIncludeMetadata(builder.FieldType, includeName);
-            builder.Resolve(context => includeAppender.AddIncludes(resolve(context), context)
-                .ApplyGraphQlArguments(context)
-                .ApplyConnectionContext(context.First,
-                    context.After,
-                    context.Last,
-                    context.Before));
+            builder.Resolve(context =>
+            {
+                var withIncludes = includeAppender.AddIncludes(resolve(context), context);
+                var withArguments = withIncludes.ApplyGraphQlArguments(context);
+                return withArguments
+                    .ApplyConnectionContext(
+                        context.First,
+                        context.After,
+                        context.Last,
+                        context.Before);
+            });
             return builder;
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildQueryField( graphType, name, resolve, arguments, includeName);
+            var field = BuildQueryField(graphType, name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
@@ -44,7 +45,7 @@ namespace GraphQL.EntityFramework
             string includeName = null)
             where TReturn : class
         {
-            var field = BuildQueryField( graphType, name, resolve, arguments, includeName);
+            var field = BuildQueryField(graphType, name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
@@ -57,7 +58,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var listGraphType = MakeListGraphType(graphType);
-            return BuildQueryField( name, resolve, arguments, includeName, listGraphType);
+            return BuildQueryField(name, resolve, arguments, includeName, listGraphType);
         }
 
         public FieldType AddQueryField<TGraph, TReturn>(
@@ -69,7 +70,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildQueryField<object, TGraph, TReturn>( name, resolve, arguments, includeName);
+            var field = BuildQueryField<object, TGraph, TReturn>(name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
@@ -82,7 +83,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildQueryField<TSource, TGraph, TReturn>( name, resolve, arguments, includeName);
+            var field = BuildQueryField<TSource, TGraph, TReturn>(name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
@@ -95,7 +96,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var field = BuildQueryField<TSource, TGraph, TReturn>( name, resolve, arguments, includeName);
+            var field = BuildQueryField<TSource, TGraph, TReturn>(name, resolve, arguments, includeName);
             return graph.AddField(field);
         }
 
@@ -125,13 +126,13 @@ namespace GraphQL.EntityFramework
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(includeName),
-                Resolver = new AsyncFieldResolver<TSource, List<TReturn>>(
+                Resolver = new FuncFieldResolver<TSource, Task<List<TReturn>>>(
                     context =>
                     {
                         var returnTypes = resolve(context);
-                        return includeAppender.AddIncludes(returnTypes, context)
-                            .ApplyGraphQlArguments(context)
-                            .ToListAsync();
+                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        var withArguments = withIncludes.ApplyGraphQlArguments(context);
+                        return withArguments.ToListAsync();
                     })
             };
         }

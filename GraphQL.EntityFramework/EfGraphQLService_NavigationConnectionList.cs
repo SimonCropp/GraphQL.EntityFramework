@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
-using GraphQL.Types.Relay.DataObjects;
 
 namespace GraphQL.EntityFramework
 {
@@ -19,7 +18,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildListConnectionField<object, TGraph, TReturn>( name, resolve, includeName, pageSize);
+            var connection = BuildListConnectionField<object, TGraph, TReturn>(name, resolve, includeName, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -35,7 +34,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildListConnectionField<TSource, TGraph, TReturn>( name, resolve, includeName, pageSize);
+            var connection = BuildListConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -55,20 +54,16 @@ namespace GraphQL.EntityFramework
             IncludeAppender.SetIncludeMetadata(builder.FieldType, includeName);
             builder.Resolve(context =>
             {
-                return ((Func<Connection<TReturn>>) (() =>
-                {
-                    var enumerable = resolve(context);
-                    var page = enumerable
-                        .ApplyGraphQlArguments(context)
-                        .ToList();
+                var enumerable = resolve(context);
+                var withArguments = enumerable.ApplyGraphQlArguments(context);
+                var page = withArguments.ToList();
 
-                    return ConnectionConverter.ApplyConnectionContext(
-                        page,
-                        context.First,
-                        context.After,
-                        context.Last,
-                        context.Before);
-                }))();
+                return ConnectionConverter.ApplyConnectionContext(
+                    page,
+                    context.First,
+                    context.After,
+                    context.Last,
+                    context.Before);
             });
             return builder;
         }

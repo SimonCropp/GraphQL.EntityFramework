@@ -73,11 +73,7 @@ namespace GraphQL.EntityFramework
                 Type = graphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(includeName),
-                Resolver = new FuncFieldResolver<TSource, TReturn>(
-                    context =>
-                    {
-                        return ((Func<TReturn>) (() => resolve(context)))();
-                    })
+                Resolver = new FuncFieldResolver<TSource, TReturn>(resolve)
             };
         }
     }
