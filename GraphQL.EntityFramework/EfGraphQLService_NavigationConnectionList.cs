@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
+using GraphQL.Types.Relay.DataObjects;
 
 namespace GraphQL.EntityFramework
 {
@@ -54,7 +55,7 @@ namespace GraphQL.EntityFramework
             IncludeAppender.SetIncludeMetadata(builder.FieldType, includeName);
             builder.Resolve(context =>
             {
-                return ExecuteWrapper.ExecuteQuery(name, typeof(TGraph), context.Errors, () =>
+                return ((Func<Connection<TReturn>>) (() =>
                 {
                     var enumerable = resolve(context);
                     var page = enumerable
@@ -67,7 +68,7 @@ namespace GraphQL.EntityFramework
                         context.After,
                         context.Last,
                         context.Before);
-                });
+                }))();
             });
             return builder;
         }

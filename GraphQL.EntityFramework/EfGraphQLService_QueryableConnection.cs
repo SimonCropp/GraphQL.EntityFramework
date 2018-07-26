@@ -34,7 +34,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>( name, resolve, includeName, pageSize);
+            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -50,7 +50,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>( name, resolve, includeName, pageSize);
+            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, includeName, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -70,18 +70,12 @@ namespace GraphQL.EntityFramework
             //builder.Bidirectional();
             builder.Name(name);
             IncludeAppender.SetIncludeMetadata(builder.FieldType, includeName);
-            builder.ResolveAsync(async context =>
-            {
-                return await ExecuteWrapper.ExecuteConnection(name, typeof(TGraph), context.Errors, () =>
-                {
-                    return includeAppender.AddIncludes(resolve(context),context)
-                        .ApplyGraphQlArguments(context)
-                        .ApplyConnectionContext(context.First,
-                            context.After,
-                            context.Last,
-                            context.Before);
-                });
-            });
+            builder.Resolve(context => includeAppender.AddIncludes(resolve(context), context)
+                .ApplyGraphQlArguments(context)
+                .ApplyConnectionContext(context.First,
+                    context.After,
+                    context.Last,
+                    context.Before));
             return builder;
         }
     }

@@ -76,7 +76,7 @@ namespace GraphQL.EntityFramework
                 Resolver = new FuncFieldResolver<TSource, TReturn>(
                     context =>
                     {
-                        return ExecuteWrapper.ExecuteQuery(name, graphType, context.Errors, () => resolve(context));
+                        return ((Func<TReturn>) (() => resolve(context)))();
                     })
             };
         }

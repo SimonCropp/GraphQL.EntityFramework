@@ -100,11 +100,11 @@ namespace GraphQL.EntityFramework
                 Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
                     context =>
                     {
-                        return ExecuteWrapper.ExecuteQuery(name, listGraphType, context.Errors, () =>
+                        return ((Func<IEnumerable<TReturn>>) (() =>
                         {
                             var returnTypes = resolve(context);
                             return returnTypes.ApplyGraphQlArguments(context);
-                        });
+                        }))();
                     })
             };
         }

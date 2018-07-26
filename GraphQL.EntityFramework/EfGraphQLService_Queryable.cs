@@ -111,7 +111,7 @@ namespace GraphQL.EntityFramework
             return BuildQueryField(name, resolve, arguments, includeName, listGraphType);
         }
 
-         FieldType BuildQueryField<TSource, TReturn>(
+        FieldType BuildQueryField<TSource, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments,
@@ -128,13 +128,10 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, List<TReturn>>(
                     context =>
                     {
-                        return ExecuteWrapper.ExecuteAsyncQuery(name, listGraphType, context.Errors, () =>
-                        {
-                            var returnTypes = resolve(context);
-                            return includeAppender.AddIncludes(returnTypes,context)
-                                    .ApplyGraphQlArguments(context)
-                                    .ToListAsync();
-                        });
+                        var returnTypes = resolve(context);
+                        return includeAppender.AddIncludes(returnTypes, context)
+                            .ApplyGraphQlArguments(context)
+                            .ToListAsync();
                     })
             };
         }
