@@ -12,6 +12,6 @@ public class ParentGraph : EfObjectGraphType<ParentEntity>
         AddNavigationConnectionField<ChildGraph, ChildEntity>(
             name: "childrenConnection",
             resolve: context => context.Source.Children,
-            includeName: "Children");
+            includeNames: new[] { "Children"});
     }
 }

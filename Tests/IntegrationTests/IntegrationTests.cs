@@ -756,7 +756,6 @@ public class IntegrationTests : TestBase
         ObjectApprover.VerifyWithJson(result);
     }
 
-
     [Fact]
     public async Task With_null_navigation_property()
     {
@@ -897,6 +896,41 @@ public class IntegrationTests : TestBase
         ObjectApprover.VerifyWithJson(result);
     }
 
+    [Fact]
+    public async Task Many_children()
+    {
+        var queryString = @"
+{
+  manyChildren
+  {
+    child1
+    {
+      id
+    }
+  }
+}";
+
+        var parent = new WithManyChildrenEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+        };
+        var child1 = new Child1Entity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Parent = parent
+        };
+        var child2 = new Child2Entity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Parent = parent
+        };
+        parent.Child1 = child1;
+        parent.Child2 = child2;
+
+        var result = await RunQuery(queryString, parent, child1, child2);
+        ObjectApprover.VerifyWithJson(result);
+    }
+
     static async Task<object> RunQuery(string queryString, params object[] entities)
     {
         Purge();
@@ -940,6 +974,9 @@ public class IntegrationTests : TestBase
             Purge(dataContext.WithMisNamedQueryChildEntities);
             Purge(dataContext.WithMisNamedQueryParentEntities);
             Purge(dataContext.WithNullableEntities);
+            Purge(dataContext.WithManyChildrenEntities);
+            Purge(dataContext.Child1Entities);
+            Purge(dataContext.Child2Entities);
             dataContext.SaveChanges();
         }
     }

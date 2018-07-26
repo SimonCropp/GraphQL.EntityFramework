@@ -13,6 +13,6 @@ public class ChildGraph : EfObjectGraphType<ChildEntity>
         AddNavigationField<ParentGraph, ParentEntity>(
             name: "parentAlias",
             resolve: context => context.Source.Parent,
-            includeName: "Parent");
+            includeNames: new []{"Parent"});
     }
 }
