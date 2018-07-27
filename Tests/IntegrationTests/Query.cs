@@ -3,7 +3,7 @@ using GraphQL.Types;
 
 public class Query : ObjectGraphType
 {
-    public Query(EfGraphQLService efGraphQlService)
+    public Query(IEfGraphQLService efGraphQlService)
     {
         efGraphQlService.AddQueryField<SkipLevelGraph, Level1Entity>(this,
             name: "skipLevel",

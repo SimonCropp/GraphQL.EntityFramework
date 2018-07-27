@@ -2,7 +2,7 @@
 
 public class WithMisNamedQueryChildGraph : EfObjectGraphType<WithMisNamedQueryChildEntity>
 {
-    public WithMisNamedQueryChildGraph(EfGraphQLService graphQlService) : base(graphQlService)
+    public WithMisNamedQueryChildGraph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
         Field(x => x.Id);
         AddNavigationField<WithMisNamedQueryParentGraph, WithMisNamedQueryParentEntity>(

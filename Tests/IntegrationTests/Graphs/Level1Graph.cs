@@ -2,7 +2,7 @@
 
 public class Level1Graph : EfObjectGraphType<Level1Entity>
 {
-    public Level1Graph(EfGraphQLService graphQlService) : base(graphQlService)
+    public Level1Graph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
         Field(x => x.Id);
         AddNavigationField<Level2Graph, Level2Entity>(

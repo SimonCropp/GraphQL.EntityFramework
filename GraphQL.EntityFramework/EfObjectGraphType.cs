@@ -8,9 +8,9 @@ namespace GraphQL.EntityFramework
 {
     public class EfObjectGraphType<TSource> : ObjectGraphType<TSource>
     {
-        EfGraphQLService efGraphQlService;
+        IEfGraphQLService efGraphQlService;
 
-        public EfObjectGraphType(EfGraphQLService efGraphQlService)
+        public EfObjectGraphType(IEfGraphQLService efGraphQlService)
         {
             this.efGraphQlService = efGraphQlService;
         }

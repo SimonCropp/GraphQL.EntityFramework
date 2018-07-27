@@ -2,7 +2,7 @@
 
 public class Level3Graph : EfObjectGraphType<Level3Entity>
 {
-    public Level3Graph(EfGraphQLService graphQlService) : base(graphQlService)
+    public Level3Graph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
         Field(x => x.Id);
         Field(x => x.Property);

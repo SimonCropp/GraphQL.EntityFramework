@@ -2,7 +2,7 @@
 
 public class EmployeeGraph : EfObjectGraphType<Employee>
 {
-    public EmployeeGraph(EfGraphQLService graphQlService) : base(graphQlService)
+    public EmployeeGraph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
         Field(x => x.Id);
         Field(x => x.Content);

@@ -3,7 +3,7 @@ using GraphQL.EntityFramework;
 
 public class Query : ObjectGraphType
 {
-    public Query(EfGraphQLService efGraphQlService)
+    public Query(IEfGraphQLService efGraphQlService)
     {
         efGraphQlService.AddQueryField<CompanyGraph, Company>(this, name: "companies", resolve: context =>
         {

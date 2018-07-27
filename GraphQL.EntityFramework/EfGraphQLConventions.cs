@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +16,7 @@ namespace GraphQL.EntityFramework
             ArgumentGraphs.RegisterInContainer(registerInstance);
 
             var service = new EfGraphQLService(GetNavigationProperties(dbContext));
-            registerInstance(typeof(EfGraphQLService), service);
+            registerInstance(typeof(IEfGraphQLService), service);
         }
 
         public static void RegisterInContainer(IServiceCollection services, DbContext dbContext)
@@ -72,11 +71,5 @@ namespace GraphQL.EntityFramework
             register(typeof(EdgeType<>));
             register(typeof(PageInfoType));
         }
-    }
-    [DebuggerDisplay("PropertyName = {PropertyName}, PropertyType = {PropertyType}")]
-    public class Navigation
-    {
-        public string PropertyName;
-        public Type PropertyType;
     }
 }

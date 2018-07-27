@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using GraphQL.EntityFramework;
 using GraphQL.Types;
 
-namespace GraphQL.EntityFramework
+partial class EfGraphQLService : IEfGraphQLService
 {
-    public partial class EfGraphQLService
+    public EfGraphQLService(Dictionary<Type, List<Navigation>> navigations)
     {
-        public EfGraphQLService(Dictionary<Type, List<Navigation>> navigations)
-        {
-            includeAppender = new IncludeAppender(navigations);
-        }
+        includeAppender = new IncludeAppender(navigations);
+    }
 
-        IncludeAppender includeAppender;
+    IncludeAppender includeAppender;
 
-        static Type MakeListGraphType(Type graphType)
-        {
-            var listGraphType = typeof(ListGraphType<>);
-            return listGraphType.MakeGenericType(graphType);
-        }
+    static Type MakeListGraphType(Type graphType)
+    {
+        var listGraphType = typeof(ListGraphType<>);
+        return listGraphType.MakeGenericType(graphType);
     }
 }

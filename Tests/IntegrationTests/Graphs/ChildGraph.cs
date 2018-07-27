@@ -2,7 +2,7 @@
 
 public class ChildGraph : EfObjectGraphType<ChildEntity>
 {
-    public ChildGraph(EfGraphQLService graphQlService) : base(graphQlService)
+    public ChildGraph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
         Field(x => x.Id);
         Field(x => x.Property);

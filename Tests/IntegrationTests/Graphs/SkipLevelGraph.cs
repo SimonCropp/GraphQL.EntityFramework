@@ -2,7 +2,7 @@
 
 public class SkipLevelGraph : EfObjectGraphType<Level1Entity>
 {
-    public SkipLevelGraph(EfGraphQLService graphQlService) : base(graphQlService)
+    public SkipLevelGraph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
         Field(x => x.Id);
         AddNavigationField<Level3Graph, Level3Entity>(
