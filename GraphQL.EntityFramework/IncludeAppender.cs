@@ -26,7 +26,7 @@ class IncludeAppender
     IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, List<Navigation> navigationProperties)
         where T : class
     {
-        var paths = GetPaths(fieldType, subFields, navigationProperties).ToList();
+        var paths = GetPaths(fieldType, subFields, navigationProperties);
         foreach (var path in paths)
         {
             query = query.Include(path);
@@ -35,7 +35,7 @@ class IncludeAppender
         return query;
     }
 
-    IEnumerable<string> GetPaths(FieldType fieldType, ICollection<Field> fields, List<Navigation> navigationProperty)
+    List<string> GetPaths(FieldType fieldType, ICollection<Field> fields, List<Navigation> navigationProperty)
     {
         var list = new List<string>();
 
@@ -62,20 +62,31 @@ class IncludeAppender
             return;
         }
 
-        if (fieldType.TryGetEntityTypeForField(out var entityType))
+        if (!fieldType.TryGetEntityTypeForField(out var entityType))
         {
-            if (!TryGetIncludeMetadata(fieldType, out var includeNames))
-            {
-                return;
-            }
-            //todo: do a single check to avoid allocations
-            var paths = GetPaths(parentPath, includeNames).ToList();
-            foreach (var path in paths)
-            {
-                list.Add(path);
-            }
-            ProcessSubFields(list, paths.First(), subFields, complexGraph, navigations[entityType]);
+            return;
         }
+        if (!TryGetIncludeMetadata(fieldType, out var includeNames))
+        {
+            return;
+        }
+        //todo: do a single check to avoid allocations
+        var paths = GetPaths(parentPath, includeNames).ToList();
+        foreach (var path in paths)
+        {
+            list.Add(path);
+        }
+        ProcessSubFields(list, paths.First(), subFields, complexGraph, navigations[entityType]);
+    }
+
+    static IEnumerable<string> GetPaths(string parentPath, string[] includeNames)
+    {
+        if (parentPath == null)
+        {
+            return includeNames;
+        }
+
+        return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
     void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<Navigation> navigationProperties)
@@ -94,16 +105,6 @@ class IncludeAppender
     {
         var name = field.Name.ToLowerInvariant();
         return name == "edges" || name == "items" || name == "node";
-    }
-
-    static IEnumerable<string> GetPaths(string parentPath, string[] includeNames)
-    {
-        if (parentPath == null)
-        {
-            return includeNames;
-        }
-
-        return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
     public static Dictionary<string, object> GetIncludeMetadata(string fieldName, IEnumerable<string> value)

@@ -39,8 +39,7 @@ namespace GraphQL.EntityFramework
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null,
-            string includeName = null)
+            IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
             var field = BuildQueryField(graphType, name, resolve, arguments);
