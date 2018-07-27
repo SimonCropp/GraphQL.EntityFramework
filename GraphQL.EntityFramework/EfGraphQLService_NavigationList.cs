@@ -96,7 +96,7 @@ namespace GraphQL.EntityFramework
                 Name = name,
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
-                Metadata = IncludeAppender.GetIncludeMetadata(includeNames),
+                Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
                 Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
                     context =>
                     {

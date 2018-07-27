@@ -96,49 +96,50 @@ class IncludeAppender
         return name == "edges" || name == "items" || name == "node";
     }
 
-    static IEnumerable<string> GetPaths(string parentPath, List<string> includeNames)
+    static IEnumerable<string> GetPaths(string parentPath, string[] includeNames)
     {
-        foreach (var includeName in includeNames)
+        if (parentPath == null)
         {
-            if (parentPath == null)
-            {
-                yield return includeName;
-            }
-
-            yield return $"{parentPath}.{includeName}";
+            return includeNames;
         }
+
+        return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-    public static Dictionary<string, object> GetIncludeMetadata(IEnumerable<string> value)
+    public static Dictionary<string, object> GetIncludeMetadata(string fieldName, IEnumerable<string> value)
     {
         var metadata = new Dictionary<string, object>();
-        if (value != null)
-        {
-            metadata["_EF_IncludeName"] = value.ToList();
-        }
-
+        SetIncludeMetadata(fieldName, value, metadata);
         return metadata;
     }
 
     public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string> includeNames)
     {
-        var metadata = fieldType.Metadata;
+        SetIncludeMetadata(fieldName, includeNames, fieldType.Metadata);
+    }
+
+    static void SetIncludeMetadata(string fieldName, IEnumerable<string> includeNames, IDictionary<string, object> metadata)
+    {
         if (includeNames == null)
         {
-            metadata["_EF_IncludeName"] = new[] {char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1)};
+            metadata["_EF_IncludeName"] = FieldNameToArray(fieldName);
         }
         else
         {
-            metadata["_EF_IncludeName"] = includeNames.ToList();
+            metadata["_EF_IncludeName"] = includeNames.ToArray();
         }
     }
 
+    static string[] FieldNameToArray(string fieldName)
+    {
+        return new[] {char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1)};
+    }
 
-    static bool TryGetIncludeMetadata(FieldType fieldType, out List<string> value)
+    static bool TryGetIncludeMetadata(FieldType fieldType, out string[] value)
     {
         if (fieldType.Metadata.TryGetValue("_EF_IncludeName", out var fieldNameObject))
         {
-            value = (List<string>) fieldNameObject;
+            value = (string[]) fieldNameObject;
             return true;
         }
 
