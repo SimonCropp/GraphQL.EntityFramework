@@ -12,6 +12,15 @@ public class Query : ObjectGraphType
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Level1Entities;
             });
+
+        efGraphQlService.AddQueryField<WithManyChildrenGraph, WithManyChildrenEntity>(this,
+            name: "manyChildren",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.WithManyChildrenEntities;
+            });
+
         efGraphQlService.AddQueryField<Level1Graph, Level1Entity>(this,
             name: "level1Entities",
             resolve: context =>

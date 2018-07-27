@@ -12,6 +12,6 @@ public class CompanyGraph : EfObjectGraphType<Company>
         AddNavigationConnectionField<EmployeeGraph, Employee>(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
-            includeName: "Employees");
+            includeNames: new []{ "Employees"});
     }
 }

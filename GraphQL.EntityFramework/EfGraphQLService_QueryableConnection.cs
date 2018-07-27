@@ -65,7 +65,6 @@ namespace GraphQL.EntityFramework
             //todo:
             //builder.Bidirectional();
             builder.Name(name);
-            IncludeAppender.SetSkipMetadata(builder.FieldType);
             builder.Resolve(context =>
             {
                 var withIncludes = includeAppender.AddIncludes(resolve(context), context);

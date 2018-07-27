@@ -64,14 +64,17 @@ class IncludeAppender
 
         if (fieldType.TryGetEntityTypeForField(out var entityType))
         {
-            if (GetSkipMetadata(fieldType))
+            if (!TryGetIncludeMetadata(fieldType, out var includeNames))
             {
                 return;
             }
-
-            var path = GetPath(parentPath, field, fieldType);
-            list.Add(path);
-            ProcessSubFields(list, path, subFields, complexGraph, navigations[entityType]);
+            //todo: do a single check to avoid allocations
+            var paths = GetPaths(parentPath, includeNames).ToList();
+            foreach (var path in paths)
+            {
+                list.Add(path);
+            }
+            ProcessSubFields(list, paths.First(), subFields, complexGraph, navigations[entityType]);
         }
     }
 
@@ -93,75 +96,50 @@ class IncludeAppender
         return name == "edges" || name == "items" || name == "node";
     }
 
-    static string GetPath(string parentPath, Field field, FieldType fieldType)
+    static IEnumerable<string> GetPaths(string parentPath, string[] includeNames)
     {
-        var fieldName = GetFieldName(field, fieldType);
-
         if (parentPath == null)
         {
-            return fieldName;
+            return includeNames;
         }
 
-        return $"{parentPath}.{fieldName}";
+        return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-    static string GetFieldName(Field field, FieldType fieldType)
-    {
-        if (fieldType != null)
-        {
-            if (TryGetIncludeMetadata(fieldType, out var fieldName))
-            {
-                return fieldName;
-            }
-        }
-
-        return char.ToUpperInvariant(field.Name[0]) + field.Name.Substring(1);
-    }
-
-    public static Dictionary<string, object> GetIncludeMetadata(string value, bool skip = false)
+    public static Dictionary<string, object> GetIncludeMetadata(string fieldName, IEnumerable<string> value)
     {
         var metadata = new Dictionary<string, object>();
-        if (value != null)
-        {
-            metadata["_EF_IncludeName"] = value;
-        }
-
-        if (skip)
-        {
-            metadata["_EF_SkipNode"] = true;
-        }
-
+        SetIncludeMetadata(fieldName, value, metadata);
         return metadata;
     }
 
-    public static void SetSkipMetadata(FieldType fieldType)
+    public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string> includeNames)
     {
-        fieldType.Metadata["_EF_SkipNode"] = true;
+        SetIncludeMetadata(fieldName, includeNames, fieldType.Metadata);
     }
 
-    public static void SetIncludeMetadata(FieldType fieldType, string value)
+    static void SetIncludeMetadata(string fieldName, IEnumerable<string> includeNames, IDictionary<string, object> metadata)
     {
-        if (value != null)
+        if (includeNames == null)
         {
-            fieldType.Metadata["_EF_IncludeName"] = value;
+            metadata["_EF_IncludeName"] = FieldNameToArray(fieldName);
+        }
+        else
+        {
+            metadata["_EF_IncludeName"] = includeNames.ToArray();
         }
     }
 
-    static bool GetSkipMetadata(FieldType fieldType)
+    static string[] FieldNameToArray(string fieldName)
     {
-        if (fieldType.Metadata.TryGetValue("_EF_SkipNode", out var fieldNameObject))
-        {
-            return (bool) fieldNameObject;
-        }
-
-        return false;
+        return new[] {char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1)};
     }
 
-    static bool TryGetIncludeMetadata(FieldType fieldType, out string value)
+    static bool TryGetIncludeMetadata(FieldType fieldType, out string[] value)
     {
         if (fieldType.Metadata.TryGetValue("_EF_IncludeName", out var fieldNameObject))
         {
-            value = (string) fieldNameObject;
+            value = (string[]) fieldNameObject;
             return true;
         }
 

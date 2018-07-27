@@ -118,7 +118,6 @@ namespace GraphQL.EntityFramework
                 Name = name,
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
-                Metadata = IncludeAppender.GetIncludeMetadata(null,true),
                 Resolver = new FuncFieldResolver<TSource, Task<List<TReturn>>>(
                     context =>
                     {
