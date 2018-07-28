@@ -16,6 +16,7 @@ partial class EfGraphQLService
         IEnumerable<QueryArgument> arguments = null)
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildQueryField(graphType, name, resolve, arguments);
         return graph.AddField(field);
     }
@@ -28,6 +29,7 @@ partial class EfGraphQLService
         IEnumerable<QueryArgument> arguments = null)
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildQueryField(graphType, name, resolve, arguments);
         return graph.AddField(field);
     }
@@ -40,6 +42,7 @@ partial class EfGraphQLService
         IEnumerable<QueryArgument> arguments = null)
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildQueryField(graphType, name, resolve, arguments);
         return graph.AddField(field);
     }
@@ -51,6 +54,7 @@ partial class EfGraphQLService
         IEnumerable<QueryArgument> arguments)
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graphType), graphType);
         var listGraphType = MakeListGraphType(graphType);
         return BuildQueryField(name, resolve, arguments, listGraphType);
     }
@@ -63,6 +67,7 @@ partial class EfGraphQLService
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildQueryField<object, TGraph, TReturn>(name, resolve, arguments);
         return graph.AddField(field);
     }
@@ -76,6 +81,7 @@ partial class EfGraphQLService
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildQueryField<TSource, TGraph, TReturn>(name, resolve, arguments);
         return graph.AddField(field);
     }
@@ -88,6 +94,7 @@ partial class EfGraphQLService
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildQueryField<TSource, TGraph, TReturn>(name, resolve, arguments);
         return graph.AddField(field);
     }
@@ -110,6 +117,8 @@ partial class EfGraphQLService
         Type listGraphType)
         where TReturn : class
     {
+        Guard.AgainstNullWhiteSpace(nameof(name), name);
+        Guard.AgainstNull(nameof(resolve), resolve);
         return new FieldType
         {
             Name = name,

@@ -193,7 +193,7 @@ static class ExpressionBuilder<T>
         }
         catch (ArgumentException exception)
         {
-            throw new ErrorException($"Failed to create a member expression. Type: {typeof(T).FullName}, Path: {path}. Error: {exception.Message}");
+            throw new Exception($"Failed to create a member expression. Type: {typeof(T).FullName}, Path: {path}. Error: {exception.Message}");
         }
     }
 

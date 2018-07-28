@@ -15,6 +15,7 @@ partial class EfGraphQLService
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var connection = BuildQueryConnectionField<object, TGraph, TReturn>(name, resolve, pageSize);
         var field = graph.AddField(connection.FieldType);
         field.AddWhereArgument(arguments);
@@ -30,6 +31,7 @@ partial class EfGraphQLService
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize);
         var field = graph.AddField(connection.FieldType);
         field.AddWhereArgument(arguments);
@@ -45,6 +47,7 @@ partial class EfGraphQLService
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize);
         var field = graph.AddField(connection.FieldType);
         field.AddWhereArgument(arguments);
@@ -58,6 +61,9 @@ partial class EfGraphQLService
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
+        Guard.AgainstNullWhiteSpace(nameof(name), name);
+        Guard.AgainstNull(nameof(resolve), resolve);
+        Guard.AgainstNegative(nameof(pageSize), pageSize);
         var builder = ConnectionBuilder.Create<TGraph, TSource>();
         builder.PageSize(pageSize);
         //todo:

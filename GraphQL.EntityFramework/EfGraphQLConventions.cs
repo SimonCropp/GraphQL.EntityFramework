@@ -12,6 +12,8 @@ namespace GraphQL.EntityFramework
     {
         public static void RegisterInContainer(Action<Type, object> registerInstance, DbContext dbContext)
         {
+            Guard.AgainstNull(nameof(registerInstance), registerInstance);
+            Guard.AgainstNull(nameof(dbContext), dbContext);
             Scalars.RegisterInContainer(registerInstance);
             ArgumentGraphs.RegisterInContainer(registerInstance);
 
@@ -21,11 +23,14 @@ namespace GraphQL.EntityFramework
 
         public static void RegisterInContainer(IServiceCollection services, DbContext dbContext)
         {
+            Guard.AgainstNull(nameof(services), services);
+            Guard.AgainstNull(nameof(dbContext), dbContext);
             RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, dbContext);
         }
 
         public static void RegisterConnectionTypesInContainer(IServiceCollection services)
         {
+            Guard.AgainstNull(nameof(services), services);
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();
@@ -67,6 +72,7 @@ namespace GraphQL.EntityFramework
 
         public static void RegisterConnectionTypesInContainer(Action<Type> register)
         {
+            Guard.AgainstNull(nameof(register), register);
             register(typeof(ConnectionType<>));
             register(typeof(EdgeType<>));
             register(typeof(PageInfoType));

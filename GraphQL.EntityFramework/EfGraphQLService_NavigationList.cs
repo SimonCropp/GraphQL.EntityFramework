@@ -14,6 +14,7 @@ partial class EfGraphQLService
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildNavigationField<object, TGraph, TReturn>(name, resolve, includeNames, arguments);
         return graph.AddField(field);
     }
@@ -27,6 +28,7 @@ partial class EfGraphQLService
         IEnumerable<string> includeNames = null)
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildNavigationField(graphType, name, resolve, includeNames, arguments);
         return graph.AddField(field);
     }
@@ -40,6 +42,7 @@ partial class EfGraphQLService
         IEnumerable<string> includeNames = null)
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildNavigationField(graphType, name, resolve, includeNames, arguments);
         return graph.AddField(field);
     }
@@ -52,6 +55,7 @@ partial class EfGraphQLService
         IEnumerable<QueryArgument> arguments)
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graphType), graphType);
         var listGraphType = MakeListGraphType(graphType);
         return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments);
     }
@@ -65,6 +69,7 @@ partial class EfGraphQLService
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
+        Guard.AgainstNull(nameof(graph), graph);
         var field = BuildNavigationField<TSource, TGraph, TReturn>(name, resolve, includeNames, arguments);
         return graph.AddField(field);
     }
@@ -89,6 +94,8 @@ partial class EfGraphQLService
         IEnumerable<QueryArgument> arguments)
         where TReturn : class
     {
+        Guard.AgainstNullWhiteSpace(nameof(name), name);
+        Guard.AgainstNull(nameof(resolve), resolve);
         return new FieldType
         {
             Name = name,

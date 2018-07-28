@@ -43,7 +43,7 @@ static class TypeConverter
         {
             return values.Select(DateTimeOffset.Parse).ToList();
         }
-        throw new Exception($"Could not convert strings to {type.FullName} ");
+        throw new System.Exception($"Could not convert strings to {type.FullName} ");
     }
 
     public static object ConvertStringToType(string value, Type type)

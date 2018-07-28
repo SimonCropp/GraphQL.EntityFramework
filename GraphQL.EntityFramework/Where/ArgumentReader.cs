@@ -35,7 +35,7 @@ static class ArgumentReader
         {
             if (skip < 0)
             {
-                throw new ErrorException("Skip cannot be less than 0.");
+                throw new Exception("Skip cannot be less than 0.");
             }
         }
         return result;
@@ -48,7 +48,7 @@ static class ArgumentReader
         {
             if (take < 0)
             {
-                throw new ErrorException("Take cannot be less than 0.");
+                throw new Exception("Take cannot be less than 0.");
             }
         }
         return result;
