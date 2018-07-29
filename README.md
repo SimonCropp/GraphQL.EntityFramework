@@ -34,7 +34,7 @@ Queries entities by id. Currently the only supported identity member (property o
 
 ```graphql
 {
-  entities (ids: "00000000-0000-0000-0000-000000000001")
+  entities (ids: "1")
   {
     property
   }
@@ -46,7 +46,7 @@ Queries entities by id. Currently the only supported identity member (property o
 
 ```graphql
 {
-  entities (ids: ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"])
+  entities (ids: ["1", "2"])
   {
     property
   }
@@ -244,7 +244,18 @@ Or via a delegate.
 EfGraphQLConventions.RegisterInContainer(Action<Type, object> registerInstance, DbContext dbContext)
 ```
 
-Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
+Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields. 
+
+The DbContext is only used to interrogate `DbContext.Model`, as such it only needs to be short lived. So the context can be cleaned up after calling `RegisterInContainer`:
+
+```csharp
+using (var dataContext = BuildDataContext())
+{
+    EfGraphQLConventions.RegisterInContainer(serviceCollection, dataContext)
+}
+```
+
+
 
 ### Connection Types
 
