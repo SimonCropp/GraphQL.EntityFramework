@@ -275,7 +275,7 @@ EfGraphQLConventions.RegisterConnectionTypesInContainer(Action<Type> register)
 
 ### Includes and Navigation properties.
 
-Entity Framework has the concept of [Navigation property](https://docs.microsoft.com/en-us/ef/core/modeling/relationships):
+Entity Framework has the concept of [Navigation Properties](https://docs.microsoft.com/en-us/ef/core/modeling/relationships):
 
 > A property defined on the principal and/or dependent entity that contains a reference(s) to the related entity(s). 
 
