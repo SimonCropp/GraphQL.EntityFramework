@@ -410,7 +410,7 @@ public class Query : EfObjectGraphType
 
 ##### Response
 
-```json
+```js
 {
   "data": {
     "companiesConnection": {
