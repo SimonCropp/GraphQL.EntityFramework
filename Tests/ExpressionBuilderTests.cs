@@ -49,7 +49,7 @@ public class ExpressionBuilderTests
         };
 
         var resultFromString = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] { guid.ToString() }))
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] {guid.ToString()}))
             .Single();
         Assert.Equal(guid, resultFromString.Field);
         var nullResult = list.AsQueryable()
@@ -154,7 +154,7 @@ public class ExpressionBuilderTests
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.In, new[] { "2" }))
+            .Where(ExpressionBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.In, new[] {"2"}))
             .Single();
         Assert.Equal(2, result.Member);
     }
@@ -163,6 +163,7 @@ public class ExpressionBuilderTests
     {
         public int Member;
     }
+
     [Fact]
     public void InGuidList()
     {

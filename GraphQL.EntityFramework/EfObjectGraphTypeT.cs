@@ -6,7 +6,7 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public class EfObjectGraphType : ObjectGraphType
+    public class EfObjectGraphType<TSource> : ObjectGraphType<TSource>
     {
         IEfGraphQLService efGraphQlService;
 
@@ -16,33 +16,33 @@ namespace GraphQL.EntityFramework
             this.efGraphQlService = efGraphQlService;
         }
 
-        protected ConnectionBuilder<TGraph, object> AddNavigationConnectionField<TGraph, TReturn>(
+        protected ConnectionBuilder<TGraph, TSource> AddNavigationConnectionField<TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
+            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
             int pageSize = 10)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddNavigationConnectionField<TGraph, TReturn>(this, name, resolve, arguments, includeNames, pageSize);
+            return efGraphQlService.AddNavigationConnectionField<TSource, TGraph, TReturn>(this, name, resolve, arguments, includeNames, pageSize);
         }
 
         protected FieldType AddNavigationField<TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<object>, TReturn> resolve,
+            Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddNavigationField<TGraph, TReturn>(this, name, resolve, arguments, includeNames);
+            return efGraphQlService.AddNavigationField<TSource, TGraph, TReturn>(this, name, resolve, arguments, includeNames);
         }
 
         protected FieldType AddNavigationField<TReturn>(
             Type graphType,
             string name,
-            Func<ResolveFieldContext<object>, TReturn> resolve,
+            Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -52,19 +52,19 @@ namespace GraphQL.EntityFramework
 
         protected FieldType AddNavigationField<TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
+            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddNavigationField<TGraph, TReturn>(this, name, resolve, arguments, includeNames);
+            return efGraphQlService.AddNavigationField<TSource, TGraph, TReturn>(this, name, resolve, arguments, includeNames);
         }
 
         protected FieldType AddNavigationField<TReturn>(
             Type graphType,
             string name,
-            Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
+            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -72,31 +72,31 @@ namespace GraphQL.EntityFramework
             return efGraphQlService.AddNavigationField(this, graphType, name, resolve, arguments, includeNames);
         }
 
-        protected ConnectionBuilder<TGraph, object> AddQueryConnectionField<TGraph, TReturn>(
+        protected ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddQueryConnectionField<TGraph, TReturn>(this, name, resolve, arguments, pageSize);
+            return efGraphQlService.AddQueryConnectionField<TSource, TGraph, TReturn>(this, name, resolve, arguments, pageSize);
         }
 
         protected FieldType AddQueryField<TGraph, TReturn>(
             string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField<TGraph, TReturn>(this, name, resolve, arguments);
+            return efGraphQlService.AddQueryField<TSource, TGraph, TReturn>(this, name, resolve, arguments);
         }
 
         protected FieldType AddQueryField<TReturn>(
             Type graphType,
             string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {

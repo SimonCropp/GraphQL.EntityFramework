@@ -10,7 +10,7 @@ https://nuget.org/packages/GraphQL.EntityFramework/
     PM> Install-Package GraphQL.EntityFramework
 
 
-## Usage
+## Query Usage
 
 
 ### Arguments
@@ -32,7 +32,7 @@ Queries entities by id. Currently the only supported identity member (property o
 
 ##### Single
 
-```
+```graphql
 {
   entities (ids: "00000000-0000-0000-0000-000000000001")
   {
@@ -44,7 +44,7 @@ Queries entities by id. Currently the only supported identity member (property o
 
 ##### Multiple
 
-```
+```graphql
 {
   entities (ids: ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"])
   {
@@ -90,7 +90,7 @@ Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, a
 
 Single where statements can be expressed:
 
-```
+```graphql
 {
   entities
   (where: {path: "Property", comparison: "==", value: "the value"})
@@ -105,7 +105,7 @@ Single where statements can be expressed:
 
 Multiple where statements can be expressed:
 
-```
+```graphql
 {
   entities
   (where:
@@ -123,7 +123,7 @@ Multiple where statements can be expressed:
 
 ##### Where In
 
-```c#
+```graphql
 {
   testEntities
   (where: {path: "Property", comparison: "In", value: ["Value1", "Value2"]})
@@ -138,7 +138,7 @@ Multiple where statements can be expressed:
 
 All string comparisons are, by default, done using no [StringComparison](https://msdn.microsoft.com/en-us/library/system.stringcomparison.aspx). A custom StringComparison can be used via the `case` attribute.
 
-```
+```graphql
 {
   entities
   (where: {path: "Property", comparison: "endsWith", value: "the value", case: "Ordinal"})
@@ -148,12 +148,22 @@ All string comparisons are, by default, done using no [StringComparison](https:/
 }
 ```
 
+**Note that many [Database Providers](https://docs.microsoft.com/en-us/ef/core/providers/), including [SQL Server](https://docs.microsoft.com/en-us/ef/core/providers/sql-server/index), cannot correctly convert a case insensitive comparison to a server side query.** Hence this will result in the query being [resolved client side](https://docs.microsoft.com/en-us/ef/core/querying/client-eval#client-evaluation). If this is a concern it is recommended to [Disabling client evaluation](https://docs.microsoft.com/en-us/ef/core/querying/client-eval#disabling-client-evaluation).
+
+```csharp
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+    optionsBuilder.ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning));
+}
+```
+
+
 
 ##### Null
 
 Null can be expressed by omitting the `value`:
 
-```
+```graphql
 {
   entities
   (where: {path: "Property", comparison: "=="})
@@ -169,7 +179,7 @@ Null can be expressed by omitting the `value`:
 
 ##### Ascending
 
-```
+```graphql
 {
   entities (orderBy: {path: "Property"})
   {
@@ -181,7 +191,7 @@ Null can be expressed by omitting the `value`:
 
 ##### Descending
 
-```
+```graphql
 {
   entities (orderBy: {path: "Property", descending: true})
   {
@@ -193,10 +203,9 @@ Null can be expressed by omitting the `value`:
 
 #### Take
 
-[Queryable.Take](https://msdn.microsoft.com/en-us/library/bb300906(v=vs.110).aspx) or
-[Enumerable.Take](https://msdn.microsoft.com/en-us/library/bb503062.aspx) can be used as follows:
+[Queryable.Take](https://msdn.microsoft.com/en-us/library/bb300906(v=vs.110).aspx) or [Enumerable.Take](https://msdn.microsoft.com/en-us/library/bb503062.aspx) can be used as follows:
 
-```
+```graphql
 {
   entities (take: 1)
   {
@@ -208,10 +217,9 @@ Null can be expressed by omitting the `value`:
 
 #### Skip
 
-[Queryable.Skip](https://msdn.microsoft.com/en-us/library/bb357513.aspx) or
-[Enumerable.Skip](https://msdn.microsoft.com/en-us/library/bb358985.aspx) can be used as follows:
+[Queryable.Skip](https://msdn.microsoft.com/en-us/library/bb357513.aspx) or [Enumerable.Skip](https://msdn.microsoft.com/en-us/library/bb358985.aspx) can be used as follows:
 
-```
+```graphql
 {
   entities (skip: 1)
   {
@@ -220,21 +228,106 @@ Null can be expressed by omitting the `value`:
 }
 ```
 
+## Configuration
+
+Enabling is done via registering in a container.
+
+This can be applied to an [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
+
+```csharp
+EfGraphQLConventions.RegisterInContainer(IServiceCollection services, DbContext dataContext);
+```
+
+Or via a delegate.
+
+```csharp
+EfGraphQLConventions.RegisterInContainer(Action<Type, object> registerInstance, DbContext dbContext)
+```
+
+Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
+
+### Connection Types
+
+GraphQL enables paging via [Connections](https://graphql.org/learn/pagination/#complete-connection-model). When using Connections in GraphQL.net it is [necessary to register several types in the container](https://github.com/graphql-dotnet/graphql-dotnet/issues/451#issuecomment-335894433):
+
+```csharp
+services.AddTransient(typeof(ConnectionType<>));
+services.AddTransient(typeof(EdgeType<>));
+services.AddSingleton<PageInfoType>();
+```
+
+There is a helper methods to perform the above:
+
+``` csharp
+EfGraphQLConventions.RegisterConnectionTypesInContainer(IServiceCollection services);
+```
+
+or 
+
+```csharp
+EfGraphQLConventions.RegisterConnectionTypesInContainer(Action<Type> register)
+```
+
+
 
 ## Defining Graphs
 
 
+### Includes and Navigation properties.
+
+Entity Framework has the concept of [Navigation property](https://docs.microsoft.com/en-us/ef/core/modeling/relationships):
+
+> A property defined on the principal and/or dependent entity that contains a reference(s) to the related entity(s). 
+
+In the context of GraphQL, Root Graph is the entry point to performing the initial EF query. Nested graphs then usually access navigation properties to return data, or perform a new EF query. New EF queries can be performed with `AddQueryField` and `AddQueryConnectionField`. Navigation properties queries are performed using `AddNavigationField` and `AddNavigationConnectionField`.
+
+When performing a query there are several approaches to [Loading Related Data](https://docs.microsoft.com/en-us/ef/core/querying/related-data)
+
+- **Eager loading** means that the related data is loaded from the database as part of the initial query.
+- **Explicit loading** means that the related data is explicitly loaded from the database at a later time.
+- **Lazy loading** means that the related data is transparently loaded from the database when the navigation property is accessed.
+
+Ideally, all navigation properties would be eagerly loaded as part of the root query. However determining what navigation properties to eagerly is difficult in the context of GraphQL. The reason is, given the returned hierarchy of data is dynamically defined by the requesting client, the root query cannot know what properties to include. To work around this GraphQL.EntityFramework interrogates the incoming query to derive the includes. So for example take the following query
+
+```graphql
+{
+  hero {
+    name
+    friends {
+      name
+      address {
+        town  
+      }
+    }
+  }
+}
+```
+
+Would result in the following query being performed
+
+```
+context.Heros
+        .Include("Friends")
+        .Include("Friends.Address");
+```
+
+The string for the include is taken from the field name when using `AddNavigationField` or `AddNavigationConnectionField` with the first character upper cased. This value can be overridden using the optional parameter `includeNames` .  Note that  `includeNames` is an `IEnumerable<string>` so that multiple navigation properties can optionally be included for a single node.
+
+
+
+
 ### Fields
 
+Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet.github.io/docs/getting-started/introduction#queries). Fields can be mapped to Entity Framework by using `IEfGraphQLService`. `IEfGraphQLService` can be used in either a root query or a nested query via dependency injection. Alternatively the base type `EfObjectGraphType` or `EfObjectGraphType<TSource>` can be used for root or nested graphs respectively. The below samples all use the base type approach as it results in slightly less code.
 
 #### Root Query
 
 ```c#
-public class Query : ObjectGraphType
+public class Query : EfObjectGraphType
 {
-    public Query(EfGraphQLService graphQlService)
+    public Query(IEfGraphQLService graphQlService) : base(graphQlService)
     {
-        graphQlService.AddQueryField<CompanyGraph, Company>(
+        AddQueryField<CompanyGraph, Company>(
             name: "companies",
             resolve: context =>
             {
@@ -252,9 +345,9 @@ public class Query : ObjectGraphType
 ```c#
 public class CompanyGraph : EfObjectGraphType<Company>
 {
-    public CompanyGraph(EfGraphQLService graphQlService) : base(graphQlService)
+    public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
-        AddListField<EmployeeGraph, Employee>(
+        AddNavigationField<EmployeeGraph, Employee>(
             name: "employees",
             resolve: context => context.Source.Employees);
     }
@@ -271,11 +364,11 @@ public class CompanyGraph : EfObjectGraphType<Company>
 ##### Graph Type
 
 ```c#
-public class Query : ObjectGraphType
+public class Query : EfObjectGraphType
 {
-    public Query(EfGraphQLService graphQlService) : base(graphQlService)
+    public Query(IEfGraphQLService graphQlService) : base(graphQlService)
     {
-        graphQlService.AddQueryConnectionField<CompanyGraph, Company>(
+        AddQueryConnectionField<CompanyGraph, Company>(
             name: "companiesConnection",
             resolve: context =>
             {
@@ -289,7 +382,7 @@ public class Query : ObjectGraphType
 
 ##### Request
 
-```
+```graphql
 {
   companiesConnection(first: 2, after: "1") {
     totalCount
@@ -365,7 +458,7 @@ public class Query : ObjectGraphType
 ```c#
 public class CompanyGraph : EfObjectGraphType<Company>
 {
-    public CompanyGraph(EfGraphQLService graphQlService) : base(graphQlService)
+    public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
         AddNavigationConnectionField<EmployeeGraph, Employee>(
             name: "employeesConnection",
@@ -374,6 +467,9 @@ public class CompanyGraph : EfObjectGraphType<Company>
     }
 }
 ```
+
+
+
 
 
 ## Icon

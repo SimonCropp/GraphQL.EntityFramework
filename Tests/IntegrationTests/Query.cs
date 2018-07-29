@@ -1,11 +1,10 @@
 ﻿using GraphQL.EntityFramework;
-using GraphQL.Types;
 
-public class Query : ObjectGraphType
+public class Query : EfObjectGraphType
 {
-    public Query(IEfGraphQLService efGraphQlService)
+    public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
     {
-        efGraphQlService.AddQueryField<SkipLevelGraph, Level1Entity>(this,
+        AddQueryField<SkipLevelGraph, Level1Entity>(
             name: "skipLevel",
             resolve: context =>
             {
@@ -13,7 +12,7 @@ public class Query : ObjectGraphType
                 return dataContext.Level1Entities;
             });
 
-        efGraphQlService.AddQueryField<WithManyChildrenGraph, WithManyChildrenEntity>(this,
+        AddQueryField<WithManyChildrenGraph, WithManyChildrenEntity>(
             name: "manyChildren",
             resolve: context =>
             {
@@ -21,7 +20,7 @@ public class Query : ObjectGraphType
                 return dataContext.WithManyChildrenEntities;
             });
 
-        efGraphQlService.AddQueryField<Level1Graph, Level1Entity>(this,
+        AddQueryField<Level1Graph, Level1Entity>(
             name: "level1Entities",
             resolve: context =>
             {

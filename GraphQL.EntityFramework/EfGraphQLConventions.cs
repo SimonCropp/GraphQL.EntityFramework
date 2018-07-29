@@ -38,22 +38,22 @@ namespace GraphQL.EntityFramework
 
         static Dictionary<Type, List<Navigation>> GetNavigationProperties(DbContext dbContext)
         {
-            var dictionary = new Dictionary<Type, List<Navigation>>();
-            foreach (var entity in dbContext.Model.GetEntityTypes())
-            {
-                var navigations = entity.GetNavigations();
-                var value = navigations
-                    .Select(
-                        x => new Navigation
-                        {
-                            PropertyName = x.Name,
-                            PropertyType = GetNavigationType(x)
-                        })
-                    .ToList();
-                dictionary.Add(entity.ClrType, value);
-            }
+            return dbContext.Model
+                .GetEntityTypes()
+                .ToDictionary(x => x.ClrType, GetNavigations);
+        }
 
-            return dictionary;
+        static List<Navigation> GetNavigations(IEntityType entity)
+        {
+            var navigations = entity.GetNavigations();
+            return navigations
+                .Select(
+                    x => new Navigation
+                    {
+                        PropertyName = x.Name,
+                        PropertyType = GetNavigationType(x)
+                    })
+                .ToList();
         }
 
         static Type GetNavigationType(INavigation navigation)

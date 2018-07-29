@@ -49,7 +49,7 @@ public class FuncBuilderTests
         };
 
         var resultFromString = list
-            .Where(FuncBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] { guid .ToString()}))
+            .Where(FuncBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] {guid.ToString()}))
             .Single();
         Assert.Equal(guid, resultFromString.Field);
         var nullResult = list
@@ -109,7 +109,7 @@ public class FuncBuilderTests
         };
 
         var result = list
-            .Where(FuncBuilder<TargetForInInt>.BuildPredicate("Member",Comparison.In, new[] {"2"}))
+            .Where(FuncBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.In, new[] {"2"}))
             .Single();
         Assert.Equal(2, result.Member);
     }
@@ -118,6 +118,7 @@ public class FuncBuilderTests
     {
         public int Member;
     }
+
     [Fact]
     public void InList()
     {
@@ -134,7 +135,7 @@ public class FuncBuilderTests
         };
 
         var result = list
-            .Where(FuncBuilder<TargetForIn>.BuildPredicate("Member",Comparison.In, new[] {"Value2"}))
+            .Where(FuncBuilder<TargetForIn>.BuildPredicate("Member", Comparison.In, new[] {"Value2"}))
             .Single();
         Assert.Equal("Value2", result.Member);
     }
@@ -160,7 +161,7 @@ public class FuncBuilderTests
         };
 
         var result = list
-            .Where(FuncBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] { "00000000-0000-0000-0000-000000000002" }))
+            .Where(FuncBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] {"00000000-0000-0000-0000-000000000002"}))
             .Single();
         Assert.Same(list[1], result);
     }
@@ -169,6 +170,7 @@ public class FuncBuilderTests
     {
         public Guid Member;
     }
+
     [Fact]
     public void Contains()
     {
@@ -190,6 +192,7 @@ public class FuncBuilderTests
             .Single();
         Assert.Equal("Target2", result.Field);
     }
+
     [Fact]
     public void Field()
     {
@@ -249,7 +252,7 @@ public class FuncBuilderTests
         };
 
         var result = people
-            .Where(FuncBuilder<Person>.BuildPredicate(name, expression, new[] {value},stringComparison))
+            .Where(FuncBuilder<Person>.BuildPredicate(name, expression, new[] {value}, stringComparison))
             .Single();
         Assert.Equal(expectedName, result.Name);
     }
