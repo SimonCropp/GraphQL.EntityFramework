@@ -369,7 +369,7 @@ public class Query : EfObjectGraphType
     public Query(IEfGraphQLService graphQlService) : base(graphQlService)
     {
         AddQueryConnectionField<CompanyGraph, Company>(
-            name: "companiesConnection",
+            name: "companies",
             resolve: context =>
             {
                 var dataContext = (MyDataContext)context.UserContext;
@@ -384,7 +384,7 @@ public class Query : EfObjectGraphType
 
 ```graphql
 {
-  companiesConnection(first: 2, after: "1") {
+  companies(first: 2, after: "1") {
     totalCount
     edges {
       node {
@@ -413,7 +413,7 @@ public class Query : EfObjectGraphType
 ```js
 {
   "data": {
-    "companiesConnection": {
+    "companies": {
       "totalCount": 4,
       "edges": [
         {
@@ -461,9 +461,8 @@ public class CompanyGraph : EfObjectGraphType<Company>
     public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
         AddNavigationConnectionField<EmployeeGraph, Employee>(
-            name: "employeesConnection",
-            resolve: context => context.Source.Employees,
-            includeName: "Employees");
+            name: "employees",
+            resolve: context => context.Source.Employees);
     }
 }
 ```
