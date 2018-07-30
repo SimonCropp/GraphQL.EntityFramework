@@ -110,8 +110,8 @@ Multiple where statements can be expressed:
   entities
   (where:
     [
-      {path: "Property", comparison: "startsWith"", value: "Valu"}
-      {path: "Property", comparison: "endsWith"", value: "ue"}
+      {path: "Property", comparison: "startsWith", value: "Valu"}
+      {path: "Property", comparison: "endsWith", value: "ue"}
     ]
   )
   {
