@@ -310,7 +310,7 @@ public class Startup
 
 See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com/en-us/ef/core/api/microsoft.extensions.dependencyinjection.entityframeworkservicecollectionextensions)
 
-With the DataContext existing in the container, it can be resolved in controller that handles the GraphQL query:
+With the DataContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
 
 ```
 [Route("[controller]")]
