@@ -312,7 +312,7 @@ See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com
 
 With the DataContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
 
-```
+```csharp
 [Route("[controller]")]
 public class GraphQlController : Controller
 {
@@ -355,7 +355,7 @@ Note that the instance of the DataContext is passed to the [GraphQL .net User Co
 
 The same instance of the DataContext can then be accessed in the `resolve` delegate by casting the `ResolveFieldContext.UserContext` to the DataContext type:
 
-```
+```csharp
 public class Query : EfObjectGraphType
 {
     public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
