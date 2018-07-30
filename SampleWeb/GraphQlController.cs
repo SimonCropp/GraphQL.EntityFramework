@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
@@ -38,7 +38,7 @@ public class GraphQlController : Controller
 
         if (result.Errors?.Count > 0)
         {
-            throw new AggregateException(result.Errors);
+            Response.StatusCode = (int) HttpStatusCode.BadRequest;
         }
 
         return result;
