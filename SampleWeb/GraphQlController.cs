@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
@@ -17,7 +18,7 @@ public class GraphQlController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] GraphQlQuery query, [FromServices] MyDataContext dataContext)
+    public async Task<ExecutionResult> Post([FromBody] GraphQlQuery query, [FromServices] MyDataContext dataContext)
     {
         if (query == null)
         {
@@ -37,9 +38,9 @@ public class GraphQlController : Controller
 
         if (result.Errors?.Count > 0)
         {
-            return BadRequest(result);
+            throw new AggregateException(result.Errors);
         }
 
-        return Ok(result);
+        return result;
     }
 }

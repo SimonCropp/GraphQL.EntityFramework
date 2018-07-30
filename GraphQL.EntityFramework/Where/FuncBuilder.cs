@@ -203,7 +203,7 @@ static class FuncBuilder<T>
                     .Any(x => x == value);
             }
 
-            throw new System.Exception($"Could not convert strings to {type.FullName} ");
+            throw new Exception($"Could not convert strings to {type.FullName} ");
         };
     }
 
