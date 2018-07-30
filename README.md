@@ -71,16 +71,16 @@ All where statements require a `path`. This is a full path to a, possible nested
 
 ##### Supported Comparisons
 
- * `Equal`: alias `==`
- * `NotEqual`: alias `!=`
- * `GreaterThan`: alias `>`
- * `GreaterThanOrEqual`: alias `>=`
- * `LessThan`: alias `<`
- * `LessThanOrEqual`: alias `<=`
- * `Contains`: Only works with `string`
- * `StartsWith`: Only works with `string`
- * `EndsWith`: Only works with `string`
- * `In`: Check if a member existing in a given collection of values.`
+ * `equal`
+ * `notEqual`
+ * `greaterThan`
+ * `greaterThanOrEqual`
+ * `lessThan`
+ * `lessThanOrEqual`:
+ * `contains`: Only works with `string`
+ * `startsWith`: Only works with `string`
+ * `endsWith`: Only works with `string`
+ * `in`: Check if a member existing in a given collection of values.`
 * `Like`: Performs a SQL Like by using `EF.Functions.Like`.
 
 Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
@@ -93,7 +93,7 @@ Single where statements can be expressed:
 ```graphql
 {
   entities
-  (where: {path: "Property", comparison: "==", value: "the value"})
+  (where: {path: "Property", comparison: "equal", value: "the value"})
   {
     property
   }
@@ -126,7 +126,7 @@ Multiple where statements can be expressed:
 ```graphql
 {
   testEntities
-  (where: {path: "Property", comparison: "In", value: ["Value1", "Value2"]})
+  (where: {path: "Property", comparison: "in", value: ["Value1", "Value2"]})
   {
     property
   }
@@ -166,7 +166,7 @@ Null can be expressed by omitting the `value`:
 ```graphql
 {
   entities
-  (where: {path: "Property", comparison: "=="})
+  (where: {path: "Property", comparison: "equal"})
   {
     property
   }
@@ -244,7 +244,7 @@ Or via a delegate.
 EfGraphQLConventions.RegisterInContainer(Action<Type, object> registerInstance, DbContext dbContext)
 ```
 
-Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields. 
+Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
 
 The DbContext is only used to interrogate `DbContext.Model`, as such it only needs to be short lived. So the context can be cleaned up after calling `RegisterInContainer`:
 
@@ -254,7 +254,6 @@ using (var dataContext = BuildDataContext())
     EfGraphQLConventions.RegisterInContainer(serviceCollection, dataContext)
 }
 ```
-
 
 
 ### Connection Types
@@ -273,7 +272,7 @@ There is a helper methods to perform the above:
 EfGraphQLConventions.RegisterConnectionTypesInContainer(IServiceCollection services);
 ```
 
-or 
+or
 
 ```csharp
 EfGraphQLConventions.RegisterConnectionTypesInContainer(Action<Type> register)
@@ -288,7 +287,7 @@ EfGraphQLConventions.RegisterConnectionTypesInContainer(Action<Type> register)
 
 Entity Framework has the concept of [Navigation Properties](https://docs.microsoft.com/en-us/ef/core/modeling/relationships):
 
-> A property defined on the principal and/or dependent entity that contains a reference(s) to the related entity(s). 
+> A property defined on the principal and/or dependent entity that contains a reference(s) to the related entity(s).
 
 In the context of GraphQL, Root Graph is the entry point to performing the initial EF query. Nested graphs then usually access navigation properties to return data, or perform a new EF query. New EF queries can be performed with `AddQueryField` and `AddQueryConnectionField`. Navigation properties queries are performed using `AddNavigationField` and `AddNavigationConnectionField`.
 
@@ -307,7 +306,7 @@ Ideally, all navigation properties would be eagerly loaded as part of the root q
     friends {
       name
       address {
-        town  
+        town
       }
     }
   }
@@ -464,6 +463,7 @@ public class Query : EfObjectGraphType
 }
 ```
 
+
 #### Typed Graph
 
 ```c#
@@ -477,9 +477,6 @@ public class CompanyGraph : EfObjectGraphType<Company>
     }
 }
 ```
-
-
-
 
 
 ## Icon

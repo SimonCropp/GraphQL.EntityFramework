@@ -1,21 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using GraphQL.EntityFramework;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 
-class ComparisonGraph : EnumerationGraphType<Comparison>
+class ComparisonGraph : EnumerationGraphType
 {
-    static Dictionary<string, Comparison> comparisons = new Dictionary<string, Comparison>();
-
-    static ComparisonGraph()
+    public ComparisonGraph()
     {
-        Add(Comparison.Equal, "==");
-        Add(Comparison.NotEqual, "!=");
-        Add(Comparison.GreaterThan, ">");
-        Add(Comparison.GreaterThanOrEqual, ">=");
-        Add(Comparison.LessThan, "<");
-        Add(Comparison.LessThanOrEqual, "<=");
+        AddValue("contains", null, Comparison.Contains);
+        AddValue("endsWith", null, Comparison.EndsWith);
+        AddValue("equal", null, Comparison.Equal);
+        AddValue("greaterThan", null, Comparison.GreaterThan);
+        AddValue("greaterThanOrEqual", null, Comparison.GreaterThanOrEqual);
+        AddValue("in", null, Comparison.In);
+        AddValue("lessThan", null, Comparison.LessThan);
+        AddValue("lessThanOrEqual", null, Comparison.LessThanOrEqual);
+        AddValue("like", null, Comparison.Like);
+        AddValue("notEqual", null, Comparison.NotEqual);
+        AddValue("startsWith", null, Comparison.StartsWith);
     }
 
     public override object ParseLiteral(IValue value)
@@ -28,20 +30,13 @@ class ComparisonGraph : EnumerationGraphType<Comparison>
 
         if (value is StringValue str)
         {
-            if (
-                Enum.TryParse(str.Value, true, out Comparison comparison) ||
-                comparisons.TryGetValue(str.Value, out comparison)
-            )
+            var strValue = str.Value;
+            if (Enum.TryParse(strValue, true, out Comparison comparison))
             {
                 return comparison;
             }
         }
 
         return null;
-    }
-
-    static void Add(Comparison comparison, string name)
-    {
-        comparisons[name] = comparison;
     }
 }

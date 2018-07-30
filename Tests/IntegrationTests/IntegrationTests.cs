@@ -63,7 +63,7 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where_with_nullable_properties1()
     {
-        var queryString = "{ withNullableEntities (where: {path: 'Nullable', comparison: '=='}){ id } }";
+        var queryString = "{ withNullableEntities (where: {path: 'Nullable', comparison: 'equal'}){ id } }";
 
         var entity1 = new WithNullableEntity
         {
@@ -82,7 +82,7 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where_with_nullable_properties2()
     {
-        var queryString = "{ withNullableEntities (where: {path: 'Nullable', comparison: '==', value: '10'}){ id } }";
+        var queryString = "{ withNullableEntities (where: {path: 'Nullable', comparison: 'equal', value: '10'}){ id } }";
 
         var entity1 = new WithNullableEntity
         {
@@ -101,7 +101,7 @@ public class IntegrationTests : TestBase
     [Fact]
     public async Task Where_null_comparison_value()
     {
-        var queryString = "{ parentEntities (where: {path: 'Property', comparison: '=='}){ id } }";
+        var queryString = "{ parentEntities (where: {path: 'Property', comparison: 'equal'}){ id } }";
 
         var entity1 = new ParentEntity
         {
@@ -213,7 +213,7 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  parentEntities (where: {path: 'Property', comparison: '==', value: 'Value2', case: 'Ordinal' })
+  parentEntities (where: {path: 'Property', comparison: 'equal', value: 'Value2', case: 'Ordinal' })
   {
     property
   }
@@ -317,7 +317,7 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  parentEntities (where: {path: 'Property', comparison: '==', value: 'value2'})
+  parentEntities (where: {path: 'Property', comparison: 'equal', value: 'value2'})
   {
     property
   }
@@ -663,7 +663,7 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  level1Entities(where: {path: 'Level2Entity.Level3EntityId', comparison: '==', value: '00000000-0000-0000-0000-000000000003'})
+  level1Entities(where: {path: 'Level2Entity.Level3EntityId', comparison: 'equal', value: '00000000-0000-0000-0000-000000000003'})
   {
     level2Entity
     {
@@ -761,7 +761,7 @@ public class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  childEntities(where: {path: 'ParentId', comparison: '==', value: '00000000-0000-0000-0000-000000000001'})
+  childEntities(where: {path: 'ParentId', comparison: 'equal', value: '00000000-0000-0000-0000-000000000001'})
   {
     property
     parent
