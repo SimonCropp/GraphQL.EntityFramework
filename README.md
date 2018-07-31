@@ -81,7 +81,7 @@ All where statements require a `path`. This is a full path to a, possible nested
  * `startsWith`: Only works with `string`
  * `endsWith`: Only works with `string`
  * `in`: Check if a member existing in a given collection of values.`
-* `Like`: Performs a SQL Like by using `EF.Functions.Like`.
+ * `like`: Performs a SQL Like by using `EF.Functions.Like`.
 
 Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
 
@@ -110,8 +110,8 @@ Multiple where statements can be expressed:
   entities
   (where:
     [
-      {path: "Property", comparison: "startsWith"", value: "Valu"}
-      {path: "Property", comparison: "endsWith"", value: "ue"}
+      {path: "Property", comparison: "startsWith", value: "Valu"}
+      {path: "Property", comparison: "endsWith", value: "ue"}
     ]
   )
   {
@@ -268,7 +268,7 @@ services.AddSingleton<PageInfoType>();
 
 There is a helper methods to perform the above:
 
-``` csharp
+```csharp
 EfGraphQLConventions.RegisterConnectionTypesInContainer(IServiceCollection services);
 ```
 
@@ -276,6 +276,99 @@ or
 
 ```csharp
 EfGraphQLConventions.RegisterConnectionTypesInContainer(Action<Type> register)
+```
+
+### DependencyInjection and ASP.Net Core
+
+As with GraphQL .net, GraphQL.EntityFramework makes no assumptions on the container or web framework it is hosted in. However given [Microsoft.Extensions.DependencyInjection](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection) and [ASP.Net Core](https://docs.microsoft.com/en-us/aspnet/core/) are the most likely usage scenarios, the below will address those scenarios explicitly.
+
+See the GraphQL .net [documentation for ASP.Net Core](https://graphql-dotnet.github.io/docs/getting-started/dependency-injection#aspnet-core) and the [ASP.Net Core sample](https://github.com/graphql-dotnet/examples/tree/master/src/AspNetCoreCustom/Example).
+
+The Entity Framework Data Context instance is generally [scoped per request](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection#service-lifetimes-and-registration-options). This can be done in the [Startup.ConfigureServices method](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/startup#the-configureservices-method):
+
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped(provider => MyDataContextBuilder.BuildDataContext());
+    }
+}
+```
+
+Entity Framework also provides [several helper methods](https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext#using-dbcontext-with-dependency-injection) to control a DataContexts lifecycle. For example:
+
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDbContext<MyDataContext>(provider => DataContextBuilder.BuildDataContext());
+    }
+}
+```
+
+See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com/en-us/ef/core/api/microsoft.extensions.dependencyinjection.entityframeworkservicecollectionextensions)
+
+With the DataContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
+
+```csharp
+[Route("[controller]")]
+public class GraphQlController : Controller
+{
+    IDocumentExecuter executer;
+    ISchema schema;
+
+    public GraphQlController(ISchema schema, IDocumentExecuter executer)
+    {
+        this.schema = schema;
+        this.executer = executer;
+    }
+
+    [HttpPost]
+    public async Task<ExecutionResult> Post(
+        [FromBody] GraphQlQuery query,
+        [FromServices] MyDataContext dataContext)
+    {
+        var inputs = query.Variables.ToInputs();
+        var executionOptions = new ExecutionOptions
+        {
+            Schema = schema,
+            Query = query.Query,
+            Inputs = inputs,
+            UserContext = dataContext
+        };
+
+        var result = await executer.ExecuteAsync(executionOptions);
+
+        if (result.Errors?.Count > 0)
+        {
+            Response.StatusCode = (int) HttpStatusCode.BadRequest;
+        }
+
+        return result;
+    }
+}
+```
+
+Note that the instance of the DataContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
+
+The same instance of the DataContext can then be accessed in the `resolve` delegate by casting the `ResolveFieldContext.UserContext` to the DataContext type:
+
+```csharp
+public class Query : EfObjectGraphType
+{
+    public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
+    {
+        AddQueryField<CompanyGraph, Company>(
+            name: "companies",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.Companies;
+            });
+    }
+}
 ```
 
 
@@ -332,7 +425,7 @@ Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet
 
 #### Root Query
 
-```c#
+```csharp
 public class Query : EfObjectGraphType
 {
     public Query(IEfGraphQLService graphQlService) : base(graphQlService)
@@ -352,7 +445,7 @@ public class Query : EfObjectGraphType
 
 #### Typed Graph
 
-```c#
+```csharp
 public class CompanyGraph : EfObjectGraphType<Company>
 {
     public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
@@ -373,7 +466,7 @@ public class CompanyGraph : EfObjectGraphType<Company>
 
 ##### Graph Type
 
-```c#
+```csharp
 public class Query : EfObjectGraphType
 {
     public Query(IEfGraphQLService graphQlService) : base(graphQlService)
@@ -466,7 +559,7 @@ public class Query : EfObjectGraphType
 
 #### Typed Graph
 
-```c#
+```csharp
 public class CompanyGraph : EfObjectGraphType<Company>
 {
     public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)

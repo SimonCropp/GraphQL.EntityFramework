@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EfCore.InMemoryHelpers" Version="1.1.3" />
+    <PackageReference Include="EfCore.InMemoryHelpers" Version="1.1.4" />
     <PackageReference Include="graphiql" Version="1.1.0" />
     <PackageReference Include="GraphQL" Version="2.0.0-alpha-952" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.2" />
