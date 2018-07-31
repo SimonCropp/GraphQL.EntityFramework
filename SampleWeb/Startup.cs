@@ -42,7 +42,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder builder)
     {
-        builder.UseGraphiQl();
+        builder.UseGraphiQl("graphiql");
         builder.UseMvc();
     }
 }

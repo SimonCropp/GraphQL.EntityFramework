@@ -17,15 +17,28 @@ public class GraphQlController : Controller
     }
 
     [HttpPost]
-    public async Task<ExecutionResult> Post(
+    public Task<ExecutionResult> Post(
         [FromBody] GraphQlQuery query,
         [FromServices] MyDataContext dataContext)
     {
         var inputs = query.Variables.ToInputs();
+        return Execute(dataContext, query.Query, inputs);
+    }
+
+    [HttpGet]
+    public Task<ExecutionResult> Get(
+        [FromQuery] string query,
+        [FromServices] MyDataContext dataContext)
+    {
+        return Execute(dataContext, query, null);
+    }
+
+    async Task<ExecutionResult> Execute(MyDataContext dataContext, string queryQuery, Inputs inputs)
+    {
         var executionOptions = new ExecutionOptions
         {
             Schema = schema,
-            Query = query.Query,
+            Query = queryQuery,
             Inputs = inputs,
             UserContext = dataContext
         };

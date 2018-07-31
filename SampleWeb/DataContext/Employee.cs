@@ -1,9 +1,7 @@
-﻿using System;
-
-public class Employee
+﻿public class Employee
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid CompanyId { get; set; }
+    public int Id { get; set; }
+    public int CompanyId { get; set; }
     public Company Company { get; set; }
     public string Content { get; set; }
 }
