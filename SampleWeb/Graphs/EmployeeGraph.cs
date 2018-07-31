@@ -6,6 +6,8 @@ public class EmployeeGraph : EfObjectGraphType<Employee>
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        Field(typeof(CompanyGraph), "company", null, null, x => x.Source.Company);
+        AddNavigationField<CompanyGraph, Company>(
+            name: "company",
+            resolve: context => context.Source.Company);
     }
 }
