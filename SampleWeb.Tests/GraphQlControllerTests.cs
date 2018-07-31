@@ -12,9 +12,7 @@ public class GraphQlControllerTests
     {
         using (var server = GetTestServer())
         using (var client = server.CreateClient())
-        using (var postRequest = new HttpRequestMessage(HttpMethod.Get, "graphql/?query={companies{id}}")
-        {
-        })
+        using (var postRequest = new HttpRequestMessage(HttpMethod.Get, "graphql?query={companies{id}}"))
         {
             await SendAndVerify(client, postRequest);
         }

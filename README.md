@@ -521,15 +521,15 @@ public class Query : EfObjectGraphType
       "edges": [
         {
           "node": {
-            "id": "bd042865-db68-4cdb-ad6c-b67cd3ad9602",
+            "id": "1",
             "content": "Company1",
             "employees": [
               {
-                "id": "b373d722-0ca5-4616-b074-d862367d1405",
+                "id": "2",
                 "content": "Employee1"
               },
               {
-                "id": "66e4dbed-aeb4-4ba2-87db-e10d0d17255c",
+                "id": "3",
                 "content": "Employee2"
               }
             ]
@@ -538,7 +538,7 @@ public class Query : EfObjectGraphType
         },
         {
           "node": {
-            "id": "d663e248-9d9f-4327-88da-7fd8f9e3fedb",
+            "id": "4",
             "content": "Company3",
             "employees": []
           },
