@@ -54,7 +54,7 @@ public class GraphQlControllerTests
     }
 
     [Fact]
-    public async Task Post_null_qery()
+    public async Task Post_null_query()
     {
         using (var server = GetTestServer())
         using (var client = server.CreateClient())
