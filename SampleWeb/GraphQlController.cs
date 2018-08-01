@@ -4,7 +4,6 @@ using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json.Linq;
 
 [Route("[controller]")]
 [ApiController]
@@ -24,27 +23,29 @@ public class GraphQlController : Controller
         [BindRequired, FromBody] GraphQlQuery query,
         [FromServices] MyDataContext dataContext)
     {
-        return Execute(dataContext, query.Query, query.OperationName, query.Variables);
+        return Execute(dataContext, query);
     }
 
     [HttpGet]
     public Task<ExecutionResult> Get(
-        [BindRequired, FromQuery] string query,
-        [FromQuery] string operationName,
+        [BindRequired, FromQuery] GraphQlQuery query,
         [FromServices] MyDataContext dataContext)
     {
-        return Execute(dataContext, query, operationName, null);
+        return Execute(dataContext, query);
     }
 
-    async Task<ExecutionResult> Execute(MyDataContext dataContext, string query, string operationName, JObject variables)
+    async Task<ExecutionResult> Execute(MyDataContext dataContext, GraphQlQuery query)
     {
         var executionOptions = new ExecutionOptions
         {
             Schema = schema,
-            Query = query,
-            OperationName = operationName,
-            Inputs = variables.ToInputs(),
-            UserContext = dataContext
+            Query = query.Query,
+            OperationName = query.OperationName,
+            Inputs = query.Variables.ToInputs(),
+            UserContext = dataContext,
+#if (DEBUG)
+            ExposeExceptions = true
+#endif
         };
 
         var result = await executer.ExecuteAsync(executionOptions);
