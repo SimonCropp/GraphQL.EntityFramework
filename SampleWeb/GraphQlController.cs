@@ -20,28 +20,28 @@ public class GraphQlController : Controller
 
     [HttpPost]
     public Task<ExecutionResult> Post(
-        [BindRequired, FromBody] GraphQlQuery query,
+        [BindRequired, FromBody] GraphQlRequest request,
         [FromServices] MyDataContext dataContext)
     {
-        return Execute(dataContext, query);
+        return Execute(dataContext, request);
     }
 
     [HttpGet]
     public Task<ExecutionResult> Get(
-        [BindRequired, FromQuery] GraphQlQuery query,
+        [BindRequired, FromQuery] GraphQlRequest request,
         [FromServices] MyDataContext dataContext)
     {
-        return Execute(dataContext, query);
+        return Execute(dataContext, request);
     }
 
-    async Task<ExecutionResult> Execute(MyDataContext dataContext, GraphQlQuery query)
+    async Task<ExecutionResult> Execute(MyDataContext dataContext, GraphQlRequest request)
     {
         var executionOptions = new ExecutionOptions
         {
             Schema = schema,
-            Query = query.Query,
-            OperationName = query.OperationName,
-            Inputs = query.Variables.ToInputs(),
+            Query = request.Query,
+            OperationName = request.OperationName,
+            Inputs = request.Variables.ToInputs(),
             UserContext = dataContext,
 #if (DEBUG)
             ExposeExceptions = true

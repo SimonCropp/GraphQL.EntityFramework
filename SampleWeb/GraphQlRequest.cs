@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-public class GraphQlQuery
+public class GraphQlRequest
 {
     public string OperationName { get; set; }
     [Required]
