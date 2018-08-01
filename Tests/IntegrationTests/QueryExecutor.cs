@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 static internal class QueryExecutor
 {
-    public static async Task<object> ExecuteQuery(string queryString, ServiceCollection services, DbContext dataContext)
+    public static async Task<object> ExecuteQuery(string queryString, ServiceCollection services, DbContext dataContext, Inputs inputs)
     {
         queryString = queryString.Replace("'", "\"");
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
@@ -22,7 +22,8 @@ static internal class QueryExecutor
             {
                 Schema = schema,
                 Query = queryString,
-                UserContext = dataContext
+                UserContext = dataContext,
+                Inputs = inputs
             };
 
             var executionResult = await documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);

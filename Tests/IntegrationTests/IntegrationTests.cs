@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,7 +57,7 @@ public class IntegrationTests : TestBase
             Property = "Value3"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2, entity3);
+        var result = await RunQuery(queryString, null, entity1, entity2, entity3);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -75,7 +76,7 @@ public class IntegrationTests : TestBase
             Nullable = 10
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -94,7 +95,7 @@ public class IntegrationTests : TestBase
             Nullable = 10
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -114,7 +115,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -140,7 +141,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -166,7 +167,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -192,7 +193,7 @@ public class IntegrationTests : TestBase
 ";
         var entities = BuildEntities(8);
 
-        var result = await RunQuery(queryString, entities.ToArray());
+        var result = await RunQuery(queryString, null, entities.ToArray());
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -230,7 +231,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -256,7 +257,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity2, entity1);
+        var result = await RunQuery(queryString, null, entity2, entity1);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -282,7 +283,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -308,7 +309,39 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result);
+    }
+
+    [Fact]
+    public async Task Where_with_variable()
+    {
+        var queryString = @"
+query myQuery($value: String!)
+{
+  parentEntities (where: {path: 'Property', comparison: 'equal', value: [$value]})
+  {
+    property
+  }
+}
+";
+
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var inputs = new Inputs(new Dictionary<string, object>
+        {
+            {"value", "value2"}
+        });
+        var result = await RunQuery(queryString, inputs, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -334,7 +367,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -360,7 +393,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -386,7 +419,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -418,7 +451,7 @@ public class IntegrationTests : TestBase
             Property = "Value3"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2, entity3);
+        var result = await RunQuery(queryString, null, entity1, entity2, entity3);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -444,7 +477,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -471,7 +504,7 @@ public class IntegrationTests : TestBase
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, entity1, entity2);
+        var result = await RunQuery(queryString, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -532,7 +565,7 @@ public class IntegrationTests : TestBase
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, entity1, entity2, entity3, entity4, entity5);
 
         ObjectApprover.VerifyWithJson(result);
     }
@@ -583,7 +616,7 @@ public class IntegrationTests : TestBase
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -617,7 +650,7 @@ public class IntegrationTests : TestBase
             Level2Entity = level2
         };
 
-        var result = await RunQuery(queryString, level1, level2, level3);
+        var result = await RunQuery(queryString, null, level1, level2, level3);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -654,7 +687,7 @@ public class IntegrationTests : TestBase
             Level2Entity = level2
         };
 
-        var result = await RunQuery(queryString, level1, level2, level3);
+        var result = await RunQuery(queryString, null, level1, level2, level3);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -701,7 +734,7 @@ public class IntegrationTests : TestBase
             Level2Entity = level2b
         };
 
-        var result = await RunQuery(queryString, level1b, level2b, level1a, level2a, level3a);
+        var result = await RunQuery(queryString, null, level1b, level2b, level1a, level2a, level3a);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -752,7 +785,7 @@ public class IntegrationTests : TestBase
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -796,7 +829,7 @@ public class IntegrationTests : TestBase
             Property = "Value5",
         };
 
-        var result = await RunQuery(queryString, entity1, entity2, entity3, entity5);
+        var result = await RunQuery(queryString, null, entity1, entity2, entity3, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -841,7 +874,7 @@ public class IntegrationTests : TestBase
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -892,7 +925,7 @@ public class IntegrationTests : TestBase
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -927,11 +960,11 @@ public class IntegrationTests : TestBase
         parent.Child1 = child1;
         parent.Child2 = child2;
 
-        var result = await RunQuery(queryString, parent, child1, child2);
+        var result = await RunQuery(queryString, null, parent, child1, child2);
         ObjectApprover.VerifyWithJson(result);
     }
 
-    static async Task<object> RunQuery(string queryString, params object[] entities)
+    static async Task<object> RunQuery(string queryString, Inputs inputs, params object[] entities)
     {
         Purge();
 
@@ -951,7 +984,7 @@ public class IntegrationTests : TestBase
                 services.AddSingleton(type);
             }
 
-            return await QueryExecutor.ExecuteQuery(queryString, services, dataContext);
+            return await QueryExecutor.ExecuteQuery(queryString, services, dataContext, inputs);
         }
     }
 
