@@ -3,8 +3,11 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json.Linq;
 
 [Route("[controller]")]
+[ApiController]
 public class GraphQlController : Controller
 {
     IDocumentExecuter executer;
@@ -18,28 +21,29 @@ public class GraphQlController : Controller
 
     [HttpPost]
     public Task<ExecutionResult> Post(
-        [FromBody] GraphQlQuery query,
+        [BindRequired, FromBody] GraphQlQuery query,
         [FromServices] MyDataContext dataContext)
     {
-        var inputs = query.Variables.ToInputs();
-        return Execute(dataContext, query.Query, inputs);
+        return Execute(dataContext, query.Query, query.OperationName, query.Variables);
     }
 
     [HttpGet]
     public Task<ExecutionResult> Get(
-        [FromQuery] string query,
+        [BindRequired, FromQuery] string query,
+        [FromQuery] string operationName,
         [FromServices] MyDataContext dataContext)
     {
-        return Execute(dataContext, query, null);
+        return Execute(dataContext, query, operationName, null);
     }
 
-    async Task<ExecutionResult> Execute(MyDataContext dataContext, string queryQuery, Inputs inputs)
+    async Task<ExecutionResult> Execute(MyDataContext dataContext, string query, string operationName, JObject variables)
     {
         var executionOptions = new ExecutionOptions
         {
             Schema = schema,
-            Query = queryQuery,
-            Inputs = inputs,
+            Query = query,
+            OperationName = operationName,
+            Inputs = variables.ToInputs(),
             UserContext = dataContext
         };
 
