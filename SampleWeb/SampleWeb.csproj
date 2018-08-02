@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="EfCore.InMemoryHelpers" Version="1.1.4" />
     <PackageReference Include="graphiql" Version="1.1.0" />
-    <PackageReference Include="GraphQL" Version="2.0.0-alpha-952" />
+    <PackageReference Include="GraphQL" Version="2.0.0-alpha-978" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />

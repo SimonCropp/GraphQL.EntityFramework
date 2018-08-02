@@ -41,7 +41,10 @@ static class ArgumentAppender
         arguments.Add(idArgument);
         if (extra != null)
         {
-            arguments.AddRange(extra);
+            foreach (var argument in extra)
+            {
+                arguments.Add(argument);
+            }
         }
     }
 
@@ -57,7 +60,10 @@ static class ArgumentAppender
         };
         if (extra != null)
         {
-            arguments.AddRange(extra);
+            foreach (var argument in extra)
+            {
+                arguments.Add(argument);
+            }
         }
         return arguments;
     }
