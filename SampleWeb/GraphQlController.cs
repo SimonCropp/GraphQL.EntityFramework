@@ -1,9 +1,11 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json.Linq;
 
 [Route("[controller]")]
 [ApiController]
@@ -20,39 +22,65 @@ public class GraphQlController : Controller
 
     [HttpPost]
     public Task<ExecutionResult> Post(
-        [BindRequired, FromBody] GraphQlRequest request,
+        [BindRequired, FromBody] PostBody body,
         [FromServices] MyDataContext dataContext)
     {
-        return Execute(dataContext, request);
+        return Execute(dataContext, body.Query, body.OperationName, body.Variables);
+    }
+
+    public class PostBody
+    {
+        public string OperationName;
+        public string Query;
+        public JObject Variables;
     }
 
     [HttpGet]
     public Task<ExecutionResult> Get(
-        [BindRequired, FromQuery] GraphQlRequest request,
+        [FromQuery] string query,
+        [FromQuery] string variables,
+        [FromQuery] string operationName,
         [FromServices] MyDataContext dataContext)
     {
-        return Execute(dataContext, request);
+        var jObject = ParseVariables(variables);
+        return Execute(dataContext, query, operationName, jObject);
     }
 
-    async Task<ExecutionResult> Execute(MyDataContext dataContext, GraphQlRequest request)
+    static JObject ParseVariables(string variables)
+    {
+        if (variables == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return JObject.Parse(variables);
+        }
+        catch (Exception exception)
+        {
+            throw new Exception("Could not parse variables.", exception);
+        }
+    }
+    async Task<ExecutionResult> Execute(MyDataContext dataContext, string query, string operationName, JObject variables)
     {
         var executionOptions = new ExecutionOptions
         {
             Schema = schema,
-            Query = request.Query,
-            OperationName = request.OperationName,
-            Inputs = request.Variables.ToInputs(),
+            Query = query,
+            OperationName = operationName,
+            Inputs = variables?.ToInputs(),
             UserContext = dataContext,
 #if (DEBUG)
             ExposeExceptions = true
 #endif
         };
 
-        var result = await executer.ExecuteAsync(executionOptions);
+        var result = await executer.ExecuteAsync(executionOptions).ConfigureAwait(false);
 
         if (result.Errors?.Count > 0)
         {
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
         }
 
         return result;

@@ -50,7 +50,7 @@ public class GraphQlControllerTests
         {
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             var result = await response.Content.ReadAsStringAsync();
-            Assert.Equal("{\"Query\":[\"The Query field is required.\"]}", result);
+            Assert.StartsWith("{\"errors\":[{\"message\":\"GraphQL.ExecutionError: A query is required.", result);
         }
     }
 
@@ -74,7 +74,7 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Post_variable()
     {
-        var content = "{\"query\":\"query myQuery($id: String!){companies(ids:[$id]){id}}\",\"variables\":\"{\\\"id\\\":\\\"1\\\"}\"}";
+        var content = "{\"query\":\"query myQuery($id: String!){companies(ids:[$id]){id}}\",\"variables\":{\"id\":\"1\"}}";
         using (var server = GetTestServer())
         using (var client = server.CreateClient())
         using (var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
@@ -102,7 +102,7 @@ public class GraphQlControllerTests
         {
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             var result = await response.Content.ReadAsStringAsync();
-            Assert.Equal("{\"Query\":[\"The Query field is required.\"]}", result);
+            Assert.StartsWith("{\"errors\":[{\"message\":\"GraphQL.ExecutionError: A query is required.", result);
         }
     }
 
