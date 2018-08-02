@@ -76,8 +76,7 @@ partial class EfGraphQLService
         ObjectGraphType graph,
         string name,
         Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-        IEnumerable<QueryArgument> arguments = null,
-        string includeName = null)
+        IEnumerable<QueryArgument> arguments = null)
         where TGraph : ObjectGraphType<TReturn>, IGraphType
         where TReturn : class
     {
