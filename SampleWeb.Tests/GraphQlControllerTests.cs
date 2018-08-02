@@ -25,7 +25,7 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Get_variable()
     {
-        var query = "query myQuery($id: String!){companies(ids:[$id]){id}}";
+        var query = "query ($id: String!){companies(ids:[$id]){id}}";
         var variables = "{\"id\":\"1\"}";
 
         var uri = $"graphql?query={query}&variables={variables}";
@@ -74,7 +74,7 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Post_variable()
     {
-        var content = "{\"query\":\"query myQuery($id: String!){companies(ids:[$id]){id}}\",\"variables\":{\"id\":\"1\"}}";
+        var content = "{\"query\":\"query ($id: String!){companies(ids:[$id]){id}}\",\"variables\":{\"id\":\"1\"}}";
         using (var server = GetTestServer())
         using (var client = server.CreateClient())
         using (var request = new HttpRequestMessage(HttpMethod.Post, "graphql")

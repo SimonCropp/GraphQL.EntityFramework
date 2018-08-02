@@ -317,7 +317,7 @@ public class IntegrationTests : TestBase
     public async Task Where_with_variable()
     {
         var queryString = @"
-query myQuery($value: String!)
+query ($value: String!)
 {
   parentEntities (where: {path: 'Property', comparison: 'equal', value: [$value]})
   {
