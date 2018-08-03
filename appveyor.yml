@@ -12,7 +12,7 @@ build:
   verbosity: minimal
 test_script:
 - cmd: >-
-    %xunit20%\xunit.console Tests\bin\Release\net471\Tests.dll
+    %xunit20%\xunit.console Tests\bin\Release\net472\Tests.dll
 
 artifacts:
 - path: nugets\**\*.nupkg
