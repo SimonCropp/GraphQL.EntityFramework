@@ -8,11 +8,18 @@ using Xunit;
 
 public class GraphQlControllerTests
 {
+    static TestServer server;
+    static HttpClient client;
+
+    static GraphQlControllerTests()
+    {
+        server = GetTestServer();
+        client = server.CreateClient();
+    }
+
     [Fact]
     public async Task Get()
     {
-        using (var server = GetTestServer())
-        using (var client = server.CreateClient())
         using (var postRequest = new HttpRequestMessage(HttpMethod.Get, "graphql?query={companies{id}}"))
         using (var response = await client.SendAsync(postRequest))
         {
@@ -29,8 +36,6 @@ public class GraphQlControllerTests
         var variables = "{\"id\":\"1\"}";
 
         var uri = $"graphql?query={query}&variables={variables}";
-        using (var server = GetTestServer())
-        using (var client = server.CreateClient())
         using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
         using (var response = await client.SendAsync(request))
         {
@@ -43,8 +48,6 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Get_null_query()
     {
-        using (var server = GetTestServer())
-        using (var client = server.CreateClient())
         using (var request = new HttpRequestMessage(HttpMethod.Get, "graphql"))
         using (var response = await client.SendAsync(request))
         {
@@ -57,8 +60,6 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Post()
     {
-        using (var server = GetTestServer())
-        using (var client = server.CreateClient())
         using (var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
         {
             Content = new StringContent("{\"query\":\"{companies{id}}\",\"variables\":null}", Encoding.UTF8, "application/json")
@@ -75,8 +76,6 @@ public class GraphQlControllerTests
     public async Task Post_variable()
     {
         var content = "{\"query\":\"query ($id: String!){companies(ids:[$id]){id}}\",\"variables\":{\"id\":\"1\"}}";
-        using (var server = GetTestServer())
-        using (var client = server.CreateClient())
         using (var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
         {
             Content = new StringContent(content, Encoding.UTF8, "application/json")
@@ -92,8 +91,6 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Post_null_query()
     {
-        using (var server = GetTestServer())
-        using (var client = server.CreateClient())
         using (var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
         {
             Content = new StringContent("{}", Encoding.UTF8, "application/json")

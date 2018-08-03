@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GraphQL.Types.Relay.DataObjects;
 using Microsoft.EntityFrameworkCore;
@@ -61,24 +62,25 @@ static class ConnectionConverter
         return Build(skip, take, count, reverse, page);
     }
 
-    public static Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(this IQueryable<TReturn> list, int? first, string afterString, int? last, string beforeString)
+    public static Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(this IQueryable<TReturn> list, int? first, string afterString, int? last, string beforeString, CancellationToken cancellation)
     {
         Parse(afterString, beforeString, out var after, out var before);
-        return ApplyConnectionContext(list, first, after, last, before);
+        return ApplyConnectionContext(list, first, after, last, before, cancellation);
     }
 
-    public static async Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, int? after, int? last, int? before)
+    public static async Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, int? after, int? last, int? before, CancellationToken cancellation)
     {
-        var count = await list.CountAsync().ConfigureAwait(false);
+        var count = await list.CountAsync(cancellation).ConfigureAwait(false);
+        cancellation.ThrowIfCancellationRequested();
         if (last == null)
         {
-            return await First(list, first.GetValueOrDefault(0), after, before, count).ConfigureAwait(false);
+            return await First(list, first.GetValueOrDefault(0), after, before, count, cancellation).ConfigureAwait(false);
         }
 
-        return await Last(list, last.Value, after, before, count).ConfigureAwait(false);
+        return await Last(list, last.Value, after, before, count, cancellation).ConfigureAwait(false);
     }
 
-    static Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before, int count)
+    static Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before, int count, CancellationToken cancellation)
     {
         int skip;
         if (before == null)
@@ -90,10 +92,10 @@ static class ConnectionConverter
             skip = Math.Max(before.Value - first, 0);
         }
 
-        return Range(list, skip, first, count);
+        return Range(list, skip, first, count, cancellation);
     }
 
-    static Task<Connection<TReturn>> Last<TReturn>(IQueryable<TReturn> list, int last, int? after, int? before, int count)
+    static Task<Connection<TReturn>> Last<TReturn>(IQueryable<TReturn> list, int last, int? after, int? before, int count, CancellationToken cancellation)
     {
         int skip;
         if (after == null)
@@ -107,16 +109,17 @@ static class ConnectionConverter
             skip = after.Value + 1;
         }
 
-        return Range(list, skip, take: last, count, true);
+        return Range(list, skip, take: last, count, cancellation, true);
     }
 
-    static async Task<Connection<TReturn>> Range<TReturn>(IQueryable<TReturn> list, int skip, int take, int count, bool reverse = false)
+    static async Task<Connection<TReturn>> Range<TReturn>(IQueryable<TReturn> list, int skip, int take, int count, CancellationToken cancellation, bool reverse = false)
     {
         var page = list.Skip(skip).Take(take);
 
         var result = await page
-            .ToListAsync()
+            .ToListAsync(cancellation)
             .ConfigureAwait(false);
+        cancellation.ThrowIfCancellationRequested();
         return Build(skip, take, count, reverse, result);
     }
 

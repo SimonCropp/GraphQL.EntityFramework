@@ -129,7 +129,7 @@ partial class EfGraphQLService
                     var returnTypes = resolve(context);
                     var withIncludes = includeAppender.AddIncludes(returnTypes, context);
                     var withArguments = withIncludes.ApplyGraphQlArguments(context);
-                    return withArguments.ToListAsync();
+                    return withArguments.ToListAsync(context.CancellationToken);
                 })
         };
     }

@@ -78,7 +78,8 @@ partial class EfGraphQLService
                     context.First,
                     context.After,
                     context.Last,
-                    context.Before);
+                    context.Before,
+                    context.CancellationToken);
         });
         return builder;
     }
