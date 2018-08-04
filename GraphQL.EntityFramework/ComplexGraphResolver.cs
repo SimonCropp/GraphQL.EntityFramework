@@ -32,9 +32,9 @@ static class ComplexGraphResolver
         var orAdd = cache.GetOrAdd(fieldType.ResolvedType, graphType =>
         {
             var resolved = new Resolved();
-            if (graphType is ListGraphType)
+            if (graphType is ListGraphType listGraphType)
             {
-                graphType = ((ListGraphType) graphType).ResolvedType;
+                graphType = listGraphType.ResolvedType;
             }
 
             if (graphType is IComplexGraphType complexType)
@@ -55,7 +55,8 @@ static class ComplexGraphResolver
         while (type.BaseType != null)
         {
             type = type.BaseType;
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ComplexGraphType<>))
+            if (type.IsGenericType &&
+                type.GetGenericTypeDefinition() == typeof(ComplexGraphType<>))
             {
                 return type.GetGenericArguments().Single();
             }

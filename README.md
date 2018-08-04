@@ -158,7 +158,6 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 ```
 
 
-
 ##### Null
 
 Null can be expressed by omitting the `value`:
@@ -228,6 +227,7 @@ Null can be expressed by omitting the `value`:
 }
 ```
 
+
 ## Configuration
 
 Enabling is done via registering in a container.
@@ -278,6 +278,7 @@ or
 EfGraphQLConventions.RegisterConnectionTypesInContainer(Action<Type> register)
 ```
 
+
 ### DependencyInjection and ASP.Net Core
 
 As with GraphQL .net, GraphQL.EntityFramework makes no assumptions on the container or web framework it is hosted in. However given [Microsoft.Extensions.DependencyInjection](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection) and [ASP.Net Core](https://docs.microsoft.com/en-us/aspnet/core/) are the most likely usage scenarios, the below will address those scenarios explicitly.
@@ -313,7 +314,9 @@ See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com
 With the DataContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
 
 ```csharp
+
 [Route("[controller]")]
+[ApiController]
 public class GraphQlController : Controller
 {
     IDocumentExecuter executer;
@@ -326,20 +329,50 @@ public class GraphQlController : Controller
     }
 
     [HttpPost]
-    public async Task<ExecutionResult> Post(
-        [FromBody] GraphQlQuery query,
-        [FromServices] MyDataContext dataContext)
+    public Task<ExecutionResult> Post(
+        [BindRequired, FromBody] PostBody body,
+        [FromServices] MyDataContext dataContext,
+        CancellationToken cancellation)
     {
-        var inputs = query.Variables.ToInputs();
+        return Execute(dataContext, body.Query, body.OperationName, body.Variables, cancellation);
+    }
+
+    public class PostBody
+    {
+        public string OperationName;
+        public string Query;
+        public JObject Variables;
+    }
+
+    [HttpGet]
+    public Task<ExecutionResult> Get(
+        [FromQuery] string query,
+        [FromQuery] string variables,
+        [FromQuery] string operationName,
+        [FromServices] MyDataContext dataContext,
+        CancellationToken cancellation)
+    {
+        var jObject = ParseVariables(variables);
+        return Execute(dataContext, query, operationName, jObject, cancellation);
+    }
+
+    async Task<ExecutionResult> Execute(MyDataContext dataContext, string query, string operationName, JObject variables, CancellationToken cancellation)
+    {
         var executionOptions = new ExecutionOptions
         {
             Schema = schema,
-            Query = query.Query,
-            Inputs = inputs,
-            UserContext = dataContext
+            Query = query,
+            OperationName = operationName,
+            Inputs = variables?.ToInputs(),
+            UserContext = dataContext,
+            CancellationToken = cancellation,
+#if (DEBUG)
+            ExposeExceptions = true,
+            EnableMetrics = true,
+#endif
         };
 
-        var result = await executer.ExecuteAsync(executionOptions);
+        var result = await executer.ExecuteAsync(executionOptions).ConfigureAwait(false);
 
         if (result.Errors?.Count > 0)
         {
@@ -347,6 +380,23 @@ public class GraphQlController : Controller
         }
 
         return result;
+    }
+
+    static JObject ParseVariables(string variables)
+    {
+        if (variables == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return JObject.Parse(variables);
+        }
+        catch (Exception exception)
+        {
+            throw new Exception("Could not parse variables.", exception);
+        }
     }
 }
 ```
@@ -371,6 +421,149 @@ public class Query : EfObjectGraphType
 }
 ```
 
+### Testing the GraphQlController
+
+The `GraphQlController` can be tested using the [ASP.NET Integration tests](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests) via the [Microsoft.AspNetCore.Mvc.Testing NuGet package](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Testing).
+
+```csharp
+public class GraphQlControllerTests
+{
+    static HttpClient client;
+
+    static GraphQlControllerTests()
+    {
+        var server = GetTestServer();
+        client = server.CreateClient();
+    }
+
+    [Fact]
+    public async Task Get()
+    {
+        var query = @"
+{
+  companies
+  {
+    id
+  }
+}";
+        var response = await ExecuteGet(query);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
+    }
+
+    [Fact]
+    public async Task Get_variable()
+    {
+        var query = @"
+query ($id: String!)
+{
+  companies(ids:[$id])
+  {
+    id
+  }
+}";
+        var variables = new
+        {
+            id = "1"
+        };
+
+        var response = await ExecuteGet(query, variables);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
+    }
+
+    [Fact]
+    public async Task Get_null_query()
+    {
+        var response = await ExecuteGet();
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("GraphQL.ExecutionError: A query is required.", result);
+    }
+
+    static Task<HttpResponseMessage> ExecuteGet(string query = null, object variables = null)
+    {
+        var compressed = CompressQuery(query);
+        var variablesString = ToJson(variables);
+        var uri = $"graphql?query={compressed}&variables={variablesString}";
+        var request = new HttpRequestMessage(HttpMethod.Get, uri);
+        return client.SendAsync(request);
+    }
+
+    [Fact]
+    public async Task Post()
+    {
+        var response = await ExecutePost("{companies{id}}");
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
+        response.EnsureSuccessStatusCode();
+    }
+
+    [Fact]
+    public async Task Post_variable()
+    {
+        var variables = new
+        {
+            id = "1"
+        };
+        var response = await ExecutePost("query ($id: String!){companies(ids:[$id]){id}}", variables);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
+        response.EnsureSuccessStatusCode();
+    }
+
+    [Fact]
+    public async Task Post_null_query()
+    {
+        var response = await ExecutePost();
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("GraphQL.ExecutionError: A query is required.", result);
+    }
+
+    static Task<HttpResponseMessage> ExecutePost(string query = null, object variables = null)
+    {
+        query = CompressQuery(query);
+        var body = new
+        {
+            query,
+            variables
+        };
+        var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
+        {
+            Content = new StringContent(ToJson(body), Encoding.UTF8, "application/json")
+        };
+        return client.SendAsync(request);
+    }
+
+    static TestServer GetTestServer()
+    {
+        var hostBuilder = new WebHostBuilder();
+        hostBuilder.UseStartup<Startup>();
+        return new TestServer(hostBuilder);
+    }
+
+    static string ToJson(object target)
+    {
+        if (target == null)
+        {
+            return "";
+        }
+        return JsonConvert.SerializeObject(target);
+    }
+
+    static string CompressQuery(string query)
+    {
+        if (query == null)
+        {
+            return "";
+        }
+        return Compress.Query(query);
+    }
+}
+```
 
 
 ## Defining Graphs

@@ -4,103 +4,119 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Newtonsoft.Json;
 using Xunit;
 
 public class GraphQlControllerTests
 {
-    static TestServer server;
     static HttpClient client;
 
     static GraphQlControllerTests()
     {
-        server = GetTestServer();
+        var server = GetTestServer();
         client = server.CreateClient();
     }
 
     [Fact]
     public async Task Get()
     {
-        using (var postRequest = new HttpRequestMessage(HttpMethod.Get, "graphql?query={companies{id}}"))
-        using (var response = await client.SendAsync(postRequest))
-        {
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
-        }
+        var query = @"
+{
+  companies
+  {
+    id
+  }
+}";
+        var response = await ExecuteGet(query);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
     }
 
     [Fact]
     public async Task Get_variable()
     {
-        var query = "query ($id: String!){companies(ids:[$id]){id}}";
-        var variables = "{\"id\":\"1\"}";
-
-        var uri = $"graphql?query={query}&variables={variables}";
-        using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
-        using (var response = await client.SendAsync(request))
+        var query = @"
+query ($id: String!)
+{
+  companies(ids:[$id])
+  {
+    id
+  }
+}";
+        var variables = new
         {
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
-        }
+            id = "1"
+        };
+
+        var response = await ExecuteGet(query, variables);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
     }
 
     [Fact]
     public async Task Get_null_query()
     {
-        using (var request = new HttpRequestMessage(HttpMethod.Get, "graphql"))
-        using (var response = await client.SendAsync(request))
-        {
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.StartsWith("{\"errors\":[{\"message\":\"GraphQL.ExecutionError: A query is required.", result);
-        }
+        var response = await ExecuteGet();
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("GraphQL.ExecutionError: A query is required.", result);
+    }
+
+    static Task<HttpResponseMessage> ExecuteGet(string query = null, object variables = null)
+    {
+        var compressed = Compress(query);
+        var variablesString = ToJson(variables);
+        var uri = $"graphql?query={compressed}&variables={variablesString}";
+        var request = new HttpRequestMessage(HttpMethod.Get, uri);
+        return client.SendAsync(request);
     }
 
     [Fact]
     public async Task Post()
     {
-        using (var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
-        {
-            Content = new StringContent("{\"query\":\"{companies{id}}\",\"variables\":null}", Encoding.UTF8, "application/json")
-        })
-        using (var response = await client.SendAsync(request))
-        {
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
-        }
+        var response = await ExecutePost("{companies{id}}");
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
+        response.EnsureSuccessStatusCode();
     }
 
     [Fact]
     public async Task Post_variable()
     {
-        var content = "{\"query\":\"query ($id: String!){companies(ids:[$id]){id}}\",\"variables\":{\"id\":\"1\"}}";
-        using (var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
+        var variables = new
         {
-            Content = new StringContent(content, Encoding.UTF8, "application/json")
-        })
-        using (var response = await client.SendAsync(request))
-        {
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
-        }
+            id = "1"
+        };
+        var response = await ExecutePost("query ($id: String!){companies(ids:[$id]){id}}", variables);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
+        response.EnsureSuccessStatusCode();
     }
 
     [Fact]
     public async Task Post_null_query()
     {
-        using (var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
+        var response = await ExecutePost();
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("GraphQL.ExecutionError: A query is required.", result);
+    }
+
+    static Task<HttpResponseMessage> ExecutePost(string query = null, object variables = null)
+    {
+        query = Compress(query);
+        var body = new
         {
-            Content = new StringContent("{}", Encoding.UTF8, "application/json")
-        })
-        using (var response = await client.SendAsync(request))
+            query,
+            variables
+        };
+        var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
         {
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.StartsWith("{\"errors\":[{\"message\":\"GraphQL.ExecutionError: A query is required.", result);
-        }
+            Content = new StringContent(ToJson(body), Encoding.UTF8, "application/json")
+        };
+        return client.SendAsync(request);
     }
 
     static TestServer GetTestServer()
@@ -108,5 +124,23 @@ public class GraphQlControllerTests
         var hostBuilder = new WebHostBuilder();
         hostBuilder.UseStartup<Startup>();
         return new TestServer(hostBuilder);
+    }
+
+    static string ToJson(object target)
+    {
+        if (target == null)
+        {
+            return "";
+        }
+        return JsonConvert.SerializeObject(target);
+    }
+
+    static string Compress(string query)
+    {
+        if (query == null)
+        {
+            return "";
+        }
+        return GraphQL.EntityFramework.Compress.Query(query);
     }
 }
