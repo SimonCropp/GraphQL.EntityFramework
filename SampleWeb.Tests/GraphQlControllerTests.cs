@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GraphQL.EntityFramework;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
@@ -66,7 +67,7 @@ query ($id: String!)
 
     static Task<HttpResponseMessage> ExecuteGet(string query = null, object variables = null)
     {
-        var compressed = Compress(query);
+        var compressed = CompressQuery(query);
         var variablesString = ToJson(variables);
         var uri = $"graphql?query={compressed}&variables={variablesString}";
         var request = new HttpRequestMessage(HttpMethod.Get, uri);
@@ -106,7 +107,7 @@ query ($id: String!)
 
     static Task<HttpResponseMessage> ExecutePost(string query = null, object variables = null)
     {
-        query = Compress(query);
+        query = CompressQuery(query);
         var body = new
         {
             query,
@@ -135,12 +136,12 @@ query ($id: String!)
         return JsonConvert.SerializeObject(target);
     }
 
-    static string Compress(string query)
+    static string CompressQuery(string query)
     {
         if (query == null)
         {
             return "";
         }
-        return GraphQL.EntityFramework.Compress.Query(query);
+        return Compress.Query(query);
     }
 }
