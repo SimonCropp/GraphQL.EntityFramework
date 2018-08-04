@@ -80,8 +80,8 @@ All where statements require a `path`. This is a full path to a, possible nested
  * `contains`: Only works with `string`
  * `startsWith`: Only works with `string`
  * `endsWith`: Only works with `string`
- * `in`: Check if a member existing in a given collection of values.`
- * `like`: Performs a SQL Like by using `EF.Functions.Like`.
+ * `in`: Check if a member existing in a given collection of values
+ * `like`: Performs a SQL Like by using `EF.Functions.Like`
 
 Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
 
@@ -421,6 +421,7 @@ public class Query : EfObjectGraphType
 }
 ```
 
+
 ### Testing the GraphQlController
 
 The `GraphQlController` can be tested using the [ASP.NET Integration tests](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests) via the [Microsoft.AspNetCore.Mvc.Testing NuGet package](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Testing).
@@ -579,9 +580,9 @@ In the context of GraphQL, Root Graph is the entry point to performing the initi
 
 When performing a query there are several approaches to [Loading Related Data](https://docs.microsoft.com/en-us/ef/core/querying/related-data)
 
-- **Eager loading** means that the related data is loaded from the database as part of the initial query.
-- **Explicit loading** means that the related data is explicitly loaded from the database at a later time.
-- **Lazy loading** means that the related data is transparently loaded from the database when the navigation property is accessed.
+ * **Eager loading** means that the related data is loaded from the database as part of the initial query.
+ * **Explicit loading** means that the related data is explicitly loaded from the database at a later time.
+ * **Lazy loading** means that the related data is transparently loaded from the database when the navigation property is accessed.
 
 Ideally, all navigation properties would be eagerly loaded as part of the root query. However determining what navigation properties to eagerly is difficult in the context of GraphQL. The reason is, given the returned hierarchy of data is dynamically defined by the requesting client, the root query cannot know what properties to include. To work around this GraphQL.EntityFramework interrogates the incoming query to derive the includes. So for example take the following query
 
@@ -610,11 +611,10 @@ context.Heros
 The string for the include is taken from the field name when using `AddNavigationField` or `AddNavigationConnectionField` with the first character upper cased. This value can be overridden using the optional parameter `includeNames` .  Note that  `includeNames` is an `IEnumerable<string>` so that multiple navigation properties can optionally be included for a single node.
 
 
-
-
 ### Fields
 
 Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet.github.io/docs/getting-started/introduction#queries). Fields can be mapped to Entity Framework by using `IEfGraphQLService`. `IEfGraphQLService` can be used in either a root query or a nested query via dependency injection. Alternatively the base type `EfObjectGraphType` or `EfObjectGraphType<TSource>` can be used for root or nested graphs respectively. The below samples all use the base type approach as it results in slightly less code.
+
 
 #### Root Query
 
@@ -630,7 +630,6 @@ public class Query : EfObjectGraphType
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
             });
-        }
     }
 }
 ```
