@@ -1,11 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using GraphQL.EntityFramework;
+using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Newtonsoft.Json;
 using Xunit;
 
 public class GraphQlControllerTests
@@ -28,7 +26,7 @@ public class GraphQlControllerTests
     id
   }
 }";
-        var response = await ExecuteGet(query);
+        var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadAsStringAsync();
         Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
@@ -50,7 +48,7 @@ query ($id: String!)
             id = "1"
         };
 
-        var response = await ExecuteGet(query, variables);
+        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadAsStringAsync();
         Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
@@ -59,25 +57,16 @@ query ($id: String!)
     [Fact]
     public async Task Get_null_query()
     {
-        var response = await ExecuteGet();
+        var response = await ClientQueryExecutor.ExecuteGet(client);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var result = await response.Content.ReadAsStringAsync();
         Assert.Contains("GraphQL.ExecutionError: A query is required.", result);
     }
 
-    static Task<HttpResponseMessage> ExecuteGet(string query = null, object variables = null)
-    {
-        var compressed = CompressQuery(query);
-        var variablesString = ToJson(variables);
-        var uri = $"graphql?query={compressed}&variables={variablesString}";
-        var request = new HttpRequestMessage(HttpMethod.Get, uri);
-        return client.SendAsync(request);
-    }
-
     [Fact]
     public async Task Post()
     {
-        var response = await ExecutePost("{companies{id}}");
+        var response = await ClientQueryExecutor.ExecutePost(client, "{companies{id}}");
         var result = await response.Content.ReadAsStringAsync();
         Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
         response.EnsureSuccessStatusCode();
@@ -90,7 +79,7 @@ query ($id: String!)
         {
             id = "1"
         };
-        var response = await ExecutePost("query ($id: String!){companies(ids:[$id]){id}}", variables);
+        var response = await ClientQueryExecutor.ExecutePost(client, "query ($id: String!){companies(ids:[$id]){id}}", variables);
         var result = await response.Content.ReadAsStringAsync();
         Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
         response.EnsureSuccessStatusCode();
@@ -99,25 +88,10 @@ query ($id: String!)
     [Fact]
     public async Task Post_null_query()
     {
-        var response = await ExecutePost();
+        var response = await ClientQueryExecutor.ExecutePost(client);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var result = await response.Content.ReadAsStringAsync();
         Assert.Contains("GraphQL.ExecutionError: A query is required.", result);
-    }
-
-    static Task<HttpResponseMessage> ExecutePost(string query = null, object variables = null)
-    {
-        query = CompressQuery(query);
-        var body = new
-        {
-            query,
-            variables
-        };
-        var request = new HttpRequestMessage(HttpMethod.Post, "graphql")
-        {
-            Content = new StringContent(ToJson(body), Encoding.UTF8, "application/json")
-        };
-        return client.SendAsync(request);
     }
 
     static TestServer GetTestServer()
@@ -125,23 +99,5 @@ query ($id: String!)
         var hostBuilder = new WebHostBuilder();
         hostBuilder.UseStartup<Startup>();
         return new TestServer(hostBuilder);
-    }
-
-    static string ToJson(object target)
-    {
-        if (target == null)
-        {
-            return "";
-        }
-        return JsonConvert.SerializeObject(target);
-    }
-
-    static string CompressQuery(string query)
-    {
-        if (query == null)
-        {
-            return "";
-        }
-        return Compress.Query(query);
     }
 }
