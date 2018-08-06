@@ -61,7 +61,7 @@ Where statements are [and'ed](https://docs.microsoft.com/en-us/dotnet/csharp/lan
 
 ##### Property Path
 
-All where statements require a `path`. This is a full path to a, possible nested, property. Eg a property at the root level could be `Address`, while a nested property could be `Address.Street`.  No null checking of nested  values is done.
+All where statements require a `path`. This is a full path to a, possible nested, property. Eg a property at the root level could be `Address`, while a nested property could be `Address.Street`. No null checking of nested values is done.
 
 
 ##### Supported Types
