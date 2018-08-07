@@ -66,7 +66,14 @@ query ($id: String!)
     [Fact]
     public async Task Post()
     {
-        var response = await ClientQueryExecutor.ExecutePost(client, "{companies{id}}");
+        var query = @"
+{
+  companies
+  {
+    id
+  }
+}";
+        var response = await ClientQueryExecutor.ExecutePost(client, query);
         var result = await response.Content.ReadAsStringAsync();
         Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
         response.EnsureSuccessStatusCode();
@@ -75,11 +82,19 @@ query ($id: String!)
     [Fact]
     public async Task Post_variable()
     {
+        var query = @"
+query ($id: String!)
+{
+  companies(ids:[$id])
+  {
+    id
+  }
+}";
         var variables = new
         {
             id = "1"
         };
-        var response = await ClientQueryExecutor.ExecutePost(client, "query ($id: String!){companies(ids:[$id]){id}}", variables);
+        var response = await ClientQueryExecutor.ExecutePost(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
         Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
         response.EnsureSuccessStatusCode();
