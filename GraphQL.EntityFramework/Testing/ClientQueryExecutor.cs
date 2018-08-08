@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -15,7 +17,7 @@ namespace GraphQL.EntityFramework.Testing
             ClientQueryExecutor.uri = uri;
         }
 
-        public static Task<HttpResponseMessage> ExecutePost(HttpClient client, string query = null, object variables = null)
+        public static Task<HttpResponseMessage> ExecutePost(HttpClient client, string query = null, object variables = null, Action<HttpHeaders> headerAction = null)
         {
             Guard.AgainstNull(nameof(client), client);
             query = CompressQuery(query);
@@ -28,16 +30,18 @@ namespace GraphQL.EntityFramework.Testing
             {
                 Content = new StringContent(ToJson(body), Encoding.UTF8, "application/json")
             };
+            headerAction?.Invoke(request.Headers);
             return client.SendAsync(request);
         }
 
-        public static Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query = null, object variables = null)
+        public static Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query = null, object variables = null, Action<HttpHeaders> headerAction = null)
         {
             Guard.AgainstNull(nameof(client), client);
             var compressed = CompressQuery(query);
             var variablesString = ToJson(variables);
             var getUri = $"{uri}?query={compressed}&variables={variablesString}";
             var request = new HttpRequestMessage(HttpMethod.Get, getUri);
+            headerAction?.Invoke(request.Headers);
             return client.SendAsync(request);
         }
 
