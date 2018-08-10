@@ -1,9 +1,12 @@
 ﻿using System;
 
-class GuidGraph : ScalarGraph<Guid>
+namespace GraphQL.EntityFramework
 {
-    protected override Guid InnerParse(string value)
+    public class GuidGraph : ScalarGraph<Guid>
     {
-        return Guid.Parse(value);
+        protected override Guid InnerParse(string value)
+        {
+            return Guid.Parse(value);
+        }
     }
 }

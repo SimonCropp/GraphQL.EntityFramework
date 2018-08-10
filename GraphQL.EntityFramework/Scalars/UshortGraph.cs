@@ -1,7 +1,10 @@
-﻿class UshortGraph : ScalarGraph<ushort>
+﻿namespace GraphQL.EntityFramework
 {
-    protected override ushort InnerParse(string value)
+    public class UshortGraph : ScalarGraph<ushort>
     {
-        return ushort.Parse(value);
+        protected override ushort InnerParse(string value)
+        {
+            return ushort.Parse(value);
+        }
     }
 }
