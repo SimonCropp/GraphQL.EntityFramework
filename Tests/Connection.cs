@@ -6,7 +6,7 @@ public static class Connection
 
     static Connection()
     {
-        if (Environment.GetEnvironmentVariable("APPVEYOR") == "True")
+        if (Environment.GetEnvironmentVariable("AppVeyor") == "True")
         {
             ConnectionString = @"Server=(local)\SQL2017;Database=GraphQLEntityFrameworkTests;User ID=sa;Password=Password12!;MultipleActiveResultSets=true";
             SqlHelper.EnsureDatabaseExists(ConnectionString);

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL" Version="2.0.0-alpha-978" />
+    <PackageReference Include="GraphQL" Version="2.0.0" />
     <PackageReference Include="ApprovalTests" Version="3.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.1" />
     <PackageReference Include="ObjectApproval" Version="2.2.0" />
