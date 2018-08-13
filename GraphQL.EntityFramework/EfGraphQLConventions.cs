@@ -47,12 +47,7 @@ namespace GraphQL.EntityFramework
         {
             var navigations = entity.GetNavigations();
             return navigations
-                .Select(
-                    x => new Navigation
-                    {
-                        PropertyName = x.Name,
-                        PropertyType = GetNavigationType(x)
-                    })
+                .Select(x => new Navigation(x.Name, GetNavigationType(x)))
                 .ToList();
         }
 
