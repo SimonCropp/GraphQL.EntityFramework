@@ -4,10 +4,11 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    partial class EfGraphQLService : IEfGraphQLService
+    public partial class EfGraphQLService : IEfGraphQLService
     {
         public EfGraphQLService(Dictionary<Type, List<Navigation>> navigations)
         {
+            Guard.AgainstNull(nameof(navigations), navigations);
             includeAppender = new IncludeAppender(navigations);
         }
 
