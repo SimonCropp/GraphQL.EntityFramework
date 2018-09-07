@@ -45,7 +45,7 @@ static partial class ArgumentProcessor
         var items = queryable.ToList();
         var orderBys = ArgumentReader.ReadOrderBy(getArguments).ToList();
         IOrderedEnumerable<TItem> ordered;
-        if (orderBys.Any())
+        if (orderBys.Count > 0)
         {
             var orderBy = orderBys.First();
             var property = FuncBuilder<TItem>.BuildPropertyExpression(orderBy.Path);
@@ -62,6 +62,7 @@ static partial class ArgumentProcessor
         {
             return items;
         }
+
         foreach (var orderBy in orderBys.Skip(1))
         {
             var property = FuncBuilder<TItem>.BuildPropertyExpression(orderBy.Path);

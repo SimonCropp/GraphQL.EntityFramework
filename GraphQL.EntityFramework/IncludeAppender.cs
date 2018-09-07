@@ -54,7 +54,7 @@ class IncludeAppender
         var subFields = field.SelectionSet.Selections.OfType<Field>().ToList();
         if (IsConnectionNode(field))
         {
-            if (subFields.Any())
+            if (subFields.Count > 0)
             {
                 ProcessSubFields(list, parentPath, subFields, complexGraph, parentNavigationProperties);
             }
@@ -66,16 +66,19 @@ class IncludeAppender
         {
             return;
         }
+
         if (!TryGetIncludeMetadata(fieldType, out var includeNames))
         {
             return;
         }
+
         //todo: do a single check to avoid allocations
         var paths = GetPaths(parentPath, includeNames).ToList();
         foreach (var path in paths)
         {
             list.Add(path);
         }
+
         ProcessSubFields(list, paths.First(), subFields, complexGraph, navigations[entityType]);
     }
 

@@ -28,7 +28,7 @@ static class QueryExecutor
 
             var executionResult = await documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);
 
-            if (executionResult.Errors != null && executionResult.Errors.Any())
+            if (executionResult.Errors != null && executionResult.Errors.Count > 0)
             {
                 if (executionResult.Errors.Count == 1)
                 {
