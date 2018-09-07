@@ -13,12 +13,13 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildQueryConnectionField<object, TGraph, TReturn>(name, resolve, pageSize);
+            var connection = BuildQueryConnectionField<object, TGraph, TReturn>(name, resolve, pageSize, filter);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -29,12 +30,13 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize);
+            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize, filter);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -45,12 +47,13 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize);
+            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize, filter);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -59,7 +62,8 @@ namespace GraphQL.EntityFramework
         ConnectionBuilder<TGraph, TSource> BuildQueryConnectionField<TSource, TGraph, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            int pageSize)
+            int pageSize,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -81,6 +85,7 @@ namespace GraphQL.EntityFramework
                         context.After,
                         context.Last,
                         context.Before,
+                        filter,
                         context.CancellationToken);
             });
             return builder;

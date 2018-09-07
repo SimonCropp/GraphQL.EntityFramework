@@ -10,7 +10,7 @@ using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 
-public class IntegrationTests : TestBase
+public partial class IntegrationTests : TestBase
 {
     static IntegrationTests()
     {
@@ -1008,6 +1008,8 @@ query ($value: String!)
             Purge(dataContext.WithMisNamedQueryParentEntities);
             Purge(dataContext.WithNullableEntities);
             Purge(dataContext.WithManyChildrenEntities);
+            Purge(dataContext.FilterParentEntities);
+            Purge(dataContext.FilterChildEntities);
             Purge(dataContext.Child1Entities);
             Purge(dataContext.Child2Entities);
             dataContext.SaveChanges();

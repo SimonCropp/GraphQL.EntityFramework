@@ -13,7 +13,8 @@ namespace GraphQL.EntityFramework
             Type graphType,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
@@ -21,7 +22,8 @@ namespace GraphQL.EntityFramework
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
@@ -29,14 +31,16 @@ namespace GraphQL.EntityFramework
             Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TReturn : class;
 
         FieldType AddQueryField<TGraph, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
@@ -44,7 +48,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter =null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
@@ -52,7 +57,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter =null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
@@ -97,7 +103,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
@@ -107,7 +114,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TReturn : class;
 
         FieldType AddNavigationField<TReturn>(
@@ -116,7 +124,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TReturn : class;
 
         FieldType AddNavigationField<TSource, TGraph, TReturn>(
@@ -124,7 +133,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter=null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
@@ -133,7 +143,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
@@ -142,7 +153,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
@@ -151,7 +163,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 

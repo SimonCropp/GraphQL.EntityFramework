@@ -62,25 +62,25 @@ static class ConnectionConverter
         return Build(skip, take, count, reverse, page);
     }
 
-    public static Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(this IQueryable<TReturn> list, int? first, string afterString, int? last, string beforeString, CancellationToken cancellation)
+    public static Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(this IQueryable<TReturn> list, int? first, string afterString, int? last, string beforeString, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation)
     {
         Parse(afterString, beforeString, out var after, out var before);
-        return ApplyConnectionContext(list, first, after, last, before, cancellation);
+        return ApplyConnectionContext(list, first, after, last, before, filter, cancellation);
     }
 
-    public static async Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, int? after, int? last, int? before, CancellationToken cancellation)
+    public static async Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, int? after, int? last, int? before, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation)
     {
         var count = await list.CountAsync(cancellation).ConfigureAwait(false);
         cancellation.ThrowIfCancellationRequested();
         if (last == null)
         {
-            return await First(list, first.GetValueOrDefault(0), after, before, count, cancellation).ConfigureAwait(false);
+            return await First(list, first.GetValueOrDefault(0), after, before, count, filter, cancellation).ConfigureAwait(false);
         }
 
-        return await Last(list, last.Value, after, before, count, cancellation).ConfigureAwait(false);
+        return await Last(list, last.Value, after, before, count, filter, cancellation).ConfigureAwait(false);
     }
 
-    static Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before, int count, CancellationToken cancellation)
+    static Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before, int count, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation)
     {
         int skip;
         if (before == null)
@@ -92,10 +92,10 @@ static class ConnectionConverter
             skip = Math.Max(before.Value - first, 0);
         }
 
-        return Range(list, skip, first, count, cancellation);
+        return Range(list, skip, first, count, filter, cancellation);
     }
 
-    static Task<Connection<TReturn>> Last<TReturn>(IQueryable<TReturn> list, int last, int? after, int? before, int count, CancellationToken cancellation)
+    static Task<Connection<TReturn>> Last<TReturn>(IQueryable<TReturn> list, int last, int? after, int? before, int count, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation)
     {
         int skip;
         if (after == null)
@@ -109,16 +109,20 @@ static class ConnectionConverter
             skip = after.Value + 1;
         }
 
-        return Range(list, skip, take: last, count, cancellation, true);
+        return Range(list, skip, take: last, count, filter, cancellation, true);
     }
 
-    static async Task<Connection<TReturn>> Range<TReturn>(IQueryable<TReturn> list, int skip, int take, int count, CancellationToken cancellation, bool reverse = false)
+    static async Task<Connection<TReturn>> Range<TReturn>(IQueryable<TReturn> list, int skip, int take, int count, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation, bool reverse = false)
     {
         var page = list.Skip(skip).Take(take);
 
         var result = await page
             .ToListAsync(cancellation)
             .ConfigureAwait(false);
+        if (filter != null)
+        {
+            result = filter(result).ToList();
+        }
         cancellation.ThrowIfCancellationRequested();
         return Build(skip, take, count, reverse, result);
     }
