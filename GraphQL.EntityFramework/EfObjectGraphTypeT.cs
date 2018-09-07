@@ -22,7 +22,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
             int pageSize = 10,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource,TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
@@ -56,7 +56,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
@@ -69,7 +69,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TReturn : class
         {
             return efGraphQlService.AddNavigationField(this, graphType, name, resolve, arguments, includeNames, filter);
@@ -80,7 +80,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
@@ -91,7 +91,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
@@ -103,7 +103,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TReturn : class
         {
             return efGraphQlService.AddQueryField(this, graphType, name, resolve, arguments, filter);

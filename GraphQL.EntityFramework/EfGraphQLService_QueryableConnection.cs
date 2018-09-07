@@ -14,7 +14,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<object, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -48,7 +48,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -63,7 +63,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             int pageSize,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter)
+            Filter<TSource, TReturn> filter)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -86,6 +86,7 @@ namespace GraphQL.EntityFramework
                         context.Last,
                         context.Before,
                         filter,
+                        context,
                         context.CancellationToken);
             });
             return builder;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GraphQL.EntityFramework;
+using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,31 +58,59 @@ static class ConnectionConverter
         return Range(list, skip, take: last, count, true);
     }
 
-    static Connection<TReturn> Range<TReturn>(List<TReturn> list, int skip, int take, int count, bool reverse = false)
+    static Connection<TReturn> Range<TReturn>(List<TReturn> list,
+        int skip,
+        int take,
+        int count,
+        bool reverse = false)
     {
         var page = list.Skip(skip).Take(take).ToList();
         return Build(skip, take, count, reverse, page);
     }
 
-    public static Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(this IQueryable<TReturn> list, int? first, string afterString, int? last, string beforeString, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation)
+    public static Task<Connection<TReturn>> ApplyConnectionContext<TSource,TReturn>(
+        this IQueryable<TReturn> list,
+        int? first,
+        string afterString,
+        int? last,
+        string beforeString,
+        Filter<TSource, TReturn> filter,
+        ResolveFieldContext<TSource> context,
+        CancellationToken cancellation)
     {
         Parse(afterString, beforeString, out var after, out var before);
-        return ApplyConnectionContext(list, first, after, last, before, filter, cancellation);
+        return ApplyConnectionContext(list, first, after, last, before, filter, context, cancellation);
     }
 
-    public static async Task<Connection<TReturn>> ApplyConnectionContext<TReturn>(IQueryable<TReturn> list, int? first, int? after, int? last, int? before, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation)
+    public static async Task<Connection<TReturn>> ApplyConnectionContext<TSource, TReturn>(
+        IQueryable<TReturn> list,
+        int? first,
+        int? after,
+        int? last,
+        int? before,
+        Filter<TSource, TReturn> filter,
+        ResolveFieldContext<TSource> context,
+        CancellationToken cancellation)
     {
         var count = await list.CountAsync(cancellation).ConfigureAwait(false);
         cancellation.ThrowIfCancellationRequested();
         if (last == null)
         {
-            return await First(list, first.GetValueOrDefault(0), after, before, count, filter, cancellation).ConfigureAwait(false);
+            return await First(list, first.GetValueOrDefault(0), after, before, count, filter, context, cancellation).ConfigureAwait(false);
         }
 
-        return await Last(list, last.Value, after, before, count, filter, cancellation).ConfigureAwait(false);
+        return await Last(list, last.Value, after, before, count, filter, context, cancellation).ConfigureAwait(false);
     }
 
-    static Task<Connection<TReturn>> First<TReturn>(IQueryable<TReturn> list, int first, int? after, int? before, int count, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation)
+    static Task<Connection<TReturn>> First<TSource, TReturn>(
+        IQueryable<TReturn> list,
+        int first,
+        int? after,
+        int? before,
+        int count,
+        Filter<TSource, TReturn> filter,
+        ResolveFieldContext<TSource> context,
+        CancellationToken cancellation)
     {
         int skip;
         if (before == null)
@@ -92,10 +122,18 @@ static class ConnectionConverter
             skip = Math.Max(before.Value - first, 0);
         }
 
-        return Range(list, skip, first, count, filter, cancellation);
+        return Range(list, skip, first, count, filter, context, cancellation);
     }
 
-    static Task<Connection<TReturn>> Last<TReturn>(IQueryable<TReturn> list, int last, int? after, int? before, int count, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation)
+    static Task<Connection<TReturn>> Last<TSource, TReturn>(
+        IQueryable<TReturn> list,
+        int last,
+        int? after,
+        int? before,
+        int count,
+        Filter<TSource, TReturn> filter,
+        ResolveFieldContext<TSource> context,
+        CancellationToken cancellation)
     {
         int skip;
         if (after == null)
@@ -109,10 +147,17 @@ static class ConnectionConverter
             skip = after.Value + 1;
         }
 
-        return Range(list, skip, take: last, count, filter, cancellation, true);
+        return Range(list, skip, take: last, count, filter, context, cancellation, true);
     }
 
-    static async Task<Connection<TReturn>> Range<TReturn>(IQueryable<TReturn> list, int skip, int take, int count, Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter, CancellationToken cancellation, bool reverse = false)
+    static async Task<Connection<TReturn>> Range<TSource, TReturn>(
+        IQueryable<TReturn> list,
+        int skip,
+        int take, int count,
+        Filter<TSource, TReturn> filter,
+        ResolveFieldContext<TSource> context,
+        CancellationToken cancellation,
+        bool reverse = false)
     {
         var page = list.Skip(skip).Take(take);
 
@@ -121,7 +166,7 @@ static class ConnectionConverter
             .ConfigureAwait(false);
         if (filter != null)
         {
-            result = filter(result).ToList();
+            result = filter(context,result).ToList();
         }
         cancellation.ThrowIfCancellationRequested();
         return Build(skip, take, count, reverse, result);

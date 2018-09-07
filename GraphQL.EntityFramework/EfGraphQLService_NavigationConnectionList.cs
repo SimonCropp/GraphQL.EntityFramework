@@ -15,7 +15,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
             int pageSize = 10,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<object, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -33,7 +33,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
             int pageSize = 10,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -49,7 +49,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string> includeName,
             int pageSize,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter)
+            Filter<TSource, TReturn> filter)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -66,7 +66,7 @@ namespace GraphQL.EntityFramework
                 enumerable = enumerable.ApplyGraphQlArguments(context);
                 if (filter != null)
                 {
-                    enumerable = filter(enumerable);
+                    enumerable = filter(context,enumerable);
                 }
                 var page = enumerable.ToList();
 

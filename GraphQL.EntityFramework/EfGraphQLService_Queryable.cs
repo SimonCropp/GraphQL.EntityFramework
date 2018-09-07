@@ -16,7 +16,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<object, TReturn> filter = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -30,7 +30,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -44,7 +44,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -57,7 +57,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter)
+            Filter<TSource, TReturn> filter)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graphType), graphType);
@@ -70,7 +70,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<object, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -84,7 +84,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter =null)
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -98,7 +98,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -111,7 +111,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter)
+            Filter<TSource, TReturn> filter)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -124,7 +124,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments,
             Type listGraphType,
-            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter)
+            Filter<TSource, TReturn> filter)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -135,17 +135,18 @@ namespace GraphQL.EntityFramework
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Resolver = new FuncFieldResolver<TSource, Task<List<TReturn>>>(async context =>
+                {
+                    var returnTypes = resolve(context);
+                    var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                    var withArguments = withIncludes.ApplyGraphQlArguments(context);
+                    var list = await withArguments.ToListAsync(context.CancellationToken).ConfigureAwait(false);
+                    if (filter == null)
                     {
-                        var returnTypes = resolve(context);
-                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
-                        var withArguments = withIncludes.ApplyGraphQlArguments(context);
-                        var list = await withArguments.ToListAsync(context.CancellationToken).ConfigureAwait(false);
-                        if (filter == null)
-                        {
-                            return list;
-                        }
-                        return filter(list).ToList();
-                    })
+                        return list;
+                    }
+
+                    return filter(context, list).ToList();
+                })
             };
         }
     }
