@@ -534,7 +534,6 @@ query ($value: String!)
     }
   }
 }
-
 ";
         var entity1 = new ParentEntity
         {
