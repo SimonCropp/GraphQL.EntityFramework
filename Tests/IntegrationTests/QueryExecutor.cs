@@ -6,7 +6,7 @@ using GraphQL.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-static internal class QueryExecutor
+static class QueryExecutor
 {
     public static async Task<object> ExecuteQuery(string queryString, ServiceCollection services, DbContext dataContext, Inputs inputs)
     {
