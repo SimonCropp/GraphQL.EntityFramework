@@ -174,7 +174,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
@@ -184,7 +185,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
     }

@@ -14,12 +14,13 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildListConnectionField<object, TGraph, TReturn>(name, resolve, includeNames, pageSize);
+            var connection = BuildListConnectionField<object, TGraph, TReturn>(name, resolve, includeNames, pageSize, filter);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -31,12 +32,13 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildListConnectionField<TSource, TGraph, TReturn>(name, resolve, includeNames, pageSize);
+            var connection = BuildListConnectionField<TSource, TGraph, TReturn>(name, resolve, includeNames, pageSize, filter);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
             return connection;
@@ -46,7 +48,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string> includeName,
-            int pageSize)
+            int pageSize,
+            Func<IEnumerable<TReturn>, IEnumerable<TReturn>> filter)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
@@ -60,8 +63,12 @@ namespace GraphQL.EntityFramework
             builder.Resolve(context =>
             {
                 var enumerable = resolve(context);
-                var withArguments = enumerable.ApplyGraphQlArguments(context);
-                var page = withArguments.ToList();
+                enumerable = enumerable.ApplyGraphQlArguments(context);
+                if (filter != null)
+                {
+                    enumerable = filter(enumerable);
+                }
+                var page = enumerable.ToList();
 
                 return ConnectionConverter.ApplyConnectionContext(
                     page,
