@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 
 public class FilterParentGraph : EfObjectGraphType<FilterParentEntity>
 {
@@ -10,11 +9,11 @@ public class FilterParentGraph : EfObjectGraphType<FilterParentEntity>
         AddNavigationField<FilterChildGraph, FilterChildEntity>(
             name: "children",
             resolve: context => context.Source.Children,
-            filter: (context,entities) => entities.Where(x => x.Property != "Ignore"));
+            filter: (context, entity) => entity.Property != "Ignore");
         AddNavigationConnectionField<FilterChildGraph, FilterChildEntity>(
             name: "childrenConnection",
             resolve: context => context.Source.Children,
             includeNames: new[] {"Children"},
-            filter: (context, entities) => entities.Where(x => x.Property != "Ignore"));
+            filter: (context, entity) => entity.Property != "Ignore");
     }
 }

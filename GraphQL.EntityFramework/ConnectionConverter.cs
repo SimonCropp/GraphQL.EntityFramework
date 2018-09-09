@@ -166,8 +166,9 @@ static class ConnectionConverter
             .ConfigureAwait(false);
         if (filter != null)
         {
-            result = filter(context,result).ToList();
+            result = result.Where(x => filter(context, x)).ToList();
         }
+
         cancellation.ThrowIfCancellationRequested();
         return Build(skip, take, count, reverse, result);
     }

@@ -145,7 +145,7 @@ namespace GraphQL.EntityFramework
                         return list;
                     }
 
-                    return filter(context, list).ToList();
+                    return list.Where(x => filter(context, x)).ToList();
                 })
             };
         }

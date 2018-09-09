@@ -12,12 +12,13 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<object, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField(name, resolve, includeNames, typeof(TGraph), arguments);
+            var field = BuildNavigationField(name, resolve, includeNames, typeof(TGraph), arguments, filter);
             return graph.AddField(field);
         }
 
@@ -27,11 +28,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<TSource, TReturn> filter = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField(name, resolve, includeNames, graphType, arguments);
+            var field = BuildNavigationField(name, resolve, includeNames, graphType, arguments, filter);
             return graph.AddField(field);
         }
 
@@ -41,11 +43,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<object, TReturn> filter = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField(name, resolve, includeNames, graphType, arguments);
+            var field = BuildNavigationField(name, resolve, includeNames, graphType, arguments, filter);
             return graph.AddField(field);
         }
 
@@ -54,12 +57,13 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField(name, resolve, includeNames, typeof(TGraph), arguments);
+            var field = BuildNavigationField(name, resolve, includeNames, typeof(TGraph), arguments, filter);
             return graph.AddField(field);
         }
 
@@ -68,7 +72,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<string> includeNames,
             Type graphType,
-            IEnumerable<QueryArgument> arguments)
+            IEnumerable<QueryArgument> arguments,
+            Filter<TSource, TReturn> filter)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -80,7 +85,19 @@ namespace GraphQL.EntityFramework
                 Type = graphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
-                Resolver = new FuncFieldResolver<TSource, TReturn>(resolve)
+                Resolver = new FuncFieldResolver<TSource, TReturn>(context =>
+                {
+                    var result = resolve(context);
+                    if (filter != null)
+                    {
+                        if (!filter(context, result))
+                        {
+                            return null;
+                        }
+                    }
+
+                    return result;
+                })
             };
         }
     }

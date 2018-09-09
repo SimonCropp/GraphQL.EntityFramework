@@ -66,7 +66,7 @@ namespace GraphQL.EntityFramework
                 enumerable = enumerable.ApplyGraphQlArguments(context);
                 if (filter != null)
                 {
-                    enumerable = filter(context,enumerable);
+                    enumerable = enumerable.Where(x => filter(context, x));
                 }
                 var page = enumerable.ToList();
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 
@@ -121,7 +122,7 @@ namespace GraphQL.EntityFramework
                             return result;
                         }
 
-                        return filter(context, result);
+                        return result.Where(x => filter(context, x));
                     })
             };
         }

@@ -67,7 +67,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<object, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
@@ -77,7 +78,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<TSource, TReturn> filter = null)
             where TReturn : class;
 
         FieldType AddNavigationField<TReturn>(
@@ -86,7 +88,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<object, TReturn> filter = null)
             where TReturn : class;
 
         FieldType AddNavigationField<TSource, TGraph, TReturn>(
@@ -94,7 +97,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 

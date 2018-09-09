@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 
 public class Query : EfObjectGraphType
 {
@@ -77,8 +76,6 @@ public class Query : EfObjectGraphType
                 return dataContext.ChildEntities;
             });
 
-
-
         efGraphQlService.AddQueryField<FilterParentGraph, FilterParentEntity>(this,
             name: "parentEntitiesFiltered",
             resolve: context =>
@@ -86,7 +83,7 @@ public class Query : EfObjectGraphType
                 var dataContext = (MyDataContext)context.UserContext;
                 return dataContext.FilterParentEntities;
             },
-            filter: (context, entities) => entities.Where(x=>x.Property!= "Ignore"));
+            filter: (context, entity) => entity.Property != "Ignore");
 
         efGraphQlService.AddQueryConnectionField<FilterParentGraph, FilterParentEntity>(this,
             name: "parentEntitiesConnectionFiltered",
@@ -95,9 +92,6 @@ public class Query : EfObjectGraphType
                 var dataContext = (MyDataContext)context.UserContext;
                 return dataContext.FilterParentEntities;
             },
-            filter: (context, entities) =>
-            {
-                return entities.Where(x => x.Property != "Ignore");
-            });
+            filter: (context, entity) => entity.Property != "Ignore");
     }
 }
