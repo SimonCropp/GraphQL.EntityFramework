@@ -33,11 +33,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<TSource, TReturn> filter = null)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddNavigationField<TSource, TGraph, TReturn>(this, name, resolve, arguments, includeNames);
+            return efGraphQlService.AddNavigationField<TSource, TGraph, TReturn>(this, name, resolve, arguments, includeNames, filter);
         }
 
         protected FieldType AddNavigationField<TReturn>(
@@ -45,10 +46,11 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            Filter<TSource, TReturn> filter = null)
             where TReturn : class
         {
-            return efGraphQlService.AddNavigationField(this, graphType, name, resolve, arguments, includeNames);
+            return efGraphQlService.AddNavigationField(this, graphType, name, resolve, arguments, includeNames, filter);
         }
 
         protected FieldType AddNavigationField<TGraph, TReturn>(
