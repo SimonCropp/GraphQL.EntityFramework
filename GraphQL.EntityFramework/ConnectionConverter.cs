@@ -162,7 +162,7 @@ static class ConnectionConverter
         var filter = await GlobalFilters.GetFilter<TReturn>(context.UserContext, cancellation);
         if (filter != null)
         {
-            result = result.Where(item => filter(item));
+            result = result.Where(filter);
         }
 
         cancellation.ThrowIfCancellationRequested();

@@ -64,7 +64,7 @@ namespace GraphQL.EntityFramework
                 var filter = await GlobalFilters.GetFilter<TReturn>(context.UserContext, context.CancellationToken);
                 if (filter != null)
                 {
-                    enumerable = enumerable.Where(item => filter(item));
+                    enumerable = enumerable.Where(filter);
                 }
                 var page = enumerable.ToList();
 

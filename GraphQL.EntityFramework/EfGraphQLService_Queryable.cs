@@ -135,7 +135,7 @@ namespace GraphQL.EntityFramework
                     var filter = await GlobalFilters.GetFilter<TReturn>(context.UserContext, context.CancellationToken);
                     if (filter != null)
                     {
-                        list = list.Where(item => filter(item));
+                        list = list.Where(filter);
                     }
 
                     return list;
