@@ -68,6 +68,7 @@ namespace GraphQL.EntityFramework
                 {
                     enumerable = enumerable.Where(x => filter(context, x));
                 }
+                enumerable = enumerable.Where(item => GlobalFilters.ShouldInclude(context.UserContext, item));
                 var page = enumerable.ToList();
 
                 return ConnectionConverter.ApplyConnectionContext(

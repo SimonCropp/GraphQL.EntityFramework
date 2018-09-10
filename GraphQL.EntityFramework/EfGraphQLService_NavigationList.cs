@@ -117,12 +117,13 @@ namespace GraphQL.EntityFramework
                     {
                         var result = resolve(context);
                         result = result.ApplyGraphQlArguments(context);
-                        if (filter == null)
+                        if (filter != null)
                         {
-                            return result;
+                            result= result.Where(x => filter(context, x));
                         }
 
-                        return result.Where(x => filter(context, x));
+                        result = result.Where(item => GlobalFilters.ShouldInclude(context.UserContext, item));
+                        return result;
                     })
             };
         }

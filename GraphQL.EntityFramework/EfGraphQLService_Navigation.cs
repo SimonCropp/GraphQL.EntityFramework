@@ -96,6 +96,11 @@ namespace GraphQL.EntityFramework
                         }
                     }
 
+                    if (!GlobalFilters.ShouldInclude(context.UserContext, result))
+                    {
+                        return null;
+                    }
+
                     return result;
                 })
             };

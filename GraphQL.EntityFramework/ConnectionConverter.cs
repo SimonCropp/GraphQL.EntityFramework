@@ -161,19 +161,21 @@ static class ConnectionConverter
     {
         var page = list.Skip(skip).Take(take);
 
-        var result = await page
+        IEnumerable<TReturn> result = await page
             .ToListAsync(cancellation)
             .ConfigureAwait(false);
         if (filter != null)
         {
-            result = result.Where(x => filter(context, x)).ToList();
+            result = result.Where(x => filter(context, x));
         }
+
+        result = result.Where(item => GlobalFilters.ShouldInclude(context.UserContext,item));
 
         cancellation.ThrowIfCancellationRequested();
         return Build(skip, take, count, reverse, result);
     }
 
-    static Connection<TReturn> Build<TReturn>(int skip, int take, int count, bool reverse, List<TReturn> result)
+    static Connection<TReturn> Build<TReturn>(int skip, int take, int count, bool reverse, IEnumerable<TReturn> result)
     {
         var edges = result
             .Select((item, index) =>

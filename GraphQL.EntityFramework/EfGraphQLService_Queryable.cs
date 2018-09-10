@@ -134,18 +134,19 @@ namespace GraphQL.EntityFramework
                 Name = name,
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
-                Resolver = new FuncFieldResolver<TSource, Task<List<TReturn>>>(async context =>
+                Resolver = new FuncFieldResolver<TSource, Task<IEnumerable<TReturn>>>(async context =>
                 {
                     var returnTypes = resolve(context);
                     var withIncludes = includeAppender.AddIncludes(returnTypes, context);
                     var withArguments = withIncludes.ApplyGraphQlArguments(context);
-                    var list = await withArguments.ToListAsync(context.CancellationToken).ConfigureAwait(false);
-                    if (filter == null)
+                    IEnumerable<TReturn> list = await withArguments.ToListAsync(context.CancellationToken).ConfigureAwait(false);
+                    if (filter != null)
                     {
-                        return list;
+                        list = list.Where(x => filter(context, x)).ToList();
                     }
 
-                    return list.Where(x => filter(context, x)).ToList();
+                    list = list.Where(item => GlobalFilters.ShouldInclude(context.UserContext, item));
+                    return list;
                 })
             };
         }

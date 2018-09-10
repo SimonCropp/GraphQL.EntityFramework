@@ -41,7 +41,7 @@ public class ConnectionConverterTests
     {
         NamerFactory.AdditionalInformation = $"first_{first}_after_{after}_last_{last}_before_{before}";
         var queryable = new AsyncEnumerable<string>(list);
-        var connection = await ConnectionConverter.ApplyConnectionContext(queryable, first, after, last, before, null, (ResolveFieldContext<string>) null, CancellationToken.None);
+        var connection = await ConnectionConverter.ApplyConnectionContext(queryable, first, after, last, before, null, new ResolveFieldContext<string>() , CancellationToken.None);
         ObjectApprover.VerifyWithJson(connection);
     }
 
