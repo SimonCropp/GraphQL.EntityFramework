@@ -7,7 +7,7 @@ namespace GraphQL.EntityFramework
     {
         static Dictionary<Type, Func<object, object, bool>> funcs = new Dictionary<Type, Func<object, object, bool>>();
 
-        public static void Add<TItem>(Func<object, TItem, bool> filter)
+        public static void Add<TItem>(GlobalFilter<TItem> filter)
         {
             funcs[typeof(TItem)] = (context, item) => filter(context, (TItem) item);
         }
