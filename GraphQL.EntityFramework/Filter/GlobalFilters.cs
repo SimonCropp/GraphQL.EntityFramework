@@ -18,7 +18,7 @@ namespace GraphQL.EntityFramework
             };
         }
 
-        internal static Task<Func<object, bool>> GetFilter<TItem>(object userContext, CancellationToken token = default)
+        internal static async Task<Func<TItem, bool>> GetFilter<TItem>(object userContext, CancellationToken token = default)
         {
             var itemType = typeof(TItem);
             foreach (var pair in funcs)
@@ -29,10 +29,11 @@ namespace GraphQL.EntityFramework
                 }
 
                 var filterBuilder = pair.Value;
-                return filterBuilder(userContext, token);
+                var func = await filterBuilder(userContext, token).ConfigureAwait(false);
+                return item => func(item);
             }
 
-            return Task.FromResult((Func<object, bool>)null);
+            return null;
         }
 
     }
