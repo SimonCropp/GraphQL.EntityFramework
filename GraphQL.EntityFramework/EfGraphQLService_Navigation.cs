@@ -12,13 +12,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null,
-            Filter<object, TReturn> filter = null)
+            IEnumerable<string> includeNames = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField(name, resolve, includeNames, typeof(TGraph), arguments, filter);
+            var field = BuildNavigationField(name, resolve, includeNames, typeof(TGraph), arguments);
             return graph.AddField(field);
         }
 
@@ -28,12 +27,11 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null,
-            Filter<TSource, TReturn> filter = null)
+            IEnumerable<string> includeNames = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField(name, resolve, includeNames, graphType, arguments, filter);
+            var field = BuildNavigationField(name, resolve, includeNames, graphType, arguments);
             return graph.AddField(field);
         }
 
@@ -43,12 +41,11 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null,
-            Filter<object, TReturn> filter = null)
+            IEnumerable<string> includeNames = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField(name, resolve, includeNames, graphType, arguments, filter);
+            var field = BuildNavigationField(name, resolve, includeNames, graphType, arguments);
             return graph.AddField(field);
         }
 
@@ -57,13 +54,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null,
-            Filter<TSource, TReturn> filter = null)
+            IEnumerable<string> includeNames = null)
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField(name, resolve, includeNames, typeof(TGraph), arguments, filter);
+            var field = BuildNavigationField(name, resolve, includeNames, typeof(TGraph), arguments);
             return graph.AddField(field);
         }
 
@@ -72,8 +68,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             IEnumerable<string> includeNames,
             Type graphType,
-            IEnumerable<QueryArgument> arguments,
-            Filter<TSource, TReturn> filter)
+            IEnumerable<QueryArgument> arguments)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -85,20 +80,17 @@ namespace GraphQL.EntityFramework
                 Type = graphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
-                Resolver = new FuncFieldResolver<TSource, TReturn>(context =>
+                Resolver = new AsyncFieldResolver<TSource, TReturn>(async context =>
                 {
                     var result = resolve(context);
+
+                    var filter = await GlobalFilters.GetFilter<TReturn>(context.UserContext, context.CancellationToken);
                     if (filter != null)
                     {
-                        if (!filter(context, result))
+                        if (!filter(result))
                         {
                             return null;
                         }
-                    }
-
-                    if (!GlobalFilters.ShouldInclude(context.UserContext, result))
-                    {
-                        return null;
                     }
 
                     return result;

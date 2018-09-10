@@ -82,8 +82,7 @@ public class Query : EfObjectGraphType
             {
                 var dataContext = (MyDataContext)context.UserContext;
                 return dataContext.FilterParentEntities;
-            },
-            filter: (context, entity) => entity.Property != "Ignore");
+            });
 
         efGraphQlService.AddQueryConnectionField<FilterParentGraph, FilterParentEntity>(this,
             name: "parentEntitiesConnectionFiltered",
@@ -91,7 +90,6 @@ public class Query : EfObjectGraphType
             {
                 var dataContext = (MyDataContext)context.UserContext;
                 return dataContext.FilterParentEntities;
-            },
-            filter: (context, entity) => entity.Property != "Ignore");
+            });
     }
 }

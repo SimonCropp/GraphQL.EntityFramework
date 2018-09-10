@@ -8,12 +8,10 @@ public class FilterParentGraph : EfObjectGraphType<FilterParentEntity>
         Field(x => x.Property);
         AddNavigationField<FilterChildGraph, FilterChildEntity>(
             name: "children",
-            resolve: context => context.Source.Children,
-            filter: (context, entity) => entity.Property != "Ignore");
+            resolve: context => context.Source.Children);
         AddNavigationConnectionField<FilterChildGraph, FilterChildEntity>(
             name: "childrenConnection",
             resolve: context => context.Source.Children,
-            includeNames: new[] {"Children"},
-            filter: (context, entity) => entity.Property != "Ignore");
+            includeNames: new[] {"Children"});
     }
 }

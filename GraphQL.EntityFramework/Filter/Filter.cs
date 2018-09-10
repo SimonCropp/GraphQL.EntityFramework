@@ -1,9 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public delegate bool Filter<TSource, in TReturn>(ResolveFieldContext<TSource> context, TReturn input);
-    public delegate bool GlobalFilter<in TReturn>(object userContext, TReturn input);
+    public delegate bool Filter<in TReturn>(TReturn input);
+    public delegate Task<Filter<TReturn>> FilterBuilder<TReturn>(object userContext, CancellationToken token);
 }

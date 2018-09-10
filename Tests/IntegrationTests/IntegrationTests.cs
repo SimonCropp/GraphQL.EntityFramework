@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.EntityFramework;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,15 @@ public partial class IntegrationTests : TestBase
 {
     static IntegrationTests()
     {
+        GlobalFilters.Add((context, token) =>
+        {
+            return Task.FromResult(new Filter<FilterParentEntity>(input => input.Property != "Ignore"));
+        });
+        GlobalFilters.Add((context, token) =>
+        {
+            return Task.FromResult(new Filter<FilterChildEntity>(input => input.Property != "Ignore"));
+        });
+
         using (var dataContext = BuildDataContext())
         {
             dataContext.Database.EnsureCreated();

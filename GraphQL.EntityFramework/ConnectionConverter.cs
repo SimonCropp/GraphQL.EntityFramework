@@ -74,12 +74,11 @@ static class ConnectionConverter
         string afterString,
         int? last,
         string beforeString,
-        Filter<TSource, TReturn> filter,
         ResolveFieldContext<TSource> context,
         CancellationToken cancellation)
     {
         Parse(afterString, beforeString, out var after, out var before);
-        return ApplyConnectionContext(list, first, after, last, before, filter, context, cancellation);
+        return ApplyConnectionContext(list, first, after, last, before, context, cancellation);
     }
 
     public static async Task<Connection<TReturn>> ApplyConnectionContext<TSource, TReturn>(
@@ -88,7 +87,6 @@ static class ConnectionConverter
         int? after,
         int? last,
         int? before,
-        Filter<TSource, TReturn> filter,
         ResolveFieldContext<TSource> context,
         CancellationToken cancellation)
     {
@@ -96,10 +94,10 @@ static class ConnectionConverter
         cancellation.ThrowIfCancellationRequested();
         if (last == null)
         {
-            return await First(list, first.GetValueOrDefault(0), after, before, count, filter, context, cancellation).ConfigureAwait(false);
+            return await First(list, first.GetValueOrDefault(0), after, before, count, context, cancellation).ConfigureAwait(false);
         }
 
-        return await Last(list, last.Value, after, before, count, filter, context, cancellation).ConfigureAwait(false);
+        return await Last(list, last.Value, after, before, count, context, cancellation).ConfigureAwait(false);
     }
 
     static Task<Connection<TReturn>> First<TSource, TReturn>(
@@ -108,7 +106,6 @@ static class ConnectionConverter
         int? after,
         int? before,
         int count,
-        Filter<TSource, TReturn> filter,
         ResolveFieldContext<TSource> context,
         CancellationToken cancellation)
     {
@@ -122,7 +119,7 @@ static class ConnectionConverter
             skip = Math.Max(before.Value - first, 0);
         }
 
-        return Range(list, skip, first, count, filter, context, cancellation);
+        return Range(list, skip, first, count, context, cancellation);
     }
 
     static Task<Connection<TReturn>> Last<TSource, TReturn>(
@@ -131,7 +128,6 @@ static class ConnectionConverter
         int? after,
         int? before,
         int count,
-        Filter<TSource, TReturn> filter,
         ResolveFieldContext<TSource> context,
         CancellationToken cancellation)
     {
@@ -147,14 +143,13 @@ static class ConnectionConverter
             skip = after.Value + 1;
         }
 
-        return Range(list, skip, take: last, count, filter, context, cancellation, true);
+        return Range(list, skip, take: last, count, context, cancellation, true);
     }
 
     static async Task<Connection<TReturn>> Range<TSource, TReturn>(
         IQueryable<TReturn> list,
         int skip,
         int take, int count,
-        Filter<TSource, TReturn> filter,
         ResolveFieldContext<TSource> context,
         CancellationToken cancellation,
         bool reverse = false)
@@ -164,12 +159,11 @@ static class ConnectionConverter
         IEnumerable<TReturn> result = await page
             .ToListAsync(cancellation)
             .ConfigureAwait(false);
+        var filter = await GlobalFilters.GetFilter<TReturn>(context.UserContext, cancellation);
         if (filter != null)
         {
-            result = result.Where(x => filter(context, x));
+            result = result.Where(item => filter(item));
         }
-
-        result = result.Where(item => GlobalFilters.ShouldInclude(context.UserContext,item));
 
         cancellation.ThrowIfCancellationRequested();
         return Build(skip, take, count, reverse, result);
