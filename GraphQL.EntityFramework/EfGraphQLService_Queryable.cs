@@ -142,7 +142,7 @@ namespace GraphQL.EntityFramework
                     IEnumerable<TReturn> list = await withArguments.ToListAsync(context.CancellationToken).ConfigureAwait(false);
                     if (filter != null)
                     {
-                        list = list.Where(x => filter(context, x)).ToList();
+                        list = list.Where(x => filter(context, x));
                     }
 
                     list = list.Where(item => GlobalFilters.ShouldInclude(context.UserContext, item));
