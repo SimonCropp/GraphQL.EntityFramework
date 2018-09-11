@@ -1,40 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace GraphQL.EntityFramework
 {
     public static class GlobalFilters
     {
-        static Dictionary<Type, Func<object,CancellationToken,Task<Func<object,bool>>>> funcs = new Dictionary<Type, Func<object, CancellationToken, Task<Func<object, bool>>>>();
+        static Dictionary<Type, Func<object, object, bool>> funcs = new Dictionary<Type, Func<object, object, bool>>();
 
-        public static void Add<TItem>(FilterBuilder<TItem> filterBuilder)
+        public static void Add<TItem>(Filter<TItem> filter)
         {
-            funcs[typeof(TItem)] = async (userContext, token) =>
-            {
-                var filter = await filterBuilder(userContext, token);
-                return item => filter((TItem) item);
-            };
+            funcs[typeof(TItem)] = (context, item) => filter(context, (TItem)item);
         }
 
-        internal static async Task<Func<TItem, bool>> GetFilter<TItem>(object userContext, CancellationToken token = default)
+        public static bool ShouldInclude(object userContext, object item)
         {
-            var itemType = typeof(TItem);
+            var itemType = item.GetType();
             foreach (var pair in funcs)
             {
                 if (!pair.Key.IsAssignableFrom(itemType))
                 {
                     continue;
                 }
-
-                var filterBuilder = pair.Value;
-                var func = await filterBuilder(userContext, token).ConfigureAwait(false);
-                return item => func(item);
+                if (!pair.Value(userContext, item))
+                {
+                    return false;
+                }
             }
 
-            return null;
+            return true;
         }
-
     }
 }

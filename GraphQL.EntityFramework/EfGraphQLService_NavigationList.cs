@@ -105,18 +105,11 @@ namespace GraphQL.EntityFramework
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
-                Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(async context =>
+                Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(context =>
                     {
                         var result = resolve(context);
                         result = result.ApplyGraphQlArguments(context);
-
-                        var filter = await GlobalFilters.GetFilter<TReturn>(context.UserContext, context.CancellationToken);
-                        if (filter != null)
-                        {
-                            result = result.Where(filter);
-                        }
-
-                        return result;
+                        return  result.Where(item => GlobalFilters.ShouldInclude(context.UserContext, item));
                     })
             };
         }

@@ -15,13 +15,13 @@ public partial class IntegrationTests : TestBase
 {
     static IntegrationTests()
     {
-        GlobalFilters.Add((context, token) =>
+        GlobalFilters.Add< FilterParentEntity>((context, item) =>
         {
-            return Task.FromResult(new Filter<FilterParentEntity>(input => input.Property != "Ignore"));
+            return item.Property != "Ignore";
         });
-        GlobalFilters.Add((context, token) =>
+        GlobalFilters.Add< FilterChildEntity>((context, item) =>
         {
-            return Task.FromResult(new Filter<FilterChildEntity>(input => input.Property != "Ignore"));
+            return item.Property != "Ignore";
         });
 
         using (var dataContext = BuildDataContext())

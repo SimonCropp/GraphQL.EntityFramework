@@ -57,15 +57,11 @@ namespace GraphQL.EntityFramework
             builder.PageSize(pageSize);
             builder.Name(name);
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeName);
-            builder.ResolveAsync(async context =>
+            builder.Resolve(context =>
             {
                 var enumerable = resolve(context);
                 enumerable = enumerable.ApplyGraphQlArguments(context);
-                var filter = await GlobalFilters.GetFilter<TReturn>(context.UserContext, context.CancellationToken);
-                if (filter != null)
-                {
-                    enumerable = enumerable.Where(filter);
-                }
+                enumerable = enumerable.Where(item => GlobalFilters.ShouldInclude(context.UserContext, item));
                 var page = enumerable.ToList();
 
                 return ConnectionConverter.ApplyConnectionContext(

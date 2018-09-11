@@ -80,20 +80,14 @@ namespace GraphQL.EntityFramework
                 Type = graphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
-                Resolver = new AsyncFieldResolver<TSource, TReturn>(async context =>
+                Resolver = new FuncFieldResolver<TSource, TReturn>(context =>
                 {
                     var result = resolve(context);
-
-                    var filter = await GlobalFilters.GetFilter<TReturn>(context.UserContext, context.CancellationToken);
-                    if (filter != null)
+                    if (GlobalFilters.ShouldInclude(context.UserContext, result))
                     {
-                        if (!filter(result))
-                        {
-                            return null;
-                        }
+                        return result;
                     }
-
-                    return result;
+                    return null;
                 })
             };
         }

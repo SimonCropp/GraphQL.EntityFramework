@@ -159,11 +159,7 @@ static class ConnectionConverter
         IEnumerable<TReturn> result = await page
             .ToListAsync(cancellation)
             .ConfigureAwait(false);
-        var filter = await GlobalFilters.GetFilter<TReturn>(context.UserContext, cancellation);
-        if (filter != null)
-        {
-            result = result.Where(filter);
-        }
+        result = result.Where(item => GlobalFilters.ShouldInclude(context.UserContext, item));
 
         cancellation.ThrowIfCancellationRequested();
         return Build(skip, take, count, reverse, result);
