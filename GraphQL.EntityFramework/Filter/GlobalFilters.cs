@@ -12,7 +12,7 @@ namespace GraphQL.EntityFramework
             funcs[typeof(TItem)] = (context, item) => filter(context, (TItem)item);
         }
 
-        public static bool ShouldInclude(object userContext, object item)
+        internal static bool ShouldInclude(object userContext, object item)
         {
             var itemType = item.GetType();
             foreach (var pair in funcs)
