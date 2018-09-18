@@ -25,6 +25,10 @@ namespace GraphQL.EntityFramework
 
         internal static bool ShouldInclude(object userContext, object item)
         {
+            if (item == null)
+            {
+                return false;
+            }
             var itemType = item.GetType();
             foreach (var pair in funcs)
             {

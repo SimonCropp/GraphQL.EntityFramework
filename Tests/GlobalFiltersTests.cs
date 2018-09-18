@@ -8,6 +8,7 @@ public class GlobalFiltersTests
     {
         GlobalFilters.Add<Target>((o, target) => target.Property != "Ignore");
         Assert.True(GlobalFilters.ShouldInclude(null, new Target()));
+        Assert.False(GlobalFilters.ShouldInclude(null, null));
         Assert.True(GlobalFilters.ShouldInclude(null, new Target {Property = "Include"}));
         Assert.False(GlobalFilters.ShouldInclude(null, new Target {Property = "Ignore"}));
 
