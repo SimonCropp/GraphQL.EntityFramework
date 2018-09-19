@@ -771,7 +771,7 @@ Sometimes, in the context of constructing an EF query, it is not possible to kno
 
 Notes:
 
- * When evaluated on nodes of a collection, excluded nodes will be replaced removed from collection.
+ * When evaluated on nodes of a collection, excluded nodes will be removed from collection.
  * When evaluated on a property node, the value will be replaced with null.
  * When doing paging or counts, there is currently no smarts that adjust counts or pages sizes when items are excluded. If this is required submit a PR that adds this feature, or don't mix filters with paging.
  * The filter is passed the current [User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context) and the node item instance.
