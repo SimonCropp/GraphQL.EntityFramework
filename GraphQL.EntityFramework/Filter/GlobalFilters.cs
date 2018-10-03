@@ -7,6 +7,11 @@ namespace GraphQL.EntityFramework
     {
         static Dictionary<Type, Func<object, object, bool>> funcs = new Dictionary<Type, Func<object, object, bool>>();
 
+        public static void Clear()
+        {
+            funcs.Clear();
+        }
+
         public static void Add<TItem>(Filter<TItem> filter)
         {
             Guard.AgainstNull(nameof(filter), filter);
