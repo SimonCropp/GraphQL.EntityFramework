@@ -112,7 +112,7 @@ static class ConnectionConverter
         int skip;
         if (before == null)
         {
-            skip = after.GetValueOrDefault(0);
+            skip = after + 1 ?? 0;
         }
         else
         {
