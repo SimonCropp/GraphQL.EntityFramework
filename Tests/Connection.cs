@@ -7,9 +7,9 @@ public static class Connection
     static Connection()
     {
 #if(NET472)
-        var dbName = @"GraphQLEntityFrameworkTestsNetClassic";
+        var dbName = "GraphQLEntityFrameworkTestsNetClassic";
 #else
-        var dbName = @"GraphQLEntityFrameworkTestsNetCore";
+        var dbName = "GraphQLEntityFrameworkTestsNetCore";
 #endif
         if (Environment.GetEnvironmentVariable("AppVeyor") == "True")
         {
