@@ -186,7 +186,7 @@ public partial class IntegrationTests : TestBase
     {
         var queryString = @"
 {
-  parentEntitiesConnection(first:2, after: '1') {
+  parentEntitiesConnection(first:2, after: '0') {
     totalCount
     edges {
       cursor
@@ -523,7 +523,7 @@ query ($value: String!)
     {
         var queryString = @"
 {
-  parentEntitiesConnection(first:2, after: '1') {
+  parentEntitiesConnection(first:2, after: '0') {
     totalCount
     edges {
       cursor
