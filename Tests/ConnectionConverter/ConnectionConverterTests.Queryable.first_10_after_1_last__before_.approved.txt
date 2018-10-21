@@ -1,14 +1,10 @@
 ﻿{
   "TotalCount": 10,
   "PageInfo": {
-    "StartCursor": "1",
+    "StartCursor": "2",
     "EndCursor": "9"
   },
   "Edges": [
-    {
-      "Cursor": "1",
-      "Node": "b"
-    },
     {
       "Cursor": "2",
       "Node": "c"
@@ -43,7 +39,6 @@
     }
   ],
   "Items": [
-    "b",
     "c",
     "d",
     "e",

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 public class GraphQlControllerTests
@@ -52,6 +53,33 @@ query ($id: String!)
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadAsStringAsync();
         Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
+    }
+
+    [Fact]
+    public async Task Get_company_paging() 
+    {
+        var after = 1;
+        var query = @"
+query { 
+  companiesConnection(first:2, after:""" + after + @""") {
+    edges {
+      cursor
+      node {
+        id
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}";
+        var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        var result = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+        var firstOfNextPage = result.SelectToken("..data..companiesConnection..edges[0].cursor").Value<string>();
+        Assert.NotEqual(after.ToString(), firstOfNextPage);
     }
 
     [Fact]

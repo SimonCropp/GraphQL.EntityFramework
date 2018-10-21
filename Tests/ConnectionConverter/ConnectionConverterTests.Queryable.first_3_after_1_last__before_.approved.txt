@@ -3,14 +3,10 @@
   "PageInfo": {
     "HasNextPage": true,
     "HasPreviousPage": true,
-    "StartCursor": "1",
-    "EndCursor": "3"
+    "StartCursor": "2",
+    "EndCursor": "4"
   },
   "Edges": [
-    {
-      "Cursor": "1",
-      "Node": "b"
-    },
     {
       "Cursor": "2",
       "Node": "c"
@@ -18,11 +14,15 @@
     {
       "Cursor": "3",
       "Node": "d"
+    },
+    {
+      "Cursor": "4",
+      "Node": "e"
     }
   ],
   "Items": [
-    "b",
     "c",
-    "d"
+    "d",
+    "e"
   ]
 }
