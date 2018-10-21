@@ -1,0 +1,16 @@
+{
+  tracks(where: {
+    path: "name",
+  	comparison: startsWith,
+    value: "T"
+  }) {
+    name
+    albums(where: {
+      path: "name",
+      comparison: contains,
+      value: "2"
+    }) {
+      name
+    }
+  }
+}
