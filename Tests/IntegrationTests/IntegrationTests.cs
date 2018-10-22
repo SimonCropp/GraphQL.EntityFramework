@@ -15,14 +15,8 @@ public partial class IntegrationTests : TestBase
 {
     static IntegrationTests()
     {
-        GlobalFilters.Add< FilterParentEntity>((context, item) =>
-        {
-            return item.Property != "Ignore";
-        });
-        GlobalFilters.Add< FilterChildEntity>((context, item) =>
-        {
-            return item.Property != "Ignore";
-        });
+        GlobalFilters.Add<FilterParentEntity>((context, item) => { return item.Property != "Ignore"; });
+        GlobalFilters.Add<FilterChildEntity>((context, item) => { return item.Property != "Ignore"; });
 
         using (var dataContext = BuildDataContext())
         {
