@@ -350,6 +350,31 @@ query ($value: String!)
     }
 
     [Fact]
+    public async Task CustomType()
+    {
+        var queryString = @"
+{
+  customType
+  {
+    property
+  }
+}";
+
+        var entity1 = new CustomTypeEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = long.MaxValue,
+        };
+        var entity2 = new CustomTypeEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = 3,
+        };
+
+        var result = await RunQuery(queryString, null, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result);
+    }
+    [Fact]
     public async Task Where()
     {
         var queryString = @"
@@ -1002,6 +1027,7 @@ query ($value: String!)
     {
         using (var dataContext = BuildDataContext())
         {
+            Purge(dataContext.CustomTypeEntities);
             Purge(dataContext.Level1Entities);
             Purge(dataContext.Level2Entities);
             Purge(dataContext.Level3Entities);

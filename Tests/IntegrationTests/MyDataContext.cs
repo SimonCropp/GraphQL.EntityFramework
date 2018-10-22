@@ -9,6 +9,7 @@ public class MyDataContext : DbContext
     public DbSet<WithMisNamedQueryChildEntity> WithMisNamedQueryChildEntities { get; set; }
     public DbSet<WithMisNamedQueryParentEntity> WithMisNamedQueryParentEntities { get; set; }
     public DbSet<Level1Entity> Level1Entities { get; set; }
+    public DbSet<CustomTypeEntity> CustomTypeEntities { get; set; }
     public DbSet<Level2Entity> Level2Entities { get; set; }
     public DbSet<Level3Entity> Level3Entities { get; set; }
     public DbSet<WithNullableEntity> WithNullableEntities { get; set; }
@@ -23,6 +24,7 @@ public class MyDataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<CustomTypeEntity>();
         modelBuilder.Entity<WithNullableEntity>();
         modelBuilder.Entity<FilterParentEntity>();
         modelBuilder.Entity<FilterChildEntity>();

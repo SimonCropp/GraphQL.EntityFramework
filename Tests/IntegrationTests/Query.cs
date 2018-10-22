@@ -4,6 +4,14 @@ public class Query : EfObjectGraphType
 {
     public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
     {
+        AddQueryField<CustomTypeGraph, CustomTypeEntity>(
+            name: "customType",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.CustomTypeEntities;
+            });
+
         AddQueryField<SkipLevelGraph, Level1Entity>(
             name: "skipLevel",
             resolve: context =>

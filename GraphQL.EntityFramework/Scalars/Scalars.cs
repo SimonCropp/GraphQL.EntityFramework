@@ -46,7 +46,7 @@ static class Scalars
     {
         if (GraphTypeTypeRegistry.Get(type) == null)
         {
-            GraphTypeTypeRegistry.Register(type, typeof(GuidGraph));
+            GraphTypeTypeRegistry.Register(type, typeof(T));
             var value = new T();
             entries.Add(typeof(T), value);
         }
