@@ -1,4 +1,6 @@
-﻿using GraphQL.EntityFramework;
+﻿using System.Linq;
+using GraphQL.EntityFramework;
+using GraphQL.Types;
 
 public class Query : EfObjectGraphType
 {
@@ -26,6 +28,16 @@ public class Query : EfObjectGraphType
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
+            });
+
+        AddQueryField<EmployeeGraph, Employee>(
+            name: "employeesByArgument",
+            arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "content" }),
+            resolve: context =>
+            {
+                var content = context.GetArgument<string>("content");
+                var dataContext = (MyDataContext)context.UserContext;
+                return dataContext.Employees.Where(x => x.Content == content);
             });
 
         AddQueryConnectionField<EmployeeGraph, Employee>(
