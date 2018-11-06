@@ -26,7 +26,7 @@ public class EnumerableConnection
                         HasNextPage = true,
                         HasPreviousPage = false,
                         StartCursor = skip.ToString(),
-                        EndCursor = Math.Min(list.Count, skip + take).ToString(),
+                        EndCursor = Math.Min(list.Count, skip + take).ToString()
                     },
                     Edges = page
                         .Select((item, index) => new Edge<Employee>

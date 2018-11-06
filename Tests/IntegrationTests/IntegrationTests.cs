@@ -72,7 +72,7 @@ public partial class IntegrationTests : TestBase
 
         var entity1 = new WithNullableEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001")
         };
         var entity2 = new WithNullableEntity
         {
@@ -91,7 +91,7 @@ public partial class IntegrationTests : TestBase
 
         var entity1 = new WithNullableEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001")
         };
         var entity2 = new WithNullableEntity
         {
@@ -363,12 +363,12 @@ query ($value: String!)
         var entity1 = new CustomTypeEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            Property = long.MaxValue,
+            Property = long.MaxValue
         };
         var entity2 = new CustomTypeEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Property = 3,
+            Property = 3
         };
 
         var result = await RunQuery(queryString, null, entity1, entity2);
@@ -754,7 +754,7 @@ query ($value: String!)
 
         var level2b = new Level2Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000004")
         };
         var level1b = new Level1Entity
         {
@@ -854,7 +854,7 @@ query ($value: String!)
         var entity5 = new ChildEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
-            Property = "Value5",
+            Property = "Value5"
         };
 
         var result = await RunQuery(queryString, null, entity1, entity2, entity3, entity5);
@@ -973,7 +973,7 @@ query ($value: String!)
 
         var parent = new WithManyChildrenEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001")
         };
         var child1 = new Child1Entity
         {

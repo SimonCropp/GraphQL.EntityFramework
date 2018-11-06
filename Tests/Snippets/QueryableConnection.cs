@@ -29,7 +29,7 @@ public class QueryableConnection
                         HasNextPage = true,
                         HasPreviousPage = false,
                         StartCursor = skip.ToString(),
-                        EndCursor = Math.Min(totalCount, skip + take).ToString(),
+                        EndCursor = Math.Min(totalCount, skip + take).ToString()
                     },
                     Edges = await page
                         .Select((item, index) => new Edge<Employee>

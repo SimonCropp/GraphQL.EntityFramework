@@ -189,7 +189,7 @@ static class ConnectionConverter
                 HasNextPage = count > take + skip,
                 HasPreviousPage = skip > 0 && take < count,
                 StartCursor = skip.ToString(),
-                EndCursor = Math.Min(count - 1, take - 1 + skip).ToString(),
+                EndCursor = Math.Min(count - 1, take - 1 + skip).ToString()
             }
         };
     }
