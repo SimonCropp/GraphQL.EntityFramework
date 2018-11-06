@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using GraphQL.Types;
+using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
     public partial class EfGraphQLService : IEfGraphQLService
     {
-        public EfGraphQLService(Dictionary<Type, List<Navigation>> navigations)
+        public EfGraphQLService(DbContext dbContext)
         {
-            Guard.AgainstNull(nameof(navigations), navigations);
-            includeAppender = new IncludeAppender(navigations);
+            Guard.AgainstNull(nameof(dbContext), dbContext);
+            includeAppender = new IncludeAppender(NavigationReader.GetNavigationProperties(dbContext));
         }
 
         IncludeAppender includeAppender;
