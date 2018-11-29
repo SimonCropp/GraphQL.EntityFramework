@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
-    <NoWarn>CS1591;NU5104</NoWarn>
+    <!--TODO: remove NU5125 when license url moves to license node-->
+    <NoWarn>NU5125;CS1591;NU5104</NoWarn>
     <Version>0.16.0</Version>
     <AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
