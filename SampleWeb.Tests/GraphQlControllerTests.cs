@@ -56,7 +56,7 @@ query ($id: String!)
     }
 
     [Fact]
-    public async Task Get_company_paging() 
+    public async Task Get_company_paging()
     {
         var after = 1;
         var query = @"
@@ -88,7 +88,7 @@ query {
         var response = await ClientQueryExecutor.ExecuteGet(client);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("GraphQL.ExecutionError: A query is required.", result);
+        Assert.Contains("A query is required.", result);
     }
 
     [Fact]
@@ -134,7 +134,7 @@ query ($id: String!)
         var response = await ClientQueryExecutor.ExecutePost(client);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("GraphQL.ExecutionError: A query is required.", result);
+        Assert.Contains("A query is required.", result);
     }
 
     static TestServer GetTestServer()
