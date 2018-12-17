@@ -29,27 +29,33 @@ static class ExpressionBuilder<T>
         if (propertyFunc.Type == typeof(string))
         {
             WhereValidator.ValidateString(comparison, stringComparison);
-            if (comparison == Comparison.In)
+            switch (comparison)
             {
-                return BuildStringIn(values, propertyFunc, stringComparison);
-            }
-            else
-            {
-                var value = values?.Single();
-                return BuildStringCompare(comparison, value, propertyFunc, stringComparison);
+                case Comparison.In:
+                    return BuildStringIn(values, propertyFunc, stringComparison);
+
+                case Comparison.NotIn:
+                    return BuildStringIn(values, propertyFunc, stringComparison, true);
+
+                default:
+                    var value = values?.Single();
+                    return BuildStringCompare(comparison, value, propertyFunc, stringComparison);
             }
         }
         else
         {
             WhereValidator.ValidateObject(propertyFunc.Type, comparison, stringComparison);
-            if (comparison == Comparison.In)
+            switch (comparison)
             {
-                return BuildObjectIn(values, propertyFunc);
-            }
-            else
-            {
-                var value = values?.Single();
-                return BuildObjectCompare(comparison, value, propertyFunc);
+                case Comparison.In:
+                    return BuildObjectIn(values, propertyFunc);
+
+                case Comparison.NotIn:
+                    return BuildObjectIn(values, propertyFunc, true);
+
+                default:
+                    var value = values?.Single();
+                    return BuildObjectCompare(comparison, value, propertyFunc);
             }
         }
     }
@@ -82,16 +88,16 @@ static class ExpressionBuilder<T>
         });
     }
 
-    static Expression<Func<T, bool>> BuildObjectIn(string[] values, PropertyAccessor propertyAccessor)
+    static Expression<Func<T, bool>> BuildObjectIn(string[] values, PropertyAccessor propertyAccessor, bool not = false)
     {
         var objects = TypeConverter.ConvertStringsToList(values, propertyAccessor.Type);
         var constant = Expression.Constant(objects);
         var inInfo = objects.GetType().GetMethod("Contains", new[] {propertyAccessor.Type});
         var body = Expression.Call(constant, inInfo, propertyAccessor.Left);
-        return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.SourceParameter);
+        return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(body) : (Expression)body, propertyAccessor.SourceParameter);
     }
 
-    static Expression<Func<T, bool>> BuildStringIn(string[] array, PropertyAccessor propertyAccessor, StringComparison? stringComparison)
+    static Expression<Func<T, bool>> BuildStringIn(string[] array, PropertyAccessor propertyAccessor, StringComparison? stringComparison, bool not = false)
     {
         var itemValue = Expression.Parameter(typeof(string));
         MethodCallExpression equalsBody;
@@ -105,7 +111,7 @@ static class ExpressionBuilder<T>
         }
         var itemEvaluate = Expression.Lambda<Func<string, bool>>(equalsBody, itemValue);
         var anyBody = Expression.Call(null, StringMethodCache.Any, Expression.Constant(array), itemEvaluate);
-        return Expression.Lambda<Func<T, bool>>(anyBody, propertyAccessor.SourceParameter);
+        return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(anyBody) : (Expression)anyBody, propertyAccessor.SourceParameter);
     }
 
     static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison? stringComparison)
