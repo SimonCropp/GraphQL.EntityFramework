@@ -12,6 +12,7 @@
         StartsWith,
         EndsWith,
         In,
-        Like
+        Like,
+        NotIn
     }
 }

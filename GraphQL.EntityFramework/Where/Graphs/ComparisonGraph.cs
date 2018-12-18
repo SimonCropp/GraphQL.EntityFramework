@@ -13,6 +13,7 @@ class ComparisonGraph : EnumerationGraphType
         AddValue("greaterThan", null, Comparison.GreaterThan);
         AddValue("greaterThanOrEqual", null, Comparison.GreaterThanOrEqual);
         AddValue("in", null, Comparison.In);
+        AddValue("notIn", null, Comparison.NotIn);
         AddValue("lessThan", null, Comparison.LessThan);
         AddValue("lessThanOrEqual", null, Comparison.LessThanOrEqual);
         AddValue("like", null, Comparison.Like);

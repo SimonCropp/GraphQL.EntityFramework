@@ -114,6 +114,27 @@ public class FuncBuilderTests
         Assert.Equal(2, result.Member);
     }
 
+    [Fact]
+    public void NotInIntList()
+    {
+        var list = new List<TargetForInInt>
+        {
+            new TargetForInInt
+            {
+                Member = 1
+            },
+            new TargetForInInt
+            {
+                Member = 2
+            }
+        };
+
+        var result = list
+            .Where(FuncBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.NotIn, new[] { "2" }))
+            .Single();
+        Assert.Equal(1, result.Member);
+    }
+
     public class TargetForInInt
     {
         public int Member;
@@ -140,6 +161,27 @@ public class FuncBuilderTests
         Assert.Equal("Value2", result.Member);
     }
 
+    [Fact]
+    public void NotInList()
+    {
+        var list = new List<TargetForIn>
+        {
+            new TargetForIn
+            {
+                Member = "Value1"
+            },
+            new TargetForIn
+            {
+                Member = "Value2"
+            }
+        };
+
+        var result = list
+            .Where(FuncBuilder<TargetForIn>.BuildPredicate("Member", Comparison.NotIn, new[] { "Value2" }))
+            .Single();
+        Assert.Equal("Value1", result.Member);
+    }
+
     public class TargetForIn
     {
         public string Member;
@@ -164,6 +206,27 @@ public class FuncBuilderTests
             .Where(FuncBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] {"00000000-0000-0000-0000-000000000002"}))
             .Single();
         Assert.Same(list[1], result);
+    }
+
+    [Fact]
+    public void NotInGuidList()
+    {
+        var list = new List<TargetForInGuid>
+        {
+            new TargetForInGuid
+            {
+                Member = Guid.Parse("00000000-0000-0000-0000-000000000001")
+            },
+            new TargetForInGuid
+            {
+                Member = Guid.Parse("00000000-0000-0000-0000-000000000002")
+            }
+        };
+
+        var result = list
+            .Where(FuncBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.NotIn, new[] { "00000000-0000-0000-0000-000000000002" }))
+            .Single();
+        Assert.Same(list[0], result);
     }
 
     public class TargetForInGuid

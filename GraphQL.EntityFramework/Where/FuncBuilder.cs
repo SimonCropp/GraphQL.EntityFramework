@@ -27,27 +27,33 @@ static class FuncBuilder<T>
         {
             WhereValidator.ValidateString(comparison, stringComparison);
             var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
-            if (comparison == Comparison.In)
+            switch (comparison)
             {
-                return BuildStringIn(propertyFunc, values, stringComparisonValue);
-            }
-            else
-            {
-                var value = values?.Single();
-                return target => BuildStringCompare(comparison, value, propertyFunc, target, stringComparisonValue);
+                case Comparison.In:
+                    return BuildStringIn(propertyFunc, values, stringComparisonValue);
+
+                case Comparison.NotIn:
+                    return BuildStringIn(propertyFunc, values, stringComparisonValue, true);
+
+                default:
+                    var value = values?.Single();
+                    return target => BuildStringCompare(comparison, value, propertyFunc, target, stringComparisonValue);
             }
         }
         else
         {
             WhereValidator.ValidateObject(propertyFunc.Type, comparison, stringComparison);
-            if (comparison == Comparison.In)
+            switch (comparison)
             {
-                return BuildObjectIn(propertyFunc, values);
-            }
-            else
-            {
-                var value = values?.Single();
-                return target => BuildObjectCompare(comparison, value, propertyFunc, target);
+                case Comparison.In:
+                    return BuildObjectIn(propertyFunc, values);
+
+                case Comparison.NotIn:
+                    return BuildObjectIn(propertyFunc, values, true);
+
+                default:
+                    var value = values?.Single();
+                    return target => BuildObjectCompare(comparison, value, propertyFunc, target);
             }
         }
     }
@@ -133,7 +139,7 @@ static class FuncBuilder<T>
         });
     }
 
-    static Func<T, bool> BuildObjectIn(PropertyAccessor property, string[] values)
+    static Func<T, bool> BuildObjectIn(PropertyAccessor property, string[] values, bool not = false)
     {
         return target =>
         {
@@ -142,77 +148,87 @@ static class FuncBuilder<T>
 
             if (type == typeof(Guid))
             {
-                var value = (Guid) propertyValue;
-                return values.Select(Guid.Parse)
+                var value = (Guid)propertyValue;
+                var result = values.Select(Guid.Parse)
                     .Any(x => x == value);
+                return not ? !result : result;
             }
 
             if (type == typeof(int))
             {
-                var value = (int) propertyValue;
-                return values.Select(int.Parse)
+                var value = (int)propertyValue;
+                var result = values.Select(int.Parse)
                     .Any(x => x == value);
+                return not ? !result : result;
             }
 
             if (type == typeof(short))
             {
-                var value = (short) propertyValue;
-                return values.Select(short.Parse)
+                var value = (short)propertyValue;
+                var result = values.Select(short.Parse)
                     .Any(x => x == value);
+                return not ? !result : result;
             }
 
             if (type == typeof(long))
             {
-                var value = (long) propertyValue;
-                return values.Select(long.Parse)
+                var value = (long)propertyValue;
+                var result = values.Select(long.Parse)
                     .Any(x => x == value);
+                return not ? !result : result;
             }
 
             if (type == typeof(uint))
             {
-                var value = (uint) propertyValue;
-                return values.Select(uint.Parse)
+                var value = (uint)propertyValue;
+                var result = values.Select(uint.Parse)
                     .Any(x => x == value);
+                return not ? !result : result;
             }
 
             if (type == typeof(ushort))
             {
-                var value = (ushort) propertyValue;
-                return values.Select(ushort.Parse)
+                var value = (ushort)propertyValue;
+                var result = values.Select(ushort.Parse)
                     .Any(x => x == value);
+                return not ? !result : result;
             }
 
             if (type == typeof(ulong))
             {
-                var value = (ulong) propertyValue;
-                return values.Select(ulong.Parse)
+                var value = (ulong)propertyValue;
+                var result = values.Select(ulong.Parse)
                     .Any(x => x == value);
+                return not ? !result : result;
             }
 
             if (type == typeof(DateTime))
             {
-                var value = (DateTime) propertyValue;
-                return values.Select(DateTime.Parse)
+                var value = (DateTime)propertyValue;
+                var result = values.Select(DateTime.Parse)
                     .Any(x => x == value);
+                return not ? !result : result;
             }
 
             if (type == typeof(DateTimeOffset))
             {
-                var value = (DateTimeOffset) propertyValue;
-                return values.Select(DateTimeOffset.Parse)
+                var value = (DateTimeOffset)propertyValue;
+                var result = values.Select(DateTimeOffset.Parse)
                     .Any(x => x == value);
+                return not ? !result : result;
             }
 
             throw new Exception($"Could not convert strings to {type.FullName} ");
         };
     }
 
-    static Func<T, bool> BuildStringIn(PropertyAccessor property, string[] values, StringComparison stringComparison)
+    static Func<T, bool> BuildStringIn(PropertyAccessor property, string[] values, StringComparison stringComparison, bool not = false)
     {
         return target =>
         {
-            var propertyValue = (string) property.Func(target);
-            return values.Any(x => string.Equals(x, propertyValue, stringComparison));
+            var propertyValue = (string)property.Func(target);
+            var result = values.Any(x => string.Equals(x, propertyValue, stringComparison));
+            return not ? !result : result;
         };
     }
 
