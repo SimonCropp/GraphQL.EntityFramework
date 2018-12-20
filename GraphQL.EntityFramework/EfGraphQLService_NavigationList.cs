@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 
@@ -106,11 +105,11 @@ namespace GraphQL.EntityFramework
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
                 Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(context =>
-                    {
-                        var result = resolve(context);
-                        result = result.ApplyGraphQlArguments(context);
-                        return  result.Where(item => GlobalFilters.ShouldInclude(context.UserContext, item));
-                    })
+                {
+                    var result = resolve(context);
+                    result = result.ApplyGraphQlArguments(context);
+                    return GlobalFilters.ApplyFilter(result, context.UserContext);
+                })
             };
         }
     }

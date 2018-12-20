@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphQL.EntityFramework
 {
@@ -26,6 +27,15 @@ namespace GraphQL.EntityFramework
                     throw new Exception($"Failed to execute filter. TItem: {typeof(TItem)}.", exception);
                 }
             };
+        }
+
+        internal static IEnumerable<TReturn> ApplyFilter<TReturn>(IEnumerable<TReturn> result, object userContext)
+        {
+            if (funcs.Count <= 0)
+            {
+                return result;
+            }
+            return result.Where(item => ShouldInclude(userContext, item));
         }
 
         internal static bool ShouldInclude(object userContext, object item)
