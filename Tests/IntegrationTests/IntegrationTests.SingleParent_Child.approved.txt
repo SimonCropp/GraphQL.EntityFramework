@@ -1,0 +1,13 @@
+﻿{
+  "parentEntity": {
+    "property": "Value1",
+    "children": [
+      {
+        "property": "Value2"
+      },
+      {
+        "property": "Value3"
+      }
+    ]
+  }
+}

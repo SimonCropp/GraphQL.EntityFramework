@@ -14,6 +14,14 @@ public class Query : EfObjectGraphType
                 return dataContext.Companies;
             });
 
+        AddSingleField<CompanyGraph, Company>(
+            name: "company",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext)context.UserContext;
+                return dataContext.Companies;
+            });
+
         AddQueryConnectionField<CompanyGraph, Company>(
             name: "companiesConnection",
             resolve: context =>
