@@ -13,51 +13,60 @@ namespace GraphQL.EntityFramework
             funcs.Clear();
         }
 
-        public static void Add<TItem>(Filter<TItem> filter)
+        public static void Add<T>(Filter<T> filter)
         {
             Guard.AgainstNull(nameof(filter), filter);
-            funcs[typeof(TItem)] = (context, item) =>
+            funcs[typeof(T)] = (context, item) =>
             {
                 try
                 {
-                    return filter(context, (TItem) item);
+                    return filter(context, (T) item);
                 }
                 catch (Exception exception)
                 {
-                    throw new Exception($"Failed to execute filter. TItem: {typeof(TItem)}.", exception);
+                    throw new Exception($"Failed to execute filter. TItem: {typeof(T)}.", exception);
                 }
             };
         }
 
-        internal static IEnumerable<TReturn> ApplyFilter<TReturn>(IEnumerable<TReturn> result, object userContext)
+        internal static IEnumerable<T> ApplyFilter<T>(IEnumerable<T> result, object userContext)
         {
             if (funcs.Count <= 0)
             {
                 return result;
             }
-            return result.Where(item => ShouldInclude(userContext, item));
+            var filters = FindFilters<T>();
+            return result.Where(item =>
+            {
+                if (item == null)
+                {
+                    return false;
+                }
+                return filters.All(func => func(userContext, item));
+            });
         }
 
-        internal static bool ShouldInclude(object userContext, object item)
+        internal static bool ShouldInclude<T>(object userContext, T item)
         {
             if (item == null)
             {
                 return false;
             }
-            var itemType = item.GetType();
+
+            return FindFilters<T>().All(func => func(userContext, item));
+        }
+
+        internal static IEnumerable<Func<object, T, bool>> FindFilters<T>()
+        {
+            var type = typeof(T);
             foreach (var pair in funcs)
             {
-                if (!pair.Key.IsAssignableFrom(itemType))
+                if (pair.Key.IsAssignableFrom(type))
                 {
-                    continue;
-                }
-                if (!pair.Value(userContext, item))
-                {
-                    return false;
+                    var func = pair.Value;
+                    yield return (context, item) => func(context, item) ;
                 }
             }
-
-            return true;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿
 namespace GraphQL.EntityFramework
 {
-    public delegate bool Filter<in TReturn>(object userContext, TReturn input);
+    public delegate bool Filter<in T>(object userContext, T input);
 }
