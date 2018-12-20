@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
 
         internal static IEnumerable<T> ApplyFilter<T>(IEnumerable<T> result, object userContext)
         {
-            if (funcs.Count <= 0)
+            if (funcs.Count == 0)
             {
                 return result;
             }
@@ -53,19 +53,19 @@ namespace GraphQL.EntityFramework
                 return false;
             }
 
+            if (funcs.Count == 0)
+            {
+                return true;
+            }
             return FindFilters<T>().All(func => func(userContext, item));
         }
 
-        internal static IEnumerable<Func<object, T, bool>> FindFilters<T>()
+        static IEnumerable<Func<object, T, bool>> FindFilters<T>()
         {
             var type = typeof(T);
-            foreach (var pair in funcs)
+            foreach (var pair in funcs.Where(x => x.Key.IsAssignableFrom(type)))
             {
-                if (pair.Key.IsAssignableFrom(type))
-                {
-                    var func = pair.Value;
-                    yield return (context, item) => func(context, item) ;
-                }
+                yield return (context, item) => pair.Value(context, item);
             }
         }
     }
