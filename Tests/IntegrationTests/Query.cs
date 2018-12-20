@@ -1,4 +1,5 @@
-﻿using GraphQL.EntityFramework;
+﻿using System.Linq;
+using GraphQL.EntityFramework;
 
 public class Query : EfObjectGraphType
 {
@@ -99,5 +100,14 @@ public class Query : EfObjectGraphType
                 var dataContext = (MyDataContext)context.UserContext;
                 return dataContext.FilterParentEntities;
             });
+
+        efGraphQlService.AddSingleField<ParentGraph, ParentEntity>(this,
+            name: "parentEntity",
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.ParentEntities;
+            }
+        );
     }
 }
