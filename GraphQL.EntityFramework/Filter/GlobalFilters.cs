@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
@@ -27,6 +30,32 @@ namespace GraphQL.EntityFramework
                     throw new Exception($"Failed to execute filter. TItem: {typeof(T)}.", exception);
                 }
             };
+        }
+
+        internal static async Task<List<T>> TryApplyFilter<T>(IQueryable<T> input, object userContext, CancellationToken token)
+        {
+            if (funcs.Count == 0)
+            {
+                return null;
+            }
+
+            var filters = FindFilters<T>().ToList();
+            if (filters.Count == 0)
+            {
+                return null;
+            }
+
+            var list = await input.ToListAsync(token).ConfigureAwait(false);
+            return list.Where(item =>
+                {
+                    if (item == null)
+                    {
+                        return false;
+                    }
+
+                    return filters.All(func => func(userContext, item));
+                })
+                .ToList();
         }
 
         internal static IEnumerable<T> ApplyFilter<T>(IEnumerable<T> result, object userContext)
