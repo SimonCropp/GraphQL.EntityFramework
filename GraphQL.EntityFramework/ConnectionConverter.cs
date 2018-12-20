@@ -65,7 +65,11 @@ static class ConnectionConverter
         bool reverse = false)
     {
         var page = list.Skip(skip).Take(take).ToList();
-        return Build(skip, take, count, reverse, page);
+        if (reverse)
+        {
+           page.Reverse();
+        }
+        return Build(skip, take, count, page);
     }
 
     public static Task<Connection<TItem>> ApplyConnectionContext<TSource, TItem>(
@@ -155,18 +159,21 @@ static class ConnectionConverter
         bool reverse = false)
     {
         var page = list.Skip(skip).Take(take);
-
+        if (reverse)
+        {
+            page = page.Reverse();
+        }
         IEnumerable<TItem> result = await page
             .ToListAsync(cancellation)
             .ConfigureAwait(false);
         result = GlobalFilters.ApplyFilter(result, context.UserContext);
 
         cancellation.ThrowIfCancellationRequested();
-        return Build(skip, take, count, reverse, result);
+        return Build(skip, take, count, result);
     }
 
 
-    static Connection<T> Build<T>(int skip, int take, int count, bool reverse, IEnumerable<T> result)
+    static Connection<T> Build<T>(int skip, int take, int count, IEnumerable<T> result)
     {
         var edges = result
             .Select((item, index) =>
@@ -176,10 +183,6 @@ static class ConnectionConverter
                     Node = item
                 })
             .ToList();
-        if (reverse)
-        {
-            edges.Reverse();
-        }
 
         return new Connection<T>
         {
