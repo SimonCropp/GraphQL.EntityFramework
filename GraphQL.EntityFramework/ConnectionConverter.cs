@@ -10,13 +10,13 @@ using Microsoft.EntityFrameworkCore;
 
 static class ConnectionConverter
 {
-    public static Connection<TReturn> ApplyConnectionContext<TReturn>(List<TReturn> list, int? first, string afterString, int? last, string beforeString)
+    public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, string afterString, int? last, string beforeString)
     {
         Parse(afterString, beforeString, out var after, out var before);
         return ApplyConnectionContext(list, first, after, last, before);
     }
 
-    public static Connection<TReturn> ApplyConnectionContext<TReturn>(List<TReturn> list, int? first, int? after, int? last, int? before)
+    public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, int? after, int? last, int? before)
     {
         if (last == null)
         {
@@ -26,7 +26,7 @@ static class ConnectionConverter
         return Last(list, last.Value, after, before, list.Count);
     }
 
-    static Connection<TReturn> First<TReturn>(List<TReturn> list, int first, int? after, int? before, int count)
+    static Connection<T> First<T>(List<T> list, int first, int? after, int? before, int count)
     {
         int skip;
         if (before == null)
@@ -41,7 +41,7 @@ static class ConnectionConverter
         return Range(list, skip, first, count);
     }
 
-    static Connection<TReturn> Last<TReturn>(List<TReturn> list, int last, int? after, int? before, int count)
+    static Connection<T> Last<T>(List<T> list, int last, int? after, int? before, int count)
     {
         int skip;
         if (after == null)
@@ -58,7 +58,7 @@ static class ConnectionConverter
         return Range(list, skip, take: last, count, true);
     }
 
-    static Connection<TReturn> Range<TReturn>(List<TReturn> list,
+    static Connection<T> Range<T>(List<T> list,
         int skip,
         int take,
         int count,
@@ -68,8 +68,8 @@ static class ConnectionConverter
         return Build(skip, take, count, reverse, page);
     }
 
-    public static Task<Connection<TReturn>> ApplyConnectionContext<TSource,TReturn>(
-        this IQueryable<TReturn> list,
+    public static Task<Connection<TItem>> ApplyConnectionContext<TSource, TItem>(
+        this IQueryable<TItem> list,
         int? first,
         string afterString,
         int? last,
@@ -81,8 +81,8 @@ static class ConnectionConverter
         return ApplyConnectionContext(list, first, after, last, before, context, cancellation);
     }
 
-    public static async Task<Connection<TReturn>> ApplyConnectionContext<TSource, TReturn>(
-        IQueryable<TReturn> list,
+    public static async Task<Connection<TItem>> ApplyConnectionContext<TSource, TItem>(
+        IQueryable<TItem> list,
         int? first,
         int? after,
         int? last,
@@ -100,8 +100,8 @@ static class ConnectionConverter
         return await Last(list, last.Value, after, before, count, context, cancellation).ConfigureAwait(false);
     }
 
-    static Task<Connection<TReturn>> First<TSource, TReturn>(
-        IQueryable<TReturn> list,
+    static Task<Connection<TItem>> First<TSource, TItem>(
+        IQueryable<TItem> list,
         int first,
         int? after,
         int? before,
@@ -122,8 +122,8 @@ static class ConnectionConverter
         return Range(list, skip, first, count, context, cancellation);
     }
 
-    static Task<Connection<TReturn>> Last<TSource, TReturn>(
-        IQueryable<TReturn> list,
+    static Task<Connection<TItem>> Last<TSource, TItem>(
+        IQueryable<TItem> list,
         int last,
         int? after,
         int? before,
@@ -146,8 +146,8 @@ static class ConnectionConverter
         return Range(list, skip, take: last, count, context, cancellation, true);
     }
 
-    static async Task<Connection<TReturn>> Range<TSource, TReturn>(
-        IQueryable<TReturn> list,
+    static async Task<Connection<TItem>> Range<TSource, TItem>(
+        IQueryable<TItem> list,
         int skip,
         int take, int count,
         ResolveFieldContext<TSource> context,
@@ -156,7 +156,7 @@ static class ConnectionConverter
     {
         var page = list.Skip(skip).Take(take);
 
-        IEnumerable<TReturn> result = await page
+        IEnumerable<TItem> result = await page
             .ToListAsync(cancellation)
             .ConfigureAwait(false);
         result = GlobalFilters.ApplyFilter(result, context.UserContext);
@@ -166,11 +166,11 @@ static class ConnectionConverter
     }
 
 
-    static Connection<TReturn> Build<TReturn>(int skip, int take, int count, bool reverse, IEnumerable<TReturn> result)
+    static Connection<T> Build<T>(int skip, int take, int count, bool reverse, IEnumerable<T> result)
     {
         var edges = result
             .Select((item, index) =>
-                new Edge<TReturn>
+                new Edge<T>
                 {
                     Cursor = (index + skip).ToString(),
                     Node = item
@@ -181,7 +181,7 @@ static class ConnectionConverter
             edges.Reverse();
         }
 
-        return new Connection<TReturn>
+        return new Connection<T>
         {
             TotalCount = count,
             Edges = edges,
