@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json.Linq;
 using Xunit;
-
+#region GraphQlControllerTests
 public class GraphQlControllerTests
 {
     static HttpClient client;
@@ -60,7 +60,7 @@ query ($id: String!)
     {
         var after = 1;
         var query = @"
-query { 
+query {
   companiesConnection(first:2, after:""" + after + @""") {
     edges {
       cursor
@@ -144,3 +144,4 @@ query ($id: String!)
         return new TestServer(hostBuilder);
     }
 }
+#endregion

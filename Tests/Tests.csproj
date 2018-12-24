@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CaptureSnippetsSimple" Version="8.0.0-beta.4" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="ApprovalTests" Version="3.0.18" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
