@@ -314,114 +314,13 @@ public class Startup
 See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com/en-us/ef/core/api/microsoft.extensions.dependencyinjection.entityframeworkservicecollectionextensions)
 
 With the DataContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
-
-```csharp
-
-[Route("[controller]")]
-[ApiController]
-public class GraphQlController : Controller
-{
-    IDocumentExecuter executer;
-    ISchema schema;
-
-    public GraphQlController(ISchema schema, IDocumentExecuter executer)
-    {
-        this.schema = schema;
-        this.executer = executer;
-    }
-
-    [HttpPost]
-    public Task<ExecutionResult> Post(
-        [BindRequired, FromBody] PostBody body,
-        [FromServices] MyDataContext dataContext,
-        CancellationToken cancellation)
-    {
-        return Execute(dataContext, body.Query, body.OperationName, body.Variables, cancellation);
-    }
-
-    public class PostBody
-    {
-        public string OperationName;
-        public string Query;
-        public JObject Variables;
-    }
-
-    [HttpGet]
-    public Task<ExecutionResult> Get(
-        [FromQuery] string query,
-        [FromQuery] string variables,
-        [FromQuery] string operationName,
-        [FromServices] MyDataContext dataContext,
-        CancellationToken cancellation)
-    {
-        var jObject = ParseVariables(variables);
-        return Execute(dataContext, query, operationName, jObject, cancellation);
-    }
-
-    async Task<ExecutionResult> Execute(MyDataContext dataContext, string query, string operationName, JObject variables, CancellationToken cancellation)
-    {
-        var executionOptions = new ExecutionOptions
-        {
-            Schema = schema,
-            Query = query,
-            OperationName = operationName,
-            Inputs = variables?.ToInputs(),
-            UserContext = dataContext,
-            CancellationToken = cancellation,
-#if (DEBUG)
-            ExposeExceptions = true,
-            EnableMetrics = true,
-#endif
-        };
-
-        var result = await executer.ExecuteAsync(executionOptions).ConfigureAwait(false);
-
-        if (result.Errors?.Count > 0)
-        {
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
-        }
-
-        return result;
-    }
-
-    static JObject ParseVariables(string variables)
-    {
-        if (variables == null)
-        {
-            return null;
-        }
-
-        try
-        {
-            return JObject.Parse(variables);
-        }
-        catch (Exception exception)
-        {
-            throw new Exception("Could not parse variables.", exception);
-        }
-    }
-}
-```
+snippet: GraphQlController
 
 Note that the instance of the DataContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
 
 The same instance of the DataContext can then be accessed in the `resolve` delegate by casting the `ResolveFieldContext.UserContext` to the DataContext type:
 
-```csharp
-public class Query : EfObjectGraphType
-{
-    public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
-    {
-        AddQueryField<CompanyGraph, Company>(
-            name: "companies",
-            resolve: context =>
-            {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies;
-            });
-    }
-}
-```
+snippet: QueryUsedInController
 
 
 ### Testing the GraphQlController
@@ -482,36 +381,12 @@ Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet
 
 #### Root Query
 
-```csharp
-public class Query : EfObjectGraphType
-{
-    public Query(IEfGraphQLService graphQlService) : base(graphQlService)
-    {
-        AddQueryField<CompanyGraph, Company>(
-            name: "companies",
-            resolve: context =>
-            {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies;
-            });
-    }
-}
-```
+snippet: rootQuery
 
 
 #### Typed Graph
 
-```csharp
-public class CompanyGraph : EfObjectGraphType<Company>
-{
-    public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
-    {
-        AddNavigationField<EmployeeGraph, Employee>(
-            name: "employees",
-            resolve: context => context.Source.Employees);
-    }
-}
-```
+snippet: typedGraph
 
 
 ### Connections
@@ -522,21 +397,7 @@ public class CompanyGraph : EfObjectGraphType<Company>
 
 ##### Graph Type
 
-```csharp
-public class Query : EfObjectGraphType
-{
-    public Query(IEfGraphQLService graphQlService) : base(graphQlService)
-    {
-        AddQueryConnectionField<CompanyGraph, Company>(
-            name: "companies",
-            resolve: context =>
-            {
-                var dataContext = (MyDataContext)context.UserContext;
-                return dataContext.Companies;
-            });
-    }
-}
-```
+snippet: ConnectionRootQuery
 
 
 ##### Request
@@ -615,17 +476,8 @@ public class Query : EfObjectGraphType
 
 #### Typed Graph
 
-```csharp
-public class CompanyGraph : EfObjectGraphType<Company>
-{
-    public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
-    {
-        AddNavigationConnectionField<EmployeeGraph, Employee>(
-            name: "employees",
-            resolve: context => context.Source.Employees);
-    }
-}
-```
+snippet: ConnectionTypedGraph
+
 
 ## Filters
 

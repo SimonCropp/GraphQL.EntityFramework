@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 
+#region GraphQlController
 [Route("[controller]")]
 [ApiController]
 public class GraphQlController : Controller
@@ -92,3 +93,4 @@ public class GraphQlController : Controller
         }
     }
 }
+#endregion

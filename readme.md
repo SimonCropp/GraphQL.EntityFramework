@@ -314,9 +314,8 @@ public class Startup
 See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com/en-us/ef/core/api/microsoft.extensions.dependencyinjection.entityframeworkservicecollectionextensions)
 
 With the DataContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
-
-```csharp
-
+<!-- snippet: GraphQlController -->
+```cs
 [Route("[controller]")]
 [ApiController]
 public class GraphQlController : Controller
@@ -402,12 +401,14 @@ public class GraphQlController : Controller
     }
 }
 ```
+<!-- endsnippet -->
 
 Note that the instance of the DataContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
 
 The same instance of the DataContext can then be accessed in the `resolve` delegate by casting the `ResolveFieldContext.UserContext` to the DataContext type:
 
-```csharp
+<!-- snippet: QueryUsedInController -->
+```cs
 public class Query : EfObjectGraphType
 {
     public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
@@ -419,9 +420,8 @@ public class Query : EfObjectGraphType
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
             });
-    }
-}
 ```
+<!-- endsnippet -->
 
 
 ### Testing the GraphQlController
@@ -622,7 +622,8 @@ Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet
 
 #### Root Query
 
-```csharp
+<!-- snippet: rootQuery -->
+```cs
 public class Query : EfObjectGraphType
 {
     public Query(IEfGraphQLService graphQlService) : base(graphQlService)
@@ -631,27 +632,36 @@ public class Query : EfObjectGraphType
             name: "companies",
             resolve: context =>
             {
-                var dataContext = (MyDataContext) context.UserContext;
+                var dataContext = (DataContext) context.UserContext;
                 return dataContext.Companies;
             });
     }
 }
 ```
+<!-- endsnippet -->
 
 
 #### Typed Graph
 
-```csharp
+<!-- snippet: typedGraph -->
+```cs
 public class CompanyGraph : EfObjectGraphType<Company>
 {
     public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
     {
+        Field(x => x.Id);
+        Field(x => x.Content);
         AddNavigationField<EmployeeGraph, Employee>(
             name: "employees",
             resolve: context => context.Source.Employees);
+        AddNavigationConnectionField<EmployeeGraph, Employee>(
+            name: "employeesConnection",
+            resolve: context => context.Source.Employees,
+            includeNames: new[] {"Employees"});
     }
 }
 ```
+<!-- endsnippet -->
 
 
 ### Connections
@@ -662,7 +672,8 @@ public class CompanyGraph : EfObjectGraphType<Company>
 
 ##### Graph Type
 
-```csharp
+<!-- snippet: ConnectionRootQuery -->
+```cs
 public class Query : EfObjectGraphType
 {
     public Query(IEfGraphQLService graphQlService) : base(graphQlService)
@@ -671,12 +682,13 @@ public class Query : EfObjectGraphType
             name: "companies",
             resolve: context =>
             {
-                var dataContext = (MyDataContext)context.UserContext;
+                var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
             });
     }
 }
 ```
+<!-- endsnippet -->
 
 
 ##### Request
@@ -755,7 +767,8 @@ public class Query : EfObjectGraphType
 
 #### Typed Graph
 
-```csharp
+<!-- snippet: ConnectionTypedGraph -->
+```cs
 public class CompanyGraph : EfObjectGraphType<Company>
 {
     public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
@@ -766,6 +779,8 @@ public class CompanyGraph : EfObjectGraphType<Company>
     }
 }
 ```
+<!-- endsnippet -->
+
 
 ## Filters
 

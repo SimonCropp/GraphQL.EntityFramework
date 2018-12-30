@@ -2,6 +2,8 @@
 using GraphQL.EntityFramework;
 using GraphQL.Types;
 
+#region QueryUsedInController
+
 public class Query : EfObjectGraphType
 {
     public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
@@ -14,6 +16,7 @@ public class Query : EfObjectGraphType
                 return dataContext.Companies;
             });
 
+        #endregion
         AddSingleField<CompanyGraph, Company>(
             name: "company",
             resolve: context =>
