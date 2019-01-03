@@ -1,54 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
-using GraphQL.EntityFramework;
 using GraphQL.Types;
 using GraphQL.Utilities;
 
-static class Scalars
+namespace GraphQL.EntityFramework
 {
-    static Dictionary<Type, ScalarGraphType> entries;
-    static object locker = new object();
-
-    public static void Initialize()
+    public static class Scalars
     {
-        if (entries != null)
-        {
-            return;
-        }
+        static Dictionary<Type, ScalarGraphType> entries;
+        static object locker = new object();
 
-        lock (locker)
+        public static void Initialize()
         {
             if (entries != null)
             {
                 return;
             }
 
-            entries = new Dictionary<Type, ScalarGraphType>();
-            Add<GuidGraph>(typeof(Guid));
-            Add<UlongGraph>(typeof(ulong));
-            Add<UintGraph>(typeof(uint));
-            Add<UshortGraph>(typeof(ushort));
-            Add<ShortGraph>(typeof(short));
-        }
-    }
+            lock (locker)
+            {
+                if (entries != null)
+                {
+                    return;
+                }
 
-    public static void RegisterInContainer(Action<Type, ScalarGraphType> registerInstance)
-    {
-        Initialize();
-        foreach (var entry in entries)
-        {
-            registerInstance(entry.Key, entry.Value);
+                entries = new Dictionary<Type, ScalarGraphType>();
+                Add<GuidGraph>(typeof(Guid));
+                Add<UlongGraph>(typeof(ulong));
+                Add<UintGraph>(typeof(uint));
+                Add<UshortGraph>(typeof(ushort));
+                Add<ShortGraph>(typeof(short));
+            }
         }
-    }
 
-    static void Add<T>(Type type)
-        where T : ScalarGraphType, new()
-    {
-        if (GraphTypeTypeRegistry.Get(type) == null)
+        public static void RegisterInContainer(Action<Type, ScalarGraphType> registerInstance)
         {
-            GraphTypeTypeRegistry.Register(type, typeof(T));
-            var value = new T();
-            entries.Add(typeof(T), value);
+            Initialize();
+            foreach (var entry in entries)
+            {
+                registerInstance(entry.Key, entry.Value);
+            }
+        }
+
+        static void Add<T>(Type type)
+            where T : ScalarGraphType, new()
+        {
+            if (GraphTypeTypeRegistry.Get(type) == null)
+            {
+                GraphTypeTypeRegistry.Register(type, typeof(T));
+                var value = new T();
+                entries.Add(typeof(T), value);
+            }
         }
     }
 }

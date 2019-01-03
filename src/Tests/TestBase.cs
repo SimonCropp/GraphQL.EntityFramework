@@ -1,4 +1,5 @@
-﻿using Xunit.Abstractions;
+﻿using GraphQL.EntityFramework;
+using Xunit.Abstractions;
 
 public class TestBase
 {
