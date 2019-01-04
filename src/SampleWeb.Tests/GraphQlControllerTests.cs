@@ -78,7 +78,8 @@ query {
         response.EnsureSuccessStatusCode();
         var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-        var firstOfNextPage = result.SelectToken("..data..companiesConnection..edges[0].cursor").Value<string>();
+        var firstOfNextPage = result.SelectToken("..data..companiesConnection..edges[0].cursor")
+            .Value<string>();
         Assert.NotEqual(after.ToString(), firstOfNextPage);
     }
 

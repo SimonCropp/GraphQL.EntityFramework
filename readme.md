@@ -152,12 +152,19 @@ All string comparisons are, by default, done using no [StringComparison](https:/
 
 **Note that many [Database Providers](https://docs.microsoft.com/en-us/ef/core/providers/), including [SQL Server](https://docs.microsoft.com/en-us/ef/core/providers/sql-server/index), cannot correctly convert a case insensitive comparison to a server side query.** Hence this will result in the query being [resolved client side](https://docs.microsoft.com/en-us/ef/core/querying/client-eval#client-evaluation). If this is a concern it is recommended to [Disabling client evaluation](https://docs.microsoft.com/en-us/ef/core/querying/client-eval#disabling-client-evaluation).
 
-```csharp
+
+<!-- snippet: QueryClientEvaluationWarning -->
+```cs
 protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 {
-    optionsBuilder.ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning));
+    optionsBuilder.ConfigureWarnings(
+        warnings =>
+        {
+            warnings.Throw(RelationalEventId.QueryClientEvaluationWarning);
+        });
 }
 ```
+<!-- endsnippet -->
 
 
 ##### Null
@@ -501,7 +508,8 @@ query {
         response.EnsureSuccessStatusCode();
         var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-        var firstOfNextPage = result.SelectToken("..data..companiesConnection..edges[0].cursor").Value<string>();
+        var firstOfNextPage = result.SelectToken("..data..companiesConnection..edges[0].cursor")
+            .Value<string>();
         Assert.NotEqual(after.ToString(), firstOfNextPage);
     }
 
