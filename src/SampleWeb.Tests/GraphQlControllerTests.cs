@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json.Linq;
 using Xunit;
 #region GraphQlControllerTests
+
 public class GraphQlControllerTests
 {
     static HttpClient client;
@@ -30,7 +31,9 @@ public class GraphQlControllerTests
         var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
+        Assert.Contains(
+            "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
+            result);
     }
 
     [Fact]
@@ -52,7 +55,7 @@ query ($id: String!)
         var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
+        Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
     }
 
     [Fact]
@@ -104,7 +107,9 @@ query {
 }";
         var response = await ClientQueryExecutor.ExecutePost(client, query);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}}", result);
+        Assert.Contains(
+            "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
+            result);
         response.EnsureSuccessStatusCode();
     }
 
@@ -125,7 +130,7 @@ query ($id: String!)
         };
         var response = await ClientQueryExecutor.ExecutePost(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Equal("{\"data\":{\"companies\":[{\"id\":1}]}}", result);
+        Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
         response.EnsureSuccessStatusCode();
     }
 
@@ -145,4 +150,5 @@ query ($id: String!)
         return new TestServer(hostBuilder);
     }
 }
+
 #endregion
