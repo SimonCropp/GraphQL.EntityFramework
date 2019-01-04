@@ -1,9 +1,11 @@
 ﻿using GraphQL.EntityFramework;
 using Xunit;
 
-public class WithManyChildrenGraph : EfObjectGraphType<WithManyChildrenEntity>
+public class WithManyChildrenGraph :
+    EfObjectGraphType<WithManyChildrenEntity>
 {
-    public WithManyChildrenGraph(IEfGraphQLService graphQlService) : base(graphQlService)
+    public WithManyChildrenGraph(IEfGraphQLService graphQlService) :
+        base(graphQlService)
     {
         Field(x => x.Id);
         AddNavigationField<Child1Graph, Child1Entity>(

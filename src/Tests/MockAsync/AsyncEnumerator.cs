@@ -2,7 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-public class AsyncEnumerator<T> : IAsyncEnumerator<T>
+public class AsyncEnumerator<T> :
+    IAsyncEnumerator<T>
 {
     IEnumerator<T> inner;
 

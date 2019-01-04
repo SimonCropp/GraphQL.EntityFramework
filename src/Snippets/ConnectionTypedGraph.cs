@@ -6,9 +6,11 @@ class ConnectionTypedGraph
 {
     #region ConnectionTypedGraph
 
-    public class CompanyGraph : EfObjectGraphType<Company>
+    public class CompanyGraph :
+        EfObjectGraphType<Company>
     {
-        public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
+        public CompanyGraph(IEfGraphQLService graphQlService) :
+            base(graphQlService)
         {
             AddNavigationConnectionField<EmployeeGraph, Employee>(
                 name: "employees",
@@ -27,7 +29,8 @@ class ConnectionTypedGraph
     {
     }
 
-    public class EmployeeGraph : ObjectGraphType<Employee>
+    public class EmployeeGraph :
+        ObjectGraphType<Employee>
     {
     }
 }

@@ -1,8 +1,10 @@
 ﻿using GraphQL.EntityFramework;
 
-public class Level2Graph : EfObjectGraphType<Level2Entity>
+public class Level2Graph :
+    EfObjectGraphType<Level2Entity>
 {
-    public Level2Graph(IEfGraphQLService graphQlService) : base(graphQlService)
+    public Level2Graph(IEfGraphQLService graphQlService) :
+        base(graphQlService)
     {
         Field(x => x.Id);
         AddNavigationField<Level3Graph, Level3Entity>(

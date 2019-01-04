@@ -4,9 +4,11 @@ using GraphQL.EntityFramework;
 class RootQuery
 {
     #region rootQuery
-    public class Query : EfObjectGraphType
+    public class Query :
+        EfObjectGraphType
     {
-        public Query(IEfGraphQLService graphQlService) : base(graphQlService)
+        public Query(IEfGraphQLService graphQlService) :
+            base(graphQlService)
         {
             AddQueryField<CompanyGraph, Company>(
                 name: "companies",
@@ -28,9 +30,11 @@ class RootQuery
     {
     }
 
-    class CompanyGraph:EfObjectGraphType<Company>
+    class CompanyGraph:
+        EfObjectGraphType<Company>
     {
-        public CompanyGraph(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
+        public CompanyGraph(IEfGraphQLService efGraphQlService) :
+            base(efGraphQlService)
         {
         }
     }

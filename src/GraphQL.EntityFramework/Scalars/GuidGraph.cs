@@ -2,7 +2,8 @@
 
 namespace GraphQL.EntityFramework
 {
-    public class GuidGraph : ScalarGraph<Guid>
+    public class GuidGraph :
+        ScalarGraph<Guid>
     {
         protected override Guid InnerParse(string value)
         {

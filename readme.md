@@ -325,7 +325,8 @@ With the DataContext existing in the container, it can be resolved in the contro
 ```cs
 [Route("[controller]")]
 [ApiController]
-public class GraphQlController : Controller
+public class GraphQlController :
+    Controller
 {
     IDocumentExecuter executer;
     ISchema schema;
@@ -364,7 +365,12 @@ public class GraphQlController : Controller
         return Execute(dataContext, query, operationName, jObject, cancellation);
     }
 
-    async Task<ExecutionResult> Execute(MyDataContext dataContext, string query, string operationName, JObject variables, CancellationToken cancellation)
+    async Task<ExecutionResult> Execute(
+        MyDataContext dataContext,
+        string query,
+        string operationName,
+        JObject variables,
+        CancellationToken cancellation)
     {
         var executionOptions = new ExecutionOptions
         {
@@ -380,7 +386,8 @@ public class GraphQlController : Controller
 #endif
         };
 
-        var result = await executer.ExecuteAsync(executionOptions).ConfigureAwait(false);
+        var result = await executer.ExecuteAsync(executionOptions)
+            .ConfigureAwait(false);
 
         if (result.Errors?.Count > 0)
         {
@@ -416,9 +423,11 @@ The same instance of the DataContext can then be accessed in the `resolve` deleg
 
 <!-- snippet: QueryUsedInController -->
 ```cs
-public class Query : EfObjectGraphType
+public class Query :
+    EfObjectGraphType
 {
-    public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
+    public Query(IEfGraphQLService efGraphQlService) :
+        base(efGraphQlService)
     {
         AddQueryField<CompanyGraph, Company>(
             name: "companies",
@@ -508,9 +517,9 @@ query {
         response.EnsureSuccessStatusCode();
         var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-        var firstOfNextPage = result.SelectToken("..data..companiesConnection..edges[0].cursor")
+        var page = result.SelectToken("..data..companiesConnection..edges[0].cursor")
             .Value<string>();
-        Assert.NotEqual(after.ToString(), firstOfNextPage);
+        Assert.NotEqual(after.ToString(), page);
     }
 
     [Fact]
@@ -632,9 +641,11 @@ Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet
 
 <!-- snippet: rootQuery -->
 ```cs
-public class Query : EfObjectGraphType
+public class Query :
+    EfObjectGraphType
 {
-    public Query(IEfGraphQLService graphQlService) : base(graphQlService)
+    public Query(IEfGraphQLService graphQlService) :
+        base(graphQlService)
     {
         AddQueryField<CompanyGraph, Company>(
             name: "companies",
@@ -653,9 +664,11 @@ public class Query : EfObjectGraphType
 
 <!-- snippet: typedGraph -->
 ```cs
-public class CompanyGraph : EfObjectGraphType<Company>
+public class CompanyGraph :
+    EfObjectGraphType<Company>
 {
-    public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
+    public CompanyGraph(IEfGraphQLService graphQlService) :
+        base(graphQlService)
     {
         Field(x => x.Id);
         Field(x => x.Content);
@@ -682,9 +695,11 @@ public class CompanyGraph : EfObjectGraphType<Company>
 
 <!-- snippet: ConnectionRootQuery -->
 ```cs
-public class Query : EfObjectGraphType
+public class Query :
+    EfObjectGraphType
 {
-    public Query(IEfGraphQLService graphQlService) : base(graphQlService)
+    public Query(IEfGraphQLService graphQlService) :
+        base(graphQlService)
     {
         AddQueryConnectionField<CompanyGraph, Company>(
             name: "companies",
@@ -777,9 +792,11 @@ public class Query : EfObjectGraphType
 
 <!-- snippet: ConnectionTypedGraph -->
 ```cs
-public class CompanyGraph : EfObjectGraphType<Company>
+public class CompanyGraph :
+    EfObjectGraphType<Company>
 {
-    public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
+    public CompanyGraph(IEfGraphQLService graphQlService) :
+        base(graphQlService)
     {
         AddNavigationConnectionField<EmployeeGraph, Employee>(
             name: "employees",

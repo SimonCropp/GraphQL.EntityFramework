@@ -1,8 +1,10 @@
 ﻿using GraphQL.EntityFramework;
 
-public class WithMisNamedQueryChildGraph : EfObjectGraphType<WithMisNamedQueryChildEntity>
+public class WithMisNamedQueryChildGraph :
+    EfObjectGraphType<WithMisNamedQueryChildEntity>
 {
-    public WithMisNamedQueryChildGraph(IEfGraphQLService graphQlService) : base(graphQlService)
+    public WithMisNamedQueryChildGraph(IEfGraphQLService graphQlService) :
+        base(graphQlService)
     {
         Field(x => x.Id);
         AddNavigationField<WithMisNamedQueryParentGraph, WithMisNamedQueryParentEntity>(

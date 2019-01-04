@@ -34,7 +34,8 @@ public class GlobalFiltersTests
         public string Property { get; set; }
     }
 
-    public class ChildTarget : BaseTarget
+    public class ChildTarget :
+        BaseTarget
     {
     }
 
@@ -43,7 +44,8 @@ public class GlobalFiltersTests
         public string Property { get; set; }
     }
 
-    public class ImplementationTarget : ITarget
+    public class ImplementationTarget :
+        ITarget
     {
         public string Property { get; set; }
     }

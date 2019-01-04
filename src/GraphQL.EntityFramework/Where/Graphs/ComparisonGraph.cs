@@ -3,7 +3,8 @@ using GraphQL.EntityFramework;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 
-class ComparisonGraph : EnumerationGraphType
+class ComparisonGraph :
+    EnumerationGraphType
 {
     public ComparisonGraph()
     {

@@ -6,7 +6,8 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public class EfObjectGraphType<TSource> : ObjectGraphType<TSource>
+    public class EfObjectGraphType<TSource> :
+        ObjectGraphType<TSource>
     {
         IEfGraphQLService efGraphQlService;
 

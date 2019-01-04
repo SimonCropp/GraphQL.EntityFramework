@@ -1,8 +1,10 @@
 ﻿using GraphQL.EntityFramework;
 
-public class Query : EfObjectGraphType
+public class Query :
+    EfObjectGraphType
 {
-    public Query(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
+    public Query(IEfGraphQLService efGraphQlService) :
+        base(efGraphQlService)
     {
         AddQueryField<CustomTypeGraph, CustomTypeEntity>(
             name: "customType",

@@ -5,9 +5,11 @@ class ConnectionRootQuery
 {
     #region ConnectionRootQuery
 
-    public class Query : EfObjectGraphType
+    public class Query :
+        EfObjectGraphType
     {
-        public Query(IEfGraphQLService graphQlService) : base(graphQlService)
+        public Query(IEfGraphQLService graphQlService) :
+            base(graphQlService)
         {
             AddQueryConnectionField<CompanyGraph, Company>(
                 name: "companies",
@@ -30,9 +32,11 @@ class ConnectionRootQuery
     {
     }
 
-    class CompanyGraph : EfObjectGraphType<Company>
+    class CompanyGraph :
+        EfObjectGraphType<Company>
     {
-        public CompanyGraph(IEfGraphQLService efGraphQlService) : base(efGraphQlService)
+        public CompanyGraph(IEfGraphQLService efGraphQlService) :
+            base(efGraphQlService)
         {
         }
     }

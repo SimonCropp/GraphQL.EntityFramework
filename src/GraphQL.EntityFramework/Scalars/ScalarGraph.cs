@@ -3,7 +3,8 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public abstract class ScalarGraph<T> : ScalarGraphType
+    public abstract class ScalarGraph<T> :
+        ScalarGraphType
     {
         public ScalarGraph()
         {

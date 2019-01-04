@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-public class QueryClientEvaluationWarningDataContext : DbContext
+public class QueryClientEvaluationWarningDataContext :
+    DbContext
 {
     #region QueryClientEvaluationWarning
 

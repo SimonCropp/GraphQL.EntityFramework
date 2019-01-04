@@ -6,9 +6,11 @@ public class TypedGraph
 {
     #region typedGraph
 
-    public class CompanyGraph : EfObjectGraphType<Company>
+    public class CompanyGraph :
+        EfObjectGraphType<Company>
     {
-        public CompanyGraph(IEfGraphQLService graphQlService) : base(graphQlService)
+        public CompanyGraph(IEfGraphQLService graphQlService) :
+            base(graphQlService)
         {
             Field(x => x.Id);
             Field(x => x.Content);
@@ -35,7 +37,8 @@ public class TypedGraph
     {
     }
 
-    public class EmployeeGraph : ObjectGraphType<Employee>
+    public class EmployeeGraph :
+        ObjectGraphType<Employee>
     {
     }
 }

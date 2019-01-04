@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-public class MyDataContext : DbContext
+public class MyDataContext :
+    DbContext
 {
     public DbSet<ParentEntity> ParentEntities { get; set; }
     public DbSet<FilterParentEntity> FilterParentEntities { get; set; }

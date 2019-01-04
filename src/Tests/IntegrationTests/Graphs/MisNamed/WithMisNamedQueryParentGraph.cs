@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using GraphQL.EntityFramework;
 
-public class WithMisNamedQueryParentGraph : EfObjectGraphType<WithMisNamedQueryParentEntity>
+public class WithMisNamedQueryParentGraph :
+    EfObjectGraphType<WithMisNamedQueryParentEntity>
 {
-    public WithMisNamedQueryParentGraph(IEfGraphQLService graphQlService) : base(graphQlService)
+    public WithMisNamedQueryParentGraph(IEfGraphQLService graphQlService) :
+        base(graphQlService)
     {
         Field(x => x.Id);
         AddQueryField<WithMisNamedQueryChildGraph, WithMisNamedQueryChildEntity>(

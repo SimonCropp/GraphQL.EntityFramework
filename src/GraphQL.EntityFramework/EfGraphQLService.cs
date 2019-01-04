@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    public partial class EfGraphQLService : IEfGraphQLService
+    public partial class EfGraphQLService :
+        IEfGraphQLService
     {
         public EfGraphQLService(DbContext dbContext)
         {

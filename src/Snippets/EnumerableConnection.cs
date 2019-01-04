@@ -6,7 +6,8 @@ using GraphQL.Types.Relay.DataObjects;
 
 public class EnumerableConnection
 {
-    public class CompanyGraph : ObjectGraphType<Company>
+    public class CompanyGraph :
+        ObjectGraphType<Company>
     {
         public CompanyGraph()
         {
@@ -48,7 +49,8 @@ public class EnumerableConnection
     {
     }
 
-    public class EmployeeGraph : ObjectGraphType<Employee>
+    public class EmployeeGraph :
+        ObjectGraphType<Employee>
     {
     }
 }

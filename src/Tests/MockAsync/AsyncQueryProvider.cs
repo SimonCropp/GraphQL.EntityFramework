@@ -5,7 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
-public class AsyncQueryProvider<TEntity> : IAsyncQueryProvider
+public class AsyncQueryProvider<TEntity> :
+    IAsyncQueryProvider
 {
     IQueryProvider inner;
 

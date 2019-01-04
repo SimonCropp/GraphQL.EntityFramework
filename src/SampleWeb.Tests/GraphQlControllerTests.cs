@@ -78,9 +78,9 @@ query {
         response.EnsureSuccessStatusCode();
         var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-        var firstOfNextPage = result.SelectToken("..data..companiesConnection..edges[0].cursor")
+        var page = result.SelectToken("..data..companiesConnection..edges[0].cursor")
             .Value<string>();
-        Assert.NotEqual(after.ToString(), firstOfNextPage);
+        Assert.NotEqual(after.ToString(), page);
     }
 
     [Fact]

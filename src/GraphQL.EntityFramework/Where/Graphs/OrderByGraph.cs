@@ -1,6 +1,7 @@
 ﻿using GraphQL.Types;
 
-class OrderByGraph : InputObjectGraphType<OrderBy>
+class OrderByGraph :
+    InputObjectGraphType<OrderBy>
 {
     public OrderByGraph()
     {

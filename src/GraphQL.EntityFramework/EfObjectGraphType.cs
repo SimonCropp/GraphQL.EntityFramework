@@ -6,7 +6,8 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public class EfObjectGraphType : ObjectGraphType
+    public class EfObjectGraphType :
+        ObjectGraphType
     {
         IEfGraphQLService efGraphQlService;
 

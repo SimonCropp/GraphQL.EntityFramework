@@ -1,6 +1,7 @@
 ﻿namespace GraphQL.EntityFramework
 {
-    public class UlongGraph : ScalarGraph<ulong>
+    public class UlongGraph :
+        ScalarGraph<ulong>
     {
         protected override ulong InnerParse(string value)
         {

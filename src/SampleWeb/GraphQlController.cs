@@ -11,7 +11,8 @@ using Newtonsoft.Json.Linq;
 #region GraphQlController
 [Route("[controller]")]
 [ApiController]
-public class GraphQlController : Controller
+public class GraphQlController :
+    Controller
 {
     IDocumentExecuter executer;
     ISchema schema;
@@ -50,7 +51,12 @@ public class GraphQlController : Controller
         return Execute(dataContext, query, operationName, jObject, cancellation);
     }
 
-    async Task<ExecutionResult> Execute(MyDataContext dataContext, string query, string operationName, JObject variables, CancellationToken cancellation)
+    async Task<ExecutionResult> Execute(
+        MyDataContext dataContext,
+        string query,
+        string operationName,
+        JObject variables,
+        CancellationToken cancellation)
     {
         var executionOptions = new ExecutionOptions
         {
@@ -66,7 +72,8 @@ public class GraphQlController : Controller
 #endif
         };
 
-        var result = await executer.ExecuteAsync(executionOptions).ConfigureAwait(false);
+        var result = await executer.ExecuteAsync(executionOptions)
+            .ConfigureAwait(false);
 
         if (result.Errors?.Count > 0)
         {

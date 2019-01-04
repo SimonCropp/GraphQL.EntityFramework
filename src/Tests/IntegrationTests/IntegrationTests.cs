@@ -11,7 +11,8 @@ using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 
-public partial class IntegrationTests : TestBase
+public partial class IntegrationTests :
+    TestBase
 {
     static IntegrationTests()
     {
@@ -24,7 +25,8 @@ public partial class IntegrationTests : TestBase
         }
     }
 
-    public IntegrationTests(ITestOutputHelper output) : base(output)
+    public IntegrationTests(ITestOutputHelper output) :
+        base(output)
     {
     }
 
@@ -1096,7 +1098,8 @@ query ($value: String!)
         }
     }
 
-    static void Purge<T>(DbSet<T> dbSet) where T : class
+    static void Purge<T>(DbSet<T> dbSet)
+        where T : class
     {
         dbSet.RemoveRange(dbSet);
     }
