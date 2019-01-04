@@ -22,9 +22,13 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNull(nameof(services), services);
             Guard.AgainstNull(nameof(dbContext), dbContext);
+            services.AddTransient(typeof(ConnectionType<>));
+            services.AddTransient(typeof(EdgeType<>));
+            services.AddSingleton<PageInfoType>();
             RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, dbContext);
         }
 
+        [Obsolete("No longer required. Done as part of EfGraphQLConventions.RegisterInContainer", true)]
         public static void RegisterConnectionTypesInContainer(IServiceCollection services)
         {
             Guard.AgainstNull(nameof(services), services);
@@ -32,7 +36,6 @@ namespace GraphQL.EntityFramework
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();
         }
-
 
         public static void RegisterConnectionTypesInContainer(Action<Type> register)
         {

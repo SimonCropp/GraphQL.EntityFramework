@@ -15,7 +15,6 @@ public class Startup
     {
         services.AddScoped(provider => DataContextBuilder.BuildDataContext());
 
-        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         using (var myDataContext = DataContextBuilder.BuildDataContext())
         {
             EfGraphQLConventions.RegisterInContainer(services, myDataContext);
