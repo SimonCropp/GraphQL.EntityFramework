@@ -509,6 +509,18 @@ GlobalFilters.Add<TItem>(Filter<TItem> filter);
 GlobalFilters.Add<Target>((userContext, target) => target.Property != "Ignore");
 ```
 
+## GraphQlExtensions
+
+The `GraphQlExtensions` class exposes some helper methods:
+
+
+### ExecuteWithErrorCheck
+
+Wraps the `DocumentExecuter.ExecuteAsync` to throw if there are any errors.
+
+snippet: ExecuteWithErrorCheck
+
+
 ## Icon
 
 <a href="https://thenounproject.com/term/database/1631008/" target="_blank">memory</a> designed by H Alberto Gongora from [The Noun Project](https://thenounproject.com)

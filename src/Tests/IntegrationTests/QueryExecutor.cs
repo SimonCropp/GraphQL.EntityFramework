@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.EntityFramework;
@@ -26,18 +24,7 @@ static class QueryExecutor
                 Inputs = inputs
             };
 
-            var executionResult = await documentExecuter.ExecuteAsync(executionOptions).ConfigureAwait(false);
-
-            if (executionResult.Errors != null && executionResult.Errors.Count > 0)
-            {
-                if (executionResult.Errors.Count == 1)
-                {
-                    throw executionResult.Errors.First();
-                }
-
-                throw new AggregateException(executionResult.Errors);
-            }
-
+            var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions).ConfigureAwait(false);
             return executionResult.Data;
         }
     }

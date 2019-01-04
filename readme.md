@@ -812,6 +812,41 @@ GlobalFilters.Add<TItem>(Filter<TItem> filter);
 GlobalFilters.Add<Target>((userContext, target) => target.Property != "Ignore");
 ```
 
+## GraphQlExtensions
+
+The `GraphQlExtensions` class exposes some helper methods:
+
+
+### ExecuteWithErrorCheck
+
+Wraps the `DocumentExecuter.ExecuteAsync` to throw if there are any errors.
+
+<!-- snippet: ExecuteWithErrorCheck -->
+```cs
+public static async Task<ExecutionResult> ExecuteWithErrorCheck(this DocumentExecuter documentExecuter, ExecutionOptions executionOptions)
+{
+    Guard.AgainstNull(nameof(documentExecuter),documentExecuter);
+    Guard.AgainstNull(nameof(executionOptions),executionOptions);
+    var executionResult = await documentExecuter.ExecuteAsync(executionOptions)
+        .ConfigureAwait(false);
+
+    var errors = executionResult.Errors;
+    if (errors != null && errors.Count > 0)
+    {
+        if (errors.Count == 1)
+        {
+            throw errors.First();
+        }
+
+        throw new AggregateException(errors);
+    }
+
+    return executionResult;
+}
+```
+<!-- endsnippet -->
+
+
 ## Icon
 
 <a href="https://thenounproject.com/term/database/1631008/" target="_blank">memory</a> designed by H Alberto Gongora from [The Noun Project](https://thenounproject.com)
