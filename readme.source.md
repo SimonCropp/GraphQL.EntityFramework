@@ -95,7 +95,10 @@ Single where statements can be expressed:
 ```graphql
 {
   entities
-  (where: {path: "Property", comparison: "equal", value: "the value"})
+  (where: {
+    path: "Property",
+    comparison: "equal",
+    value: "the value"})
   {
     property
   }
@@ -128,7 +131,10 @@ Multiple where statements can be expressed:
 ```graphql
 {
   testEntities
-  (where: {path: "Property", comparison: "in", value: ["Value1", "Value2"]})
+  (where: {
+    path: "Property",
+    comparison: "in",
+    value: ["Value1", "Value2"]})
   {
     property
   }
@@ -143,7 +149,11 @@ All string comparisons are, by default, done using no [StringComparison](https:/
 ```graphql
 {
   entities
-  (where: {path: "Property", comparison: "endsWith", value: "the value", case: "Ordinal"})
+  (where: {
+    path: "Property",
+    comparison: "endsWith",
+    value: "the value",
+    case: "Ordinal"})
   {
     property
   }
@@ -233,13 +243,13 @@ Enabling is done via registering in a container.
 This can be applied to an [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
 ```csharp
-EfGraphQLConventions.RegisterInContainer(IServiceCollection services, DbContext dataContext);
+EfGraphQLConventions.RegisterInContainer(IServiceCollection services, DbContext context);
 ```
 
 Or via a delegate.
 
 ```csharp
-EfGraphQLConventions.RegisterInContainer(Action<Type, object> registerInstance, DbContext dbContext)
+EfGraphQLConventions.RegisterInContainer(Action<Type, object> register, DbContext context)
 ```
 
 Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
@@ -247,9 +257,9 @@ Then the usage entry point `IEfGraphQLService` can be resolved via [dependency i
 The DbContext is only used to interrogate `DbContext.Model`, as such it only needs to be short lived. So the context can be cleaned up after calling `RegisterInContainer`:
 
 ```csharp
-using (var dataContext = BuildDataContext())
+using (var context = BuildDataContext())
 {
-    EfGraphQLConventions.RegisterInContainer(serviceCollection, dataContext)
+    EfGraphQLConventions.RegisterInContainer(serviceCollection, context)
 }
 ```
 
@@ -290,7 +300,8 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped(provider => MyDataContextBuilder.BuildDataContext());
+        services.AddScoped(
+          provider => MyDataContextBuilder.BuildDataContext());
     }
 }
 ```
@@ -302,7 +313,8 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<MyDataContext>(provider => DataContextBuilder.BuildDataContext());
+        services.AddDbContext<MyDataContext>(
+          provider => DataContextBuilder.BuildDataContext());
     }
 }
 ```

@@ -7,25 +7,25 @@ namespace GraphQL.EntityFramework
 {
     public static class EfGraphQLConventions
     {
-        public static void RegisterInContainer(Action<Type, object> registerInstance, DbContext dbContext)
+        public static void RegisterInContainer(Action<Type, object> register, DbContext context)
         {
-            Guard.AgainstNull(nameof(registerInstance), registerInstance);
-            Guard.AgainstNull(nameof(dbContext), dbContext);
-            Scalars.RegisterInContainer(registerInstance);
-            ArgumentGraphs.RegisterInContainer(registerInstance);
+            Guard.AgainstNull(nameof(register), register);
+            Guard.AgainstNull(nameof(context), context);
+            Scalars.RegisterInContainer(register);
+            ArgumentGraphs.RegisterInContainer(register);
 
-            var service = new EfGraphQLService(dbContext);
-            registerInstance(typeof(IEfGraphQLService), service);
+            var service = new EfGraphQLService(context);
+            register(typeof(IEfGraphQLService), service);
         }
 
-        public static void RegisterInContainer(IServiceCollection services, DbContext dbContext)
+        public static void RegisterInContainer(IServiceCollection services, DbContext context)
         {
             Guard.AgainstNull(nameof(services), services);
-            Guard.AgainstNull(nameof(dbContext), dbContext);
+            Guard.AgainstNull(nameof(context), context);
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();
-            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, dbContext);
+            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, context);
         }
 
         [Obsolete("No longer required. Done as part of EfGraphQLConventions.RegisterInContainer", true)]
