@@ -37,6 +37,28 @@ public class GraphQlControllerTests
     }
 
     [Fact]
+    public async Task Get_single()
+    {
+        var query = @"
+query ($id: String!)
+{
+  company(id:$id)
+  {
+    id
+  }
+}";
+        var variables = new
+        {
+            id = "1"
+        };
+
+        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains(@"{""data"":{""company"":{""id"":1}}}", result);
+    }
+
+    [Fact]
     public async Task Get_variable()
     {
         var query = @"
@@ -59,7 +81,7 @@ query ($id: String!)
     }
 
     [Fact]
-    public async Task Get_company_paging()
+    public async Task Get_companies_paging()
     {
         var after = 1;
         var query = @"
