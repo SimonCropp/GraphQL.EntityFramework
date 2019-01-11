@@ -113,6 +113,33 @@ public class ExpressionBuilderTests
     }
 
     [Fact]
+    public void PropertyNestedExpression()
+    {
+        var target = new TargetForPropertyNestedExpression
+        {
+            Child = new TargetChildForPropertyNestedExpression
+            {
+                Member = "Value1"
+            }
+        };
+
+        var result = ExpressionBuilder<TargetForPropertyNestedExpression>.BuildPropertyExpression("Child.Member")
+            .Compile()
+            .Invoke(target);
+        Assert.Equal("Value1", result);
+    }
+
+    public class TargetForPropertyNestedExpression
+    {
+        public TargetChildForPropertyNestedExpression Child;
+    }
+
+    public class TargetChildForPropertyNestedExpression
+    {
+        public string Member;
+    }
+
+    [Fact]
     public void InList()
     {
         var list = new List<TargetForIn>
@@ -316,6 +343,7 @@ public class ExpressionBuilderTests
     [InlineData("Age", Comparison.LessThan, "13", "Person 1", null)]
     [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1", null)]
     [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1", null)]
+    [InlineData("DateOfBirth.Day", Comparison.Equal, "11", "Person 2", null)]
     public void Combos(string name, Comparison expression, string value, string expectedName, StringComparison? stringComparison)
     {
         var people = new List<Person>
@@ -330,8 +358,8 @@ public class ExpressionBuilderTests
             {
                 Name = "Person 2",
                 Age = 13,
-                DateOfBirth = new DateTime(2000, 10, 10, 10, 10, 10, DateTimeKind.Utc)
-            }
+                DateOfBirth = new DateTime(2000, 10, 11, 10, 10, 10, DateTimeKind.Utc)
+            },
         };
 
         var result = people.AsQueryable()
