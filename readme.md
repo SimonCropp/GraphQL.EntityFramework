@@ -174,6 +174,7 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         });
 }
 ```
+<sup>[snippet source](/src/Snippets/QueryClientEvaluationWarningDataContext.cs#L7-L18)</sup>
 <!-- endsnippet -->
 
 
@@ -427,6 +428,7 @@ public class GraphQlController :
     }
 }
 ```
+<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L11-L103)</sup>
 <!-- endsnippet -->
 
 Note that the instance of the DataContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
@@ -449,6 +451,7 @@ public class Query :
                 return dataContext.Companies;
             });
 ```
+<sup>[snippet source](/src/SampleWeb/Query.cs#L5-L21)</sup>
 <!-- endsnippet -->
 
 
@@ -623,6 +626,7 @@ query ($id: String!)
     }
 }
 ```
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L9-L176)</sup>
 <!-- endsnippet -->
 
 
@@ -695,6 +699,7 @@ public class Query :
     }
 }
 ```
+<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L22)</sup>
 <!-- endsnippet -->
 
 
@@ -720,6 +725,7 @@ public class CompanyGraph :
     }
 }
 ```
+<sup>[snippet source](/src/Snippets/TypedGraph.cs#L7-L27)</sup>
 <!-- endsnippet -->
 
 
@@ -749,6 +755,7 @@ public class Query :
     }
 }
 ```
+<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L6-L24)</sup>
 <!-- endsnippet -->
 
 
@@ -842,6 +849,7 @@ public class CompanyGraph :
     }
 }
 ```
+<sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L7-L21)</sup>
 <!-- endsnippet -->
 
 
@@ -907,6 +915,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(this DocumentExe
     return executionResult;
 }
 ```
+<sup>[snippet source](/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L9-L32)</sup>
 <!-- endsnippet -->
 
 
