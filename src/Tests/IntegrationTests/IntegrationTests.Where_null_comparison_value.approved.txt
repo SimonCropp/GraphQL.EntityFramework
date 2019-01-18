@@ -1,7 +1,7 @@
 ﻿{
-  "parentEntities": [
+  parentEntities: [
     {
-      "id": "Guid 1"
+      id: 'Guid 1'
     }
   ]
 }

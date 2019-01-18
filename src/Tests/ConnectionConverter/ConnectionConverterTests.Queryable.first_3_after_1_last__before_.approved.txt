@@ -1,28 +1,28 @@
 ﻿{
-  "TotalCount": 10,
-  "PageInfo": {
-    "HasNextPage": true,
-    "HasPreviousPage": true,
-    "StartCursor": "2",
-    "EndCursor": "4"
+  TotalCount: 10,
+  PageInfo: {
+    HasNextPage: true,
+    HasPreviousPage: true,
+    StartCursor: '2',
+    EndCursor: '4'
   },
-  "Edges": [
+  Edges: [
     {
-      "Cursor": "2",
-      "Node": "c"
+      Cursor: '2',
+      Node: 'c'
     },
     {
-      "Cursor": "3",
-      "Node": "d"
+      Cursor: '3',
+      Node: 'd'
     },
     {
-      "Cursor": "4",
-      "Node": "e"
+      Cursor: '4',
+      Node: 'e'
     }
   ],
-  "Items": [
-    "c",
-    "d",
-    "e"
+  Items: [
+    'c',
+    'd',
+    'e'
   ]
 }

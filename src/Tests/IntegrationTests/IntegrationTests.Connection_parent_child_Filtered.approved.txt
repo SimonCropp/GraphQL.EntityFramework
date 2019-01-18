@@ -1,25 +1,25 @@
 ﻿{
-  "parentEntitiesConnectionFiltered": {
-    "totalCount": 1,
-    "edges": [
+  parentEntitiesConnectionFiltered: {
+    totalCount: 1,
+    edges: [
       {
-        "cursor": "0",
-        "node": {
-          "property": "Value1",
-          "children": [
+        cursor: '0',
+        node: {
+          property: 'Value1',
+          children: [
             {
-              "property": "Value3"
+              property: 'Value3'
             }
           ]
         }
       }
     ],
-    "items": [
+    items: [
       {
-        "property": "Value1",
-        "children": [
+        property: 'Value1',
+        children: [
           {
-            "property": "Value3"
+            property: 'Value3'
           }
         ]
       }

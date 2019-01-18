@@ -1,8 +1,8 @@
 ﻿{
-  "skipLevel": [
+  skipLevel: [
     {
-      "level3Entity": {
-        "property": "Value"
+      level3Entity: {
+        property: 'Value'
       }
     }
   ]

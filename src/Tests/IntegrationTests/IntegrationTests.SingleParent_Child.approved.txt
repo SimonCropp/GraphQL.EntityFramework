@@ -1,12 +1,12 @@
 ﻿{
-  "parentEntity": {
-    "property": "Value1",
-    "children": [
+  parentEntity: {
+    property: 'Value1',
+    children: [
       {
-        "property": "Value2"
+        property: 'Value2'
       },
       {
-        "property": "Value3"
+        property: 'Value3'
       }
     ]
   }

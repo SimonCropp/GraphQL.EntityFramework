@@ -1,22 +1,22 @@
 ﻿{
-  "TotalCount": 10,
-  "PageInfo": {
-    "HasPreviousPage": true,
-    "StartCursor": "8",
-    "EndCursor": "9"
+  TotalCount: 10,
+  PageInfo: {
+    HasPreviousPage: true,
+    StartCursor: '8',
+    EndCursor: '9'
   },
-  "Edges": [
+  Edges: [
     {
-      "Cursor": "8",
-      "Node": "j"
+      Cursor: '8',
+      Node: 'j'
     },
     {
-      "Cursor": "9",
-      "Node": "i"
+      Cursor: '9',
+      Node: 'i'
     }
   ],
-  "Items": [
-    "j",
-    "i"
+  Items: [
+    'j',
+    'i'
   ]
 }

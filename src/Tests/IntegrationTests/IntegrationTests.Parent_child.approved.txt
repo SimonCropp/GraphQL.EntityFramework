@@ -1,21 +1,21 @@
 ﻿{
-  "parentEntities": [
+  parentEntities: [
     {
-      "property": "Value1",
-      "children": [
+      property: 'Value1',
+      children: [
         {
-          "property": "Value2"
+          property: 'Value2'
         },
         {
-          "property": "Value3"
+          property: 'Value3'
         }
       ]
     },
     {
-      "property": "Value4",
-      "children": [
+      property: 'Value4',
+      children: [
         {
-          "property": "Value5"
+          property: 'Value5'
         }
       ]
     }

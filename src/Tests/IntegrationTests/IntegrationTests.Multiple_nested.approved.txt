@@ -1,9 +1,9 @@
 ﻿{
-  "level1Entities": [
+  level1Entities: [
     {
-      "level2Entity": {
-        "level3Entity": {
-          "property": "Value"
+      level2Entity: {
+        level3Entity: {
+          property: 'Value'
         }
       }
     }

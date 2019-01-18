@@ -1,8 +1,8 @@
 ﻿{
-  "manyChildren": [
+  manyChildren: [
     {
-      "child1": {
-        "id": "Guid 1"
+      child1: {
+        id: 'Guid 1'
       }
     }
   ]

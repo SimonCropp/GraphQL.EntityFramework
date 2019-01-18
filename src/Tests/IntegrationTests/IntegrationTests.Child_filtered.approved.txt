@@ -1,10 +1,10 @@
 ﻿{
-  "parentEntitiesFiltered": [
+  parentEntitiesFiltered: [
     {
-      "property": "Value1",
-      "children": [
+      property: 'Value1',
+      children: [
         {
-          "property": "Value3"
+          property: 'Value3'
         }
       ]
     }

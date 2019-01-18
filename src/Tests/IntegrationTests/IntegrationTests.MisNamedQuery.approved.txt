@@ -1,19 +1,19 @@
 ﻿{
-  "misNamed": [
+  misNamed: [
     {
-      "misNamedChildren": [
+      misNamedChildren: [
         {
-          "id": "Guid 1"
+          id: 'Guid 1'
         },
         {
-          "id": "Guid 2"
+          id: 'Guid 2'
         }
       ]
     },
     {
-      "misNamedChildren": [
+      misNamedChildren: [
         {
-          "id": "Guid 3"
+          id: 'Guid 3'
         }
       ]
     }
