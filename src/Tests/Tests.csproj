@@ -12,7 +12,7 @@
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="ApprovalTests" Version="3.0.18" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.1" />
-    <PackageReference Include="ObjectApproval" Version="5.1.0" />
+    <PackageReference Include="ObjectApproval" Version="5.4.0" />
     <PackageReference Include="Xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
