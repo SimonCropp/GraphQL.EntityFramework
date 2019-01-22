@@ -18,6 +18,15 @@ static class WhereValidator
             throw new Exception($"Cannot use {nameof(StringComparison)} when comparing {propertyType.FullName}.");
         }
     }
+    public static void ValidateSingleObject(Type propertyType, Comparison comparison, StringComparison? @case)
+    {
+        ValidateObject(propertyType, comparison, @case);
+        if (comparison == Comparison.In ||
+            comparison == Comparison.NotIn)
+        {
+            throw new Exception($"Cannot perform {comparison} on {propertyType.FullName}.");
+        }
+    }
 
     public static void ValidateString(Comparison comparison, StringComparison? @case)
     {
@@ -32,6 +41,16 @@ static class WhereValidator
         if (comparison == Comparison.Like && @case != null)
         {
             throw new Exception($"{nameof(Comparison.Like)} is not compatible with {nameof(StringComparison)}.");
+        }
+    }
+
+    public static void ValidateSingleString(Comparison comparison, StringComparison? @case)
+    {
+        ValidateString(comparison, @case);
+        if (comparison == Comparison.In ||
+            comparison == Comparison.NotIn)
+        {
+            throw new Exception($"Cannot perform {comparison} on a single String.");
         }
     }
 }

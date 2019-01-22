@@ -368,6 +368,45 @@ public class ExpressionBuilderTests
         Assert.Equal(expectedName, result.Name);
     }
 
+    [Theory]
+    [InlineData("Name", Comparison.Equal, "Person 1", "Person 1", null)]
+    [InlineData("Name", Comparison.NotEqual, "Person 2", "Person 1", null)]
+    [InlineData("Name", Comparison.Contains, "son 2", "Person 2", null)]
+    [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2", null)]
+    [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2", null)]
+    [InlineData("Name", Comparison.EndsWith, "person 2", "Person 2", StringComparison.OrdinalIgnoreCase)]
+    [InlineData("Age", Comparison.Equal, "13", "Person 2", null)]
+    [InlineData("Age", Comparison.GreaterThan, "12", "Person 2", null)]
+    [InlineData("Age", Comparison.NotEqual, "12", "Person 2", null)]
+    [InlineData("Age", Comparison.GreaterThanOrEqual, "13", "Person 2", null)]
+    [InlineData("Age", Comparison.LessThan, "13", "Person 1", null)]
+    [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1", null)]
+    [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1", null)]
+    [InlineData("DateOfBirth.Day", Comparison.Equal, "11", "Person 2", null)]
+    public void SingleCombos(string name, Comparison expression, string value, string expectedName, StringComparison? stringComparison)
+    {
+        var people = new List<Person>
+        {
+            new Person
+            {
+                Name = "Person 1",
+                Age = 12,
+                DateOfBirth = new DateTime(2001, 10, 10, 10, 10, 10, DateTimeKind.Utc)
+            },
+            new Person
+            {
+                Name = "Person 2",
+                Age = 13,
+                DateOfBirth = new DateTime(2000, 10, 11, 10, 10, 10, DateTimeKind.Utc)
+            },
+        };
+
+        var result = people.AsQueryable()
+            .Where(ExpressionBuilder<Person>.BuildSinglePredicate(name, expression, value, stringComparison))
+            .Single();
+        Assert.Equal(expectedName, result.Name);
+    }
+
     public class Person
     {
         public string Name { get; set; }

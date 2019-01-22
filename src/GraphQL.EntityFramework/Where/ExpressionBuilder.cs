@@ -60,6 +60,20 @@ static class ExpressionBuilder<T>
         }
     }
 
+    public static Expression<Func<T, bool>> BuildSinglePredicate(string path, Comparison comparison, string value, StringComparison? stringComparison = null)
+    {
+        var propertyFunc = GetPropertyFunc(path);
+
+        if (propertyFunc.Type == typeof(string))
+        {
+            WhereValidator.ValidateSingleString(comparison, stringComparison);
+            return BuildStringCompare(comparison, value, propertyFunc, stringComparison);
+        }
+
+        WhereValidator.ValidateSingleObject(propertyFunc.Type, comparison, stringComparison);
+        return BuildObjectCompare(comparison, value, propertyFunc);
+    }
+
     static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, PropertyAccessor propertyAccessor, StringComparison? stringComparison)
     {
         var body = MakeStringComparison(propertyAccessor.Left, comparison, value, stringComparison);
