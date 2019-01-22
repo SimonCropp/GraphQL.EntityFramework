@@ -10,7 +10,7 @@ static class FuncBuilder<T>
 
     public static Func<T, bool> BuildPredicate(WhereExpression where)
     {
-        return BuildPredicate(where.Path, where.Comparison, where.Value, where.Case);
+        return BuildPredicate(where.Path, where.Comparison.GetValueOrDefault(), where.Value, where.Case);
     }
 
     public static Func<T, object> BuildPropertyExpression(string path)

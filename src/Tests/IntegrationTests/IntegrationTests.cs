@@ -454,6 +454,32 @@ query ($value: String!)
     }
 
     [Fact]
+    public async Task Where_default_comparison()
+    {
+        var queryString = @"
+{
+  parentEntities (where: {path: 'Property', value: 'value2'})
+  {
+    property
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(queryString, null, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result);
+    }
+
+    [Fact]
     public async Task In_case_sensitive()
     {
         var queryString = @"
