@@ -10,8 +10,8 @@ namespace GraphQL.EntityFramework
 
         public static async Task<ExecutionResult> ExecuteWithErrorCheck(this DocumentExecuter documentExecuter, ExecutionOptions executionOptions)
         {
-            Guard.AgainstNull(nameof(documentExecuter),documentExecuter);
-            Guard.AgainstNull(nameof(executionOptions),executionOptions);
+            Guard.AgainstNull(nameof(documentExecuter), documentExecuter);
+            Guard.AgainstNull(nameof(executionOptions), executionOptions);
             var executionResult = await documentExecuter.ExecuteAsync(executionOptions)
                 .ConfigureAwait(false);
 

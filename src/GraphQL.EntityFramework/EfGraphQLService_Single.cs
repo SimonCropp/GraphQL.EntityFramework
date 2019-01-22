@@ -121,8 +121,13 @@ namespace GraphQL.EntityFramework
 
                     var predicate = ExpressionBuilder<TReturn>.BuildPredicate("Id", Comparison.Equal, new []{ id });
 
-                    var single = await withIncludes.FirstOrDefaultAsync(predicate, context.CancellationToken).ConfigureAwait(false);
-                    return GlobalFilters.ShouldInclude(context.UserContext, single) ? single : null;
+                    var single = await withIncludes.SingleOrDefaultAsync(predicate, context.CancellationToken).ConfigureAwait(false);
+                    if (GlobalFilters.ShouldInclude(context.UserContext, single))
+                    {
+                        return single;
+                    }
+
+                    return null;
                 })
             };
         }

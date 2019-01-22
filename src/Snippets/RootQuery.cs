@@ -10,6 +10,13 @@ class RootQuery
         public Query(IEfGraphQLService graphQlService) :
             base(graphQlService)
         {
+            AddSingleField<CompanyGraph, Company>(
+                name: "company",
+                resolve: context =>
+                {
+                    var dataContext = (DataContext) context.UserContext;
+                    return dataContext.Companies;
+                });
             AddQueryField<CompanyGraph, Company>(
                 name: "companies",
                 resolve: context =>

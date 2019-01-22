@@ -83,6 +83,7 @@ All where statements require a `path`. This is a full path to a, possible nested
  * `startsWith`: Only works with `string`
  * `endsWith`: Only works with `string`
  * `in`: Check if a member existing in a given collection of values
+ * `notIn`: Check if a member doesn't exist in a given collection of values
  * `like`: Performs a SQL Like by using `EF.Functions.Like`
 
 Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
@@ -689,6 +690,13 @@ public class Query :
     public Query(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
+        AddSingleField<CompanyGraph, Company>(
+            name: "company",
+            resolve: context =>
+            {
+                var dataContext = (DataContext) context.UserContext;
+                return dataContext.Companies;
+            });
         AddQueryField<CompanyGraph, Company>(
             name: "companies",
             resolve: context =>
@@ -699,8 +707,12 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L22)</sup>
+<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L29)</sup>
 <!-- endsnippet -->
+
+`AddQueryField` will result in all matching being found and returned.
+
+`AddSingleField` will result in a single matching being found and returned. This approach uses [`IQueryable<T>.SingleOrDefaultAsync`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.entityframeworkqueryableextensions.singleordefaultasync) as such, if no records are found a null will be returned, and if multiple records match then an exception will be thrown.
 
 
 #### Typed Graph
@@ -896,8 +908,8 @@ Wraps the `DocumentExecuter.ExecuteAsync` to throw if there are any errors.
 ```cs
 public static async Task<ExecutionResult> ExecuteWithErrorCheck(this DocumentExecuter documentExecuter, ExecutionOptions executionOptions)
 {
-    Guard.AgainstNull(nameof(documentExecuter),documentExecuter);
-    Guard.AgainstNull(nameof(executionOptions),executionOptions);
+    Guard.AgainstNull(nameof(documentExecuter), documentExecuter);
+    Guard.AgainstNull(nameof(executionOptions), executionOptions);
     var executionResult = await documentExecuter.ExecuteAsync(executionOptions)
         .ConfigureAwait(false);
 
