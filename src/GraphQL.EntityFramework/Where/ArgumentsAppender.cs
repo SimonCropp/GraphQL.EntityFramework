@@ -19,11 +19,19 @@ static class ArgumentAppender
         };
     }
 
-    static QueryArgument<ListGraphType<StringGraphType>> idArgument()
+    static QueryArgument<ListGraphType<StringGraphType>> idsArgument()
     {
         return new QueryArgument<ListGraphType<StringGraphType>>
         {
             Name = "ids"
+        };
+    }
+
+    static QueryArgument<StringGraphType> idArgument()
+    {
+        return new QueryArgument<StringGraphType>
+        {
+            Name = "id"
         };
     }
 
@@ -48,7 +56,7 @@ static class ArgumentAppender
         var arguments = field.Arguments;
         arguments.Add(whereArgument());
         arguments.Add(orderByArgument());
-        arguments.Add(idArgument());
+        arguments.Add(idsArgument());
         if (extra != null)
         {
             foreach (var argument in extra)
@@ -63,6 +71,7 @@ static class ArgumentAppender
         var arguments = new QueryArguments
         {
             idArgument(),
+            idsArgument(),
             orderByArgument(),
             whereArgument(),
             skipArgument(),

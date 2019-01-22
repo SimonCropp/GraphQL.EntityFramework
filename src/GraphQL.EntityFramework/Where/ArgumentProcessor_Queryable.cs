@@ -12,9 +12,15 @@ static partial class ArgumentProcessor
 
     static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
     {
-        if (ArgumentReader.TryReadId(getArguments, out var values))
+        if (ArgumentReader.TryReadIds(getArguments, out var values))
         {
             var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
+            queryable = queryable.Where(predicate);
+        }
+
+        if (ArgumentReader.TryReadId(getArguments, out var value))
+        {
+            var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.Equal, new[] {value});
             queryable = queryable.Where(predicate);
         }
 

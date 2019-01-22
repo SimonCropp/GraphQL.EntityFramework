@@ -14,9 +14,23 @@ static class ArgumentReader
         return getArgument.ReadList<OrderBy>("orderBy");
     }
 
-    public static bool TryReadId(Func<Type, string, object> getArgument, out string[] expression)
+    public static bool TryReadIds(Func<Type, string, object> getArgument, out string[] expression)
     {
         var argument = (string[])getArgument(typeof(string[]), "ids");
+        if (argument == null)
+        {
+            expression = null;
+            return false;
+        }
+
+        expression = argument;
+
+        return true;
+    }
+
+    public static bool TryReadId(Func<Type, string, object> getArgument, out string expression)
+    {
+        var argument = (string)getArgument(typeof(string), "id");
         if (argument == null)
         {
             expression = null;

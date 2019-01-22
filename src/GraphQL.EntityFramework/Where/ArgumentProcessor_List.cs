@@ -13,7 +13,7 @@ static partial class ArgumentProcessor
 
     static IEnumerable<TItem> ApplyToAll<TItem>(this IEnumerable<TItem> items, Func<Type, string, object> getArguments)
     {
-        if (ArgumentReader.TryReadId(getArguments, out var values))
+        if (ArgumentReader.TryReadIds(getArguments, out var values))
         {
             var predicate = FuncBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
             items = items.Where(predicate);
