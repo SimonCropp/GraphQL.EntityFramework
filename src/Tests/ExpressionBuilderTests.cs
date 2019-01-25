@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.EntityFramework;
@@ -51,11 +51,51 @@ public class ExpressionBuilderTests
         var resultFromString = list.AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] {guid.ToString()}))
             .Single();
+
         Assert.Equal(guid, resultFromString.Field);
+
         var nullResult = list.AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, null))
             .Single();
+
         Assert.Null(nullResult.Field);
+    }
+
+
+    [Fact]
+    public void Nullable_requiring_parse_In()
+    {
+        var guid = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var list = new List<TargetWithNullableRequiringParse>
+        {
+            new TargetWithNullableRequiringParse
+            {
+                Field = null
+            },
+            new TargetWithNullableRequiringParse
+            {
+                Field = guid
+            }
+        };
+
+        var resultFromNull = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {(string) null}))
+            .Single();
+
+        Assert.Null(resultFromNull.Field);
+
+        var resultWithGuid = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {guid.ToString()}))
+            .Single();
+
+        Assert.Equal(guid, resultWithGuid.Field);
+
+        var resultGuidAndNull = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {guid.ToString(), null}))
+            .Select(parse => parse.Field)
+            .ToList();
+
+        Assert.Equal(resultGuidAndNull, new List<Guid?>{null, guid});
     }
 
     public class TargetWithNullableRequiringParse
