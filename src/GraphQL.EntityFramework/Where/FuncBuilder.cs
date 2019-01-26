@@ -126,7 +126,7 @@ static class FuncBuilder<T>
         return funcs.GetOrAdd(propertyPath, x =>
         {
             var parameter = Expression.Parameter(typeof(T));
-            var left = ExpressionBuilder<T>.AggregatePath(x, parameter);
+            var left = PropertyAccessorBuilder<T>.AggregatePath(x, parameter);
 
             var converted = Expression.Convert(left, typeof(object));
             var compile = Expression.Lambda<Func<T, object>>(converted, parameter).Compile();

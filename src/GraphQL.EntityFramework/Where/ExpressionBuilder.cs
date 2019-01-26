@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
 using GraphQL.EntityFramework;
@@ -7,8 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 static class ExpressionBuilder<T>
 {
-    static ConcurrentDictionary<string, PropertyAccessor> funcs = new ConcurrentDictionary<string, PropertyAccessor>();
-
     public static Expression<Func<T, bool>> BuildPredicate(WhereExpression where)
     {
         return BuildPredicate(where.Path, where.Comparison.GetValueOrDefault(), where.Value, where.Case);
@@ -16,7 +13,7 @@ static class ExpressionBuilder<T>
 
     public static Expression<Func<T, object>> BuildPropertyExpression(string path)
     {
-        var propertyFunc = GetPropertyFunc(path);
+        var propertyFunc = PropertyAccessorBuilder<T>.GetPropertyFunc(path);
         var propAsObject = Expression.Convert(propertyFunc.Left, typeof(object));
 
         return Expression.Lambda<Func<T, object>>(propAsObject, propertyFunc.SourceParameter);
@@ -24,7 +21,7 @@ static class ExpressionBuilder<T>
 
     public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
-        var propertyFunc = GetPropertyFunc(path);
+        var propertyFunc = PropertyAccessorBuilder<T>.GetPropertyFunc(path);
 
         if (propertyFunc.Type == typeof(string))
         {
@@ -62,7 +59,7 @@ static class ExpressionBuilder<T>
 
     public static Expression<Func<T, bool>> BuildSinglePredicate(string path, Comparison comparison, string value, StringComparison? stringComparison = null)
     {
-        var propertyFunc = GetPropertyFunc(path);
+        var propertyFunc = PropertyAccessorBuilder<T>.GetPropertyFunc(path);
 
         if (propertyFunc.Type == typeof(string))
         {
@@ -85,21 +82,6 @@ static class ExpressionBuilder<T>
         var valueObject = TypeConverter.ConvertStringToType(expressionValue, propertyAccessor.Type);
         var body = MakeObjectComparison(propertyAccessor.Left, comparison, valueObject);
         return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.SourceParameter);
-    }
-
-    static PropertyAccessor GetPropertyFunc(string propertyPath)
-    {
-        return funcs.GetOrAdd(propertyPath, x =>
-        {
-            var parameter = Expression.Parameter(typeof(T));
-            var aggregatePath = AggregatePath(x, parameter);
-            return new PropertyAccessor
-            {
-                SourceParameter = parameter,
-                Left = aggregatePath,
-                Type = aggregatePath.Type
-            };
-        });
     }
 
     static Expression<Func<T, bool>> BuildObjectIn(string[] values, PropertyAccessor propertyAccessor, bool not = false)
@@ -202,25 +184,5 @@ static class ExpressionBuilder<T>
         }
 
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
-    }
-
-    internal static Expression AggregatePath(string path, Expression parameter)
-    {
-        try
-        {
-            return path.Split('.')
-                .Aggregate(parameter, Expression.PropertyOrField);
-        }
-        catch (ArgumentException exception)
-        {
-            throw new Exception($"Failed to create a member expression. Type: {typeof(T).FullName}, Path: {path}. Error: {exception.Message}");
-        }
-    }
-
-    class PropertyAccessor
-    {
-        public ParameterExpression SourceParameter;
-        public Expression Left;
-        public Type Type;
     }
 }
