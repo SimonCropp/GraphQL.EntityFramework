@@ -3,21 +3,21 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
 
-static class PropertyAccessorBuilder<T>
+static class PropertyAccessorBuilder<TInput>
 {
     static ConcurrentDictionary<string, PropertyAccessor> funcs = new ConcurrentDictionary<string, PropertyAccessor>();
 
     public static PropertyAccessor GetPropertyFunc(string propertyPath)
     {
-        return funcs.GetOrAdd(propertyPath, x =>
+        return funcs.GetOrAdd(propertyPath, path =>
         {
-            var parameter = Expression.Parameter(typeof(T));
-            var aggregatePath = AggregatePath(x, parameter);
+            var parameter = Expression.Parameter(typeof(TInput));
+            var aggregatePath = AggregatePath(path, parameter);
             return new PropertyAccessor
             {
                 SourceParameter = parameter,
                 Left = aggregatePath,
-                Type = aggregatePath.Type
+                PropertyType = aggregatePath.Type
             };
         });
     }
@@ -31,7 +31,7 @@ static class PropertyAccessorBuilder<T>
         }
         catch (ArgumentException exception)
         {
-            throw new Exception($"Failed to create a member expression. Type: {typeof(T).FullName}, Path: {path}. Error: {exception.Message}");
+            throw new Exception($"Failed to create a member expression. Type: {typeof(TInput).FullName}, Path: {path}. Error: {exception.Message}");
         }
     }
 }

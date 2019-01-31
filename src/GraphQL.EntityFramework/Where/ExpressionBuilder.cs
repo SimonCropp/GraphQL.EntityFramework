@@ -23,7 +23,7 @@ static class ExpressionBuilder<T>
     {
         var propertyFunc = PropertyAccessorBuilder<T>.GetPropertyFunc(path);
 
-        if (propertyFunc.Type == typeof(string))
+        if (propertyFunc.PropertyType == typeof(string))
         {
             WhereValidator.ValidateString(comparison, stringComparison);
             switch (comparison)
@@ -41,7 +41,7 @@ static class ExpressionBuilder<T>
         }
         else
         {
-            WhereValidator.ValidateObject(propertyFunc.Type, comparison, stringComparison);
+            WhereValidator.ValidateObject(propertyFunc.PropertyType, comparison, stringComparison);
             switch (comparison)
             {
                 case Comparison.In:
@@ -61,13 +61,13 @@ static class ExpressionBuilder<T>
     {
         var propertyFunc = PropertyAccessorBuilder<T>.GetPropertyFunc(path);
 
-        if (propertyFunc.Type == typeof(string))
+        if (propertyFunc.PropertyType == typeof(string))
         {
             WhereValidator.ValidateSingleString(comparison, stringComparison);
             return BuildStringCompare(comparison, value, propertyFunc, stringComparison);
         }
 
-        WhereValidator.ValidateSingleObject(propertyFunc.Type, comparison, stringComparison);
+        WhereValidator.ValidateSingleObject(propertyFunc.PropertyType, comparison, stringComparison);
         return BuildObjectCompare(comparison, value, propertyFunc);
     }
 
@@ -79,16 +79,16 @@ static class ExpressionBuilder<T>
 
     static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string expressionValue, PropertyAccessor propertyAccessor)
     {
-        var valueObject = TypeConverter.ConvertStringToType(expressionValue, propertyAccessor.Type);
+        var valueObject = TypeConverter.ConvertStringToType(expressionValue, propertyAccessor.PropertyType);
         var body = MakeObjectComparison(propertyAccessor.Left, comparison, valueObject);
         return Expression.Lambda<Func<T, bool>>(body, propertyAccessor.SourceParameter);
     }
 
     static Expression<Func<T, bool>> BuildObjectIn(string[] values, PropertyAccessor propertyAccessor, bool not = false)
     {
-        var objects = TypeConverter.ConvertStringsToList(values, propertyAccessor.Type);
+        var objects = TypeConverter.ConvertStringsToList(values, propertyAccessor.PropertyType);
         var constant = Expression.Constant(objects);
-        var inInfo = objects.GetType().GetMethod("Contains", new[] {propertyAccessor.Type});
+        var inInfo = objects.GetType().GetMethod("Contains", new[] {propertyAccessor.PropertyType});
         var body = Expression.Call(constant, inInfo, propertyAccessor.Left);
         return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(body) : (Expression)body, propertyAccessor.SourceParameter);
     }

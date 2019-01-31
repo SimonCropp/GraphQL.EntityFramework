@@ -5,5 +5,5 @@ class PropertyAccessor
 {
     public ParameterExpression SourceParameter;
     public Expression Left;
-    public Type Type;
+    public Type PropertyType;
 }
