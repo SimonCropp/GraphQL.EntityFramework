@@ -39,7 +39,7 @@ public partial class IntegrationTests
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var result = await RunQuery(queryString, null, entity1, entity2, entity3);
+        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3);
         ObjectApprover.VerifyWithJson(result);
     }
     [Fact]
@@ -64,7 +64,7 @@ public partial class IntegrationTests
             Property = "Ignore"
         };
 
-        var result = await RunQuery(queryString, null, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -99,7 +99,7 @@ public partial class IntegrationTests
         };
 
 
-        var result = await RunQuery(queryString, null, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -148,7 +148,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
 
-        var result = await RunQuery(queryString, null, entity1, entity2, entity3);
+        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3);
 
         ObjectApprover.VerifyWithJson(result);
     }
