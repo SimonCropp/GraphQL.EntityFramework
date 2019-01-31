@@ -1,29 +1,25 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Linq;
-using System.Linq.Expressions;
 using GraphQL.EntityFramework;
 
-static class FuncBuilder<T>
+static class FuncBuilder<TInput>
 {
-    static ConcurrentDictionary<string, PropertyAccessor> funcs = new ConcurrentDictionary<string, PropertyAccessor>();
-
-    public static Func<T, bool> BuildPredicate(WhereExpression where)
+    public static Func<TInput, bool> BuildPredicate(WhereExpression where)
     {
         return BuildPredicate(where.Path, where.Comparison.GetValueOrDefault(), where.Value, where.Case);
     }
 
-    public static Func<T, object> BuildPropertyExpression(string path)
+    public static Func<TInput, object> BuildPropertyExpression(string path)
     {
-        var propertyFunc = GetPropertyFunc(path);
+        var propertyFunc = PropertyAccessorBuilder<TInput>.GetFunc(path);
         return propertyFunc.Func;
     }
 
-    public static Func<T, bool> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
+    public static Func<TInput, bool> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
-        var propertyFunc = GetPropertyFunc(path);
+        var propertyFunc = PropertyAccessorBuilder<TInput>.GetFunc(path);
 
-        if (propertyFunc.Type == typeof(string))
+        if (propertyFunc.PropertyType == typeof(string))
         {
             WhereValidator.ValidateString(comparison, stringComparison);
             var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
@@ -42,7 +38,7 @@ static class FuncBuilder<T>
         }
         else
         {
-            WhereValidator.ValidateObject(propertyFunc.Type, comparison, stringComparison);
+            WhereValidator.ValidateObject(propertyFunc.PropertyType, comparison, stringComparison);
             switch (comparison)
             {
                 case Comparison.In:
@@ -58,10 +54,10 @@ static class FuncBuilder<T>
         }
     }
 
-    static bool BuildObjectCompare(Comparison comparison, string value, PropertyAccessor propertyFunc, T target)
+    static bool BuildObjectCompare(Comparison comparison, string value, PropertyFunc<TInput> propertyFunc, TInput target)
     {
         var propertyValue = propertyFunc.Func(target);
-        var typedValue = TypeConverter.ConvertStringToType(value, propertyFunc.Type);
+        var typedValue = TypeConverter.ConvertStringToType(value, propertyFunc.PropertyType);
 
         var compare = Compare(propertyValue, typedValue);
         switch (comparison)
@@ -83,7 +79,7 @@ static class FuncBuilder<T>
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }
 
-    static bool BuildStringCompare(Comparison comparison, string value, PropertyAccessor propertyFunc, T x, StringComparison stringComparison)
+    static bool BuildStringCompare(Comparison comparison, string value, PropertyFunc<TInput> propertyFunc, TInput x, StringComparison stringComparison)
     {
         var propertyValue = (string) propertyFunc.Func(x);
         switch (comparison)
@@ -121,29 +117,11 @@ static class FuncBuilder<T>
         return ac.CompareTo(bc);
     }
 
-    static PropertyAccessor GetPropertyFunc(string propertyPath)
-    {
-        return funcs.GetOrAdd(propertyPath, x =>
-        {
-            var parameter = Expression.Parameter(typeof(T));
-            var left = PropertyAccessorBuilder<T>.AggregatePath(x, parameter);
-
-            var converted = Expression.Convert(left, typeof(object));
-            var compile = Expression.Lambda<Func<T, object>>(converted, parameter).Compile();
-
-            return new PropertyAccessor
-            {
-                Func = compile,
-                Type = left.Type
-            };
-        });
-    }
-
-    static Func<T, bool> BuildObjectIn(PropertyAccessor property, string[] values, bool not = false)
+    static Func<TInput, bool> BuildObjectIn(PropertyFunc<TInput> property, string[] values, bool not = false)
     {
         return target =>
         {
-            var type = property.Type;
+            var type = property.PropertyType;
             var propertyValue = property.Func(target);
 
             if (type == typeof(Guid))
@@ -222,7 +200,7 @@ static class FuncBuilder<T>
         };
     }
 
-    static Func<T, bool> BuildStringIn(PropertyAccessor property, string[] values, StringComparison stringComparison, bool not = false)
+    static Func<TInput, bool> BuildStringIn(PropertyFunc<TInput> property, string[] values, StringComparison stringComparison, bool not = false)
     {
         return target =>
         {
@@ -232,9 +210,4 @@ static class FuncBuilder<T>
         };
     }
 
-    class PropertyAccessor
-    {
-        public Func<T, object> Func;
-        public Type Type;
-    }
 }

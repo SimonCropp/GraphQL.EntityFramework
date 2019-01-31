@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-class PropertyAccessor
+class PropertyExpression
 {
     public ParameterExpression SourceParameter;
     public Expression Left;
