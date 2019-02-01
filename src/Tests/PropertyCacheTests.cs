@@ -10,8 +10,8 @@ public class PropertyCacheTests
             Member = "Value1"
         };
 
-        var result = PropertyCache<TargetForProperty>.GetProperty("Member").Func
-            .Invoke(target);
+        var property = PropertyCache<TargetForProperty>.GetProperty("Member");
+        var result = property.Func(target);
         Assert.Equal("Value1", result);
     }
 
@@ -31,8 +31,8 @@ public class PropertyCacheTests
             }
         };
 
-        var result = PropertyCache<TargetForPropertyNested>.GetProperty("Child.Member").Func
-            .Invoke(target);
+        var property = PropertyCache<TargetForPropertyNested>.GetProperty("Child.Member");
+        var result = property.Func(target);
         Assert.Equal("Value1", result);
     }
 
