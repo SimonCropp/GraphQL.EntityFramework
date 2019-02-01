@@ -143,10 +143,10 @@ static class ReflectionCache
             return dateTimeOffsetNullableListContains;
         }
 
-        throw new Exception($"Could not find contains for {type.FullName} ");
+        return null;
     }
 
-    private static MethodInfo GetContains<T>()
+    static MethodInfo GetContains<T>()
     {
         return typeof(List<T>).GetMethod("Contains");
     }

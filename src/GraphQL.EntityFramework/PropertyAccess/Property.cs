@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 class Property<TInput>
 {
@@ -8,4 +9,5 @@ class Property<TInput>
     public Expression Left;
     public Type PropertyType;
     public Expression<Func<TInput, object>> Lambda;
+    public MethodInfo ListContainsMethod;
 }

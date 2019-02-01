@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Linq.Expressions;
 using GraphQL.EntityFramework;
-using Microsoft.EntityFrameworkCore;
 
 static class ExpressionBuilder<T>
 {
@@ -63,49 +62,48 @@ static class ExpressionBuilder<T>
         return BuildObjectCompare(comparison, value, property);
     }
 
-    static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, Property<T> propertyExpression, StringComparison? stringComparison)
+    static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, Property<T> property, StringComparison? stringComparison)
     {
-        var body = MakeStringComparison(propertyExpression.Left, comparison, value, stringComparison);
-        return Expression.Lambda<Func<T, bool>>(body, propertyExpression.SourceParameter);
+        var body = MakeStringComparison(property.Left, comparison, value, stringComparison);
+        return Expression.Lambda<Func<T, bool>>(body, property.SourceParameter);
     }
 
-    static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string expressionValue, Property<T> propertyExpression)
+    static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string value, Property<T> property)
     {
-        var valueObject = TypeConverter.ConvertStringToType(expressionValue, propertyExpression.PropertyType);
-        var body = MakeObjectComparison(propertyExpression.Left, comparison, valueObject);
-        return Expression.Lambda<Func<T, bool>>(body, propertyExpression.SourceParameter);
+        var valueObject = TypeConverter.ConvertStringToType(value, property.PropertyType);
+        var body = MakeObjectComparison(property.Left, comparison, valueObject);
+        return Expression.Lambda<Func<T, bool>>(body, property.SourceParameter);
     }
 
-    static Expression<Func<T, bool>> BuildObjectIn(string[] values, Property<T> propertyExpression, bool not = false)
+    static Expression<Func<T, bool>> BuildObjectIn(string[] values, Property<T> property, bool not = false)
     {
-        var objects = TypeConverter.ConvertStringsToList(values, propertyExpression.PropertyType);
+        var objects = TypeConverter.ConvertStringsToList(values, property.PropertyType);
         var constant = Expression.Constant(objects);
-        var inInfo = ReflectionCache.GetListContains(propertyExpression.PropertyType);
-        var body = Expression.Call(constant, inInfo, propertyExpression.Left);
-        return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(body) : (Expression)body, propertyExpression.SourceParameter);
+        var body = Expression.Call(constant, property.ListContainsMethod, property.Left);
+        return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(body) : (Expression)body, property.SourceParameter);
     }
 
-    static Expression<Func<T, bool>> BuildStringIn(string[] array, Property<T> propertyExpression, StringComparison? stringComparison, bool not = false)
+    static Expression<Func<T, bool>> BuildStringIn(string[] array, Property<T> property, StringComparison? comparison, bool not = false)
     {
-        var itemValue = Expression.Parameter(typeof(string));
         MethodCallExpression equalsBody;
-        if (stringComparison == null)
+        if (comparison == null)
         {
-            equalsBody = Expression.Call(null, ReflectionCache.StringEqual, itemValue, propertyExpression.Left);
+            equalsBody = Expression.Call(null, ReflectionCache.StringEqual, ExpressionCache.StringParam, property.Left);
         }
         else
         {
-            equalsBody = Expression.Call(null, ReflectionCache.StringEqualComparison, itemValue, propertyExpression.Left, Expression.Constant(stringComparison));
+            equalsBody = Expression.Call(null, ReflectionCache.StringEqualComparison, ExpressionCache.StringParam, property.Left, Expression.Constant(comparison));
         }
-        var itemEvaluate = Expression.Lambda<Func<string, bool>>(equalsBody, itemValue);
+        var itemEvaluate = Expression.Lambda<Func<string, bool>>(equalsBody, ExpressionCache.StringParam);
         var anyBody = Expression.Call(null, ReflectionCache.StringAny, Expression.Constant(array), itemEvaluate);
-        return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(anyBody) : (Expression)anyBody, propertyExpression.SourceParameter);
+        return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(anyBody) : (Expression)anyBody, property.SourceParameter);
     }
 
     static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison? stringComparison)
     {
         var valueConstant = Expression.Constant(value, typeof(string));
-        var nullCheck = Expression.NotEqual(left, Expression.Constant(null, typeof(object)));
+        var nullCheck = Expression.NotEqual(left, ExpressionCache.Null);
+
         if (stringComparison == null)
         {
             switch (comparison)
@@ -113,7 +111,7 @@ static class ExpressionBuilder<T>
                 case Comparison.Equal:
                     return Expression.Call(ReflectionCache.StringEqual, left, valueConstant);
                 case Comparison.Like:
-                    return Expression.Call(null, ReflectionCache.StringLike, Expression.Constant(EF.Functions), left, valueConstant);
+                    return Expression.Call(null, ReflectionCache.StringLike, ExpressionCache.EfFunction, left, valueConstant);
                 case Comparison.NotEqual:
                     var notEqualsCall = Expression.Call(ReflectionCache.StringEqual, left, valueConstant);
                     return Expression.Not(notEqualsCall);
@@ -125,7 +123,7 @@ static class ExpressionBuilder<T>
                     return Expression.AndAlso(nullCheck, endsWithExpression);
                 case Comparison.Contains:
                     var indexOfExpression = Expression.Call(left, ReflectionCache.StringIndexOf, valueConstant);
-                    var notEqualExpression = Expression.NotEqual(indexOfExpression, Expression.Constant(-1));
+                    var notEqualExpression = Expression.NotEqual(indexOfExpression, ExpressionCache.NegativeOne);
                     return Expression.AndAlso(nullCheck, notEqualExpression);
             }
         }
@@ -147,7 +145,7 @@ static class ExpressionBuilder<T>
                     return Expression.AndAlso(nullCheck, endsWithExpression);
                 case Comparison.Contains:
                     var indexOfExpression = Expression.Call(left, ReflectionCache.StringIndexOfComparison, valueConstant, comparisonConstant);
-                    var notEqualExpression = Expression.NotEqual(indexOfExpression, Expression.Constant(-1));
+                    var notEqualExpression = Expression.NotEqual(indexOfExpression, ExpressionCache.NegativeOne);
                     return Expression.AndAlso(nullCheck, notEqualExpression);
             }
 

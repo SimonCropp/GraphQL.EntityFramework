@@ -17,14 +17,15 @@ static class PropertyCache<TInput>
             var converted = Expression.Convert(left, typeof(object));
             var lambda = Expression.Lambda<Func<TInput, object>>(converted, parameter);
             var compile = lambda.Compile();
-
+            var listContainsMethod = ReflectionCache.GetListContains(left.Type);
             return new Property<TInput>
             {
                 Left = left,
                 Lambda = lambda,
                 SourceParameter = parameter,
                 Func = compile,
-                PropertyType = left.Type
+                PropertyType = left.Type,
+                ListContainsMethod = listContainsMethod
             };
         });
     }

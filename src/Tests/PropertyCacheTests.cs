@@ -3,45 +3,45 @@ using Xunit;
 public class PropertyCacheTests
 {
     [Fact]
-    public void PropertyExpression()
+    public void Property()
     {
-        var target = new TargetForPropertyExpression
+        var target = new TargetForProperty
         {
             Member = "Value1"
         };
 
-        var result = PropertyCache<TargetForPropertyExpression>.GetProperty("Member").Func
+        var result = PropertyCache<TargetForProperty>.GetProperty("Member").Func
             .Invoke(target);
         Assert.Equal("Value1", result);
     }
 
-    public class TargetForPropertyExpression
+    public class TargetForProperty
     {
         public string Member;
     }
 
     [Fact]
-    public void PropertyNestedExpression()
+    public void PropertyNested()
     {
-        var target = new TargetForPropertyNestedExpression
+        var target = new TargetForPropertyNested
         {
-            Child = new TargetChildForPropertyNestedExpression
+            Child = new TargetChildForPropertyNested
             {
                 Member = "Value1"
             }
         };
 
-        var result = PropertyCache<TargetForPropertyNestedExpression>.GetProperty("Child.Member").Func
+        var result = PropertyCache<TargetForPropertyNested>.GetProperty("Child.Member").Func
             .Invoke(target);
         Assert.Equal("Value1", result);
     }
 
-    public class TargetForPropertyNestedExpression
+    public class TargetForPropertyNested
     {
-        public TargetChildForPropertyNestedExpression Child;
+        public TargetChildForPropertyNested Child;
     }
 
-    public class TargetChildForPropertyNestedExpression
+    public class TargetChildForPropertyNested
     {
         public string Member;
     }
