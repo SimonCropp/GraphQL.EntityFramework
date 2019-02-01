@@ -9,15 +9,9 @@ static class FuncBuilder<TInput>
         return BuildPredicate(where.Path, where.Comparison.GetValueOrDefault(), where.Value, where.Case);
     }
 
-    public static Func<TInput, object> BuildPropertyExpression(string path)
-    {
-        var propertyFunc = PropertyAccessorBuilder<TInput>.GetFunc(path);
-        return propertyFunc.Func;
-    }
-
     public static Func<TInput, bool> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
-        var propertyFunc = PropertyAccessorBuilder<TInput>.GetFunc(path);
+        var propertyFunc = PropertyAccessorBuilder<TInput>.GetProperty(path);
 
         if (propertyFunc.PropertyType == typeof(string))
         {
@@ -54,7 +48,7 @@ static class FuncBuilder<TInput>
         }
     }
 
-    static bool BuildObjectCompare(Comparison comparison, string value, PropertyFunc<TInput> propertyFunc, TInput target)
+    static bool BuildObjectCompare(Comparison comparison, string value, Property<TInput> propertyFunc, TInput target)
     {
         var propertyValue = propertyFunc.Func(target);
         var typedValue = TypeConverter.ConvertStringToType(value, propertyFunc.PropertyType);
@@ -79,7 +73,7 @@ static class FuncBuilder<TInput>
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }
 
-    static bool BuildStringCompare(Comparison comparison, string value, PropertyFunc<TInput> propertyFunc, TInput x, StringComparison stringComparison)
+    static bool BuildStringCompare(Comparison comparison, string value, Property<TInput> propertyFunc, TInput x, StringComparison stringComparison)
     {
         var propertyValue = (string) propertyFunc.Func(x);
         switch (comparison)
@@ -117,7 +111,7 @@ static class FuncBuilder<TInput>
         return ac.CompareTo(bc);
     }
 
-    static Func<TInput, bool> BuildObjectIn(PropertyFunc<TInput> property, string[] values, bool not = false)
+    static Func<TInput, bool> BuildObjectIn(Property<TInput> property, string[] values, bool not = false)
     {
         return target =>
         {
@@ -200,7 +194,7 @@ static class FuncBuilder<TInput>
         };
     }
 
-    static Func<TInput, bool> BuildStringIn(PropertyFunc<TInput> property, string[] values, StringComparison stringComparison, bool not = false)
+    static Func<TInput, bool> BuildStringIn(Property<TInput> property, string[] values, StringComparison stringComparison, bool not = false)
     {
         return target =>
         {

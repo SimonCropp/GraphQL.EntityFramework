@@ -48,14 +48,14 @@ static partial class ArgumentProcessor
         if (orderBys.Count > 0)
         {
             var orderBy = orderBys.First();
-            var property = FuncBuilder<TItem>.BuildPropertyExpression(orderBy.Path);
+            var propertyFunc = PropertyAccessorBuilder<TItem>.GetProperty(orderBy.Path).Func;
             if (orderBy.Descending)
             {
-                ordered = items.OrderByDescending(property);
+                ordered = items.OrderByDescending(propertyFunc);
             }
             else
             {
-                ordered = items.OrderBy(property);
+                ordered = items.OrderBy(propertyFunc);
             }
         }
         else
@@ -65,14 +65,14 @@ static partial class ArgumentProcessor
 
         foreach (var orderBy in orderBys.Skip(1))
         {
-            var property = FuncBuilder<TItem>.BuildPropertyExpression(orderBy.Path);
+            var propertyFunc = PropertyAccessorBuilder<TItem>.GetProperty(orderBy.Path).Func;
             if (orderBy.Descending)
             {
-                ordered = ordered.ThenByDescending(property);
+                ordered = ordered.ThenByDescending(propertyFunc);
             }
             else
             {
-                ordered = ordered.ThenBy(property);
+                ordered = ordered.ThenBy(propertyFunc);
             }
         }
 

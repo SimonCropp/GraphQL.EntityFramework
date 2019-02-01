@@ -7,3 +7,12 @@ class PropertyExpression
     public Expression Left;
     public Type PropertyType;
 }
+
+
+class Property<TInput>
+{
+    public Func<TInput, object> Func;
+    public ParameterExpression SourceParameter;
+    public Expression Left;
+    public Type PropertyType;
+}

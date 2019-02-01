@@ -13,78 +13,78 @@ static class ExpressionBuilder<T>
 
     public static Expression<Func<T, object>> BuildPropertyExpression(string path)
     {
-        var propertyFunc = PropertyAccessorBuilder<T>.GetExpression(path);
-        var propAsObject = Expression.Convert(propertyFunc.Left, typeof(object));
+        var property = PropertyAccessorBuilder<T>.GetProperty(path);
+        var propAsObject = Expression.Convert(property.Left, typeof(object));
 
-        return Expression.Lambda<Func<T, object>>(propAsObject, propertyFunc.SourceParameter);
+        return Expression.Lambda<Func<T, object>>(propAsObject, property.SourceParameter);
     }
 
     public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
-        var propertyFunc = PropertyAccessorBuilder<T>.GetExpression(path);
+        var property = PropertyAccessorBuilder<T>.GetProperty(path);
 
-        if (propertyFunc.PropertyType == typeof(string))
+        if (property.PropertyType == typeof(string))
         {
             WhereValidator.ValidateString(comparison, stringComparison);
             switch (comparison)
             {
                 case Comparison.In:
-                    return BuildStringIn(values, propertyFunc, stringComparison);
+                    return BuildStringIn(values, property, stringComparison);
 
                 case Comparison.NotIn:
-                    return BuildStringIn(values, propertyFunc, stringComparison, true);
+                    return BuildStringIn(values, property, stringComparison, true);
 
                 default:
                     var value = values?.Single();
-                    return BuildStringCompare(comparison, value, propertyFunc, stringComparison);
+                    return BuildStringCompare(comparison, value, property, stringComparison);
             }
         }
         else
         {
-            WhereValidator.ValidateObject(propertyFunc.PropertyType, comparison, stringComparison);
+            WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
             switch (comparison)
             {
                 case Comparison.In:
-                    return BuildObjectIn(values, propertyFunc);
+                    return BuildObjectIn(values, property);
 
                 case Comparison.NotIn:
-                    return BuildObjectIn(values, propertyFunc, true);
+                    return BuildObjectIn(values, property, true);
 
                 default:
                     var value = values?.Single();
-                    return BuildObjectCompare(comparison, value, propertyFunc);
+                    return BuildObjectCompare(comparison, value, property);
             }
         }
     }
 
     public static Expression<Func<T, bool>> BuildSinglePredicate(string path, Comparison comparison, string value, StringComparison? stringComparison = null)
     {
-        var propertyFunc = PropertyAccessorBuilder<T>.GetExpression(path);
+        var property = PropertyAccessorBuilder<T>.GetProperty(path);
 
-        if (propertyFunc.PropertyType == typeof(string))
+        if (property.PropertyType == typeof(string))
         {
             WhereValidator.ValidateSingleString(comparison, stringComparison);
-            return BuildStringCompare(comparison, value, propertyFunc, stringComparison);
+            return BuildStringCompare(comparison, value, property, stringComparison);
         }
 
-        WhereValidator.ValidateSingleObject(propertyFunc.PropertyType, comparison, stringComparison);
-        return BuildObjectCompare(comparison, value, propertyFunc);
+        WhereValidator.ValidateSingleObject(property.PropertyType, comparison, stringComparison);
+        return BuildObjectCompare(comparison, value, property);
     }
 
-    static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, PropertyExpression propertyExpression, StringComparison? stringComparison)
+    static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, Property<T> propertyExpression, StringComparison? stringComparison)
     {
         var body = MakeStringComparison(propertyExpression.Left, comparison, value, stringComparison);
         return Expression.Lambda<Func<T, bool>>(body, propertyExpression.SourceParameter);
     }
 
-    static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string expressionValue, PropertyExpression propertyExpression)
+    static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string expressionValue, Property<T> propertyExpression)
     {
         var valueObject = TypeConverter.ConvertStringToType(expressionValue, propertyExpression.PropertyType);
         var body = MakeObjectComparison(propertyExpression.Left, comparison, valueObject);
         return Expression.Lambda<Func<T, bool>>(body, propertyExpression.SourceParameter);
     }
 
-    static Expression<Func<T, bool>> BuildObjectIn(string[] values, PropertyExpression propertyExpression, bool not = false)
+    static Expression<Func<T, bool>> BuildObjectIn(string[] values, Property<T> propertyExpression, bool not = false)
     {
         var objects = TypeConverter.ConvertStringsToList(values, propertyExpression.PropertyType);
         var constant = Expression.Constant(objects);
@@ -93,7 +93,7 @@ static class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(body) : (Expression)body, propertyExpression.SourceParameter);
     }
 
-    static Expression<Func<T, bool>> BuildStringIn(string[] array, PropertyExpression propertyExpression, StringComparison? stringComparison, bool not = false)
+    static Expression<Func<T, bool>> BuildStringIn(string[] array, Property<T> propertyExpression, StringComparison? stringComparison, bool not = false)
     {
         var itemValue = Expression.Parameter(typeof(string));
         MethodCallExpression equalsBody;
