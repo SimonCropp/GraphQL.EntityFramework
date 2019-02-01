@@ -52,7 +52,7 @@ static partial class ArgumentProcessor
         if (orderBys.Count > 0)
         {
             var orderBy = orderBys.First();
-            var property = ExpressionBuilder<TItem>.BuildPropertyExpression(orderBy.Path);
+            var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
             if (orderBy.Descending)
             {
                 ordered = queryable.OrderByDescending(property);
@@ -69,7 +69,7 @@ static partial class ArgumentProcessor
 
         foreach (var orderBy in orderBys.Skip(1))
         {
-            var property = ExpressionBuilder<TItem>.BuildPropertyExpression(orderBy.Path);
+            var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
             if (orderBy.Descending)
             {
                 ordered = ordered.ThenByDescending(property);

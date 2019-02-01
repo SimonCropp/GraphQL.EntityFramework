@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
 
-static class PropertyAccessorBuilder<TInput>
+static class PropertyCache<TInput>
 {
     static ConcurrentDictionary<string, Property<TInput>> properties = new ConcurrentDictionary<string, Property<TInput>>();
 
@@ -15,11 +15,13 @@ static class PropertyAccessorBuilder<TInput>
             var left = AggregatePath(x, parameter);
 
             var converted = Expression.Convert(left, typeof(object));
-            var compile = Expression.Lambda<Func<TInput, object>>(converted, parameter).Compile();
+            var lambda = Expression.Lambda<Func<TInput, object>>(converted, parameter);
+            var compile = lambda.Compile();
 
             return new Property<TInput>
             {
                 Left = left,
+                Lambda = lambda,
                 SourceParameter = parameter,
                 Func = compile,
                 PropertyType = left.Type
@@ -27,7 +29,7 @@ static class PropertyAccessorBuilder<TInput>
         });
     }
 
-    public static Expression AggregatePath(string path, Expression parameter)
+    static Expression AggregatePath(string path, Expression parameter)
     {
         try
         {

@@ -11,17 +11,9 @@ static class ExpressionBuilder<T>
         return BuildPredicate(where.Path, where.Comparison.GetValueOrDefault(), where.Value, where.Case);
     }
 
-    public static Expression<Func<T, object>> BuildPropertyExpression(string path)
-    {
-        var property = PropertyAccessorBuilder<T>.GetProperty(path);
-        var propAsObject = Expression.Convert(property.Left, typeof(object));
-
-        return Expression.Lambda<Func<T, object>>(propAsObject, property.SourceParameter);
-    }
-
     public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
-        var property = PropertyAccessorBuilder<T>.GetProperty(path);
+        var property = PropertyCache<T>.GetProperty(path);
 
         if (property.PropertyType == typeof(string))
         {
@@ -59,7 +51,7 @@ static class ExpressionBuilder<T>
 
     public static Expression<Func<T, bool>> BuildSinglePredicate(string path, Comparison comparison, string value, StringComparison? stringComparison = null)
     {
-        var property = PropertyAccessorBuilder<T>.GetProperty(path);
+        var property = PropertyCache<T>.GetProperty(path);
 
         if (property.PropertyType == typeof(string))
         {

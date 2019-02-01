@@ -133,47 +133,6 @@ public class ExpressionBuilderTests
         public int? Field;
     }
 
-    [Fact]
-    public void PropertyExpression()
-    {
-        var target = new TargetForPropertyExpression
-        {
-            Member = "Value1"
-        };
-
-        var result = ExpressionBuilder<TargetForPropertyExpression>.BuildPropertyExpression("Member")
-            .Compile()
-            .Invoke(target);
-        Assert.Equal("Value1", result);
-    }
-
-    public class TargetForPropertyExpression
-    {
-        public string Member;
-    }
-
-    [Fact]
-    public void PropertyNestedExpression()
-    {
-        var target = new TargetForPropertyNestedExpression
-        {
-            Child = new TargetChildForPropertyNestedExpression
-            {
-                Member = "Value1"
-            }
-        };
-
-        var result = ExpressionBuilder<TargetForPropertyNestedExpression>.BuildPropertyExpression("Child.Member")
-            .Compile()
-            .Invoke(target);
-        Assert.Equal("Value1", result);
-    }
-
-    public class TargetForPropertyNestedExpression
-    {
-        public TargetChildForPropertyNestedExpression Child;
-    }
-
     public class TargetChildForPropertyNestedExpression
     {
         public string Member;

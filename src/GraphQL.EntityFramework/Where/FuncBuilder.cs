@@ -11,7 +11,7 @@ static class FuncBuilder<TInput>
 
     public static Func<TInput, bool> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
-        var propertyFunc = PropertyAccessorBuilder<TInput>.GetProperty(path);
+        var propertyFunc = PropertyCache<TInput>.GetProperty(path);
 
         if (propertyFunc.PropertyType == typeof(string))
         {
