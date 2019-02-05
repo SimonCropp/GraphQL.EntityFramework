@@ -26,7 +26,7 @@ public class Subscription : ObjectGraphType<object>
         });
     }
 
-    private IObservable<Company> Subscribe(ResolveEventStreamContext context, ContextFactory contextFactory, ILogger logger)
+    IObservable<Company> Subscribe(ResolveEventStreamContext context, ContextFactory contextFactory, ILogger logger)
     {
         long lastId = 0;
         var inner = Observable.Using(token => Task.FromResult(contextFactory.BuildContext()), async (ctx, token) =>
@@ -57,10 +57,10 @@ public class Subscription : ObjectGraphType<object>
         return Observable.Interval(TimeSpan.FromSeconds(1)).SelectMany(_ => inner);
     }
 
-    private async Task<List<Company>> GetCompanies(
-        ResolveEventStreamContext context, 
-        MyDataContext ctx, 
-        long lastId, 
+    async Task<List<Company>> GetCompanies(
+        ResolveEventStreamContext context,
+        MyDataContext ctx,
+        long lastId,
         int take = 1,
         CancellationToken token = default)
     {
@@ -79,7 +79,7 @@ public class Subscription : ObjectGraphType<object>
         return await greaterThanLastIdAndPaged.ToListAsync(token);
     }
 
-    private static string SupposePersistedQuery()
+    static string SupposePersistedQuery()
     {
         return @"{
             companies
@@ -89,7 +89,7 @@ public class Subscription : ObjectGraphType<object>
         }";
     }
 
-    private ResolveFieldContext ResolveFieldContext(
+    ResolveFieldContext ResolveFieldContext(
         MyDataContext ctx,
         CancellationToken token,
         Document document,
@@ -117,17 +117,16 @@ public class Subscription : ObjectGraphType<object>
 
         var node = ExecutionStrategy.BuildExecutionRootNode(executionContext, operationRootType);
 
-        var context = GetContext(executionContext, node.SubFields["companies"]);
-        return context;
+        return GetContext(executionContext, node.SubFields["companies"]);
     }
 
-    private ResolveFieldContext GetContext(ExecutionContext context, ExecutionNode node)
+    ResolveFieldContext GetContext(ExecutionContext context, ExecutionNode node)
     {
         var argumentValues = ExecutionHelper.GetArgumentValues(context.Schema,
             node.FieldDefinition.Arguments, node.Field.Arguments, context.Variables);
         var dictionary =
             ExecutionHelper.SubFieldsFor(context, node.FieldDefinition.ResolvedType, node.Field);
-        var resolveFieldContext = new ResolveFieldContext
+        return new ResolveFieldContext
         {
             FieldName = node.Field.Name,
             FieldAst = node.Field,
@@ -149,7 +148,5 @@ public class Subscription : ObjectGraphType<object>
             Path = node.Path,
             SubFields = dictionary
         };
-
-        return resolveFieldContext;
     }
 }

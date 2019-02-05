@@ -10,13 +10,13 @@ using Newtonsoft.Json;
 
 public class GraphQLHttpSubscriptionResult
 {
-    private readonly byte[] buffer = new byte[1048576];
+    byte[] buffer = new byte[1048576];
 
-    private readonly Uri _webSocketUri;
+    Uri webSocketUri;
 
-    private readonly GraphQLRequest _graphQLRequest;
+    GraphQLRequest graphQLRequest;
 
-    private readonly WebSocketClient _clientWebSocket;
+    WebSocketClient clientWebSocket;
 
     public event Action<GraphQLResponse> OnReceive;
 
@@ -24,16 +24,16 @@ public class GraphQLHttpSubscriptionResult
 
     internal GraphQLHttpSubscriptionResult(Uri webSocketUri, GraphQLRequest graphQLRequest, WebSocketClient clientWebSocket)
     {
-        _webSocketUri = webSocketUri;
+        this.webSocketUri = webSocketUri;
 
-        _graphQLRequest = graphQLRequest;
+        this.graphQLRequest = graphQLRequest;
 
-        _clientWebSocket = clientWebSocket;
+        this.clientWebSocket = clientWebSocket;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = default(CancellationToken))
     {
-        var clientSocket = await _clientWebSocket.ConnectAsync(_webSocketUri, cancellationToken);
+        var clientSocket = await clientWebSocket.ConnectAsync(webSocketUri, cancellationToken);
         if (clientSocket.State != WebSocketState.Open)
         {
             return;
@@ -44,7 +44,7 @@ public class GraphQLHttpSubscriptionResult
         {
             Id = "1",
             Type = "start",
-            Payload = _graphQLRequest
+            Payload = graphQLRequest
         };
 
         var jsonRequest = JsonConvert.SerializeObject(graphQlSubscriptionRequest);
