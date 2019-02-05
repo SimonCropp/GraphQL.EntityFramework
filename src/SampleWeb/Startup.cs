@@ -4,9 +4,11 @@ using System.Linq;
 using GraphiQl;
 using GraphQL.EntityFramework;
 using GraphQL;
+using GraphQL.Server;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 public class Startup
@@ -25,6 +27,8 @@ public class Startup
             services.AddSingleton(type);
         }
 
+        services.AddGraphQL(options => options.ExposeExceptions = true).AddWebSockets();
+        services.AddSingleton<ContextFactory>();
         services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
         services.AddSingleton<IDependencyResolver>(
             provider => new FuncDependencyResolver(provider.GetRequiredService));
@@ -44,6 +48,8 @@ public class Startup
 
     public void Configure(IApplicationBuilder builder)
     {
+        builder.UseWebSockets();
+        builder.UseGraphQLWebSockets<ISchema>();
         builder.UseGraphiQl("/graphiql", "/graphql");
         builder.UseMvc();
     }
