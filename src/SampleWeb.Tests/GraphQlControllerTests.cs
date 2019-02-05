@@ -199,7 +199,7 @@ query ($id: String!)
 
         var task = result.StartAsync(taskCancellationSource.Token);
 
-        Assert.True(ev.WaitOne(TimeSpan.FromHours(10)));
+        Assert.True(ev.WaitOne(TimeSpan.FromSeconds(10)));
 
         taskCancellationSource.Cancel();
 
