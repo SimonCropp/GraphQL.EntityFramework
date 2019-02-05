@@ -1,3 +1,9 @@
+<!--
+This file was generate by the CaptureSnippets.
+Source File: \readme.source.md
+To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/CaptureSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/CaptureSnippets#running-as-a-unit-test).
+-->
+
 # GraphQL.EntityFramework
 
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
@@ -466,10 +472,14 @@ public class GraphQlControllerTests
 {
     static HttpClient client;
 
+    static WebSocketClient websocketClient;
+
     static GraphQlControllerTests()
     {
         var server = GetTestServer();
         client = server.CreateClient();
+        websocketClient = server.CreateWebSocketClient();
+        websocketClient.ConfigureRequest = request => { request.Headers["Sec-WebSocket-Protocol"] = "graphql-ws"; };
     }
 
     [Fact]
@@ -611,6 +621,48 @@ query ($id: String!)
     }
 
     [Fact]
+    public Task Should_subscribe_to_companies()
+    {
+        var resetEvent = new AutoResetEvent(false);
+
+        var result = new GraphQLHttpSubscriptionResult(
+            new Uri("http://example.com/graphql"),
+            new GraphQLRequest
+            {
+                Query = @"
+subscription {
+  companyChanged {
+    id
+  }
+}"
+            },
+            websocketClient);
+
+        result.OnReceive += res =>
+        {
+            if (res != null)
+            {
+                Assert.Null(res.Errors);
+
+                if (res.Data != null)
+                {
+                    resetEvent.Set();
+                }
+            }
+        };
+
+        var taskCancellationSource = new CancellationTokenSource();
+
+        var task = result.StartAsync(taskCancellationSource.Token);
+
+        Assert.True(resetEvent.WaitOne(TimeSpan.FromSeconds(10)));
+
+        taskCancellationSource.Cancel();
+
+        return task;
+    }
+
+    [Fact]
     public async Task Post_null_query()
     {
         var response = await ClientQueryExecutor.ExecutePost(client);
@@ -627,7 +679,7 @@ query ($id: String!)
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L9-L176)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L226)</sup>
 <!-- endsnippet -->
 
 

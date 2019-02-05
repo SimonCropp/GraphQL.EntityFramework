@@ -25,9 +25,7 @@ public class GraphQLHttpSubscriptionResult
     internal GraphQLHttpSubscriptionResult(Uri webSocketUri, GraphQLRequest graphQLRequest, WebSocketClient clientWebSocket)
     {
         this.webSocketUri = webSocketUri;
-
         this.graphQLRequest = graphQLRequest;
-
         this.clientWebSocket = clientWebSocket;
     }
 
@@ -51,7 +49,11 @@ public class GraphQLHttpSubscriptionResult
 
         var payload = new ArraySegment<byte>(Encoding.UTF8.GetBytes(jsonRequest));
 
-        await clientSocket.SendAsync(payload, messageType: WebSocketMessageType.Text, endOfMessage: true, cancellationToken: cancellationToken);
+        await clientSocket.SendAsync(
+            payload,
+            messageType: WebSocketMessageType.Text,
+            endOfMessage: true,
+            cancellationToken: cancellationToken);
 
         try
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GraphQL.EntityFramework;
 using GraphQL.Execution;
 using GraphQL.Language.AST;
 using GraphQL.Resolvers;
@@ -29,30 +30,32 @@ public class Subscription : ObjectGraphType<object>
     IObservable<Company> Subscribe(ResolveEventStreamContext context, ContextFactory contextFactory, ILogger logger)
     {
         long lastId = 0;
-        var inner = Observable.Using(token => Task.FromResult(contextFactory.BuildContext()), async (ctx, token) =>
-        {
-            try
+        var inner = Observable.Using(
+            token => Task.FromResult(contextFactory.BuildContext()),
+            async (ctx, token) =>
             {
-                var companies = await GetCompanies(context, ctx, lastId, token: token);
-
-                if (companies.Any())
+                try
                 {
-                    lastId = companies.Max(transaction => transaction.Id);
-                }
+                    var companies = await GetCompanies(context, ctx, lastId, token: token);
 
-                return companies.ToObservable();
-            }
-            catch (OperationCanceledException)
-            {
-                logger.LogInformation("Companies subscription has been cancelled.");
-                return Observable.Empty<Company>();
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, "Unable to get companies.");
-                return Observable.Empty<Company>();
-            }
-        });
+                    if (companies.Any())
+                    {
+                        lastId = companies.Max(transaction => transaction.Id);
+                    }
+
+                    return companies.ToObservable();
+                }
+                catch (OperationCanceledException)
+                {
+                    logger.LogInformation("Companies subscription has been cancelled.");
+                    return Observable.Empty<Company>();
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "Unable to get companies.");
+                    return Observable.Empty<Company>();
+                }
+            });
 
         return Observable.Interval(TimeSpan.FromSeconds(1)).SelectMany(_ => inner);
     }
@@ -124,8 +127,7 @@ public class Subscription : ObjectGraphType<object>
     {
         var argumentValues = ExecutionHelper.GetArgumentValues(context.Schema,
             node.FieldDefinition.Arguments, node.Field.Arguments, context.Variables);
-        var dictionary =
-            ExecutionHelper.SubFieldsFor(context, node.FieldDefinition.ResolvedType, node.Field);
+        var dictionary = ExecutionHelper.SubFieldsFor(context, node.FieldDefinition.ResolvedType, node.Field);
         return new ResolveFieldContext
         {
             FieldName = node.Field.Name,

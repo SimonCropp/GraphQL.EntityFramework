@@ -1,85 +1,89 @@
 ﻿using System;
 using System.Linq;
-using GraphQL.EntityFramework;
 using GraphQL.Types;
 
-public static partial class ArgumentProcessor
+namespace GraphQL.EntityFramework
 {
-    public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context)
+    public static partial class ArgumentProcessor
     {
-        return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x));
-    }
-
-    static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
-    {
-        if (ArgumentReader.TryReadIds(getArguments, out var values))
+        public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context)
         {
-            var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
-            queryable = queryable.Where(predicate);
+            Guard.AgainstNull(nameof(queryable),queryable);
+            Guard.AgainstNull(nameof(context),context);
+            return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x));
         }
 
-        if (ArgumentReader.TryReadId(getArguments, out var value))
+        static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
         {
-            var predicate = ExpressionBuilder<TItem>.BuildSinglePredicate("Id", Comparison.Equal, value);
-            queryable = queryable.Where(predicate);
-        }
-
-        foreach (var where in ArgumentReader.ReadWhere(getArguments))
-        {
-            var predicate = ExpressionBuilder<TItem>.BuildPredicate(where);
-            queryable = queryable.Where(predicate);
-        }
-
-        queryable = Order(queryable, getArguments);
-
-        if (ArgumentReader.TryReadSkip(getArguments, out var skip))
-        {
-            queryable = queryable.Skip(skip);
-        }
-
-        if (ArgumentReader.TryReadTake(getArguments, out var take))
-        {
-            queryable = queryable.Take(take);
-        }
-
-        return queryable;
-    }
-
-    static IQueryable<TItem> Order<TItem>(IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
-    {
-        var orderBys = ArgumentReader.ReadOrderBy(getArguments).ToList();
-        IOrderedQueryable<TItem> ordered;
-        if (orderBys.Count > 0)
-        {
-            var orderBy = orderBys.First();
-            var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
-            if (orderBy.Descending)
+            if (ArgumentReader.TryReadIds(getArguments, out var values))
             {
-                ordered = queryable.OrderByDescending(property);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
+                queryable = queryable.Where(predicate);
             }
-            else
+
+            if (ArgumentReader.TryReadId(getArguments, out var value))
             {
-                ordered = queryable.OrderBy(property);
+                var predicate = ExpressionBuilder<TItem>.BuildSinglePredicate("Id", Comparison.Equal, value);
+                queryable = queryable.Where(predicate);
             }
-        }
-        else
-        {
+
+            foreach (var where in ArgumentReader.ReadWhere(getArguments))
+            {
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(where);
+                queryable = queryable.Where(predicate);
+            }
+
+            queryable = Order(queryable, getArguments);
+
+            if (ArgumentReader.TryReadSkip(getArguments, out var skip))
+            {
+                queryable = queryable.Skip(skip);
+            }
+
+            if (ArgumentReader.TryReadTake(getArguments, out var take))
+            {
+                queryable = queryable.Take(take);
+            }
+
             return queryable;
         }
 
-        foreach (var orderBy in orderBys.Skip(1))
+        static IQueryable<TItem> Order<TItem>(IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
         {
-            var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
-            if (orderBy.Descending)
+            var orderBys = ArgumentReader.ReadOrderBy(getArguments).ToList();
+            IOrderedQueryable<TItem> ordered;
+            if (orderBys.Count > 0)
             {
-                ordered = ordered.ThenByDescending(property);
+                var orderBy = orderBys.First();
+                var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
+                if (orderBy.Descending)
+                {
+                    ordered = queryable.OrderByDescending(property);
+                }
+                else
+                {
+                    ordered = queryable.OrderBy(property);
+                }
             }
             else
             {
-                ordered = ordered.ThenBy(property);
+                return queryable;
             }
-        }
 
-        return ordered;
+            foreach (var orderBy in orderBys.Skip(1))
+            {
+                var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
+                if (orderBy.Descending)
+                {
+                    ordered = ordered.ThenByDescending(property);
+                }
+                else
+                {
+                    ordered = ordered.ThenBy(property);
+                }
+            }
+
+            return ordered;
+        }
     }
 }

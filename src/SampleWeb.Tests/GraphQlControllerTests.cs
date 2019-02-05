@@ -164,23 +164,23 @@ query ($id: String!)
         response.EnsureSuccessStatusCode();
     }
 
-
     [Fact]
-    public async Task Should_subscribe_to_companies()
+    public Task Should_subscribe_to_companies()
     {
-        var ev = new AutoResetEvent(false);
+        var resetEvent = new AutoResetEvent(false);
 
-        var result = new GraphQLHttpSubscriptionResult(new Uri("http://example.com/graphql"), new GraphQLRequest
-        {
-            Query = @"
-                    subscription { 
-                        companyChanged
-                        {
-                            id
-                        }
-                    }
-                "
-        }, websocketClient);
+        var result = new GraphQLHttpSubscriptionResult(
+            new Uri("http://example.com/graphql"),
+            new GraphQLRequest
+            {
+                Query = @"
+subscription {
+  companyChanged {
+    id
+  }
+}"
+            },
+            websocketClient);
 
         result.OnReceive += res =>
         {
@@ -190,7 +190,7 @@ query ($id: String!)
 
                 if (res.Data != null)
                 {
-                    ev.Set();
+                    resetEvent.Set();
                 }
             }
         };
@@ -199,11 +199,11 @@ query ($id: String!)
 
         var task = result.StartAsync(taskCancellationSource.Token);
 
-        Assert.True(ev.WaitOne(TimeSpan.FromSeconds(10)));
+        Assert.True(resetEvent.WaitOne(TimeSpan.FromSeconds(10)));
 
         taskCancellationSource.Cancel();
 
-        await task;
+        return task;
     }
 
     [Fact]
