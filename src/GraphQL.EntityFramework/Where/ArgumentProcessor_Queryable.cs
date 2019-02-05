@@ -3,7 +3,7 @@ using System.Linq;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
 
-static partial class ArgumentProcessor
+public static partial class ArgumentProcessor
 {
     public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context)
     {
