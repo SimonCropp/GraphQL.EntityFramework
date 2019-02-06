@@ -1,3 +1,8 @@
+<!--
+This file was generate by the CaptureSnippets.
+Source File: \readme.source.md
+To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/CaptureSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/CaptureSnippets#running-as-a-unit-test).
+-->
 
 # GraphQL.EntityFramework
 
