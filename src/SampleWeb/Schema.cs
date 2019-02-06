@@ -6,5 +6,6 @@ public class Schema : GraphQL.Types.Schema
         base(resolver)
     {
         Query = resolver.Resolve<Query>();
+        Subscription = resolver.Resolve<Subscription>();
     }
 }
