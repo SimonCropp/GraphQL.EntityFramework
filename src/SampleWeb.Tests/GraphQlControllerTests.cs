@@ -1,21 +1,29 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using GraphQL.Common.Request;
 using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json.Linq;
 using Xunit;
+
 #region GraphQlControllerTests
 
 public class GraphQlControllerTests
 {
     static HttpClient client;
 
+    static WebSocketClient websocketClient;
+
     static GraphQlControllerTests()
     {
         var server = GetTestServer();
         client = server.CreateClient();
+        websocketClient = server.CreateWebSocketClient();
+        websocketClient.ConfigureRequest = request => { request.Headers["Sec-WebSocket-Protocol"] = "graphql-ws"; };
     }
 
     [Fact]
@@ -154,6 +162,48 @@ query ($id: String!)
         var result = await response.Content.ReadAsStringAsync();
         Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
         response.EnsureSuccessStatusCode();
+    }
+
+    [Fact]
+    public Task Should_subscribe_to_companies()
+    {
+        var resetEvent = new AutoResetEvent(false);
+
+        var result = new GraphQLHttpSubscriptionResult(
+            new Uri("http://example.com/graphql"),
+            new GraphQLRequest
+            {
+                Query = @"
+subscription {
+  companyChanged {
+    id
+  }
+}"
+            },
+            websocketClient);
+
+        result.OnReceive += res =>
+        {
+            if (res != null)
+            {
+                Assert.Null(res.Errors);
+
+                if (res.Data != null)
+                {
+                    resetEvent.Set();
+                }
+            }
+        };
+
+        var taskCancellationSource = new CancellationTokenSource();
+
+        var task = result.StartAsync(taskCancellationSource.Token);
+
+        Assert.True(resetEvent.WaitOne(TimeSpan.FromSeconds(10)));
+
+        taskCancellationSource.Cancel();
+
+        return task;
     }
 
     [Fact]
