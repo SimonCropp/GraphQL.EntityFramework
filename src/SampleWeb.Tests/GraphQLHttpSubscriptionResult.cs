@@ -29,7 +29,7 @@ public class GraphQLHttpSubscriptionResult
         this.clientWebSocket = clientWebSocket;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken = default(CancellationToken))
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         var clientSocket = await clientWebSocket.ConnectAsync(webSocketUri, cancellationToken);
         if (clientSocket.State != WebSocketState.Open)
