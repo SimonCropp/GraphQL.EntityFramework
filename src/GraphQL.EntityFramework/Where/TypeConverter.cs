@@ -111,6 +111,19 @@ static class TypeConverter
             return values.Select(s => new DateTimeOffset?(DateTimeOffset.Parse(s))).ToList();
         }
 
+        var enumType = type.IsEnum
+            ? type
+            : Nullable.GetUnderlyingType(type) is var underlying && (underlying?.IsEnum ?? false)
+                ? underlying
+                : null;
+        if (enumType != null)
+        {
+            return values.Select(s => string.IsNullOrWhiteSpace(s)
+                    ? Activator.CreateInstance(enumType)
+                    : Enum.Parse(enumType, s, true))
+                .ToList();
+        }
+
         throw new Exception($"Could not convert strings to {type.FullName} ");
     }
 
@@ -140,6 +153,11 @@ static class TypeConverter
         if (type == typeof(Guid))
         {
             return Guid.Parse(value);
+        }
+
+        if (type.IsEnum)
+        {
+            return Enum.Parse(type, value, true);
         }
 
         return Convert.ChangeType(value, type);
