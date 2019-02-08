@@ -1,4 +1,4 @@
-﻿using CaptureSnippets;
+﻿using MarkdownSnippets;
 using Xunit;
 
 public class DocoUpdater
