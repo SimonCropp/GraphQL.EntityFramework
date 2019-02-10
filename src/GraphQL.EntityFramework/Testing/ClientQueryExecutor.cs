@@ -17,9 +17,10 @@ namespace GraphQL.EntityFramework.Testing
             ClientQueryExecutor.uri = uri;
         }
 
-        public static Task<HttpResponseMessage> ExecutePost(HttpClient client, string query = null, object variables = null, Action<HttpHeaders> headerAction = null)
+        public static Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object variables = null, Action<HttpHeaders> headerAction = null)
         {
             Guard.AgainstNull(nameof(client), client);
+            Guard.AgainstNullWhiteSpace(nameof(query), query);
             query = CompressQuery(query);
             var body = new
             {
@@ -34,9 +35,10 @@ namespace GraphQL.EntityFramework.Testing
             return client.SendAsync(request);
         }
 
-        public static Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query = null, object variables = null, Action<HttpHeaders> headerAction = null)
+        public static Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query, object variables = null, Action<HttpHeaders> headerAction = null)
         {
             Guard.AgainstNull(nameof(client), client);
+            Guard.AgainstNullWhiteSpace(nameof(query), query);
             var compressed = CompressQuery(query);
             var variablesString = ToJson(variables);
             var getUri = $"{uri}?query={compressed}&variables={variablesString}";
@@ -57,11 +59,6 @@ namespace GraphQL.EntityFramework.Testing
 
         static string CompressQuery(string query)
         {
-            if (query == null)
-            {
-                return "";
-            }
-
             return Compress.Query(query);
         }
     }

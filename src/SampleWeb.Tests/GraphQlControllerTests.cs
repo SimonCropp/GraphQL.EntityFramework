@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -117,15 +116,6 @@ query {
     }
 
     [Fact]
-    public async Task Get_null_query()
-    {
-        var response = await ClientQueryExecutor.ExecuteGet(client);
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("A query is required.", result);
-    }
-
-    [Fact]
     public async Task Post()
     {
         var query = @"
@@ -204,15 +194,6 @@ subscription {
         taskCancellationSource.Cancel();
 
         return task;
-    }
-
-    [Fact]
-    public async Task Post_null_query()
-    {
-        var response = await ClientQueryExecutor.ExecutePost(client);
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("A query is required.", result);
     }
 
     static TestServer GetTestServer()
