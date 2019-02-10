@@ -1,7 +1,7 @@
 <!--
-This file was generate by the CaptureSnippets.
+This file was generate by the MarkdownSnippets.
 Source File: \readme.source.md
-To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/CaptureSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/CaptureSnippets#running-as-a-unit-test).
+To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/MarkdownSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/MarkdownSnippets#running-as-a-unit-test).
 -->
 
 # GraphQL.EntityFramework
@@ -571,15 +571,6 @@ query {
     }
 
     [Fact]
-    public async Task Get_null_query()
-    {
-        var response = await ClientQueryExecutor.ExecuteGet(client);
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("A query is required.", result);
-    }
-
-    [Fact]
     public async Task Post()
     {
         var query = @"
@@ -660,15 +651,6 @@ subscription {
         return task;
     }
 
-    [Fact]
-    public async Task Post_null_query()
-    {
-        var response = await ClientQueryExecutor.ExecutePost(client);
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("A query is required.", result);
-    }
-
     static TestServer GetTestServer()
     {
         var hostBuilder = new WebHostBuilder();
@@ -677,7 +659,7 @@ subscription {
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L226)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L12-L207)</sup>
 <!-- endsnippet -->
 
 
