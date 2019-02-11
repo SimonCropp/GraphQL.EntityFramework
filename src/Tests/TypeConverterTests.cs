@@ -29,4 +29,23 @@ public class TypeConverterTests
         var result = TypeConverter.ConvertStringToType(value, typeof(DateTime));
         Assert.Equal(dateTime, result);
     }
+    
+    [Fact]
+    public void ConvertStringToEnum()
+    {
+        var day = DayOfWeek.Thursday;
+        var value = day.ToString();
+        var result = TypeConverter.ConvertStringToType(value, typeof(DayOfWeek));
+        Assert.Equal(day, result);
+    }
+    
+    [Fact]
+    public void ConvertUppercaseStringToEnum()
+    {
+        var day = DayOfWeek.Thursday;
+        var value = day.ToString().ToUpperInvariant();
+        var result = TypeConverter.ConvertStringToType(value, typeof(DayOfWeek));
+        Assert.Equal(day, result);
+    }
+
 }
