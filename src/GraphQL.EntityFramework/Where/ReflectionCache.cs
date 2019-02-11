@@ -150,4 +150,28 @@ static class ReflectionCache
     {
         return typeof(List<T>).GetMethod("Contains");
     }
+   public static bool TryGetEnumType(this Type type, out Type enumType)
+    {
+        if (type.IsEnum)
+        {
+            enumType = type;
+            return true;
+        }
+
+        var underlying = Nullable.GetUnderlyingType(type);
+        if (underlying == null)
+        {
+            enumType = null;
+            return false;
+        }
+
+        if (underlying.IsEnum)
+        {
+            enumType = underlying;
+            return true;
+        }
+
+        enumType = null;
+        return false;
+    }
 }

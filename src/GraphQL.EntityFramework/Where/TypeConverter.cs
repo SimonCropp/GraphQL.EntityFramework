@@ -110,22 +110,16 @@ static class TypeConverter
         {
             return values.Select(s => new DateTimeOffset?(DateTimeOffset.Parse(s))).ToList();
         }
-
-        var enumType = type.IsEnum
-            ? type
-            : Nullable.GetUnderlyingType(type) is var underlying && (underlying?.IsEnum ?? false)
-                ? underlying
-                : null;
-        if (enumType != null)
+        
+        if (type.TryGetEnumType(out var enumType))
         {
-            return values.Select(s => string.IsNullOrWhiteSpace(s)
-                    ? Activator.CreateInstance(enumType)
-                    : Enum.Parse(enumType, s, true))
+            return values.Select(s => Enum.Parse(enumType, s, true))
                 .ToList();
         }
 
-        throw new Exception($"Could not convert strings to {type.FullName} ");
+        throw new Exception($"Could not convert strings to {type.FullName}.");
     }
+    
 
     public static object ConvertStringToType(string value, Type type)
     {
