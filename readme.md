@@ -1,6 +1,6 @@
 <!--
 This file was generate by the MarkdownSnippets.
-Source File: \readme.source.md
+Source File: /readme.source.md
 To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/MarkdownSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/MarkdownSnippets#running-as-a-unit-test).
 -->
 
@@ -72,7 +72,7 @@ All where statements require a `path`. This is a full path to a, possible nested
 
 ##### Supported Types
 
-[String](https://docs.microsoft.com/en-us/dotnet/api/system.string), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid), [Double](https://docs.microsoft.com/en-us/dotnet/api/system.double), [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean), [Float](https://docs.microsoft.com/en-us/dotnet/api/system.float), [Byte](https://docs.microsoft.com/en-us/dotnet/api/system.byte), [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime), [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset), [Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal), [Int16](https://docs.microsoft.com/en-us/dotnet/api/system.int16), [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32), [Int64](https://docs.microsoft.com/en-us/dotnet/api/system.int64), [UInt16](https://docs.microsoft.com/en-us/dotnet/api/system.uint16), [UInt32](https://docs.microsoft.com/en-us/dotnet/api/system.uint32), and [UInt64](https://docs.microsoft.com/en-us/dotnet/api/system.uint64).
+[String](https://docs.microsoft.com/en-us/dotnet/api/system.string), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid), [Double](https://docs.microsoft.com/en-us/dotnet/api/system.double), [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean), [Float](https://docs.microsoft.com/en-us/dotnet/api/system.float), [Byte](https://docs.microsoft.com/en-us/dotnet/api/system.byte), [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime), [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset), [Decimal](https://docs.microsoft.com/en-us/dotnet/api/system.decimal), [Int16](https://docs.microsoft.com/en-us/dotnet/api/system.int16), [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32), [Int64](https://docs.microsoft.com/en-us/dotnet/api/system.int64), [UInt16](https://docs.microsoft.com/en-us/dotnet/api/system.uint16), [UInt32](https://docs.microsoft.com/en-us/dotnet/api/system.uint32), [UInt64](https://docs.microsoft.com/en-us/dotnet/api/system.uint64), and [Enum](https://docs.microsoft.com/en-us/dotnet/api/system.enum).
 
 
 ##### Supported Comparisons
@@ -896,6 +896,24 @@ public class CompanyGraph :
 <sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L7-L21)</sup>
 <!-- endsnippet -->
 
+### Enums
+```csharp
+public class DayOfTheWeekGraph : EnumerationGraphType<DayOfTheWeek>
+{
+}
+```
+
+```cs
+public class ExampleGraph : ObjectGraphType<Example>
+{
+    public ExampleGraph() 
+    {
+        Field(x => x.DayOfTheWeek, type: typeof(DayOfTheWeekGraph));
+    }
+}
+```
+
+- [GraphQL .NET - Schema Types / Enumerations](https://graphql-dotnet.github.io/docs/getting-started/schema-types/#enumerations)
 
 ## Filters
 
