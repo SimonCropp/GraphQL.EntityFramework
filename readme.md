@@ -1,6 +1,6 @@
 <!--
 This file was generate by the MarkdownSnippets.
-Source File: \readme.source.md
+Source File: /readme.source.md
 To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/MarkdownSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/MarkdownSnippets#running-as-a-unit-test).
 -->
 
@@ -914,7 +914,6 @@ public class ExampleGraph : ObjectGraphType<Example>
 ```
 
 - [GraphQL .NET - Schema Types / Enumerations](https://graphql-dotnet.github.io/docs/getting-started/schema-types/#enumerations)
-
 
 ## Filters
 
