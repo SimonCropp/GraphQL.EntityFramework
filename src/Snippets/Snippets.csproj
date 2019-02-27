@@ -8,7 +8,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MarkdownSnippets" Version="8.7.1" />
+    <PackageReference Include="MarkdownSnippets" Version="9.0.0" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.2" />
     <PackageReference Include="ObjectApproval" Version="6.0.0" />
