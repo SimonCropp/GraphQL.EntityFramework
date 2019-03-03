@@ -23,15 +23,32 @@ Notes:
 
 ### Signature:
 
-```
-public delegate bool Filter<in TReturn>(object userContext, TReturn input);
+<!-- snippet: GlobalFiltersSignature -->
+```cs
+public class GlobalFilters
+{
+    public delegate bool Filter<in T>(object userContext, T input);
 
-GlobalFilters.Add<TItem>(Filter<TItem> filter);
+    public void Add<T>(Filter<T> filter)
 ```
+<sup>[snippet source](/src/GraphQL.EntityFramework/Filter/GlobalFilters.cs#L10-L16)</sup>
+<!-- endsnippet -->
 
 
 ### Usage:
 
+<!-- snippet: add-filter -->
+```cs
+public class MyEntity
+{
+    public string Property { get; set; }
+}
 ```
-GlobalFilters.Add<Target>((userContext, target) => target.Property != "Ignore");
+<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L7-L12)</sup>
+```cs
+var filters = new GlobalFilters();
+filters.Add<MyEntity>((context, item) => item.Property != "Ignore");
+EfGraphQLConventions.RegisterInContainer(services, dataContext, filters);
 ```
+<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L15-L19)</sup>
+<!-- endsnippet -->

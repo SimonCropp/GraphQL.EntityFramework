@@ -7,16 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    public static class GlobalFilters
+    #region GlobalFiltersSignature
+    public class GlobalFilters
     {
-        static Dictionary<Type, Func<object, object, bool>> funcs = new Dictionary<Type, Func<object, object, bool>>();
+        public delegate bool Filter<in T>(object userContext, T input);
 
-        public static void Clear()
-        {
-            funcs.Clear();
-        }
-
-        public static void Add<T>(Filter<T> filter)
+        public void Add<T>(Filter<T> filter)
+            #endregion
         {
             Guard.AgainstNull(nameof(filter), filter);
             funcs[typeof(T)] = (context, item) =>
@@ -27,12 +24,14 @@ namespace GraphQL.EntityFramework
                 }
                 catch (Exception exception)
                 {
-                    throw new Exception($"Failed to execute filter. TItem: {typeof(T)}.", exception);
+                    throw new Exception($"Failed to execute filter. T: {typeof(T)}.", exception);
                 }
             };
         }
 
-        internal static async Task<List<T>> TryApplyFilter<T>(IQueryable<T> input, object userContext, CancellationToken token)
+        static Dictionary<Type, Func<object, object, bool>> funcs = new Dictionary<Type, Func<object, object, bool>>();
+
+        internal async Task<List<T>> TryApplyFilter<T>(IQueryable<T> input, object userContext, CancellationToken token)
         {
             if (funcs.Count == 0)
             {
@@ -58,7 +57,7 @@ namespace GraphQL.EntityFramework
                 .ToList();
         }
 
-        internal static IEnumerable<T> ApplyFilter<T>(IEnumerable<T> result, object userContext)
+        internal IEnumerable<T> ApplyFilter<T>(IEnumerable<T> result, object userContext)
         {
             if (funcs.Count == 0)
             {
@@ -75,7 +74,7 @@ namespace GraphQL.EntityFramework
             });
         }
 
-        internal static bool ShouldInclude<T>(object userContext, T item)
+        internal bool ShouldInclude<T>(object userContext, T item)
         {
             if (item == null)
             {

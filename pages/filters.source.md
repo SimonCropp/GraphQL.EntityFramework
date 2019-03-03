@@ -17,15 +17,9 @@ Notes:
 
 ### Signature:
 
-```
-public delegate bool Filter<in TReturn>(object userContext, TReturn input);
-
-GlobalFilters.Add<TItem>(Filter<TItem> filter);
-```
+snippet: GlobalFiltersSignature
 
 
 ### Usage:
 
-```
-GlobalFilters.Add<Target>((userContext, target) => target.Property != "Ignore");
-```
+snippet: add-filter

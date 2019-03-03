@@ -108,7 +108,7 @@ namespace GraphQL.EntityFramework
                 {
                     var result = resolve(context);
                     result = result.ApplyGraphQlArguments(context);
-                    return GlobalFilters.ApplyFilter(result, context.UserContext);
+                    return filters.ApplyFilter(result, context.UserContext);
                 })
             };
         }

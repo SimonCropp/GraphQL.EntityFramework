@@ -83,7 +83,8 @@ namespace GraphQL.EntityFramework
                             context.Last,
                             context.Before,
                             context,
-                            context.CancellationToken);
+                            context.CancellationToken,
+                            filters);
                 });
             return builder;
         }

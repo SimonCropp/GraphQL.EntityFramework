@@ -17,8 +17,9 @@ public partial class IntegrationTests :
 {
     static IntegrationTests()
     {
-        GlobalFilters.Add<FilterParentEntity>((context, item) => item.Property != "Ignore");
-        GlobalFilters.Add<FilterChildEntity>((context, item) => item.Property != "Ignore");
+        var filters = new GlobalFilters();
+        filters.Add<FilterParentEntity>((context, item) => item.Property != "Ignore");
+        filters.Add<FilterChildEntity>((context, item) => item.Property != "Ignore");
 
         using (var dataContext = BuildDataContext())
         {

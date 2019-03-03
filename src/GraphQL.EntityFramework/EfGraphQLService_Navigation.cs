@@ -83,7 +83,7 @@ namespace GraphQL.EntityFramework
                 Resolver = new FuncFieldResolver<TSource, TReturn>(context =>
                 {
                     var result = resolve(context);
-                    if (GlobalFilters.ShouldInclude(context.UserContext, result))
+                    if (filters.ShouldInclude(context.UserContext, result))
                     {
                         return result;
                     }

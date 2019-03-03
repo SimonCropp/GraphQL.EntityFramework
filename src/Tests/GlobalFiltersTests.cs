@@ -6,23 +6,24 @@ public class GlobalFiltersTests
     [Fact]
     public void Simple()
     {
-        GlobalFilters.Add<Target>((o, target) => target.Property != "Ignore");
-        Assert.True(GlobalFilters.ShouldInclude(null, new Target()));
-        Assert.False(GlobalFilters.ShouldInclude<object>(null, null));
-        Assert.True(GlobalFilters.ShouldInclude(null, new Target {Property = "Include"}));
-        Assert.False(GlobalFilters.ShouldInclude(null, new Target {Property = "Ignore"}));
+        var filters= new GlobalFilters();
+        filters.Add<Target>((o, target) => target.Property != "Ignore");
+        Assert.True(filters.ShouldInclude(null, new Target()));
+        Assert.False(filters.ShouldInclude<object>(null, null));
+        Assert.True(filters.ShouldInclude(null, new Target {Property = "Include"}));
+        Assert.False(filters.ShouldInclude(null, new Target {Property = "Ignore"}));
 
-        GlobalFilters.Add<BaseTarget>((o, target) => target.Property != "Ignore");
-        Assert.True(GlobalFilters.ShouldInclude(null, new ChildTarget()));
-        Assert.True(GlobalFilters.ShouldInclude(null, new ChildTarget {Property = "Include"}));
-        Assert.False(GlobalFilters.ShouldInclude(null, new ChildTarget {Property = "Ignore"}));
+        filters.Add<BaseTarget>((o, target) => target.Property != "Ignore");
+        Assert.True(filters.ShouldInclude(null, new ChildTarget()));
+        Assert.True(filters.ShouldInclude(null, new ChildTarget {Property = "Include"}));
+        Assert.False(filters.ShouldInclude(null, new ChildTarget {Property = "Ignore"}));
 
-        GlobalFilters.Add<ITarget>((o, target) => target.Property != "Ignore");
-        Assert.True(GlobalFilters.ShouldInclude(null, new ImplementationTarget()));
-        Assert.True(GlobalFilters.ShouldInclude(null, new ImplementationTarget { Property = "Include"}));
-        Assert.False(GlobalFilters.ShouldInclude(null, new ImplementationTarget { Property = "Ignore" }));
+        filters.Add<ITarget>((o, target) => target.Property != "Ignore");
+        Assert.True(filters.ShouldInclude(null, new ImplementationTarget()));
+        Assert.True(filters.ShouldInclude(null, new ImplementationTarget { Property = "Include"}));
+        Assert.False(filters.ShouldInclude(null, new ImplementationTarget { Property = "Ignore" }));
 
-        Assert.True(GlobalFilters.ShouldInclude(null, new NonTarget { Property = "Foo" }));
+        Assert.True(filters.ShouldInclude(null, new NonTarget { Property = "Foo" }));
     }
 
     public class NonTarget

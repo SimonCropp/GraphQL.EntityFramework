@@ -7,9 +7,12 @@ namespace GraphQL.EntityFramework
     public partial class EfGraphQLService :
         IEfGraphQLService
     {
-        public EfGraphQLService(DbContext dbContext)
+        GlobalFilters filters;
+
+        public EfGraphQLService(DbContext dbContext, GlobalFilters filters)
         {
             Guard.AgainstNull(nameof(dbContext), dbContext);
+            this.filters = filters;
             includeAppender = new IncludeAppender(NavigationReader.GetNavigationProperties(dbContext));
         }
 
