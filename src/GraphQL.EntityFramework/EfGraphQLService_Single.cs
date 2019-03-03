@@ -19,7 +19,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve,arguments, graphType);
+            var field = BuildSingleField(name, resolve, arguments, graphType);
             return graph.AddField(field);
         }
 
@@ -32,7 +32,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve,arguments, graphType);
+            var field = BuildSingleField(name, resolve, arguments, graphType);
             return graph.AddField(field);
         }
 
@@ -45,7 +45,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve,arguments, graphType);
+            var field = BuildSingleField(name, resolve, arguments, graphType);
             return graph.AddField(field);
         }
 
@@ -58,7 +58,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField<object, TGraph, TReturn>(name, resolve,arguments);
+            var field = BuildSingleField<object, TGraph, TReturn>(name, resolve, arguments);
             return graph.AddField(field);
         }
 
@@ -71,7 +71,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField<TSource, TGraph, TReturn>(name, resolve,arguments);
+            var field = BuildSingleField<TSource, TGraph, TReturn>(name, resolve, arguments);
             return graph.AddField(field);
         }
 
@@ -84,7 +84,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField<TSource, TGraph, TReturn>(name, resolve,arguments);
+            var field = BuildSingleField<TSource, TGraph, TReturn>(name, resolve, arguments);
             return graph.AddField(field);
         }
 
@@ -96,7 +96,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graphType), graphType);
-            return BuildSingleField(name, resolve,arguments, graphType);
+            return BuildSingleField(name, resolve, arguments, graphType);
         }
 
         FieldType BuildSingleField<TSource, TGraph, TReturn>(
@@ -106,7 +106,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
-            return BuildSingleField(name, resolve,arguments, typeof(TGraph));
+            return BuildSingleField(name, resolve, arguments, typeof(TGraph));
         }
 
         FieldType BuildSingleField<TSource, TReturn>(
