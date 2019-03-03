@@ -13,7 +13,7 @@ static class QueryExecutor
         using (var provider = services.BuildServiceProvider())
         using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
         {
-            var documentExecuter = new DocumentExecuter();
+            var documentExecuter = new EfDocumentExecuter();
 
             var executionOptions = new ExecutionOptions
             {

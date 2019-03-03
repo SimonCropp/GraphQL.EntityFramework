@@ -28,7 +28,7 @@ public class Startup
 
         services.AddGraphQL(options => options.ExposeExceptions = true).AddWebSockets();
         services.AddSingleton<ContextFactory>();
-        services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+        services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
         services.AddSingleton<IDependencyResolver>(
             provider => new FuncDependencyResolver(provider.GetRequiredService));
         services.AddSingleton<ISchema, Schema>();
