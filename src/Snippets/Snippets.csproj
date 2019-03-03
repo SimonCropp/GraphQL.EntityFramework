@@ -14,8 +14,6 @@
     <PackageReference Include="ObjectApproval" Version="6.0.0" />
     <PackageReference Include="Xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
   </ItemGroup>
 </Project>
