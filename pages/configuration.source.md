@@ -96,6 +96,7 @@ public class Startup
 See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com/en-us/ef/core/api/microsoft.extensions.dependencyinjection.entityframeworkservicecollectionextensions)
 
 With the DataContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
+
 snippet: GraphQlController
 
 Note that the instance of the DataContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
@@ -110,7 +111,6 @@ snippet: QueryUsedInController
 The `GraphQlController` can be tested using the [ASP.NET Integration tests](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests) via the [Microsoft.AspNetCore.Mvc.Testing NuGet package](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Testing).
 
 snippet: GraphQlControllerTests
-
 
 
 ## GraphQlExtensions
