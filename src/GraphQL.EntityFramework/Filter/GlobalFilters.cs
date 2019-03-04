@@ -29,7 +29,7 @@ namespace GraphQL.EntityFramework
             };
         }
 
-        static Dictionary<Type, Func<object, object, bool>> funcs = new Dictionary<Type, Func<object, object, bool>>();
+        Dictionary<Type, Func<object, object, bool>> funcs = new Dictionary<Type, Func<object, object, bool>>();
 
         internal async Task<List<T>> TryApplyFilter<T>(IQueryable<T> input, object userContext, CancellationToken token)
         {
@@ -88,7 +88,7 @@ namespace GraphQL.EntityFramework
             return FindFilters<T>().All(func => func(userContext, item));
         }
 
-        static IEnumerable<Func<object, T, bool>> FindFilters<T>()
+        IEnumerable<Func<object, T, bool>> FindFilters<T>()
         {
             var type = typeof(T);
             foreach (var pair in funcs.Where(x => x.Key.IsAssignableFrom(type)))
