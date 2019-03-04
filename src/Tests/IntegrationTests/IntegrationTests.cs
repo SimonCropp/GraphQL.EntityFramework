@@ -17,10 +17,6 @@ public partial class IntegrationTests :
 {
     static IntegrationTests()
     {
-        var filters = new GlobalFilters();
-        filters.Add<FilterParentEntity>((context, item) => item.Property != "Ignore");
-        filters.Add<FilterChildEntity>((context, item) => item.Property != "Ignore");
-
         using (var dataContext = BuildDataContext())
         {
             dataContext.Database.EnsureCreated();
@@ -65,7 +61,7 @@ public partial class IntegrationTests :
             Property = "Value3"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -84,7 +80,7 @@ public partial class IntegrationTests :
             Nullable = 10
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -103,7 +99,7 @@ public partial class IntegrationTests :
             Nullable = 10
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -123,7 +119,7 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -149,7 +145,7 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -175,7 +171,7 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -201,7 +197,7 @@ public partial class IntegrationTests :
 ";
         var entities = BuildEntities(8);
 
-        var result = await RunQuery(queryString, null, true, entities.ToArray());
+        var result = await RunQuery(queryString, null, true, null, entities.ToArray());
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -239,7 +235,7 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, false, entity1, entity2);
+        var result = await RunQuery(queryString, null, false, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -265,7 +261,7 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity2, entity1);
+        var result = await RunQuery(queryString, null, true, null, entity2, entity1);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -291,7 +287,7 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -317,7 +313,7 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -349,7 +345,7 @@ query ($value: String!)
         {
             {"value", "value2"}
         });
-        var result = await RunQuery(queryString, inputs, true, entity1, entity2);
+        var result = await RunQuery(queryString, inputs, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -375,7 +371,7 @@ query ($value: String!)
             Property = 3
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -425,7 +421,7 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -451,7 +447,7 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -477,7 +473,7 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -503,7 +499,7 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, false, entity1, entity2);
+        var result = await RunQuery(queryString, null, false, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -529,7 +525,7 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -561,7 +557,7 @@ query ($value: String!)
             Property = "Value3"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -587,7 +583,7 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -614,7 +610,7 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -674,7 +670,7 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
 
         ObjectApprover.VerifyWithJson(result);
     }
@@ -725,7 +721,7 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -759,7 +755,7 @@ query ($value: String!)
             Level2Entity = level2
         };
 
-        var result = await RunQuery(queryString, null, true, level1, level2, level3);
+        var result = await RunQuery(queryString, null, true, null, level1, level2, level3);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -796,7 +792,7 @@ query ($value: String!)
             Level2Entity = level2
         };
 
-        var result = await RunQuery(queryString, null, true, level1, level2, level3);
+        var result = await RunQuery(queryString, null, true, null, level1, level2, level3);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -843,7 +839,7 @@ query ($value: String!)
             Level2Entity = level2b
         };
 
-        var result = await RunQuery(queryString, null, true, level1b, level2b, level1a, level2a, level3a);
+        var result = await RunQuery(queryString, null, true, null, level1b, level2b, level1a, level2a, level3a);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -894,7 +890,7 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -938,7 +934,7 @@ query ($value: String!)
             Property = "Value5"
         };
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3, entity5);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -983,7 +979,7 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -1034,7 +1030,7 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -1069,11 +1065,11 @@ query ($value: String!)
         parent.Child1 = child1;
         parent.Child2 = child2;
 
-        var result = await RunQuery(queryString, null, true, parent, child1, child2);
+        var result = await RunQuery(queryString, null, true, null, parent, child1, child2);
         ObjectApprover.VerifyWithJson(result);
     }
 
-    static async Task<object> RunQuery(string queryString, Inputs inputs, bool throwForClientEval, params object[] entities)
+    static async Task<object> RunQuery(string queryString, Inputs inputs, bool throwForClientEval, GlobalFilters filters, params object[] entities)
     {
         Purge();
 
@@ -1093,7 +1089,7 @@ query ($value: String!)
                 services.AddSingleton(type);
             }
 
-            return await QueryExecutor.ExecuteQuery(queryString, services, dataContext, inputs);
+            return await QueryExecutor.ExecuteQuery(queryString, services, dataContext, inputs, filters);
         }
     }
 
@@ -1132,7 +1128,7 @@ query ($value: String!)
         dbSet.RemoveRange(dbSet);
     }
 
-    static MyDataContext BuildDataContext(bool throwForClientEval=true)
+    static MyDataContext BuildDataContext(bool throwForClientEval = true)
     {
         var builder = new DbContextOptionsBuilder<MyDataContext>();
         builder.UseSqlServer(Connection.ConnectionString);
@@ -1140,6 +1136,7 @@ query ($value: String!)
         {
             builder.ConfigureWarnings(x => x.Throw(RelationalEventId.QueryClientEvaluationWarning));
         }
+
         return new MyDataContext(builder.Options);
     }
 }
