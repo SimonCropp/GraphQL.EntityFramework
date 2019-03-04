@@ -3,6 +3,13 @@
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
 
 
+## Community backed
+
+This project relies on financial contributions from the community to ensure its long term viability. **It is expected that all developers [become a Patron on OpenCollective](https://opencollective.com/graphqlentityframework/order/8286).**
+
+[Go to licensing FAQ](/pages/licensing-patron-faq.md) for more information.
+
+
 ## NuGet [![NuGet Status](http://img.shields.io/nuget/v/GraphQL.EntityFramework.svg?longCache=true&style=flat)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
 
 https://nuget.org/packages/GraphQL.EntityFramework/
@@ -17,6 +24,9 @@ https://nuget.org/packages/GraphQL.EntityFramework/
  * [Query Usage](/pages/query-usage.md)
  * [Filters](/pages/filters.md)
 
+
+
+All patrons: https://opencollective.com/graphqlentityframework/members/all.json
 
 ## Icon
 
