@@ -65,7 +65,7 @@ Yes. You must be a Patron to be a user. As such if you are raising an issue (que
 There are two options for an organization.
 
    1. Apply a multiplier to the Patron cost.<br>
-   The [Patron tier](https://opencollective.com/graphqlentityframework/order/8286) has no upper bound on the monthly amount. This allows an organization with multiple developers to pay a single monthly price. For example: An organization with 5 developers would pay $10 per month, i.e. 5 x $2 per patron. An organization with 10 developers would pay $20 per month, i.e. 10 x $2 per patron and so on.
+   The [Patron tier](https://opencollective.com/graphqlentityframework/order/8286) has no upper bound on the monthly amount. This allows an organization with multiple developers to pay a single monthly price. For example: An organization with 5 developers would pay $25 per month, i.e. 5 x $5 per patron. An organization with 10 developers would pay $50 per month, i.e. 10 x $5 per patron and so on.
    2. Create an Open Collective organization.<br>
    A organization can [Create an Open Collective organization](https://opencollective.com/become-a-sponsor) and then allow their developers to draw on the funds from that organization. See [FAQ for backers](https://opencollective.com/faq/backers). This is the recommended option as it also opens up the opportunity for developers to select other projects they feel need support.
 
