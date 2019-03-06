@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
