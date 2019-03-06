@@ -1,30 +1,24 @@
-
 # Configuration
 
-Enabling is done via registering in a container.
+Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`. It can be extracted from a DbContext instance via the `DbContext.Model` property. Unfortunately EntityFramework conflates configuration with runtime in its API. So `DbContext` is the main API used at runtime, but it also contains the configuration API via the `OnModelCreating` method. As such a DbContext needs to be instantiated and disposed for the purposes of IModel construction. One possible approach is via a static field on the DbContext.
+
+snippet: DataContextWithModel
+
+Enabling is then done via registering in a container.
 
 This can be applied to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
-```csharp
-EfGraphQLConventions.RegisterInContainer(IServiceCollection services, DbContext context);
-```
+snippet: RegisterInContainerServiceCollection
 
-Or via a delegate.
+Usage:
 
-```csharp
-EfGraphQLConventions.RegisterInContainer(Action<Type, object> register, DbContext context)
-```
+snippet: RegisterInContainerServiceCollectionUsage
+
+Or via an Action.
+
+snippet: RegisterInContainerAction
 
 Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
-
-The DbContext is only used to interrogate `DbContext.Model`, as such it only needs to be short lived. So the context can be cleaned up after calling `RegisterInContainer`:
-
-```csharp
-using (var context = BuildDataContext())
-{
-    EfGraphQLConventions.RegisterInContainer(serviceCollection, context)
-}
-```
 
 
 ## DocumentExecuter

@@ -23,11 +23,6 @@ class ConnectionRootQuery
 
     #endregion
 
-    class DataContext
-    {
-        public IQueryable<Company> Companies { get; set; }
-    }
-
     class Company
     {
     }

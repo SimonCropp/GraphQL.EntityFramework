@@ -34,7 +34,8 @@ public class EnumerableConnection
                         {
                             Cursor = (index + skip).ToString(),
                             Node = item
-                        }).ToList()
+                        })
+                        .ToList()
                 };
             });
         }

@@ -1,10 +1,4 @@
-<!--
-This file was generate by MarkdownSnippets.
-Source File: \readme.source.md
-To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/MarkdownSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/MarkdownSnippets#running-as-a-unit-test).
--->
-
-# GraphQL.EntityFramework
+# <img src="https://raw.githubusercontent.com/SimonCropp/GraphQL.EntityFramework/master/src/icon.png" height="40px"> GraphQL.EntityFramework
 
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
 

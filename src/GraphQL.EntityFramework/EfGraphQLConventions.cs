@@ -7,7 +7,9 @@ namespace GraphQL.EntityFramework
 {
     public static class EfGraphQLConventions
     {
+        #region RegisterInContainerAction
         public static void RegisterInContainer(Action<Type, object> register, IModel model, GlobalFilters filters = null)
+        #endregion
         {
             Guard.AgainstNull(nameof(register), register);
             Guard.AgainstNull(nameof(model), model);
@@ -23,7 +25,9 @@ namespace GraphQL.EntityFramework
             register(typeof(IEfGraphQLService), service);
         }
 
+        #region RegisterInContainerServiceCollection
         public static void RegisterInContainer(IServiceCollection services, IModel model, GlobalFilters filters = null)
+        #endregion
         {
             Guard.AgainstNull(nameof(services), services);
             Guard.AgainstNull(nameof(model), model);
