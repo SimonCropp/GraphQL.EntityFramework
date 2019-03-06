@@ -44,7 +44,7 @@ public class MyEntity
     public string Property { get; set; }
 }
 ```
-<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L7-L14)</sup>
+<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L8-L15)</sup>
 ```cs
 var filters = new GlobalFilters();
 filters.Add<MyEntity>(
@@ -52,7 +52,7 @@ filters.Add<MyEntity>(
     {
         return item.Property != "Ignore";
     });
-EfGraphQLConventions.RegisterInContainer(services, dataContext, filters);
+EfGraphQLConventions.RegisterInContainer(services, model, filters);
 ```
-<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L18-L28)</sup>
+<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L19-L29)</sup>
 <!-- endsnippet -->

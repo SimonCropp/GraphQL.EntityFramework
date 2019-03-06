@@ -9,7 +9,7 @@ static class QueryExecutor
     public static async Task<object> ExecuteQuery(string queryString, ServiceCollection services, DbContext dataContext, Inputs inputs, GlobalFilters filters)
     {
         queryString = queryString.Replace("'", "\"");
-        EfGraphQLConventions.RegisterInContainer(services, dataContext, filters);
+        EfGraphQLConventions.RegisterInContainer(services, dataContext.Model, filters);
         using (var provider = services.BuildServiceProvider())
         using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
         {

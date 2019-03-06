@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 static class NavigationReader
 {
-    public static Dictionary<Type, List<Navigation>> GetNavigationProperties(DbContext dbContext)
+    public static Dictionary<Type, List<Navigation>> GetNavigationProperties(IModel model)
     {
-        return dbContext.Model
+        return model
             .GetEntityTypes()
             .ToDictionary(x => x.ClrType, GetNavigations);
     }

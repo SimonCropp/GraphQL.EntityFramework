@@ -1,6 +1,6 @@
 ﻿using System;
 using GraphQL.Types;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace GraphQL.EntityFramework
 {
@@ -9,11 +9,11 @@ namespace GraphQL.EntityFramework
     {
         GlobalFilters filters;
 
-        public EfGraphQLService(DbContext dbContext, GlobalFilters filters)
+        public EfGraphQLService(IModel model, GlobalFilters filters)
         {
-            Guard.AgainstNull(nameof(dbContext), dbContext);
+            Guard.AgainstNull(nameof(model), model);
             this.filters = filters;
-            includeAppender = new IncludeAppender(NavigationReader.GetNavigationProperties(dbContext));
+            includeAppender = new IncludeAppender(NavigationReader.GetNavigationProperties(model));
         }
 
         IncludeAppender includeAppender;

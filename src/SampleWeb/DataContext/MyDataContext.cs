@@ -6,6 +6,9 @@ public class MyDataContext :
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Company> Companies { get; set; }
 
+    public MyDataContext()
+    {
+    }
     public MyDataContext(DbContextOptions options) :
         base(options)
     {

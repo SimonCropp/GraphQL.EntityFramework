@@ -1,9 +1,20 @@
 ﻿using EfCore.InMemoryHelpers;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 // InMemory is used to make the sample simpler.
 // Replace with a real DataContext
 static class DataContextBuilder
 {
+    static DataContextBuilder()
+    {
+        using (var myDataContext = InMemoryContextBuilder.Build<MyDataContext>())
+        {
+            Model = myDataContext.Model;
+        }
+    }
+
+    public static IModel Model;
+
     public static MyDataContext BuildDataContext()
     {
         var company1 = new Company

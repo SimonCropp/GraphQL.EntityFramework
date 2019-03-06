@@ -16,10 +16,7 @@ public class Startup
     {
         services.AddScoped(provider => DataContextBuilder.BuildDataContext());
 
-        using (var myDataContext = DataContextBuilder.BuildDataContext())
-        {
-            EfGraphQLConventions.RegisterInContainer(services, myDataContext);
-        }
+        EfGraphQLConventions.RegisterInContainer(services, DataContextBuilder.Model);
 
         foreach (var type in GetGraphQlTypes())
         {

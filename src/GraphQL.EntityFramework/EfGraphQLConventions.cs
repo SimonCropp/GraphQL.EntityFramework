@@ -1,16 +1,16 @@
 ﻿using System;
 using GraphQL.Types.Relay;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphQL.EntityFramework
 {
     public static class EfGraphQLConventions
     {
-        public static void RegisterInContainer(Action<Type, object> register, DbContext context, GlobalFilters filters = null)
+        public static void RegisterInContainer(Action<Type, object> register, IModel model, GlobalFilters filters = null)
         {
             Guard.AgainstNull(nameof(register), register);
-            Guard.AgainstNull(nameof(context), context);
+            Guard.AgainstNull(nameof(model), model);
             Scalars.RegisterInContainer(register);
             ArgumentGraphs.RegisterInContainer(register);
 
@@ -19,18 +19,18 @@ namespace GraphQL.EntityFramework
                 filters = new GlobalFilters();
             }
 
-            var service = new EfGraphQLService(context, filters);
+            var service = new EfGraphQLService(model, filters);
             register(typeof(IEfGraphQLService), service);
         }
 
-        public static void RegisterInContainer(IServiceCollection services, DbContext context, GlobalFilters filters = null)
+        public static void RegisterInContainer(IServiceCollection services, IModel model, GlobalFilters filters = null)
         {
             Guard.AgainstNull(nameof(services), services);
-            Guard.AgainstNull(nameof(context), context);
+            Guard.AgainstNull(nameof(model), model);
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();
-            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, context, filters);
+            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, model, filters);
         }
 
         public static void RegisterConnectionTypesInContainer(Action<Type> register)
