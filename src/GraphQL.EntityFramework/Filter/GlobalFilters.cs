@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
@@ -11,16 +9,32 @@ namespace GraphQL.EntityFramework
     public class GlobalFilters
     {
         public delegate bool Filter<in T>(object userContext, T input);
+        public delegate Task<bool> AsyncFilter<in T>(object userContext, T input);
 
-        public void Add<T>(Filter<T> filter)
             #endregion
+        public void Add<T>(Filter<T> filter)
         {
             Guard.AgainstNull(nameof(filter), filter);
             funcs[typeof(T)] = (context, item) =>
             {
                 try
                 {
-                    return filter(context, (T) item);
+                    return Task.FromResult(filter(context, (T) item));
+                }
+                catch (Exception exception)
+                {
+                    throw new Exception($"Failed to execute filter. T: {typeof(T)}.", exception);
+                }
+            };
+        }
+        public void Add<T>(AsyncFilter<T> filter)
+        {
+            Guard.AgainstNull(nameof(filter), filter);
+            funcs[typeof(T)] = async (context, item) =>
+            {
+                try
+                {
+                    return await filter(context, (T) item).ConfigureAwait(false);
                 }
                 catch (Exception exception)
                 {
@@ -29,52 +43,78 @@ namespace GraphQL.EntityFramework
             };
         }
 
-        Dictionary<Type, Func<object, object, bool>> funcs = new Dictionary<Type, Func<object, object, bool>>();
+        Dictionary<Type, Func<object, object, Task<bool>>> funcs = new Dictionary<Type, Func<object, object, Task<bool>>>();
 
-        internal async Task<List<T>> TryApplyFilter<T>(IQueryable<T> input, object userContext, CancellationToken token)
-        {
-            if (funcs.Count == 0)
-            {
-                return null;
-            }
+        //internal async Task<List<T>> TryApplyFilter<T>(IQueryable<T> input, object userContext, CancellationToken token)
+        //{
+        //    if (funcs.Count == 0)
+        //    {
+        //        return null;
+        //    }
 
-            var filters = FindFilters<T>().ToList();
-            if (filters.Count == 0)
-            {
-                return null;
-            }
+        //    var filters = FindFilters<T>().ToList();
+        //    if (filters.Count == 0)
+        //    {
+        //        return null;
+        //    }
 
-            var list = await input.ToListAsync(token).ConfigureAwait(false);
-            return list.Where(item =>
-                {
-                    if (item == null)
-                    {
-                        return false;
-                    }
+        //    var list = await input.ToListAsync(token).ConfigureAwait(false);
+        //    return list.Where(item =>
+        //        {
+        //            if (item == null)
+        //            {
+        //                return false;
+        //            }
 
-                    return filters.All(func => func(userContext, item));
-                })
-                .ToList();
-        }
+        //            return filters.All(func => func(userContext, item));
+        //        })
+        //        .ToList();
+        //}
 
-        internal IEnumerable<T> ApplyFilter<T>(IEnumerable<T> result, object userContext)
+        internal async Task<IEnumerable<T>> ApplyFilter<T>(IEnumerable<T> result, object userContext)
         {
             if (funcs.Count == 0)
             {
                 return result;
             }
-            var filters = FindFilters<T>();
-            return result.Where(item =>
+
+            var filters = FindFilters<T>().ToList();
+            if (filters.Count == 0)
             {
-                if (item == null)
+                return result;
+            }
+
+            var list = new List<T>();
+            foreach (var item in result)
+            {
+                if (await ShouldInclude(userContext, item, filters).ConfigureAwait(false))
+                {
+                    list.Add(item);
+                }
+            }
+
+            return list;
+        }
+
+        static async Task<bool> ShouldInclude<T>(object userContext, T item, List<Func<object, T, Task<bool>>> filters)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+
+            foreach (var func in filters)
+            {
+                if (!await func(userContext, item).ConfigureAwait(false))
                 {
                     return false;
                 }
-                return filters.All(func => func(userContext, item));
-            });
+            }
+
+            return true;
         }
 
-        internal bool ShouldInclude<T>(object userContext, T item)
+        internal async Task<bool> ShouldInclude<T>(object userContext, T item)
         {
             if (item == null)
             {
@@ -85,10 +125,19 @@ namespace GraphQL.EntityFramework
             {
                 return true;
             }
-            return FindFilters<T>().All(func => func(userContext, item));
+
+            foreach (var func in FindFilters<T>())
+            {
+                if (!await func(userContext, item).ConfigureAwait(false))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
-        IEnumerable<Func<object, T, bool>> FindFilters<T>()
+        IEnumerable<Func<object, T, Task<bool>>> FindFilters<T>()
         {
             var type = typeof(T);
             foreach (var pair in funcs.Where(x => x.Key.IsAssignableFrom(type)))

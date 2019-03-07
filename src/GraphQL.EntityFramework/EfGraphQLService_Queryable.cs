@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -125,14 +124,17 @@ namespace GraphQL.EntityFramework
                 Name = name,
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
-                Resolver = new FuncFieldResolver<TSource, Task<IEnumerable<TReturn>>>(async context =>
-                {
-                    var returnTypes = resolve(context);
-                    var withIncludes = includeAppender.AddIncludes(returnTypes, context);
-                    var withArguments = withIncludes.ApplyGraphQlArguments(context);
-                    var list = await withArguments.ToListAsync(context.CancellationToken).ConfigureAwait(false);
-                    return filters.ApplyFilter(list, context.UserContext);
-                })
+                Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
+                    async context =>
+                    {
+                        var returnTypes = resolve(context);
+                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        var withArguments = withIncludes.ApplyGraphQlArguments(context);
+                        var list = await withArguments.ToListAsync(context.CancellationToken)
+                            .ConfigureAwait(false);
+                        return await filters.ApplyFilter(list, context.UserContext)
+                            .ConfigureAwait(false);
+                    })
             };
         }
     }

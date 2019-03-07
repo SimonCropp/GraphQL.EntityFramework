@@ -104,12 +104,13 @@ namespace GraphQL.EntityFramework
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
-                Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(context =>
-                {
-                    var result = resolve(context);
-                    result = result.ApplyGraphQlArguments(context);
-                    return filters.ApplyFilter(result, context.UserContext);
-                })
+                Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
+                    async context =>
+                    {
+                        var result = resolve(context);
+                        result = result.ApplyGraphQlArguments(context);
+                        return await filters.ApplyFilter(result, context.UserContext).ConfigureAwait(false);
+                    })
             };
         }
     }

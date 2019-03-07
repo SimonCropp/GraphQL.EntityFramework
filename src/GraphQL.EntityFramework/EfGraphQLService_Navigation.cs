@@ -80,10 +80,10 @@ namespace GraphQL.EntityFramework
                 Type = graphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
-                Resolver = new FuncFieldResolver<TSource, TReturn>(context =>
+                Resolver = new AsyncFieldResolver<TSource, TReturn>(async context =>
                 {
                     var result = resolve(context);
-                    if (filters.ShouldInclude(context.UserContext, result))
+                    if (await filters.ShouldInclude(context.UserContext, result).ConfigureAwait(false))
                     {
                         return result;
                     }

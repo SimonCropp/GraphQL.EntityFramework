@@ -31,7 +31,7 @@ public class MyDataContext :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L19-L42)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L17-L40)</sup>
 <!-- endsnippet -->
 
 Enabling is then done via registering in a container.
@@ -51,7 +51,7 @@ Usage:
 ```cs
 EfGraphQLConventions.RegisterInContainer(serviceCollection, MyDataContext.DataModel);
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L12-L16)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L10-L14)</sup>
 <!-- endsnippet -->
 
 Or via an Action.
