@@ -23,7 +23,7 @@ static class QueryExecutor
                 Inputs = inputs
             };
 
-            var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions).ConfigureAwait(false);
+            var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
             return executionResult.Data;
         }
     }

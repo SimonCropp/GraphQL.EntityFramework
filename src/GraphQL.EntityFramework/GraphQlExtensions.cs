@@ -13,7 +13,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(documentExecuter), documentExecuter);
             Guard.AgainstNull(nameof(executionOptions), executionOptions);
             var executionResult = await documentExecuter.ExecuteAsync(executionOptions)
-                .ConfigureAwait(false);
+                ;
 
             var errors = executionResult.Errors;
             if (errors != null && errors.Count > 0)

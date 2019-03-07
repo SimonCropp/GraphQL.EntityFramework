@@ -129,7 +129,7 @@ namespace GraphQL.EntityFramework
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
                         var withArguments = withIncludes.ApplyGraphQlArguments(context);
 
-                        var single = await withArguments.SingleOrDefaultAsync(context.CancellationToken).ConfigureAwait(false);
+                        var single = await withArguments.SingleOrDefaultAsync(context.CancellationToken);
                         if (await filters.ShouldInclude(context.UserContext, single))
                         {
                             return single;

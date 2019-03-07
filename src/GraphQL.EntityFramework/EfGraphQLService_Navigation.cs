@@ -83,7 +83,7 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(async context =>
                 {
                     var result = resolve(context);
-                    if (await filters.ShouldInclude(context.UserContext, result).ConfigureAwait(false))
+                    if (await filters.ShouldInclude(context.UserContext, result))
                     {
                         return result;
                     }

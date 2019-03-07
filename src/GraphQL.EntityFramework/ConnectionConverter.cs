@@ -95,14 +95,14 @@ static class ConnectionConverter
         GlobalFilters filters,
         CancellationToken cancellation)
     {
-        var count = await list.CountAsync(cancellation).ConfigureAwait(false);
+        var count = await list.CountAsync(cancellation);
         cancellation.ThrowIfCancellationRequested();
         if (last == null)
         {
-            return await First(list, first.GetValueOrDefault(0), after, before, count, context, filters, cancellation).ConfigureAwait(false);
+            return await First(list, first.GetValueOrDefault(0), after, before, count, context, filters, cancellation);
         }
 
-        return await Last(list, last.Value, after, before, count, context, filters, cancellation).ConfigureAwait(false);
+        return await Last(list, last.Value, after, before, count, context, filters, cancellation);
     }
 
     static Task<Connection<TItem>> First<TSource, TItem>(
@@ -169,8 +169,8 @@ static class ConnectionConverter
         }
         IEnumerable<TItem> result = await page
             .ToListAsync(cancellation)
-            .ConfigureAwait(false);
-        result = await filters.ApplyFilter(result, context.UserContext).ConfigureAwait(false);
+            ;
+        result = await filters.ApplyFilter(result, context.UserContext);
 
         cancellation.ThrowIfCancellationRequested();
         return Build(skip, take, count, result);

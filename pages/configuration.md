@@ -224,7 +224,7 @@ public class GraphQlController :
         };
 
         var result = await executer.ExecuteAsync(executionOptions)
-            .ConfigureAwait(false);
+            ;
 
         if (result.Errors?.Count > 0)
         {
@@ -502,7 +502,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(this IDocumentEx
     Guard.AgainstNull(nameof(documentExecuter), documentExecuter);
     Guard.AgainstNull(nameof(executionOptions), executionOptions);
     var executionResult = await documentExecuter.ExecuteAsync(executionOptions)
-        .ConfigureAwait(false);
+        ;
 
     var errors = executionResult.Errors;
     if (errors != null && errors.Count > 0)

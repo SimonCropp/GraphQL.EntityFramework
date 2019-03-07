@@ -109,7 +109,7 @@ namespace GraphQL.EntityFramework
                     {
                         var result = resolve(context);
                         result = result.ApplyGraphQlArguments(context);
-                        return await filters.ApplyFilter(result, context.UserContext).ConfigureAwait(false);
+                        return await filters.ApplyFilter(result, context.UserContext);
                     })
             };
         }

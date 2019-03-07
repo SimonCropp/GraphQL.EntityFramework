@@ -61,7 +61,7 @@ namespace GraphQL.EntityFramework
             {
                 var enumerable = resolve(context);
                 enumerable = enumerable.ApplyGraphQlArguments(context);
-                enumerable = await filters.ApplyFilter(enumerable,context.UserContext).ConfigureAwait(false);
+                enumerable = await filters.ApplyFilter(enumerable,context.UserContext);
                 var page = enumerable.ToList();
 
                 return ConnectionConverter.ApplyConnectionContext(

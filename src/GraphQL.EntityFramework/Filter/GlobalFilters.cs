@@ -34,7 +34,7 @@ namespace GraphQL.EntityFramework
             {
                 try
                 {
-                    return await filter(context, (T) item).ConfigureAwait(false);
+                    return await filter(context, (T) item);
                 }
                 catch (Exception exception)
                 {
@@ -58,7 +58,7 @@ namespace GraphQL.EntityFramework
         //        return null;
         //    }
 
-        //    var list = await input.ToListAsync(token).ConfigureAwait(false);
+        //    var list = await input.ToListAsync(token);
         //    return list.Where(item =>
         //        {
         //            if (item == null)
@@ -87,7 +87,7 @@ namespace GraphQL.EntityFramework
             var list = new List<T>();
             foreach (var item in result)
             {
-                if (await ShouldInclude(userContext, item, filters).ConfigureAwait(false))
+                if (await ShouldInclude(userContext, item, filters))
                 {
                     list.Add(item);
                 }
@@ -105,7 +105,7 @@ namespace GraphQL.EntityFramework
 
             foreach (var func in filters)
             {
-                if (!await func(userContext, item).ConfigureAwait(false))
+                if (!await func(userContext, item))
                 {
                     return false;
                 }
@@ -128,7 +128,7 @@ namespace GraphQL.EntityFramework
 
             foreach (var func in FindFilters<T>())
             {
-                if (!await func(userContext, item).ConfigureAwait(false))
+                if (!await func(userContext, item))
                 {
                     return false;
                 }

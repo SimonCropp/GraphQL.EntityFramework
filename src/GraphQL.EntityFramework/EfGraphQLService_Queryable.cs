@@ -131,9 +131,9 @@ namespace GraphQL.EntityFramework
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
                         var withArguments = withIncludes.ApplyGraphQlArguments(context);
                         var list = await withArguments.ToListAsync(context.CancellationToken)
-                            .ConfigureAwait(false);
+                            ;
                         return await filters.ApplyFilter(list, context.UserContext)
-                            .ConfigureAwait(false);
+                            ;
                     })
             };
         }
