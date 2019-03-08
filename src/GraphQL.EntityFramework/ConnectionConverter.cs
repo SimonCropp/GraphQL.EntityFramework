@@ -167,15 +167,12 @@ static class ConnectionConverter
         {
             page = page.Reverse();
         }
-        IEnumerable<TItem> result = await page
-            .ToListAsync(cancellation)
-            ;
+        IEnumerable<TItem> result = await page.ToListAsync(cancellation);
         result = await filters.ApplyFilter(result, context.UserContext);
 
         cancellation.ThrowIfCancellationRequested();
         return Build(skip, take, count, result);
     }
-
 
     static Connection<T> Build<T>(int skip, int take, int count, IEnumerable<T> result)
     {

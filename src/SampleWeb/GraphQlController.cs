@@ -72,8 +72,7 @@ public class GraphQlController :
 #endif
         };
 
-        var result = await executer.ExecuteAsync(executionOptions)
-            ;
+        var result = await executer.ExecuteAsync(executionOptions);
 
         if (result.Errors?.Count > 0)
         {
