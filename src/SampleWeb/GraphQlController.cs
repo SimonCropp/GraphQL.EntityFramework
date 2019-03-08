@@ -58,7 +58,7 @@ public class GraphQlController :
         JObject variables,
         CancellationToken cancellation)
     {
-        var executionOptions = new ExecutionOptions
+        var options = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
@@ -72,7 +72,7 @@ public class GraphQlController :
 #endif
         };
 
-        var result = await executer.ExecuteAsync(executionOptions);
+        var result = await executer.ExecuteAsync(options);
 
         if (result.Errors?.Count > 0)
         {
