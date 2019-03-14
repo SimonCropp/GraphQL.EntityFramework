@@ -1,9 +1,8 @@
 <!--
 This file was generate by MarkdownSnippets.
-Source File: \pages\configuration.source.md
+Source File: /pages/configuration.source.md
 To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/MarkdownSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/MarkdownSnippets#running-as-a-unit-test).
 -->
-
 # Configuration
 
 Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`. It can be extracted from a DbContext instance via the `DbContext.Model` property. Unfortunately EntityFramework conflates configuration with runtime in its API. So `DbContext` is the main API used at runtime, but it also contains the configuration API via the `OnModelCreating` method. As such a DbContext needs to be instantiated and disposed for the purposes of IModel construction. One possible approach is via a static field on the DbContext.
@@ -209,7 +208,7 @@ public class GraphQlController :
         JObject variables,
         CancellationToken cancellation)
     {
-        var executionOptions = new ExecutionOptions
+        var options = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
@@ -223,8 +222,7 @@ public class GraphQlController :
 #endif
         };
 
-        var result = await executer.ExecuteAsync(executionOptions)
-            ;
+        var result = await executer.ExecuteAsync(options);
 
         if (result.Errors?.Count > 0)
         {
@@ -252,7 +250,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L11-L103)</sup>
+<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L11-L102)</sup>
 <!-- endsnippet -->
 
 Note that the instance of the DataContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
@@ -275,7 +273,7 @@ public class Query :
                 return dataContext.Companies;
             });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L5-L21)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L6-L22)</sup>
 <!-- endsnippet -->
 
 
@@ -394,6 +392,33 @@ query {
     }
 
     [Fact]
+    public async Task Get_employee_summary()
+    {
+        var query = @"
+query {
+  employeeSummary {
+    companyId
+    averageAge
+  }
+}";
+        var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        var result = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+        var expected = JObject.FromObject(new
+        {
+            data = new
+            {
+                employeeSummary = new[] {
+                  new { companyId = 1, averageAge = 28.0 },
+                  new { companyId = 4, averageAge = 34.0 }
+                }
+            }
+        });
+        Assert.Equal(expected.ToString(), result.ToString());
+    }
+
+    [Fact]
     public async Task Post()
     {
         var query = @"
@@ -482,7 +507,7 @@ subscription {
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L12-L211)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L12-L238)</sup>
 <!-- endsnippet -->
 
 
@@ -501,8 +526,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(this IDocumentEx
 {
     Guard.AgainstNull(nameof(documentExecuter), documentExecuter);
     Guard.AgainstNull(nameof(executionOptions), executionOptions);
-    var executionResult = await documentExecuter.ExecuteAsync(executionOptions)
-        ;
+    var executionResult = await documentExecuter.ExecuteAsync(executionOptions);
 
     var errors = executionResult.Errors;
     if (errors != null && errors.Count > 0)
@@ -518,5 +542,5 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(this IDocumentEx
     return executionResult;
 }
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L9-L32)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L9-L31)</sup>
 <!-- endsnippet -->
