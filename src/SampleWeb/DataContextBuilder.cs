@@ -26,13 +26,15 @@ static class DataContextBuilder
         {
             Id = 2,
             CompanyId = company1.Id,
-            Content = "Employee1"
+            Content = "Employee1",
+            Age = 25
         };
         var employee2 = new Employee
         {
             Id = 3,
             CompanyId = company1.Id,
-            Content = "Employee2"
+            Content = "Employee2",
+            Age = 31 
         };
         var company2 = new Company
         {
@@ -43,7 +45,8 @@ static class DataContextBuilder
         {
             Id = 5,
             CompanyId = company2.Id,
-            Content = "Employee4"
+            Content = "Employee4",
+            Age = 34 
         };
         var company3 = new Company
         {

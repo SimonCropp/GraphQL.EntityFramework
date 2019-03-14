@@ -120,6 +120,33 @@ query {
     }
 
     [Fact]
+    public async Task Get_employee_summary()
+    {
+        var query = @"
+query {
+  employeeSummary {
+    companyId
+    averageAge
+  }
+}";
+        var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        var result = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+        var expected = JObject.FromObject(new
+        {
+            data = new
+            {
+                employeeSummary = new[] {
+                  new { companyId = 1, averageAge = 28.0 },
+                  new { companyId = 4, averageAge = 34.0 }
+                }
+            }
+        });
+        Assert.Equal(expected.ToString(), result.ToString());
+    }
+
+    [Fact]
     public async Task Post()
     {
         var query = @"
