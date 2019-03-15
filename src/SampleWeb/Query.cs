@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
 
@@ -59,6 +60,36 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
+            });
+        
+        Field<ListGraphType<EmployeeSummaryGraph>>(
+            name: "employeeSummary",
+            arguments: new QueryArguments(
+                new QueryArgument<ListGraphType<WhereExpressionGraph>> { Name = "where" }
+            ),
+            resolve: context =>
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                IQueryable<Employee> query = dataContext.Employees;
+
+                if (context.HasArgument("where"))
+                {
+                    var whereExpressions = context.GetArgument<List<WhereExpression>>("where");
+                    foreach (var whereExpression in whereExpressions)
+                    {
+                        var predicate = ExpressionBuilder<Employee>.BuildPredicate(whereExpression);
+                        query = query.Where(predicate);
+                    }
+                }
+
+                var results = from q in query
+                              group q by new { q.CompanyId } into g
+                              select new EmployeeSummary {
+                                CompanyId = g.Key.CompanyId,
+                                AverageAge = g.Average(x => x.Age),
+                              };
+
+                return results;
             });
     }
 }

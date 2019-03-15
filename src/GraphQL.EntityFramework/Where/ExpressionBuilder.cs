@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using GraphQL.EntityFramework;
 
-static class ExpressionBuilder<T>
+public static class ExpressionBuilder<T>
 {
     public static Expression<Func<T, bool>> BuildPredicate(WhereExpression where)
     {

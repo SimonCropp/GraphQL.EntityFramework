@@ -1,6 +1,6 @@
 ﻿using GraphQL.Types;
 
-class WhereExpressionGraph :
+public class WhereExpressionGraph :
     InputObjectGraphType<WhereExpression>
 {
     public WhereExpressionGraph()
