@@ -3,7 +3,8 @@ using GraphQL.Language.AST;
 
 namespace GraphQL.EntityFramework
 {
-    public class EfDocumentExecuter : DocumentExecuter
+    public class EfDocumentExecuter :
+        DocumentExecuter
     {
         protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
         {

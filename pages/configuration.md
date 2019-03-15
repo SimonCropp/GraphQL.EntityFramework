@@ -80,7 +80,8 @@ using GraphQL.Language.AST;
 
 namespace GraphQL.EntityFramework
 {
-    public class EfDocumentExecuter : DocumentExecuter
+    public class EfDocumentExecuter :
+        DocumentExecuter
     {
         protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
         {
@@ -94,7 +95,7 @@ namespace GraphQL.EntityFramework
     }
 }
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L18)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L19)</sup>
 <!-- endsnippet -->
 
 

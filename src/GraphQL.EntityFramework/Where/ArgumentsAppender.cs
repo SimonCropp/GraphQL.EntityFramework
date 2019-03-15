@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GraphQL.EntityFramework;
 using GraphQL.Types;
 
 static class ArgumentAppender

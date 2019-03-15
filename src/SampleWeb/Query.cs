@@ -20,11 +20,12 @@ public class Query :
             });
 
         #endregion
+
         AddSingleField<CompanyGraph, Company>(
             name: "company",
             resolve: context =>
             {
-                var dataContext = (MyDataContext)context.UserContext;
+                var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
             });
 
@@ -46,11 +47,11 @@ public class Query :
 
         AddQueryField<EmployeeGraph, Employee>(
             name: "employeesByArgument",
-            arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "content" }),
+            arguments: new QueryArguments(new QueryArgument<StringGraphType> {Name = "content"}),
             resolve: context =>
             {
                 var content = context.GetArgument<string>("content");
-                var dataContext = (MyDataContext)context.UserContext;
+                var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees.Where(x => x.Content == content);
             });
 
@@ -61,11 +62,11 @@ public class Query :
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
             });
-        
+        #region ManuallyApplyWhere
         Field<ListGraphType<EmployeeSummaryGraph>>(
             name: "employeeSummary",
             arguments: new QueryArguments(
-                new QueryArgument<ListGraphType<WhereExpressionGraph>> { Name = "where" }
+                new QueryArgument<ListGraphType<WhereExpressionGraph>> {Name = "where"}
             ),
             resolve: context =>
             {
@@ -82,14 +83,15 @@ public class Query :
                     }
                 }
 
-                var results = from q in query
-                              group q by new { q.CompanyId } into g
-                              select new EmployeeSummary {
-                                CompanyId = g.Key.CompanyId,
-                                AverageAge = g.Average(x => x.Age),
-                              };
-
-                return results;
+                return from q in query
+                    group q by new {q.CompanyId}
+                    into g
+                    select new EmployeeSummary
+                    {
+                        CompanyId = g.Key.CompanyId,
+                        AverageAge = g.Average(x => x.Age),
+                    };
             });
+        #endregion
     }
 }

@@ -1,13 +1,16 @@
 ﻿using GraphQL.Types;
 
-public class WhereExpressionGraph :
-    InputObjectGraphType<WhereExpression>
+namespace GraphQL.EntityFramework
 {
-    public WhereExpressionGraph()
+    public class WhereExpressionGraph :
+        InputObjectGraphType<WhereExpression>
     {
-        Field(x => x.Path);
-        Field(x => x.Comparison, true);
-        Field(x => x.Case, true);
-        Field(x => x.Value, true);
+        public WhereExpressionGraph()
+        {
+            Field(x => x.Path);
+            Field(x => x.Comparison, true);
+            Field(x => x.Case, true);
+            Field(x => x.Value, true);
+        }
     }
 }
