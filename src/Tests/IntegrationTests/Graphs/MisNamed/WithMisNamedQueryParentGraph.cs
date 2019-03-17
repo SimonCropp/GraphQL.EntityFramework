@@ -8,8 +8,7 @@ public class WithMisNamedQueryParentGraph :
         base(graphQlService)
     {
         Field(x => x.Id);
-        AddQueryField(
-            typeof(WithMisNamedQueryChildGraph),
+        AddQueryField<WithMisNamedQueryChildGraph, WithMisNamedQueryChildEntity>(
             name: "misNamedChildren",
             resolve: context =>
             {

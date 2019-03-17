@@ -7,8 +7,7 @@ public class Level2Graph :
         base(graphQlService)
     {
         Field(x => x.Id);
-        AddNavigationField(
-            typeof(Level3Graph),
+        AddNavigationField<Level3Graph, Level3Entity>(
             name: "level3Entity",
             resolve: context => context.Source.Level3Entity);
     }

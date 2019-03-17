@@ -8,8 +8,7 @@ public class WithManyChildrenGraph :
         base(graphQlService)
     {
         Field(x => x.Id);
-        AddNavigationField(
-            typeof(Child1Graph),
+        AddNavigationField<Child1Graph, Child1Entity>(
             name: "child1",
             includeNames: new []{ "Child2", "Child1" },
             resolve: context =>

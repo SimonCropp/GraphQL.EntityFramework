@@ -101,8 +101,7 @@ public class CompanyGraph :
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        AddNavigationField<Employee>(
-            typeof(EmployeeGraph),
+        AddNavigationField<EmployeeGraph, Employee>(
             name: "employees",
             resolve: context => context.Source.Employees);
         AddNavigationConnectionField<EmployeeGraph, Employee>(
@@ -112,7 +111,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/TypedGraph.cs#L7-L28)</sup>
+<sup>[snippet source](/src/Snippets/TypedGraph.cs#L7-L27)</sup>
 <!-- endsnippet -->
 
 

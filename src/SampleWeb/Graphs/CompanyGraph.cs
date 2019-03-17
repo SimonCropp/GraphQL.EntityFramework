@@ -8,8 +8,7 @@ public class CompanyGraph :
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        AddNavigationField(
-            typeof(EmployeeGraph),
+        AddNavigationField<EmployeeGraph, Employee>(
             name: "employees",
             resolve: context => context.Source.Employees);
         AddNavigationConnectionField<EmployeeGraph, Employee>(

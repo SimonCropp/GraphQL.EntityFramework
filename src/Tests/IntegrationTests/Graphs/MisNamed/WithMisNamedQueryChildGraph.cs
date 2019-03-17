@@ -7,8 +7,7 @@ public class WithMisNamedQueryChildGraph :
         base(graphQlService)
     {
         Field(x => x.Id);
-        AddNavigationField(
-            typeof(WithMisNamedQueryParentGraph),
+        AddNavigationField<WithMisNamedQueryParentGraph, WithMisNamedQueryParentEntity>(
             name: "parent",
             resolve: context => context.Source.Parent);
     }

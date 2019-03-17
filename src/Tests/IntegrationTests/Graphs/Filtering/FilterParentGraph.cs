@@ -8,8 +8,7 @@ public class FilterParentGraph :
     {
         Field(x => x.Id);
         Field(x => x.Property);
-        AddNavigationField<FilterChildEntity>(
-            typeof(FilterChildGraph),
+        AddNavigationField<FilterChildGraph, FilterChildEntity>(
             name: "children",
             resolve: context => context.Source.Children);
         AddNavigationConnectionField<FilterChildGraph, FilterChildEntity>(
