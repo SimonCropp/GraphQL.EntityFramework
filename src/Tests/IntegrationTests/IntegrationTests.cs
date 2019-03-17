@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
+using GraphQL.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,20 @@ public partial class IntegrationTests :
 {
     static IntegrationTests()
     {
+        GraphTypeTypeRegistry.Register<FilterChildEntity, FilterChildGraph>();
+        GraphTypeTypeRegistry.Register<FilterParentEntity, FilterParentGraph>();
+        GraphTypeTypeRegistry.Register<WithManyChildrenEntity, WithManyChildrenGraph>();
+        GraphTypeTypeRegistry.Register<CustomTypeEntity, CustomTypeGraph>();
+        GraphTypeTypeRegistry.Register<Child1Entity, Child1Graph>();
+        GraphTypeTypeRegistry.Register<ChildEntity, ChildGraph>();
+        GraphTypeTypeRegistry.Register<ParentEntity, ParentGraph>();
+        GraphTypeTypeRegistry.Register<Level1Entity, Level1Graph>();
+        GraphTypeTypeRegistry.Register<Level2Entity, Level2Graph>();
+        GraphTypeTypeRegistry.Register<Level3Entity, Level3Graph>();
+        GraphTypeTypeRegistry.Register<WithMisNamedQueryParentEntity, WithMisNamedQueryParentGraph>();
+        GraphTypeTypeRegistry.Register<WithNullableEntity, WithNullableGraph>();
+        GraphTypeTypeRegistry.Register<WithMisNamedQueryChildEntity, WithMisNamedQueryChildGraph>();
+
         using (var dataContext = BuildDataContext())
         {
             dataContext.Database.EnsureCreated();

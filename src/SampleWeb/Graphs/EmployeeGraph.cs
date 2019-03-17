@@ -9,7 +9,8 @@ public class EmployeeGraph :
         Field(x => x.Id);
         Field(x => x.Content);
         Field(x => x.Age);
-        AddNavigationField(name: "company",
-            resolve: context => context.Source.Company, graphType: typeof(CompanyGraph));
+        AddNavigationField(
+            name: "company",
+            resolve: context => context.Source.Company);
     }
 }

@@ -6,6 +6,7 @@ using GraphQL.EntityFramework;
 using GraphQL;
 using GraphQL.Server;
 using GraphQL.Types;
+using GraphQL.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,10 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
+        GraphTypeTypeRegistry.Register<Employee, EmployeeGraph>();
+        GraphTypeTypeRegistry.Register<EmployeeSummary, EmployeeSummaryGraph>();
+        GraphTypeTypeRegistry.Register<Company, CompanyGraph>();
+
         services.AddScoped(provider => DataContextBuilder.BuildDataContext());
 
         EfGraphQLConventions.RegisterInContainer(services, DataContextBuilder.Model);

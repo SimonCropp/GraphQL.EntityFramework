@@ -15,7 +15,7 @@ static class GraphTypeFinder
         {
             return graphType;
         }
-        throw new Exception($"Could not resolve a GraphType for {nameof(TReturn)}. Either pass in a GraphType explicitly or register a GraphType using GraphTypeTypeRegistry.Register<{nameof(TReturn)},MyGraphType>().");
+        throw new Exception($"Could not resolve a GraphType for {typeof(TReturn).FullName}. Either pass in a GraphType explicitly or register a GraphType using GraphTypeTypeRegistry.Register<{typeof(TReturn).FullName},MyGraphType>().");
 
     }
 }

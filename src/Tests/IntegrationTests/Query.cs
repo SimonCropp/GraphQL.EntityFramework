@@ -6,107 +6,117 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField(name: "customType",
+        AddQueryField(
+            name: "customType",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.CustomTypeEntities;
-            }, graphType: typeof(CustomTypeGraph));
+            });
 
-        AddQueryField(name: "skipLevel",
+        AddQueryField(
+            name: "skipLevel",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Level1Entities;
             }, graphType: typeof(SkipLevelGraph));
 
-        AddQueryField(name: "manyChildren",
+        AddQueryField(
+            name: "manyChildren",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.WithManyChildrenEntities;
-            }, graphType: typeof(WithManyChildrenGraph));
+            });
 
-        AddQueryField(name: "level1Entities",
+        AddQueryField(
+            name: "level1Entities",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Level1Entities;
             }, graphType: typeof(Level1Graph));
 
-        efGraphQlService.AddQueryField(this,
+        efGraphQlService.AddQueryField(
+            this,
             name: "withNullableEntities",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.WithNullableEntities;
-            }, graphType: typeof(WithNullableGraph));
+            });
 
-        efGraphQlService.AddQueryField(this,
+        efGraphQlService.AddQueryField(
+            this,
             name: "misNamed",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.WithMisNamedQueryParentEntities;
-            }, graphType: typeof(WithMisNamedQueryParentGraph));
+            });
 
-        efGraphQlService.AddQueryField(this,
+        efGraphQlService.AddQueryField(
+            this,
             name: "parentEntities",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ParentEntities;
-            }, graphType: typeof(ParentGraph));
+            });
 
-        efGraphQlService.AddQueryField(this,
+        efGraphQlService.AddQueryField(
+            this,
             name: "childEntities",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ChildEntities;
-            }, graphType: typeof(ChildGraph));
+            });
 
-        efGraphQlService.AddQueryConnectionField<ParentGraph, ParentEntity>(this,
+        efGraphQlService.AddQueryConnectionField<ParentGraph, ParentEntity>(
+            this,
             name: "parentEntitiesConnection",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ParentEntities;
-            },
-            graphType: typeof(ParentGraph));
+            });
 
-        efGraphQlService.AddQueryConnectionField<ChildGraph, ChildEntity>(this,
+        efGraphQlService.AddQueryConnectionField<ChildGraph, ChildEntity>(
+            this,
             name: "childEntitiesConnection",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ChildEntities;
-            },
-            graphType: typeof(ChildGraph));
+            });
 
-        efGraphQlService.AddQueryField(this,
+        efGraphQlService.AddQueryField(
+            this,
             name: "parentEntitiesFiltered",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.FilterParentEntities;
-            }, graphType: typeof(FilterParentGraph));
+            });
 
-        efGraphQlService.AddQueryConnectionField<FilterParentGraph, FilterParentEntity>(this,
+        efGraphQlService.AddQueryConnectionField<FilterParentGraph, FilterParentEntity>(
+            this,
             name: "parentEntitiesConnectionFiltered",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.FilterParentEntities;
-            },
-            graphType: typeof(FilterParentGraph));
+            });
 
-        efGraphQlService.AddSingleField(this,
+        efGraphQlService.AddSingleField(
+            this,
             name: "parentEntity",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ParentEntities;
-            }, graphType: typeof(ParentGraph));
+            });
     }
 }

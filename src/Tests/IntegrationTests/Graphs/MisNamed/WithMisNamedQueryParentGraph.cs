@@ -8,12 +8,14 @@ public class WithMisNamedQueryParentGraph :
         base(graphQlService)
     {
         Field(x => x.Id);
-        AddQueryField(name: "misNamedChildren",
+        AddQueryField(
+            name: "misNamedChildren",
             resolve: context =>
             {
                 var dataContext = (MyDataContext)context.UserContext;
                 var parentId = context.Source.Id;
-                return dataContext.WithMisNamedQueryChildEntities.Where(x=>x.ParentId == parentId);
-            }, graphType: typeof(WithMisNamedQueryChildGraph));
+                return dataContext.WithMisNamedQueryChildEntities
+                    .Where(x=>x.ParentId == parentId);
+            });
     }
 }

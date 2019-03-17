@@ -11,20 +11,22 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField(name: "companies",
+        AddQueryField(
+            name: "companies",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
-            }, graphType: typeof(CompanyGraph));
+            });
 
         #endregion
 
-        AddSingleField(resolve: context =>
+        AddSingleField(
+            resolve: context =>
         {
             var dataContext = (MyDataContext) context.UserContext;
             return dataContext.Companies;
-        }, graphType: typeof(CompanyGraph), name: "company");
+        }, name: "company");
 
         AddQueryConnectionField(
             name: "companiesConnection",
@@ -32,23 +34,25 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
-            },
-            graphType: typeof(CompanyGraph));
+            });
 
-        AddQueryField(name: "employees",
+        AddQueryField(
+            name: "employees",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
-            }, graphType: typeof(EmployeeGraph));
+            });
 
-        AddQueryField(name: "employeesByArgument",
+        AddQueryField(
+            name: "employeesByArgument",
             resolve: context =>
             {
                 var content = context.GetArgument<string>("content");
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees.Where(x => x.Content == content);
-            }, graphType: typeof(EmployeeGraph), arguments: new QueryArguments(new QueryArgument<StringGraphType> {Name = "content"}));
+            },
+            arguments: new QueryArguments(new QueryArgument<StringGraphType> {Name = "content"}));
 
         AddQueryConnectionField(
             name: "employeesConnection",
@@ -56,8 +60,7 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
-            },
-            graphType: typeof(EmployeeGraph));
+            });
 
         #region ManuallyApplyWhere
 

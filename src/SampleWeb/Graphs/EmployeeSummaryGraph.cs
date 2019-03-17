@@ -10,9 +10,3 @@ public class EmployeeSummaryGraph :
         Field(x => x.AverageAge);
     }
 }
-
-public class EmployeeSummary
-{
-    public int CompanyId { get; set; }
-    public double AverageAge { get; set; }
-}
