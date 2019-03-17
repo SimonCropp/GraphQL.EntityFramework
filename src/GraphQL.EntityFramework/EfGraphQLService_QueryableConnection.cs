@@ -63,8 +63,6 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNegative(nameof(pageSize), pageSize);
             var builder = ConnectionBuilder.Create<TGraph, TSource>();
             builder.PageSize(pageSize);
-            //todo:
-            //builder.Bidirectional();
             builder.Name(name);
             builder.Resolve(
                 context =>
