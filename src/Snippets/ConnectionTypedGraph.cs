@@ -14,8 +14,7 @@ class ConnectionTypedGraph
         {
             AddNavigationConnectionField(
                 name: "employees",
-                resolve: context => context.Source.Employees,
-                typeof(EmployeeGraph));
+                resolve: context => context.Source.Employees);
         }
     }
 

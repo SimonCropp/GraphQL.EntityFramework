@@ -4,25 +4,30 @@ using GraphQL.EntityFramework;
 class RootQuery
 {
     #region rootQuery
+
     public class Query :
         EfObjectGraphType
     {
         public Query(IEfGraphQLService graphQlService) :
             base(graphQlService)
         {
-            AddSingleField(resolve: context =>
-            {
-                var dataContext = (DataContext) context.UserContext;
-                return dataContext.Companies;
-            }, graphType: typeof(CompanyGraph), name: "company");
-            AddQueryField(name: "companies",
+            AddSingleField(
                 resolve: context =>
                 {
                     var dataContext = (DataContext) context.UserContext;
                     return dataContext.Companies;
-                }, graphType: typeof(CompanyGraph));
+                },
+                name: "company");
+            AddQueryField(
+                name: "companies",
+                resolve: context =>
+                {
+                    var dataContext = (DataContext) context.UserContext;
+                    return dataContext.Companies;
+                });
         }
     }
+
     #endregion
 
     class DataContext

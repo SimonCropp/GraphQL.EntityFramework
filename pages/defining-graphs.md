@@ -62,21 +62,24 @@ public class Query :
     public Query(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
-        AddSingleField(resolve: context =>
-        {
-            var dataContext = (DataContext) context.UserContext;
-            return dataContext.Companies;
-        }, graphType: typeof(CompanyGraph), name: "company");
-        AddQueryField(name: "companies",
+        AddSingleField(
             resolve: context =>
             {
                 var dataContext = (DataContext) context.UserContext;
                 return dataContext.Companies;
-            }, graphType: typeof(CompanyGraph));
+            },
+            name: "company");
+        AddQueryField(
+            name: "companies",
+            resolve: context =>
+            {
+                var dataContext = (DataContext) context.UserContext;
+                return dataContext.Companies;
+            });
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L26)</sup>
+<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L31)</sup>
 <!-- endsnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -96,12 +99,12 @@ public class CompanyGraph :
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        AddNavigationField<Employee>(name: "employees",
-            resolve: context => context.Source.Employees, graphType: typeof(EmployeeGraph));
+        AddNavigationField<Employee>(
+            name: "employees",
+            resolve: context => context.Source.Employees);
         AddNavigationConnectionField(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
-            typeof(EmployeeGraph),
             includeNames: new[] {"Employees"});
     }
 }
@@ -132,12 +135,11 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
-            },
-            graphType: typeof(CompanyGraph));
+            });
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L6-L25)</sup>
+<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L6-L24)</sup>
 <!-- endsnippet -->
 
 
@@ -227,12 +229,11 @@ public class CompanyGraph :
     {
         AddNavigationConnectionField(
             name: "employees",
-            resolve: context => context.Source.Employees,
-            typeof(EmployeeGraph));
+            resolve: context => context.Source.Employees);
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L7-L22)</sup>
+<sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L7-L21)</sup>
 <!-- endsnippet -->
 
 

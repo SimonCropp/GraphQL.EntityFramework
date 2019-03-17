@@ -17,8 +17,7 @@ class ConnectionRootQuery
                 {
                     var dataContext = (MyDataContext) context.UserContext;
                     return dataContext.Companies;
-                },
-                graphType: typeof(CompanyGraph));
+                });
         }
     }
 
