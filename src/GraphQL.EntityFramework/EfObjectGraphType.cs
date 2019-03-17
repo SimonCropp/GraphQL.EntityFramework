@@ -62,16 +62,6 @@ namespace GraphQL.EntityFramework
             return efGraphQlService.AddQueryConnectionField<TGraph, TReturn>(this, name, resolve, arguments, pageSize);
         }
 
-        protected FieldType AddQueryField<TGraph, TReturn>(
-            string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>
-            where TReturn : class
-        {
-            return efGraphQlService.AddQueryField(this, name: name, resolve: resolve, graphType: typeof(TGraph), arguments: arguments);
-        }
-
         protected FieldType AddQueryField<TReturn>(
             Type graphType,
             string name,
@@ -80,15 +70,6 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             return efGraphQlService.AddQueryField(this, graphType, name, resolve, arguments);
-        }
-
-        protected FieldType AddSingleField<TGraph, TReturn>(
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            string name = nameof(TReturn))
-            where TGraph : ObjectGraphType<TReturn>
-            where TReturn : class
-        {
-            return efGraphQlService.AddSingleField(this, name, resolve: resolve, graphType: typeof(TGraph));
         }
 
         protected FieldType AddSingleField<TReturn>(

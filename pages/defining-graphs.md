@@ -62,14 +62,16 @@ public class Query :
     public Query(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
-        AddSingleField<CompanyGraph, Company>(
+        AddSingleField(
+            typeof(CompanyGraph),
             name: "company",
             resolve: context =>
             {
                 var dataContext = (DataContext) context.UserContext;
                 return dataContext.Companies;
             });
-        AddQueryField<CompanyGraph, Company>(
+        AddQueryField(
+            typeof(CompanyGraph),
             name: "companies",
             resolve: context =>
             {
@@ -79,7 +81,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L29)</sup>
+<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L31)</sup>
 <!-- endsnippet -->
 
 `AddQueryField` will result in all matching being found and returned.

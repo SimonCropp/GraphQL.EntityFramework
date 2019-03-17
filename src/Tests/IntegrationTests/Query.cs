@@ -24,7 +24,7 @@ public class Query :
                 return dataContext.Level1Entities;
             });
 
-        AddQueryField<WithManyChildrenGraph, WithManyChildrenEntity>(
+        AddQueryField(typeof(WithManyChildrenGraph),
             name: "manyChildren",
             resolve: context =>
             {
