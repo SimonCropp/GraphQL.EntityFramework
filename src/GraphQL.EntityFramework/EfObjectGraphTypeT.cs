@@ -59,7 +59,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddNavigationField<TSource, TGraph, TReturn>(this, name, resolve, arguments, includeNames);
+            return efGraphQlService.AddNavigationField(this,typeof(TGraph), name, resolve: resolve, arguments: arguments, includeNames: includeNames);
         }
 
         protected FieldType AddNavigationField<TReturn>(
