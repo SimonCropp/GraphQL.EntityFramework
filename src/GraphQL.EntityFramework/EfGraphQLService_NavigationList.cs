@@ -7,25 +7,11 @@ namespace GraphQL.EntityFramework
 {
     partial class EfGraphQLService
     {
-        public FieldType AddNavigationField<TGraph, TReturn>(
-            ObjectGraphType graph,
-            string name,
-            Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField<object, TGraph, TReturn>(name, resolve, includeNames, arguments);
-            return graph.AddField(field);
-        }
-
         public FieldType AddNavigationField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
-            Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -35,11 +21,10 @@ namespace GraphQL.EntityFramework
             return graph.AddField(field);
         }
 
-        public FieldType AddNavigationField<TReturn>(
-            ObjectGraphType graph,
-            Type graphType,
+        public FieldType AddNavigationField<TReturn>(ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -57,34 +42,8 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graphType), graphType);
+            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
             var listGraphType = MakeListGraphType(graphType);
-            return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments);
-        }
-
-        public FieldType AddNavigationField<TSource, TGraph, TReturn>(
-            ObjectGraphType<TSource> graph,
-            string name,
-            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField<TSource, TGraph, TReturn>(name, resolve, includeNames, arguments);
-            return graph.AddField(field);
-        }
-
-        FieldType BuildNavigationField<TSource, TGraph, TReturn>(
-            string name,
-            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
-            IEnumerable<string> includeNames,
-            IEnumerable<QueryArgument> arguments)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            var listGraphType = typeof(ListGraphType<TGraph>);
             return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments);
         }
 

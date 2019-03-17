@@ -12,7 +12,7 @@ class ConnectionTypedGraph
         public CompanyGraph(IEfGraphQLService graphQlService) :
             base(graphQlService)
         {
-            AddNavigationConnectionField<EmployeeGraph, Employee>(
+            AddNavigationConnectionField(
                 name: "employees",
                 resolve: context => context.Source.Employees);
         }

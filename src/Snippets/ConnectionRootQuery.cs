@@ -11,7 +11,7 @@ class ConnectionRootQuery
         public Query(IEfGraphQLService graphQlService) :
             base(graphQlService)
         {
-            AddQueryConnectionField<CompanyGraph, Company>(
+            AddQueryConnectionField(
                 name: "companies",
                 resolve: context =>
                 {

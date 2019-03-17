@@ -14,10 +14,10 @@ public class TypedGraph
         {
             Field(x => x.Id);
             Field(x => x.Content);
-            AddNavigationField<EmployeeGraph, Employee>(
+            AddNavigationField<Employee>(
                 name: "employees",
                 resolve: context => context.Source.Employees);
-            AddNavigationConnectionField<EmployeeGraph, Employee>(
+            AddNavigationConnectionField(
                 name: "employeesConnection",
                 resolve: context => context.Source.Employees,
                 includeNames: new[] {"Employees"});

@@ -8,69 +8,68 @@ namespace GraphQL.EntityFramework
 {
     partial class EfGraphQLService
     {
-        public ConnectionBuilder<TGraph, object> AddQueryConnectionField<TGraph, TReturn>(
+        public void AddQueryConnectionField<TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildQueryConnectionField<object, TGraph, TReturn>(name, resolve, pageSize);
+            var connection = BuildQueryConnectionField(name, resolve, pageSize,graphType);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
-            return connection;
         }
 
-        public ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TSource, TGraph, TReturn>(
+        public void AddQueryConnectionField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize);
+            var connection = BuildQueryConnectionField(name, resolve, pageSize, graphType);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
-            return connection;
         }
 
-        public ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TSource, TGraph, TReturn>(
+        public void AddQueryConnectionField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize);
+            var connection = BuildQueryConnectionField(name, resolve, pageSize, graphType);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
-            return connection;
         }
 
-        ConnectionBuilder<TGraph, TSource> BuildQueryConnectionField<TSource, TGraph, TReturn>(
+        ConnectionBuilder<FakeGraph, TSource> BuildQueryConnectionField<TSource, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            int pageSize)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
+            int pageSize,
+            Type graphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
             Guard.AgainstNegative(nameof(pageSize), pageSize);
-            var builder = ConnectionBuilder.Create<TGraph, TSource>();
+
+            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
+            var fieldType = GetFieldType<TSource>(name, graphType);
+            var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
             builder.PageSize(pageSize);
-            //todo:
-            //builder.Bidirectional();
-            builder.Name(name);
+            SetField(builder, fieldType);
+
             builder.Resolve(
                 context =>
                 {

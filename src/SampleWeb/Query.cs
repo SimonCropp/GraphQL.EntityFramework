@@ -11,7 +11,7 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField<CompanyGraph, Company>(
+        AddQueryField(
             name: "companies",
             resolve: context =>
             {
@@ -21,15 +21,14 @@ public class Query :
 
         #endregion
 
-        AddSingleField<CompanyGraph, Company>(
-            name: "company",
+        AddSingleField(
             resolve: context =>
-            {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies;
-            });
+        {
+            var dataContext = (MyDataContext) context.UserContext;
+            return dataContext.Companies;
+        }, name: "company");
 
-        AddQueryConnectionField<CompanyGraph, Company>(
+        AddQueryConnectionField(
             name: "companiesConnection",
             resolve: context =>
             {
@@ -37,7 +36,7 @@ public class Query :
                 return dataContext.Companies;
             });
 
-        AddQueryField<EmployeeGraph, Employee>(
+        AddQueryField(
             name: "employees",
             resolve: context =>
             {
@@ -45,24 +44,26 @@ public class Query :
                 return dataContext.Employees;
             });
 
-        AddQueryField<EmployeeGraph, Employee>(
+        AddQueryField(
             name: "employeesByArgument",
-            arguments: new QueryArguments(new QueryArgument<StringGraphType> {Name = "content"}),
             resolve: context =>
             {
                 var content = context.GetArgument<string>("content");
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees.Where(x => x.Content == content);
-            });
+            },
+            arguments: new QueryArguments(new QueryArgument<StringGraphType> {Name = "content"}));
 
-        AddQueryConnectionField<EmployeeGraph, Employee>(
+        AddQueryConnectionField(
             name: "employeesConnection",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
             });
+
         #region ManuallyApplyWhere
+
         Field<ListGraphType<EmployeeSummaryGraph>>(
             name: "employeeSummary",
             arguments: new QueryArguments(
@@ -92,6 +93,7 @@ public class Query :
                         AverageAge = g.Average(x => x.Age),
                     };
             });
+
         #endregion
     }
 }

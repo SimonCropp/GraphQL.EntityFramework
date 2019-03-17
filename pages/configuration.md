@@ -266,7 +266,7 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField<CompanyGraph, Company>(
+        AddQueryField(
             name: "companies",
             resolve: context =>
             {

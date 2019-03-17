@@ -4,20 +4,21 @@ using GraphQL.EntityFramework;
 class RootQuery
 {
     #region rootQuery
+
     public class Query :
         EfObjectGraphType
     {
         public Query(IEfGraphQLService graphQlService) :
             base(graphQlService)
         {
-            AddSingleField<CompanyGraph, Company>(
-                name: "company",
+            AddSingleField(
                 resolve: context =>
                 {
                     var dataContext = (DataContext) context.UserContext;
                     return dataContext.Companies;
-                });
-            AddQueryField<CompanyGraph, Company>(
+                },
+                name: "company");
+            AddQueryField(
                 name: "companies",
                 resolve: context =>
                 {
@@ -26,6 +27,7 @@ class RootQuery
                 });
         }
     }
+
     #endregion
 
     class DataContext

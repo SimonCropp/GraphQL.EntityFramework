@@ -62,14 +62,14 @@ public class Query :
     public Query(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
-        AddSingleField<CompanyGraph, Company>(
-            name: "company",
+        AddSingleField(
             resolve: context =>
             {
                 var dataContext = (DataContext) context.UserContext;
                 return dataContext.Companies;
-            });
-        AddQueryField<CompanyGraph, Company>(
+            },
+            name: "company");
+        AddQueryField(
             name: "companies",
             resolve: context =>
             {
@@ -79,7 +79,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L29)</sup>
+<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L31)</sup>
 <!-- endsnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -99,10 +99,10 @@ public class CompanyGraph :
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        AddNavigationField<EmployeeGraph, Employee>(
+        AddNavigationField<Employee>(
             name: "employees",
             resolve: context => context.Source.Employees);
-        AddNavigationConnectionField<EmployeeGraph, Employee>(
+        AddNavigationConnectionField(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
             includeNames: new[] {"Employees"});
@@ -129,7 +129,7 @@ public class Query :
     public Query(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
-        AddQueryConnectionField<CompanyGraph, Company>(
+        AddQueryConnectionField(
             name: "companies",
             resolve: context =>
             {
@@ -227,7 +227,7 @@ public class CompanyGraph :
     public CompanyGraph(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
-        AddNavigationConnectionField<EmployeeGraph, Employee>(
+        AddNavigationConnectionField(
             name: "employees",
             resolve: context => context.Source.Employees);
     }
@@ -297,5 +297,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L65-L95)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L65-L97)</sup>
 <!-- endsnippet -->

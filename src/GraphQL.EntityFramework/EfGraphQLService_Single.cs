@@ -12,8 +12,8 @@ namespace GraphQL.EntityFramework
         public FieldType AddSingleField<TReturn>(
             ObjectGraphType graph,
             string name,
-            Type graphType,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
@@ -25,8 +25,8 @@ namespace GraphQL.EntityFramework
         public FieldType AddSingleField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Type graphType,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
@@ -38,74 +38,14 @@ namespace GraphQL.EntityFramework
         public FieldType AddSingleField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
-            Type graphType,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
             var field = BuildSingleField(name, resolve, arguments, graphType);
             return graph.AddField(field);
-        }
-
-        public FieldType AddSingleField<TGraph, TReturn>(
-            ObjectGraphType graph,
-            string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField<object, TGraph, TReturn>(name, resolve, arguments);
-            return graph.AddField(field);
-        }
-
-        public FieldType AddSingleField<TSource, TGraph, TReturn>(
-            ObjectGraphType graph,
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField<TSource, TGraph, TReturn>(name, resolve, arguments);
-            return graph.AddField(field);
-        }
-
-        public FieldType AddSingleField<TSource, TGraph, TReturn>(
-            ObjectGraphType<TSource> graph,
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField<TSource, TGraph, TReturn>(name, resolve, arguments);
-            return graph.AddField(field);
-        }
-
-        FieldType BuildSingleField<TSource, TReturn>(
-            Type graphType,
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graphType), graphType);
-            return BuildSingleField(name, resolve, arguments, graphType);
-        }
-
-        FieldType BuildSingleField<TSource, TGraph, TReturn>(
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            return BuildSingleField(name, resolve, arguments, typeof(TGraph));
         }
 
         FieldType BuildSingleField<TSource, TReturn>(
@@ -117,6 +57,8 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
+
+            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
             return new FieldType
             {
                 Name = name,
@@ -139,5 +81,6 @@ namespace GraphQL.EntityFramework
                     })
             };
         }
+
     }
 }
