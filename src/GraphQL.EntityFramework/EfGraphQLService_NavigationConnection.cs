@@ -55,8 +55,7 @@ namespace GraphQL.EntityFramework
             var fieldType = GetFieldType<TSource>(name, graphType);
             var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
             builder.PageSize(pageSize);
-            var fieldTypeField = builder.GetType().GetProperty("FieldType", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            fieldTypeField.SetValue(builder, fieldType);
+            SetField(builder, fieldType);
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeName);
             builder.ResolveAsync(async context =>
             {
@@ -73,6 +72,12 @@ namespace GraphQL.EntityFramework
                     context.Before);
             });
             return builder;
+        }
+
+        static void SetField(object builder, object fieldType)
+        {
+            var fieldTypeField = builder.GetType().GetProperty("FieldType", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            fieldTypeField.SetValue(builder, fieldType);
         }
 
         static object GetFieldType<TSource>(string name, Type graphType)
