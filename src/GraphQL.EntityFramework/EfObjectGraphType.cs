@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL.Builders;
 using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
@@ -16,7 +17,7 @@ namespace GraphQL.EntityFramework
             this.efGraphQlService = efGraphQlService;
         }
 
-        protected void AddNavigationConnectionField<TGraph, TReturn>(
+        protected ConnectionBuilder<TGraph, object> AddNavigationConnectionField<TGraph, TReturn>(
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
@@ -25,7 +26,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            efGraphQlService.AddNavigationConnectionField<TGraph, TReturn>(this, name, resolve, arguments, includeNames, pageSize);
+            return efGraphQlService.AddNavigationConnectionField<TGraph, TReturn>(this, name, resolve, arguments, includeNames, pageSize);
         }
 
         protected FieldType AddNavigationField<TReturn>(
@@ -50,14 +51,15 @@ namespace GraphQL.EntityFramework
             return efGraphQlService.AddNavigationField(this, graphType, name, resolve, arguments, includeNames);
         }
 
-        protected void AddQueryConnectionField<TGraph, TReturn>(string name,
+        protected ConnectionBuilder<TGraph, object> AddQueryConnectionField<TGraph, TReturn>(
+            string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            efGraphQlService.AddQueryConnectionField<TGraph, TReturn>(this, name, resolve, arguments, pageSize);
+            return efGraphQlService.AddQueryConnectionField<TGraph, TReturn>(this, name, resolve, arguments, pageSize);
         }
 
         protected FieldType AddQueryField<TReturn>(

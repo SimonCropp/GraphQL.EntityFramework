@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using GraphQL.Builders;
 using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
     public partial interface IEfGraphQLService
     {
-        void AddNavigationConnectionField<TGraph, TReturn>(
+        ConnectionBuilder<TGraph, object> AddNavigationConnectionField<TGraph, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
@@ -16,7 +17,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class;
 
-        void AddNavigationConnectionField<TSource, TGraph, TReturn>(
+        ConnectionBuilder<TGraph, TSource> AddNavigationConnectionField<TSource, TGraph, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,

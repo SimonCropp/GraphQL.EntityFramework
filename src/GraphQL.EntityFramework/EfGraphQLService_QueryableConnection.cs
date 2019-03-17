@@ -8,7 +8,7 @@ namespace GraphQL.EntityFramework
 {
     partial class EfGraphQLService
     {
-        public void AddQueryConnectionField<TGraph, TReturn>(
+        public ConnectionBuilder<TGraph, object> AddQueryConnectionField<TGraph, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
@@ -21,9 +21,10 @@ namespace GraphQL.EntityFramework
             var connection = BuildQueryConnectionField<object, TGraph, TReturn>(name, resolve, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
+            return connection;
         }
 
-        public void AddQueryConnectionField<TSource, TGraph, TReturn>(
+        public ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TSource, TGraph, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
@@ -36,9 +37,10 @@ namespace GraphQL.EntityFramework
             var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
+            return connection;
         }
 
-        public void AddQueryConnectionField<TSource, TGraph, TReturn>(
+        public ConnectionBuilder<TGraph, TSource> AddQueryConnectionField<TSource, TGraph, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
@@ -51,6 +53,7 @@ namespace GraphQL.EntityFramework
             var connection = BuildQueryConnectionField<TSource, TGraph, TReturn>(name, resolve, pageSize);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
+            return connection;
         }
 
         ConnectionBuilder<TGraph, TSource> BuildQueryConnectionField<TSource, TGraph, TReturn>(
