@@ -48,45 +48,6 @@ namespace GraphQL.EntityFramework
             return graph.AddField(field);
         }
 
-        public FieldType AddSingleField<TGraph, TReturn>(
-            ObjectGraphType graph,
-            string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField<object, TGraph, TReturn>(name, resolve, arguments);
-            return graph.AddField(field);
-        }
-
-        public FieldType AddSingleField<TSource, TGraph, TReturn>(
-            ObjectGraphType graph,
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField<TSource, TGraph, TReturn>(name, resolve, arguments);
-            return graph.AddField(field);
-        }
-
-        public FieldType AddSingleField<TSource, TGraph, TReturn>(
-            ObjectGraphType<TSource> graph,
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField<TSource, TGraph, TReturn>(name, resolve, arguments);
-            return graph.AddField(field);
-        }
-
         FieldType BuildSingleField<TSource, TReturn>(
             Type graphType,
             string name,
