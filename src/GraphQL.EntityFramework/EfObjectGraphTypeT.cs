@@ -16,15 +16,15 @@ namespace GraphQL.EntityFramework
             this.efGraphQlService = efGraphQlService;
         }
 
-        protected void AddNavigationConnectionField<TGraph, TReturn>(string name,
+        protected void AddNavigationConnectionField<TReturn>(
+            string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            int pageSize = 10)
-            where TGraph : ObjectGraphType<TReturn>
-            where TReturn : class
+            int pageSize = 10) where TReturn : class
         {
-            efGraphQlService.AddNavigationConnectionField<TSource, TGraph, TReturn>(this, name, resolve, arguments, includeNames, pageSize);
+            efGraphQlService.AddNavigationConnectionField(this, name, resolve,graphType, arguments, includeNames, pageSize);
         }
 
         protected FieldType AddNavigationField<TReturn>(

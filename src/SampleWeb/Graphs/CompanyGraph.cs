@@ -12,9 +12,10 @@ public class CompanyGraph :
             typeof(EmployeeGraph),
             name: "employees",
             resolve: context => context.Source.Employees);
-        AddNavigationConnectionField<EmployeeGraph, Employee>(
+        AddNavigationConnectionField(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
+            typeof(EmployeeGraph),
             includeNames: new[] {"Employees"});
     }
 }

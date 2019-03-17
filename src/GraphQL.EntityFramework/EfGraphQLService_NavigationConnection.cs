@@ -9,34 +9,34 @@ namespace GraphQL.EntityFramework
 {
     partial class EfGraphQLService
     {
-        public void AddNavigationConnectionField<TGraph, TReturn>(
+        public void AddNavigationConnectionField<TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
             int pageSize = 10)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, typeof(TGraph));
+            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, graphType);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
         }
 
-        public void AddNavigationConnectionField<TSource, TGraph, TReturn>(
+        public void AddNavigationConnectionField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
             int pageSize = 10)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, typeof(TGraph));
+            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, graphType);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
         }
@@ -46,7 +46,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string> includeName,
             int pageSize,
-            Type graphType) where TReturn : class
+            Type graphType)
+            where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);

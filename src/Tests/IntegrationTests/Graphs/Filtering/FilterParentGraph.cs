@@ -12,9 +12,10 @@ public class FilterParentGraph :
             typeof(FilterChildGraph),
             name: "children",
             resolve: context => context.Source.Children);
-        AddNavigationConnectionField<FilterChildGraph, FilterChildEntity>(
+        AddNavigationConnectionField(
             name: "childrenConnection",
             resolve: context => context.Source.Children,
+            typeof(FilterChildGraph),
             includeNames: new[] {"Children"});
     }
 }

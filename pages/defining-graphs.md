@@ -105,14 +105,15 @@ public class CompanyGraph :
             typeof(EmployeeGraph),
             name: "employees",
             resolve: context => context.Source.Employees);
-        AddNavigationConnectionField<EmployeeGraph, Employee>(
+        AddNavigationConnectionField(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
+            typeof(EmployeeGraph),
             includeNames: new[] {"Employees"});
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/TypedGraph.cs#L7-L28)</sup>
+<sup>[snippet source](/src/Snippets/TypedGraph.cs#L7-L29)</sup>
 <!-- endsnippet -->
 
 
@@ -230,13 +231,14 @@ public class CompanyGraph :
     public CompanyGraph(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
-        AddNavigationConnectionField<EmployeeGraph, Employee>(
+        AddNavigationConnectionField(
             name: "employees",
-            resolve: context => context.Source.Employees);
+            resolve: context => context.Source.Employees,
+            typeof(EmployeeGraph));
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L7-L21)</sup>
+<sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L7-L22)</sup>
 <!-- endsnippet -->
 
 
