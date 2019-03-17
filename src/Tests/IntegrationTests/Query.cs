@@ -6,7 +6,8 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField<CustomTypeGraph, CustomTypeEntity>(
+        AddQueryField(
+            typeof(CustomTypeGraph),
             name: "customType",
             resolve: context =>
             {
@@ -14,7 +15,8 @@ public class Query :
                 return dataContext.CustomTypeEntities;
             });
 
-        AddQueryField<SkipLevelGraph, Level1Entity>(
+        AddQueryField(
+            typeof(SkipLevelGraph),
             name: "skipLevel",
             resolve: context =>
             {
@@ -30,7 +32,8 @@ public class Query :
                 return dataContext.WithManyChildrenEntities;
             });
 
-        AddQueryField<Level1Graph, Level1Entity>(
+        AddQueryField(
+            typeof(Level1Graph),
             name: "level1Entities",
             resolve: context =>
             {
@@ -38,7 +41,8 @@ public class Query :
                 return dataContext.Level1Entities;
             });
 
-        efGraphQlService.AddQueryField<WithNullableGraph, WithNullableEntity>(this,
+        efGraphQlService.AddQueryField(this,
+            typeof(WithNullableGraph),
             name: "withNullableEntities",
             resolve: context =>
             {
@@ -46,7 +50,8 @@ public class Query :
                 return dataContext.WithNullableEntities;
             });
 
-        efGraphQlService.AddQueryField<WithMisNamedQueryParentGraph, WithMisNamedQueryParentEntity>(this,
+        efGraphQlService.AddQueryField(this,
+            typeof(WithMisNamedQueryParentGraph),
             name: "misNamed",
             resolve: context =>
             {
@@ -54,7 +59,8 @@ public class Query :
                 return dataContext.WithMisNamedQueryParentEntities;
             });
 
-        efGraphQlService.AddQueryField<ParentGraph, ParentEntity>(this,
+        efGraphQlService.AddQueryField(this,
+            typeof(ParentGraph),
             name: "parentEntities",
             resolve: context =>
             {
@@ -62,7 +68,8 @@ public class Query :
                 return dataContext.ParentEntities;
             });
 
-        efGraphQlService.AddQueryField<ChildGraph, ChildEntity>(this,
+        efGraphQlService.AddQueryField(this,
+            typeof(ChildGraph),
             name: "childEntities",
             resolve: context =>
             {
@@ -86,7 +93,8 @@ public class Query :
                 return dataContext.ChildEntities;
             });
 
-        efGraphQlService.AddQueryField<FilterParentGraph, FilterParentEntity>(this,
+        efGraphQlService.AddQueryField(this,
+            typeof(FilterParentGraph),
             name: "parentEntitiesFiltered",
             resolve: context =>
             {
@@ -102,8 +110,9 @@ public class Query :
                 return dataContext.FilterParentEntities;
             });
 
-        efGraphQlService.AddSingleField<ParentGraph, ParentEntity>(this,
+        efGraphQlService.AddSingleField(this,
             name: "parentEntity",
+            typeof(ParentGraph),
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
