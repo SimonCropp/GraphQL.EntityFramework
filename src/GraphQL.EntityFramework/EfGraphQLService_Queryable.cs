@@ -60,17 +60,6 @@ namespace GraphQL.EntityFramework
             return BuildQueryField(name, resolve, arguments, listGraphType);
         }
 
-        FieldType BuildQueryField<TSource, TGraph, TReturn>(
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            var listGraphType = MakeListGraphType(typeof(TGraph));
-            return BuildQueryField(name, resolve, arguments, listGraphType);
-        }
-
         FieldType BuildQueryField<TSource, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,

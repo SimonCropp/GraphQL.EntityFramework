@@ -59,16 +59,6 @@ namespace GraphQL.EntityFramework
             return BuildSingleField(name, resolve, arguments, graphType);
         }
 
-        FieldType BuildSingleField<TSource, TGraph, TReturn>(
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class
-        {
-            return BuildSingleField(name, resolve, arguments, typeof(TGraph));
-        }
-
         FieldType BuildSingleField<TSource, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
