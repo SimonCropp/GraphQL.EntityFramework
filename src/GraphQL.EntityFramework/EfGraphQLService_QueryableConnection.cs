@@ -8,10 +8,11 @@ namespace GraphQL.EntityFramework
 {
     partial class EfGraphQLService
     {
-        public void AddQueryConnectionField<TReturn>(ObjectGraphType graph,
+        public void AddQueryConnectionField<TReturn>(
+            ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TReturn : class
@@ -26,7 +27,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TReturn : class
@@ -41,7 +42,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TReturn : class

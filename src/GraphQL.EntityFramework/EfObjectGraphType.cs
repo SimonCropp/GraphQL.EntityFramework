@@ -42,7 +42,7 @@ namespace GraphQL.EntityFramework
         protected FieldType AddNavigationField<TReturn>(
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class

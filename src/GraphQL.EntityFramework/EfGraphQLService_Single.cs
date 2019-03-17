@@ -13,7 +13,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
@@ -46,17 +46,6 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(graph), graph);
             var field = BuildSingleField(name, resolve, arguments, graphType);
             return graph.AddField(field);
-        }
-
-        FieldType BuildSingleField<TSource, TReturn>(
-            Type graphType,
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graphType), graphType);
-            return BuildSingleField(name, resolve, arguments, graphType);
         }
 
         FieldType BuildSingleField<TSource, TReturn>(

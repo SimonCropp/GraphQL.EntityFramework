@@ -11,7 +11,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class;
 
