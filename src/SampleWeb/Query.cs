@@ -31,14 +31,14 @@ public class Query :
                 return dataContext.Companies;
             });
 
-        AddQueryConnectionField<CompanyGraph, Company>(
+        AddQueryConnectionField(
             name: "companiesConnection",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
             },
-            graphType:typeof(CompanyGraph));
+            graphType: typeof(CompanyGraph));
 
         AddQueryField(
             typeof(EmployeeGraph),
@@ -60,15 +60,17 @@ public class Query :
                 return dataContext.Employees.Where(x => x.Content == content);
             });
 
-        AddQueryConnectionField<EmployeeGraph, Employee>(
+        AddQueryConnectionField(
             name: "employeesConnection",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
             },
-            graphType:typeof(EmployeeGraph));
+            graphType: typeof(EmployeeGraph));
+
         #region ManuallyApplyWhere
+
         Field<ListGraphType<EmployeeSummaryGraph>>(
             name: "employeeSummary",
             arguments: new QueryArguments(
@@ -98,6 +100,7 @@ public class Query :
                         AverageAge = g.Average(x => x.Age),
                     };
             });
+
         #endregion
     }
 }

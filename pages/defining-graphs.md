@@ -133,14 +133,14 @@ public class Query :
     public Query(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
-        AddQueryConnectionField<CompanyGraph, Company>(
+        AddQueryConnectionField(
             name: "companies",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
             },
-            graphType:typeof(CompanyGraph));
+            graphType: typeof(CompanyGraph));
     }
 }
 ```
@@ -303,5 +303,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L71-L101)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L72-L104)</sup>
 <!-- endsnippet -->

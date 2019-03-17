@@ -22,7 +22,8 @@ namespace GraphQL.EntityFramework
             Type graphType,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            int pageSize = 10) where TReturn : class
+            int pageSize = 10)
+            where TReturn : class
         {
             efGraphQlService.AddNavigationConnectionField(this, name, resolve, graphType, arguments, includeNames, pageSize);
         }
@@ -49,16 +50,15 @@ namespace GraphQL.EntityFramework
             return efGraphQlService.AddNavigationField(this, graphType, name, resolve, arguments, includeNames);
         }
 
-        protected void AddQueryConnectionField<TGraph, TReturn>(
+        protected void AddQueryConnectionField<TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             Type graphType,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
-            where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            efGraphQlService.AddQueryConnectionField<TSource, TGraph, TReturn>(this, name, resolve, graphType, arguments, pageSize);
+            efGraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize);
         }
 
         protected FieldType AddQueryField<TReturn>(
