@@ -9,10 +9,12 @@ public class ChildGraph :
         Field(x => x.Id);
         Field(x => x.Property);
         Field(x => x.Nullable, true);
-        AddNavigationField<ParentGraph, ParentEntity>(
+        AddNavigationField(
+            typeof(ParentGraph),
             name: "parent",
             resolve: context => context.Source.Parent);
-        AddNavigationField<ParentGraph, ParentEntity>(
+        AddNavigationField(
+            typeof(ParentGraph),
             name: "parentAlias",
             resolve: context => context.Source.Parent,
             includeNames: new []{"Parent"});
