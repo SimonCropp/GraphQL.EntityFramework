@@ -91,7 +91,7 @@ namespace GraphQL.EntityFramework
             where TGraph : ObjectGraphType<TReturn>
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField<TSource, TGraph, TReturn>(this, name, resolve, arguments);
+            return efGraphQlService.AddQueryField(this, typeof(TGraph), name, resolve, arguments);
         }
 
         protected FieldType AddQueryField<TReturn>(

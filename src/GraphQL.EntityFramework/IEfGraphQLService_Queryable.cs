@@ -30,29 +30,5 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class;
-
-        FieldType AddQueryField<TGraph, TReturn>(
-            ObjectGraphType graph,
-            string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class;
-
-        FieldType AddQueryField<TSource, TGraph, TReturn>(
-            ObjectGraphType graph,
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class;
-
-        FieldType AddQueryField<TSource, TGraph, TReturn>(
-            ObjectGraphType<TSource> graph,
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments = null)
-            where TGraph : ObjectGraphType<TReturn>, IGraphType
-            where TReturn : class;
     }
 }
