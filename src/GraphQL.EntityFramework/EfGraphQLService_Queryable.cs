@@ -55,20 +55,20 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments)
             where TReturn : class
         {
-            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
-            var listGraphType = MakeListGraphType(graphType);
-            return BuildQueryField(name, resolve, arguments, listGraphType);
+            return BuildQueryField(name, resolve, arguments, graphType);
         }
 
         FieldType BuildQueryField<TSource, TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments,
-            Type listGraphType)
+            Type graphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
+            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
+            var listGraphType = MakeListGraphType(graphType);
             return new FieldType
             {
                 Name = name,
