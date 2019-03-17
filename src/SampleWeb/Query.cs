@@ -52,7 +52,11 @@ public class Query :
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees.Where(x => x.Content == content);
             },
-            arguments: new QueryArguments(new QueryArgument<StringGraphType> {Name = "content"}));
+            arguments: new QueryArguments(
+                new QueryArgument<StringGraphType>
+                {
+                    Name = "content"
+                }));
 
         AddQueryConnectionField(
             name: "employeesConnection",
@@ -67,7 +71,10 @@ public class Query :
         Field<ListGraphType<EmployeeSummaryGraph>>(
             name: "employeeSummary",
             arguments: new QueryArguments(
-                new QueryArgument<ListGraphType<WhereExpressionGraph>> {Name = "where"}
+                new QueryArgument<ListGraphType<WhereExpressionGraph>>
+                {
+                    Name = "where"
+                }
             ),
             resolve: context =>
             {
@@ -76,10 +83,10 @@ public class Query :
 
                 if (context.HasArgument("where"))
                 {
-                    var whereExpressions = context.GetArgument<List<WhereExpression>>("where");
-                    foreach (var whereExpression in whereExpressions)
+                    var wheres = context.GetArgument<List<WhereExpression>>("where");
+                    foreach (var where in wheres)
                     {
-                        var predicate = ExpressionBuilder<Employee>.BuildPredicate(whereExpression);
+                        var predicate = ExpressionBuilder<Employee>.BuildPredicate(where);
                         query = query.Where(predicate);
                     }
                 }
