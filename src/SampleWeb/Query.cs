@@ -11,14 +11,12 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField(
-            typeof(CompanyGraph),
-            name: "companies",
+        AddQueryField(name: "companies",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
-            });
+            }, graphType: typeof(CompanyGraph));
 
         #endregion
 
@@ -37,25 +35,20 @@ public class Query :
             },
             graphType: typeof(CompanyGraph));
 
-        AddQueryField(
-            typeof(EmployeeGraph),
-            name: "employees",
+        AddQueryField(name: "employees",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
-            });
+            }, graphType: typeof(EmployeeGraph));
 
-        AddQueryField(
-            typeof(EmployeeGraph),
-            name: "employeesByArgument",
-            arguments: new QueryArguments(new QueryArgument<StringGraphType> {Name = "content"}),
+        AddQueryField(name: "employeesByArgument",
             resolve: context =>
             {
                 var content = context.GetArgument<string>("content");
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees.Where(x => x.Content == content);
-            });
+            }, graphType: typeof(EmployeeGraph), arguments: new QueryArguments(new QueryArgument<StringGraphType> {Name = "content"}));
 
         AddQueryConnectionField(
             name: "employeesConnection",

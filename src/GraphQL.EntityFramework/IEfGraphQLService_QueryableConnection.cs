@@ -10,7 +10,7 @@ namespace GraphQL.EntityFramework
         void AddQueryConnectionField<TReturn>(ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TReturn : class;
@@ -19,7 +19,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TReturn : class;
@@ -27,7 +27,7 @@ namespace GraphQL.EntityFramework
         void AddQueryConnectionField<TSource, TReturn>(ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TReturn : class;

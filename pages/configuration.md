@@ -266,16 +266,14 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField(
-            typeof(CompanyGraph),
-            name: "companies",
+        AddQueryField(name: "companies",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
-            });
+            }, graphType: typeof(CompanyGraph));
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L6-L23)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L6-L21)</sup>
 <!-- endsnippet -->
 
 

@@ -67,18 +67,16 @@ public class Query :
             var dataContext = (DataContext) context.UserContext;
             return dataContext.Companies;
         }, graphType: typeof(CompanyGraph), name: "company");
-        AddQueryField(
-            typeof(CompanyGraph),
-            name: "companies",
+        AddQueryField(name: "companies",
             resolve: context =>
             {
                 var dataContext = (DataContext) context.UserContext;
                 return dataContext.Companies;
-            });
+            }, graphType: typeof(CompanyGraph));
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L28)</sup>
+<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L26)</sup>
 <!-- endsnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -298,5 +296,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L69-L101)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L62-L94)</sup>
 <!-- endsnippet -->

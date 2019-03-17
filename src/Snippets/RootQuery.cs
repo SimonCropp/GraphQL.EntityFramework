@@ -15,14 +15,12 @@ class RootQuery
                 var dataContext = (DataContext) context.UserContext;
                 return dataContext.Companies;
             }, graphType: typeof(CompanyGraph), name: "company");
-            AddQueryField(
-                typeof(CompanyGraph),
-                name: "companies",
+            AddQueryField(name: "companies",
                 resolve: context =>
                 {
                     var dataContext = (DataContext) context.UserContext;
                     return dataContext.Companies;
-                });
+                }, graphType: typeof(CompanyGraph));
         }
     }
     #endregion

@@ -26,7 +26,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
@@ -39,7 +39,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
@@ -68,6 +68,8 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
+
+            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
             return new FieldType
             {
                 Name = name,
@@ -90,5 +92,6 @@ namespace GraphQL.EntityFramework
                     })
             };
         }
+
     }
 }

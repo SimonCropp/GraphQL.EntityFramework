@@ -19,7 +19,7 @@ namespace GraphQL.EntityFramework
         protected void AddNavigationConnectionField<TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
             int pageSize = 10)
@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
         protected FieldType AddNavigationField<TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -42,7 +42,7 @@ namespace GraphQL.EntityFramework
         protected FieldType AddNavigationField<TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -53,7 +53,7 @@ namespace GraphQL.EntityFramework
         protected void AddQueryConnectionField<TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TReturn : class
@@ -64,7 +64,7 @@ namespace GraphQL.EntityFramework
         protected FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {

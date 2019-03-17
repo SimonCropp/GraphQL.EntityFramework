@@ -37,7 +37,8 @@ namespace GraphQL.EntityFramework
             field.AddWhereArgument(arguments);
         }
 
-        public void AddQueryConnectionField<TSource, TReturn>(ObjectGraphType<TSource> graph,
+        public void AddQueryConnectionField<TSource, TReturn>(
+            ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             Type graphType,
@@ -55,13 +56,14 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             int pageSize,
-            Type graphType) where TReturn : class
+            Type graphType)
+            where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
-
+            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
             var fieldType = GetFieldType<TSource>(name, graphType);
             var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
             builder.PageSize(pageSize);

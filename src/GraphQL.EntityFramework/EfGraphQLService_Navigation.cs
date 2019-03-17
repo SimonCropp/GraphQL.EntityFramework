@@ -10,7 +10,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddNavigationField<TSource, TReturn>(ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -23,7 +23,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddNavigationField<TReturn>(ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, TReturn> resolve,
-            Type graphType,
+            Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -42,8 +42,8 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-            Guard.AgainstNull(nameof(graphType), graphType);
             Guard.AgainstNull(nameof(resolve), resolve);
+            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
             return new FieldType
             {
                 Name = name,
@@ -57,6 +57,7 @@ namespace GraphQL.EntityFramework
                     {
                         return result;
                     }
+
                     return null;
                 })
             };

@@ -41,7 +41,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graphType), graphType);
+            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
             var listGraphType = MakeListGraphType(graphType);
             return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments);
         }

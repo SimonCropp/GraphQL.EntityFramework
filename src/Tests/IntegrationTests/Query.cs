@@ -6,40 +6,33 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField(
-            typeof(CustomTypeGraph),
-            name: "customType",
+        AddQueryField(name: "customType",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.CustomTypeEntities;
-            });
+            }, graphType: typeof(CustomTypeGraph));
 
-        AddQueryField(
-            typeof(SkipLevelGraph),
-            name: "skipLevel",
+        AddQueryField(name: "skipLevel",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Level1Entities;
-            });
+            }, graphType: typeof(SkipLevelGraph));
 
-        AddQueryField(typeof(WithManyChildrenGraph),
-            name: "manyChildren",
+        AddQueryField(name: "manyChildren",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.WithManyChildrenEntities;
-            });
+            }, graphType: typeof(WithManyChildrenGraph));
 
-        AddQueryField(
-            typeof(Level1Graph),
-            name: "level1Entities",
+        AddQueryField(name: "level1Entities",
             resolve: context =>
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Level1Entities;
-            });
+            }, graphType: typeof(Level1Graph));
 
         efGraphQlService.AddQueryField(this,
             name: "withNullableEntities",
