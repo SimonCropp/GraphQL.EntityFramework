@@ -14,10 +14,8 @@ public class TypedGraph
         {
             Field(x => x.Id);
             Field(x => x.Content);
-            AddNavigationField<Employee>(
-                typeof(EmployeeGraph),
-                name: "employees",
-                resolve: context => context.Source.Employees);
+            AddNavigationField<Employee>(name: "employees",
+                resolve: context => context.Source.Employees, graphType: typeof(EmployeeGraph));
             AddNavigationConnectionField(
                 name: "employeesConnection",
                 resolve: context => context.Source.Employees,

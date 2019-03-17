@@ -11,9 +11,9 @@ namespace GraphQL.EntityFramework
     {
         public FieldType AddQueryField<TReturn>(
             ObjectGraphType graph,
-            Type graphType,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
@@ -24,9 +24,9 @@ namespace GraphQL.EntityFramework
 
         public FieldType AddQueryField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
-            Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
@@ -37,9 +37,9 @@ namespace GraphQL.EntityFramework
 
         public FieldType AddQueryField<TSource, TReturn>(
             ObjectGraphType graph,
-            Type graphType,
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {

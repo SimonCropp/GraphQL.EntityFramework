@@ -8,15 +8,12 @@ public class WithManyChildrenGraph :
         base(graphQlService)
     {
         Field(x => x.Id);
-        AddNavigationField(
-            typeof(Child1Graph),
-            name: "child1",
-            includeNames: new []{ "Child2", "Child1" },
+        AddNavigationField(name: "child1",
             resolve: context =>
             {
                 Assert.NotNull(context.Source.Child2);
                 Assert.NotNull(context.Source.Child1);
                 return context.Source.Child1;
-            });
+            }, graphType: typeof(Child1Graph), includeNames: new []{ "Child2", "Child1" });
     }
 }

@@ -7,10 +7,8 @@ public class SkipLevelGraph :
         base(graphQlService)
     {
         Field(x => x.Id);
-        AddNavigationField(
-            typeof(Level3Graph),
-            name: "level3Entity",
+        AddNavigationField(name: "level3Entity",
             resolve: context => context.Source.Level2Entity.Level3Entity,
-            includeNames: new[] { "Level2Entity.Level3Entity"});
+            graphType: typeof(Level3Graph), includeNames: new[] { "Level2Entity.Level3Entity"});
     }
 }

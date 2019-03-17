@@ -29,25 +29,25 @@ namespace GraphQL.EntityFramework
         }
 
         protected FieldType AddNavigationField<TReturn>(
-            Type graphType,
             string name,
             Func<ResolveFieldContext<object>, TReturn> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
         {
-            return efGraphQlService.AddNavigationField(this, graphType, name, resolve, arguments, includeNames);
+            return efGraphQlService.AddNavigationField(this, name, resolve, graphType, arguments, includeNames);
         }
 
         protected FieldType AddNavigationField<TReturn>(
-            Type graphType,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
         {
-            return efGraphQlService.AddNavigationField(this, graphType, name, resolve, arguments, includeNames);
+            return efGraphQlService.AddNavigationField(this, name, resolve, graphType, arguments, includeNames);
         }
 
         protected void AddQueryConnectionField<TReturn>(
@@ -68,16 +68,16 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField(this, graphType, name, resolve, arguments);
+            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
         }
 
         protected FieldType AddSingleField<TReturn>(
-            Type graphType,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Type graphType,
             string name = nameof(TReturn))
             where TReturn : class
         {
-            return efGraphQlService.AddSingleField(this, name, graphType, resolve);
+            return efGraphQlService.AddSingleField(this, name, resolve, graphType);
         }
     }
 }

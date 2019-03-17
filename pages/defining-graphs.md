@@ -62,14 +62,11 @@ public class Query :
     public Query(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
-        AddSingleField(
-            typeof(CompanyGraph),
-            name: "company",
-            resolve: context =>
-            {
-                var dataContext = (DataContext) context.UserContext;
-                return dataContext.Companies;
-            });
+        AddSingleField(resolve: context =>
+        {
+            var dataContext = (DataContext) context.UserContext;
+            return dataContext.Companies;
+        }, graphType: typeof(CompanyGraph), name: "company");
         AddQueryField(
             typeof(CompanyGraph),
             name: "companies",
@@ -81,7 +78,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L31)</sup>
+<sup>[snippet source](/src/Snippets/RootQuery.cs#L6-L28)</sup>
 <!-- endsnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -101,10 +98,8 @@ public class CompanyGraph :
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        AddNavigationField<Employee>(
-            typeof(EmployeeGraph),
-            name: "employees",
-            resolve: context => context.Source.Employees);
+        AddNavigationField<Employee>(name: "employees",
+            resolve: context => context.Source.Employees, graphType: typeof(EmployeeGraph));
         AddNavigationConnectionField(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
@@ -113,7 +108,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/TypedGraph.cs#L7-L29)</sup>
+<sup>[snippet source](/src/Snippets/TypedGraph.cs#L7-L27)</sup>
 <!-- endsnippet -->
 
 
@@ -303,5 +298,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L72-L104)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L69-L101)</sup>
 <!-- endsnippet -->

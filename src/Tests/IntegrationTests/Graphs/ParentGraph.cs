@@ -8,10 +8,8 @@ public class ParentGraph :
     {
         Field(x => x.Id);
         Field(x => x.Property);
-        AddNavigationField<ChildEntity>(
-            typeof(ChildGraph),
-            name: "children",
-            resolve: context => context.Source.Children);
+        AddNavigationField<ChildEntity>(name: "children",
+            resolve: context => context.Source.Children, graphType: typeof(ChildGraph));
         AddNavigationConnectionField(
             name: "childrenConnection",
             resolve: context => context.Source.Children,

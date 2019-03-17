@@ -10,24 +10,24 @@ namespace GraphQL.EntityFramework
         FieldType AddSingleField<TReturn>(
             ObjectGraphType graph,
             string name,
-            Type graphType,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Type graphType,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
-            Type graphType,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Type graphType,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class;
     }

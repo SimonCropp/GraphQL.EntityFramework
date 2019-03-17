@@ -22,14 +22,11 @@ public class Query :
 
         #endregion
 
-        AddSingleField(
-            typeof(CompanyGraph),
-            name: "company",
-            resolve: context =>
-            {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies;
-            });
+        AddSingleField(resolve: context =>
+        {
+            var dataContext = (MyDataContext) context.UserContext;
+            return dataContext.Companies;
+        }, graphType: typeof(CompanyGraph), name: "company");
 
         AddQueryConnectionField(
             name: "companiesConnection",
