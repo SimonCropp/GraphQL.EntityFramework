@@ -139,11 +139,12 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
-            });
+            },
+            graphType:typeof(CompanyGraph));
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L6-L24)</sup>
+<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L6-L25)</sup>
 <!-- endsnippet -->
 
 
@@ -302,5 +303,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L69-L99)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L71-L101)</sup>
 <!-- endsnippet -->

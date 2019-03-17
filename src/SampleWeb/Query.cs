@@ -37,7 +37,8 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
-            });
+            },
+            graphType:typeof(CompanyGraph));
 
         AddQueryField(
             typeof(EmployeeGraph),
@@ -65,7 +66,8 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Employees;
-            });
+            },
+            graphType:typeof(EmployeeGraph));
         #region ManuallyApplyWhere
         Field<ListGraphType<EmployeeSummaryGraph>>(
             name: "employeeSummary",

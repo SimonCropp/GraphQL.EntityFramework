@@ -83,7 +83,8 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ParentEntities;
-            });
+            },
+            graphType: typeof(ParentGraph));
 
         efGraphQlService.AddQueryConnectionField<ChildGraph, ChildEntity>(this,
             name: "childEntitiesConnection",
@@ -91,14 +92,15 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.ChildEntities;
-            });
+            },
+            graphType: typeof(ChildGraph));
 
         efGraphQlService.AddQueryField(this,
             typeof(FilterParentGraph),
             name: "parentEntitiesFiltered",
             resolve: context =>
             {
-                var dataContext = (MyDataContext)context.UserContext;
+                var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.FilterParentEntities;
             });
 
@@ -106,9 +108,10 @@ public class Query :
             name: "parentEntitiesConnectionFiltered",
             resolve: context =>
             {
-                var dataContext = (MyDataContext)context.UserContext;
+                var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.FilterParentEntities;
-            });
+            },
+            graphType: typeof(FilterParentGraph));
 
         efGraphQlService.AddSingleField(this,
             name: "parentEntity",
