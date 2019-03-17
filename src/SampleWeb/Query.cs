@@ -11,7 +11,8 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField<CompanyGraph, Company>(
+        AddQueryField(
+            typeof(CompanyGraph),
             name: "companies",
             resolve: context =>
             {
@@ -21,7 +22,8 @@ public class Query :
 
         #endregion
 
-        AddSingleField<CompanyGraph, Company>(
+        AddSingleField(
+            typeof(CompanyGraph),
             name: "company",
             resolve: context =>
             {
@@ -37,7 +39,8 @@ public class Query :
                 return dataContext.Companies;
             });
 
-        AddQueryField<EmployeeGraph, Employee>(
+        AddQueryField(
+            typeof(EmployeeGraph),
             name: "employees",
             resolve: context =>
             {
@@ -45,7 +48,8 @@ public class Query :
                 return dataContext.Employees;
             });
 
-        AddQueryField<EmployeeGraph, Employee>(
+        AddQueryField(
+            typeof(EmployeeGraph),
             name: "employeesByArgument",
             arguments: new QueryArguments(new QueryArgument<StringGraphType> {Name = "content"}),
             resolve: context =>

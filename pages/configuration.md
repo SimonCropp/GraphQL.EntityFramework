@@ -266,7 +266,8 @@ public class Query :
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
     {
-        AddQueryField<CompanyGraph, Company>(
+        AddQueryField(
+            typeof(CompanyGraph),
             name: "companies",
             resolve: context =>
             {
@@ -274,7 +275,7 @@ public class Query :
                 return dataContext.Companies;
             });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L6-L22)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L6-L23)</sup>
 <!-- endsnippet -->
 
 
