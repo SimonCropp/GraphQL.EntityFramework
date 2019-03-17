@@ -99,7 +99,7 @@ public class CompanyGraph :
     {
         Field(x => x.Id);
         Field(x => x.Content);
-        AddNavigationField<Employee>(
+        AddNavigationListField(
             name: "employees",
             resolve: context => context.Source.Employees);
         AddNavigationConnectionField(
@@ -270,7 +270,10 @@ In some cases, you may want to use `Field` instead of `AddQueryField`/`AddSingle
 Field<ListGraphType<EmployeeSummaryGraph>>(
     name: "employeeSummary",
     arguments: new QueryArguments(
-        new QueryArgument<ListGraphType<WhereExpressionGraph>> {Name = "where"}
+        new QueryArgument<ListGraphType<WhereExpressionGraph>>
+        {
+            Name = "where"
+        }
     ),
     resolve: context =>
     {
@@ -279,10 +282,10 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
 
         if (context.HasArgument("where"))
         {
-            var whereExpressions = context.GetArgument<List<WhereExpression>>("where");
-            foreach (var whereExpression in whereExpressions)
+            var wheres = context.GetArgument<List<WhereExpression>>("where");
+            foreach (var where in wheres)
             {
-                var predicate = ExpressionBuilder<Employee>.BuildPredicate(whereExpression);
+                var predicate = ExpressionBuilder<Employee>.BuildPredicate(where);
                 query = query.Where(predicate);
             }
         }
@@ -297,5 +300,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L65-L97)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L69-L104)</sup>
 <!-- endsnippet -->

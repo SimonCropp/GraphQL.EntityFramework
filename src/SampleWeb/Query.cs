@@ -23,10 +23,10 @@ public class Query :
 
         AddSingleField(
             resolve: context =>
-        {
-            var dataContext = (MyDataContext) context.UserContext;
-            return dataContext.Companies;
-        }, name: "company");
+            {
+                var dataContext = (MyDataContext) context.UserContext;
+                return dataContext.Companies;
+            }, name: "company");
 
         AddQueryConnectionField(
             name: "companiesConnection",

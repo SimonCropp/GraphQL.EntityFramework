@@ -7,7 +7,7 @@ namespace GraphQL.EntityFramework
 {
     partial class EfGraphQLService
     {
-        public FieldType AddNavigationField<TSource, TReturn>(
+        public FieldType AddNavigationListField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
@@ -21,7 +21,7 @@ namespace GraphQL.EntityFramework
             return graph.AddField(field);
         }
 
-        public FieldType AddNavigationField<TReturn>(ObjectGraphType graph,
+        public FieldType AddNavigationListField<TReturn>(ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             Type graphType = null,
