@@ -14,6 +14,7 @@ public class WithManyChildrenGraph :
                 Assert.NotNull(context.Source.Child2);
                 Assert.NotNull(context.Source.Child1);
                 return context.Source.Child1;
-            }, graphType: typeof(Child1Graph), includeNames: new []{ "Child2", "Child1" });
+            },
+            includeNames: new []{ "Child2", "Child1" });
     }
 }

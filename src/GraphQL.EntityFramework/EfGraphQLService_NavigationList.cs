@@ -21,7 +21,8 @@ namespace GraphQL.EntityFramework
             return graph.AddField(field);
         }
 
-        public FieldType AddNavigationListField<TReturn>(ObjectGraphType graph,
+        public FieldType AddNavigationListField<TReturn>(
+            ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
             Type graphType = null,

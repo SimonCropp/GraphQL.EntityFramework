@@ -26,7 +26,8 @@ public class Query :
             {
                 var dataContext = (MyDataContext) context.UserContext;
                 return dataContext.Companies;
-            }, name: "company");
+            },
+            name: "company");
 
         AddQueryConnectionField(
             name: "companiesConnection",
