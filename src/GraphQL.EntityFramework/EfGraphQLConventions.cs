@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using GraphQL.Types.Relay;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphQL.EntityFramework
@@ -51,6 +55,26 @@ namespace GraphQL.EntityFramework
             register(typeof(ConnectionType<>));
             register(typeof(EdgeType<>));
             register(typeof(PageInfoType));
+        }
+
+        #region RegisterInContainerServiceCollection
+        public static void RegisterInContainer(IServiceCollection services, IEnumerable<Assembly> typeConfigurationAssemblies, GlobalFilters filters = null)
+        #endregion
+        {
+            Guard.AgainstNull(nameof(services), services);
+
+            var builder = new DbContextOptionsBuilder();
+            builder.UseSqlServer("fake");
+            using (var context = new DbContext(builder.Options))
+            {
+                var modelBuilder = new ModelBuilder(ConventionSet.CreateConventionSet(context));
+                foreach (var assembly in typeConfigurationAssemblies)
+                {
+                    modelBuilder.ApplyConfigurationsFromAssembly(assembly);
+                }
+
+                RegisterInContainer(services, modelBuilder.Model, filters);
+            }
         }
     }
 }
