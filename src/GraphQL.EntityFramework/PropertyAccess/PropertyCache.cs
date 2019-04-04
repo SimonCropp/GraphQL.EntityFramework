@@ -9,25 +9,26 @@ static class PropertyCache<TInput>
 
     public static Property<TInput> GetProperty(string path)
     {
-        return properties.GetOrAdd(path, x =>
-        {
-            var parameter = Expression.Parameter(typeof(TInput));
-            var left = AggregatePath(x, parameter);
-
-            var converted = Expression.Convert(left, typeof(object));
-            var lambda = Expression.Lambda<Func<TInput, object>>(converted, parameter);
-            var compile = lambda.Compile();
-            var listContainsMethod = ReflectionCache.GetListContains(left.Type);
-            return new Property<TInput>
+        return properties.GetOrAdd(path,
+            x =>
             {
-                Left = left,
-                Lambda = lambda,
-                SourceParameter = parameter,
-                Func = compile,
-                PropertyType = left.Type,
-                ListContainsMethod = listContainsMethod
-            };
-        });
+                var parameter = Expression.Parameter(typeof(TInput));
+                var left = AggregatePath(x, parameter);
+
+                var converted = Expression.Convert(left, typeof(object));
+                var lambda = Expression.Lambda<Func<TInput, object>>(converted, parameter);
+                var compile = lambda.Compile();
+                var listContainsMethod = ReflectionCache.GetListContains(left.Type);
+                return new Property<TInput>
+                {
+                    Left = left,
+                    Lambda = lambda,
+                    SourceParameter = parameter,
+                    Func = compile,
+                    PropertyType = left.Type,
+                    ListContainsMethod = listContainsMethod
+                };
+            });
     }
 
     static Expression AggregatePath(string path, Expression parameter)

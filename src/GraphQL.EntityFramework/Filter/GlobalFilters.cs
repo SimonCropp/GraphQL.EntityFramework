@@ -6,41 +6,47 @@ using System.Threading.Tasks;
 namespace GraphQL.EntityFramework
 {
     #region GlobalFiltersSignature
+
     public class GlobalFilters
     {
         public delegate bool Filter<in T>(object userContext, T input);
+
         public delegate Task<bool> AsyncFilter<in T>(object userContext, T input);
 
-            #endregion
+        #endregion
+
         public void Add<T>(Filter<T> filter)
         {
             Guard.AgainstNull(nameof(filter), filter);
-            funcs[typeof(T)] = (context, item) =>
-            {
-                try
+            funcs[typeof(T)] =
+                (context, item) =>
                 {
-                    return Task.FromResult(filter(context, (T) item));
-                }
-                catch (Exception exception)
-                {
-                    throw new Exception($"Failed to execute filter. T: {typeof(T)}.", exception);
-                }
-            };
+                    try
+                    {
+                        return Task.FromResult(filter(context, (T) item));
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new Exception($"Failed to execute filter. T: {typeof(T)}.", exception);
+                    }
+                };
         }
+
         public void Add<T>(AsyncFilter<T> filter)
         {
             Guard.AgainstNull(nameof(filter), filter);
-            funcs[typeof(T)] = async (context, item) =>
-            {
-                try
+            funcs[typeof(T)] =
+                async (context, item) =>
                 {
-                    return await filter(context, (T) item);
-                }
-                catch (Exception exception)
-                {
-                    throw new Exception($"Failed to execute filter. T: {typeof(T)}.", exception);
-                }
-            };
+                    try
+                    {
+                        return await filter(context, (T) item);
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new Exception($"Failed to execute filter. T: {typeof(T)}.", exception);
+                    }
+                };
         }
 
         Dictionary<Type, Func<object, object, Task<bool>>> funcs = new Dictionary<Type, Func<object, object, Task<bool>>>();
