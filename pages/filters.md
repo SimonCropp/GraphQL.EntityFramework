@@ -27,9 +27,10 @@ Notes:
 public class GlobalFilters
 {
     public delegate bool Filter<in T>(object userContext, T input);
+
     public delegate Task<bool> AsyncFilter<in T>(object userContext, T input);
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/Filter/GlobalFilters.cs#L8-L14)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/Filter/GlobalFilters.cs#L8-L16)</sup>
 <!-- endsnippet -->
 
 
