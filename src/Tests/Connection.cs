@@ -6,11 +6,7 @@ public static class Connection
 
     static Connection()
     {
-#if(NET472)
-        var dbName = "GraphQLEntityFrameworkTestsNetClassic";
-#else
-        var dbName = "GraphQLEntityFrameworkTestsNetCore";
-#endif
+        var dbName = "GraphQLEntityFrameworkTests";
         if (Environment.GetEnvironmentVariable("AppVeyor") == "True")
         {
             ConnectionString = $@"Server=(local)\SQL2017;Database={dbName};User ID=sa;Password=Password12!;MultipleActiveResultSets=true";
