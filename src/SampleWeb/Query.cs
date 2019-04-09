@@ -6,7 +6,7 @@ using GraphQL.Types;
 #region QueryUsedInController
 
 public class Query :
-    EfObjectGraphType
+    QueryGraphType
 {
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)

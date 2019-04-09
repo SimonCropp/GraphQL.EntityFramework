@@ -6,7 +6,7 @@ class ConnectionRootQuery
     #region ConnectionRootQuery
 
     public class Query :
-        EfObjectGraphType
+        QueryGraphType
     {
         public Query(IEfGraphQLService graphQlService) :
             base(graphQlService)

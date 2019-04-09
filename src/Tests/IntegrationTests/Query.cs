@@ -1,7 +1,7 @@
 ﻿using GraphQL.EntityFramework;
 
 public class Query :
-    EfObjectGraphType
+    QueryGraphType
 {
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)
