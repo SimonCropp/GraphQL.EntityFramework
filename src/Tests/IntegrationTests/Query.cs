@@ -37,11 +37,9 @@ public class Query :
             {
                 var dbContext = (MyDbContext) context.UserContext;
                 return dbContext.Level1Entities;
-            },
-            graphType: typeof(Level1Graph));
+            });
 
-        efGraphQlService.AddQueryField(
-            this,
+        AddQueryField(
             name: "withNullableEntities",
             resolve: context =>
             {
@@ -49,8 +47,7 @@ public class Query :
                 return dbContext.WithNullableEntities;
             });
 
-        efGraphQlService.AddQueryField(
-            this,
+        AddQueryField(
             name: "misNamed",
             resolve: context =>
             {
@@ -58,8 +55,7 @@ public class Query :
                 return dbContext.WithMisNamedQueryParentEntities;
             });
 
-        efGraphQlService.AddQueryField(
-            this,
+        AddQueryField(
             name: "parentEntities",
             resolve: context =>
             {
@@ -67,8 +63,7 @@ public class Query :
                 return dbContext.ParentEntities;
             });
 
-        efGraphQlService.AddQueryField(
-            this,
+        AddQueryField(
             name: "childEntities",
             resolve: context =>
             {
@@ -94,8 +89,7 @@ public class Query :
                 return dbContext.ChildEntities;
             });
 
-        efGraphQlService.AddQueryField(
-            this,
+        AddQueryField(
             name: "parentEntitiesFiltered",
             resolve: context =>
             {
@@ -112,8 +106,7 @@ public class Query :
                 return dbContext.FilterParentEntities;
             });
 
-        efGraphQlService.AddSingleField(
-            this,
+        AddSingleField(
             name: "parentEntity",
             resolve: context =>
             {
