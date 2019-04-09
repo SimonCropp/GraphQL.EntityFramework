@@ -62,17 +62,14 @@ public partial class IntegrationTests :
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
         var entity3 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value3"
         };
 
@@ -85,13 +82,9 @@ public partial class IntegrationTests :
     {
         var query = "{ withNullableEntities (where: {path: 'Nullable', comparison: 'equal'}){ id } }";
 
-        var entity1 = new WithNullableEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001")
-        };
+        var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Nullable = 10
         };
 
@@ -104,13 +97,9 @@ public partial class IntegrationTests :
     {
         var query = "{ withNullableEntities (where: {path: 'Nullable', comparison: 'equal', value: '10'}){ id } }";
 
-        var entity1 = new WithNullableEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001")
-        };
+        var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Nullable = 10
         };
 
@@ -125,12 +114,10 @@ public partial class IntegrationTests :
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = null
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -151,12 +138,10 @@ public partial class IntegrationTests :
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -177,12 +162,10 @@ public partial class IntegrationTests :
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -208,7 +191,6 @@ public partial class IntegrationTests :
     }
   }
 }
-
 ";
         var entities = BuildEntities(8);
 
@@ -241,12 +223,10 @@ public partial class IntegrationTests :
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -267,12 +247,10 @@ public partial class IntegrationTests :
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -293,12 +271,10 @@ public partial class IntegrationTests :
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -319,12 +295,10 @@ public partial class IntegrationTests :
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -347,12 +321,10 @@ query ($value: String!)
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -377,12 +349,10 @@ query ($value: String!)
 
         var entity1 = new CustomTypeEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = long.MaxValue
         };
         var entity2 = new CustomTypeEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = 3
         };
 
@@ -411,13 +381,11 @@ query ($value: String!)
         };
         var entity2 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2",
             Parent = entity1
         };
         var entity3 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value3",
             Parent = entity1
         };
@@ -425,12 +393,10 @@ query ($value: String!)
         entity1.Children.Add(entity3);
         var entity4 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
             Property = "Value4"
         };
         var entity5 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
             Property = "Value5",
             Parent = entity4
         };
@@ -453,12 +419,10 @@ query ($value: String!)
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -479,12 +443,10 @@ query ($value: String!)
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -505,12 +467,10 @@ query ($value: String!)
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -536,7 +496,6 @@ query ($value: String!)
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -589,12 +548,10 @@ query ($value: String!)
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -616,12 +573,10 @@ query ($value: String!)
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -658,29 +613,24 @@ query ($value: String!)
 ";
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
         var entity3 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value3"
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
         var entity4 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
             Property = "Value4"
         };
         var entity5 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
             Property = "Value5"
         };
         entity4.Children.Add(entity5);
@@ -706,18 +656,15 @@ query ($value: String!)
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2",
             Parent = entity1
         };
         var entity3 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value3",
             Parent = entity1
         };
@@ -725,12 +672,10 @@ query ($value: String!)
         entity1.Children.Add(entity3);
         var entity4 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
             Property = "Value4"
         };
         var entity5 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
             Property = "Value5",
             Parent = entity4
         };
@@ -756,17 +701,14 @@ query ($value: String!)
 
         var level3 = new Level3Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value"
         };
         var level2 = new Level2Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Level3Entity = level3
         };
         var level1 = new Level1Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Level2Entity = level2
         };
 
@@ -793,17 +735,14 @@ query ($value: String!)
 
         var level3 = new Level3Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value"
         };
         var level2 = new Level2Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Level3Entity = level3
         };
         var level1 = new Level1Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Level2Entity = level2
         };
 
@@ -835,22 +774,16 @@ query ($value: String!)
         };
         var level2a = new Level2Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Level3Entity = level3a
         };
         var level1a = new Level1Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Level2Entity = level2a
         };
 
-        var level2b = new Level2Entity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004")
-        };
+        var level2b = new Level2Entity();
         var level1b = new Level1Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
             Level2Entity = level2b
         };
 
@@ -875,18 +808,15 @@ query ($value: String!)
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2",
             Parent = entity1
         };
         var entity3 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value3",
             Parent = entity1
         };
@@ -894,12 +824,10 @@ query ($value: String!)
         entity1.Children.Add(entity3);
         var entity4 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
             Property = "Value4"
         };
         var entity5 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
             Property = "Value5",
             Parent = entity4
         };
@@ -931,13 +859,11 @@ query ($value: String!)
         };
         var entity2 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2",
             Parent = entity1
         };
         var entity3 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value3",
             Parent = entity1
         };
@@ -945,7 +871,6 @@ query ($value: String!)
         entity1.Children.Add(entity3);
         var entity5 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
             Property = "Value5"
         };
 
@@ -967,29 +892,20 @@ query ($value: String!)
   }
 }";
 
-        var entity1 = new WithMisNamedQueryParentEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001")
-        };
+        var entity1 = new WithMisNamedQueryParentEntity();
         var entity2 = new WithMisNamedQueryChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Parent = entity1
         };
         var entity3 = new WithMisNamedQueryChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity4 = new WithMisNamedQueryParentEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004")
-        };
+        var entity4 = new WithMisNamedQueryParentEntity();
         var entity5 = new WithMisNamedQueryChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
             Parent = entity4
         };
         entity4.Children.Add(entity5);
@@ -1015,18 +931,15 @@ query ($value: String!)
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2",
             Parent = entity1
         };
         var entity3 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Value3",
             Parent = entity1
         };
@@ -1034,12 +947,10 @@ query ($value: String!)
         entity1.Children.Add(entity3);
         var entity4 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
             Property = "Value4"
         };
         var entity5 = new ChildEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
             Property = "Value5",
             Parent = entity4
         };
@@ -1063,18 +974,13 @@ query ($value: String!)
   }
 }";
 
-        var parent = new WithManyChildrenEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001")
-        };
+        var parent = new WithManyChildrenEntity();
         var child1 = new Child1Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Parent = parent
         };
         var child2 = new Child2Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Parent = parent
         };
         parent.Child1 = child1;

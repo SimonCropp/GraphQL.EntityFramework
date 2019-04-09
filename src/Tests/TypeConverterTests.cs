@@ -29,7 +29,7 @@ public class TypeConverterTests
         var result = TypeConverter.ConvertStringToType(value, typeof(DateTime));
         Assert.Equal(dateTime, result);
     }
-    
+
     [Fact]
     public void ConvertStringToEnum()
     {
@@ -38,7 +38,7 @@ public class TypeConverterTests
         var result = TypeConverter.ConvertStringToType(value, typeof(DayOfWeek));
         Assert.Equal(day, result);
     }
-    
+
     [Fact]
     public void ConvertUppercaseStringToEnum()
     {

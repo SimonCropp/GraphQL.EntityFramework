@@ -2,9 +2,6 @@
 
 public class CustomTypeEntity
 {
-    public CustomTypeEntity()
-    {
-    }
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = SimpleSequentialGuid.NewGuid();
     public long Property { get; set; }
 }

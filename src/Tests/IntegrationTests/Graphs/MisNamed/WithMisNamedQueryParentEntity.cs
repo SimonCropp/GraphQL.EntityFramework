@@ -3,10 +3,6 @@ using System.Collections.Generic;
 
 public class WithMisNamedQueryParentEntity
 {
-    public WithMisNamedQueryParentEntity()
-    {
-        Children = new List<WithMisNamedQueryChildEntity>();
-    }
-    public Guid Id { get; set; }
-    public IList<WithMisNamedQueryChildEntity> Children { get; set; }
+    public Guid Id { get; set; } = SimpleSequentialGuid.NewGuid();
+    public IList<WithMisNamedQueryChildEntity> Children { get; set; } = new List<WithMisNamedQueryChildEntity>();
 }
