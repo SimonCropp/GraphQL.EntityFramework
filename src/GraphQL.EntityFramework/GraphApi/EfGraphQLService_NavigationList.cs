@@ -20,7 +20,7 @@ namespace GraphQL.EntityFramework
             var field = BuildNavigationField(graphType, name, resolve, includeNames, arguments);
             return graph.AddField(field);
         }
-        
+
         FieldType BuildNavigationField<TSource, TReturn>(
             Type graphType,
             string name,

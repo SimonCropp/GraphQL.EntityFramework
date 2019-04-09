@@ -8,7 +8,8 @@ public class WithManyChildrenGraph :
         base(graphQlService)
     {
         Field(x => x.Id);
-        AddNavigationField(name: "child1",
+        AddNavigationField(
+            name: "child1",
             resolve: context =>
             {
                 Assert.NotNull(context.Source.Child2);
