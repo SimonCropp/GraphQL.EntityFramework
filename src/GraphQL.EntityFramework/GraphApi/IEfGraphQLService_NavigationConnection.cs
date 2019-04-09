@@ -6,16 +6,6 @@ namespace GraphQL.EntityFramework
 {
     public partial interface IEfGraphQLService
     {
-        void AddNavigationConnectionField<TReturn>(
-            ObjectGraphType graph,
-            string name,
-            Func<ResolveFieldContext<object>, IEnumerable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null,
-            int pageSize = 10)
-            where TReturn : class;
-
         void AddNavigationConnectionField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
