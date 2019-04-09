@@ -2,20 +2,20 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 
 // InMemory is used to make the sample simpler.
-// Replace with a real DataContext
-static class DataContextBuilder
+// Replace with a real DbContext
+static class DbContextBuilder
 {
-    static DataContextBuilder()
+    static DbContextBuilder()
     {
-        using (var myDataContext = InMemoryContextBuilder.Build<MyDataContext>())
+        using (var dbContext = InMemoryContextBuilder.Build<MyDbContext>())
         {
-            Model = myDataContext.Model;
+            Model = dbContext.Model;
         }
     }
 
     public static IModel Model;
 
-    public static MyDataContext BuildDataContext()
+    public static MyDbContext BuildDbContext()
     {
         var company1 = new Company
         {
@@ -58,9 +58,9 @@ static class DataContextBuilder
             Id = 7,
             Content = "Company4"
         };
-        var myDataContext = InMemoryContextBuilder.Build<MyDataContext>();
-        myDataContext.AddRange(company1, employee1, employee2, company2, company3, company4, employee4);
-        myDataContext.SaveChanges();
-        return myDataContext;
+        var dbContext = InMemoryContextBuilder.Build<MyDbContext>();
+        dbContext.AddRange(company1, employee1, employee2, company2, company3, company4, employee4);
+        dbContext.SaveChanges();
+        return dbContext;
     }
 }

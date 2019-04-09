@@ -65,16 +65,16 @@ public class Query :
         AddSingleField(
             resolve: context =>
             {
-                var dataContext = (DataContext) context.UserContext;
-                return dataContext.Companies;
+                var dbContext = (DbContext) context.UserContext;
+                return dbContext.Companies;
             },
             name: "company");
         AddQueryField(
             name: "companies",
             resolve: context =>
             {
-                var dataContext = (DataContext) context.UserContext;
-                return dataContext.Companies;
+                var dbContext = (DbContext) context.UserContext;
+                return dbContext.Companies;
             });
     }
 }
@@ -133,8 +133,8 @@ public class Query :
             name: "companies",
             resolve: context =>
             {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies;
+                var dbContext = (MyDbContext) context.UserContext;
+                return dbContext.Companies;
             });
     }
 }
@@ -277,8 +277,8 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
     ),
     resolve: context =>
     {
-        var dataContext = (MyDataContext) context.UserContext;
-        IQueryable<Employee> query = dataContext.Employees;
+        var dbContext = (MyDbContext) context.UserContext;
+        IQueryable<Employee> query = dbContext.Employees;
 
         if (context.HasArgument("where"))
         {

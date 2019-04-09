@@ -32,9 +32,9 @@ public partial class IntegrationTests :
         GraphTypeTypeRegistry.Register<WithNullableEntity, WithNullableGraph>();
         GraphTypeTypeRegistry.Register<WithMisNamedQueryChildEntity, WithMisNamedQueryChildGraph>();
 
-        using (var dataContext = BuildDataContext())
+        using (var dbContext = BuildDbContext())
         {
-            dataContext.Database.EnsureCreated();
+            dbContext.Database.EnsureCreated();
         }
     }
 
@@ -46,7 +46,7 @@ public partial class IntegrationTests :
     [Fact]
     public async Task Where_multiple()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities
   (where:
@@ -76,14 +76,14 @@ public partial class IntegrationTests :
             Property = "Value3"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3);
+        var result = await RunQuery(query, null, true, null, entity1, entity2, entity3);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Where_with_nullable_properties1()
     {
-        var queryString = "{ withNullableEntities (where: {path: 'Nullable', comparison: 'equal'}){ id } }";
+        var query = "{ withNullableEntities (where: {path: 'Nullable', comparison: 'equal'}){ id } }";
 
         var entity1 = new WithNullableEntity
         {
@@ -95,14 +95,14 @@ public partial class IntegrationTests :
             Nullable = 10
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Where_with_nullable_properties2()
     {
-        var queryString = "{ withNullableEntities (where: {path: 'Nullable', comparison: 'equal', value: '10'}){ id } }";
+        var query = "{ withNullableEntities (where: {path: 'Nullable', comparison: 'equal', value: '10'}){ id } }";
 
         var entity1 = new WithNullableEntity
         {
@@ -114,14 +114,14 @@ public partial class IntegrationTests :
             Nullable = 10
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Where_null_comparison_value()
     {
-        var queryString = "{ parentEntities (where: {path: 'Property', comparison: 'equal'}){ id } }";
+        var query = "{ parentEntities (where: {path: 'Property', comparison: 'equal'}){ id } }";
 
         var entity1 = new ParentEntity
         {
@@ -134,14 +134,14 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Take()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (take: 1)
   {
@@ -160,14 +160,14 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Skip()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (skip: 1)
   {
@@ -186,14 +186,14 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Connection_first_page()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntitiesConnection(first:2, after: '0') {
     totalCount
@@ -212,7 +212,7 @@ public partial class IntegrationTests :
 ";
         var entities = BuildEntities(8);
 
-        var result = await RunQuery(queryString, null, true, null, entities.ToArray());
+        var result = await RunQuery(query, null, true, null, entities.ToArray());
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -231,7 +231,7 @@ public partial class IntegrationTests :
     [Fact]
     public async Task Where_case_sensitive()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (where: {path: 'Property', comparison: 'equal', value: 'Value2', case: 'Ordinal' })
   {
@@ -250,14 +250,14 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, false, null, entity1, entity2);
+        var result = await RunQuery(query, null, false, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task OrderBy()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (orderBy: {path: 'Property'})
   {
@@ -276,14 +276,14 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity2, entity1);
+        var result = await RunQuery(query, null, true, null, entity2, entity1);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task OrderByDescending()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (orderBy: {path: 'Property', descending: true})
   {
@@ -302,14 +302,14 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Like()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (where: {path: 'Property', comparison: 'Like', value: 'value2'})
   {
@@ -328,14 +328,14 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Where_with_variable()
     {
-        var queryString = @"
+        var query = @"
 query ($value: String!)
 {
   parentEntities (where: {path: 'Property', comparison: 'equal', value: [$value]})
@@ -360,14 +360,14 @@ query ($value: String!)
         {
             {"value", "value2"}
         });
-        var result = await RunQuery(queryString, inputs, true, null, entity1, entity2);
+        var result = await RunQuery(query, inputs, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task CustomType()
     {
-        var queryString = @"
+        var query = @"
 {
   customType
   {
@@ -386,14 +386,14 @@ query ($value: String!)
             Property = 3
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task SingleParent_Child()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
     property
@@ -436,14 +436,14 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(query, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Where()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (where: {path: 'Property', comparison: 'equal', value: 'value2'})
   {
@@ -462,14 +462,14 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Where_default_comparison()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (where: {path: 'Property', value: 'value2'})
   {
@@ -488,14 +488,14 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task In_case_sensitive()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (where: {path: 'Property', comparison: 'In', value: 'Value2', case: 'Ordinal' })
   {
@@ -514,14 +514,14 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, false, null, entity1, entity2);
+        var result = await RunQuery(query, null, false, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Id()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (ids: '00000000-0000-0000-0000-000000000001')
   {
@@ -540,14 +540,14 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Id_multiple()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities
   (ids: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
@@ -572,14 +572,14 @@ query ($value: String!)
             Property = "Value3"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3);
+        var result = await RunQuery(query, null, true, null, entity1, entity2, entity3);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task In()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities (where: {path: 'Property', comparison: 'In', value: 'value2'})
   {
@@ -598,14 +598,14 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task In_multiple()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities
   (where: {path: 'Property', comparison: 'In', value: ['Value1', 'Value2']})
@@ -625,14 +625,14 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2);
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Connection_parent_child()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntitiesConnection(first:2, after: '0') {
     totalCount
@@ -685,7 +685,7 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(query, null, true, null, entity1, entity2, entity3, entity4, entity5);
 
         ObjectApprover.VerifyWithJson(result);
     }
@@ -693,7 +693,7 @@ query ($value: String!)
     [Fact]
     public async Task Child_parent_with_alias()
     {
-        var queryString = @"
+        var query = @"
 {
   childEntities
   {
@@ -736,14 +736,14 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(query, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Skip_level()
     {
-        var queryString = @"
+        var query = @"
 {
   skipLevel
   {
@@ -770,14 +770,14 @@ query ($value: String!)
             Level2Entity = level2
         };
 
-        var result = await RunQuery(queryString, null, true, null, level1, level2, level3);
+        var result = await RunQuery(query, null, true, null, level1, level2, level3);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Multiple_nested()
     {
-        var queryString = @"
+        var query = @"
 {
   level1Entities
   {
@@ -807,14 +807,14 @@ query ($value: String!)
             Level2Entity = level2
         };
 
-        var result = await RunQuery(queryString, null, true, null, level1, level2, level3);
+        var result = await RunQuery(query, null, true, null, level1, level2, level3);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Null_on_nested()
     {
-        var queryString = @"
+        var query = @"
 {
   level1Entities(where: {path: 'Level2Entity.Level3EntityId', comparison: 'equal', value: '00000000-0000-0000-0000-000000000003'})
   {
@@ -854,14 +854,14 @@ query ($value: String!)
             Level2Entity = level2b
         };
 
-        var result = await RunQuery(queryString, null, true, null, level1b, level2b, level1a, level2a, level3a);
+        var result = await RunQuery(query, null, true, null, level1b, level2b, level1a, level2a, level3a);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Child_parent()
     {
-        var queryString = @"
+        var query = @"
 {
   childEntities
   {
@@ -905,14 +905,14 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(query, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task With_null_navigation_property()
     {
-        var queryString = @"
+        var query = @"
 {
   childEntities(where: {path: 'ParentId', comparison: 'equal', value: '00000000-0000-0000-0000-000000000001'})
   {
@@ -949,14 +949,14 @@ query ($value: String!)
             Property = "Value5"
         };
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity5);
+        var result = await RunQuery(query, null, true, null, entity1, entity2, entity3, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task MisNamedQuery()
     {
-        var queryString = @"
+        var query = @"
 {
   misNamed
   {
@@ -994,14 +994,14 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(query, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Parent_child()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntities
   {
@@ -1045,14 +1045,14 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        var result = await RunQuery(queryString, null, true, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(query, null, true, null, entity1, entity2, entity3, entity4, entity5);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Many_children()
     {
-        var queryString = @"
+        var query = @"
 {
   manyChildren
   {
@@ -1080,21 +1080,21 @@ query ($value: String!)
         parent.Child1 = child1;
         parent.Child2 = child2;
 
-        var result = await RunQuery(queryString, null, true, null, parent, child1, child2);
+        var result = await RunQuery(query, null, true, null, parent, child1, child2);
         ObjectApprover.VerifyWithJson(result);
     }
 
-    static async Task<object> RunQuery(string queryString, Inputs inputs, bool throwForClientEval, GlobalFilters filters, params object[] entities)
+    static async Task<object> RunQuery(string query, Inputs inputs, bool throwForClientEval, GlobalFilters filters, params object[] entities)
     {
         Purge();
 
-        using (var dataContext = BuildDataContext(throwForClientEval))
+        using (var dbContext = BuildDbContext(throwForClientEval))
         {
-            dataContext.AddRange(entities);
-            dataContext.SaveChanges();
+            dbContext.AddRange(entities);
+            dbContext.SaveChanges();
         }
 
-        using (var dataContext = BuildDataContext(throwForClientEval))
+        using (var dbContext = BuildDbContext(throwForClientEval))
         {
             var services = new ServiceCollection();
 
@@ -1104,7 +1104,7 @@ query ($value: String!)
                 services.AddSingleton(type);
             }
 
-            return await QueryExecutor.ExecuteQuery(queryString, services, dataContext, inputs, filters);
+            return await QueryExecutor.ExecuteQuery(query, services, dbContext, inputs, filters);
         }
     }
 
@@ -1117,23 +1117,23 @@ query ($value: String!)
 
     static void Purge()
     {
-        using (var dataContext = BuildDataContext())
+        using (var dbContext = BuildDbContext())
         {
-            Purge(dataContext.CustomTypeEntities);
-            Purge(dataContext.Level1Entities);
-            Purge(dataContext.Level2Entities);
-            Purge(dataContext.Level3Entities);
-            Purge(dataContext.ChildEntities);
-            Purge(dataContext.ParentEntities);
-            Purge(dataContext.WithMisNamedQueryChildEntities);
-            Purge(dataContext.WithMisNamedQueryParentEntities);
-            Purge(dataContext.WithNullableEntities);
-            Purge(dataContext.WithManyChildrenEntities);
-            Purge(dataContext.FilterParentEntities);
-            Purge(dataContext.FilterChildEntities);
-            Purge(dataContext.Child1Entities);
-            Purge(dataContext.Child2Entities);
-            dataContext.SaveChanges();
+            Purge(dbContext.CustomTypeEntities);
+            Purge(dbContext.Level1Entities);
+            Purge(dbContext.Level2Entities);
+            Purge(dbContext.Level3Entities);
+            Purge(dbContext.ChildEntities);
+            Purge(dbContext.ParentEntities);
+            Purge(dbContext.WithMisNamedQueryChildEntities);
+            Purge(dbContext.WithMisNamedQueryParentEntities);
+            Purge(dbContext.WithNullableEntities);
+            Purge(dbContext.WithManyChildrenEntities);
+            Purge(dbContext.FilterParentEntities);
+            Purge(dbContext.FilterChildEntities);
+            Purge(dbContext.Child1Entities);
+            Purge(dbContext.Child2Entities);
+            dbContext.SaveChanges();
         }
     }
 
@@ -1143,15 +1143,15 @@ query ($value: String!)
         dbSet.RemoveRange(dbSet);
     }
 
-    static MyDataContext BuildDataContext(bool throwForClientEval = true)
+    static MyDbContext BuildDbContext(bool throwForClientEval = true)
     {
-        var builder = new DbContextOptionsBuilder<MyDataContext>();
+        var builder = new DbContextOptionsBuilder<MyDbContext>();
         builder.UseSqlServer(Connection.ConnectionString);
         if (throwForClientEval)
         {
             builder.ConfigureWarnings(x => x.Throw(RelationalEventId.QueryClientEvaluationWarning));
         }
 
-        return new MyDataContext(builder.Options);
+        return new MyDbContext(builder.Options);
     }
 }

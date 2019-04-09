@@ -9,7 +9,7 @@ public partial class IntegrationTests
     [Fact]
     public async Task Child_filtered()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntitiesFiltered
   {
@@ -40,7 +40,7 @@ public partial class IntegrationTests
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var result = await RunQuery(queryString, null, true, BuildFilters(), entity1, entity2, entity3);
+        var result = await RunQuery(query, null, true, BuildFilters(), entity1, entity2, entity3);
         ObjectApprover.VerifyWithJson(result);
     }
 
@@ -55,7 +55,7 @@ public partial class IntegrationTests
     [Fact]
     public async Task RootList_filtered()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntitiesFiltered
   {
@@ -74,14 +74,14 @@ public partial class IntegrationTests
             Property = "Ignore"
         };
 
-        var result = await RunQuery(queryString, null, true, BuildFilters(), entity1, entity2);
+        var result = await RunQuery(query, null, true, BuildFilters(), entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Root_connectionFiltered()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntitiesConnectionFiltered {
     totalCount
@@ -109,14 +109,14 @@ public partial class IntegrationTests
         };
 
 
-        var result = await RunQuery(queryString, null, true, BuildFilters(), entity1, entity2);
+        var result = await RunQuery(query, null, true, BuildFilters(), entity1, entity2);
         ObjectApprover.VerifyWithJson(result);
     }
 
     [Fact]
     public async Task Connection_parent_child_Filtered()
     {
-        var queryString = @"
+        var query = @"
 {
   parentEntitiesConnectionFiltered {
     totalCount
@@ -158,7 +158,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
 
-        var result = await RunQuery(queryString, null, true, BuildFilters(), entity1, entity2, entity3);
+        var result = await RunQuery(query, null, true, BuildFilters(), entity1, entity2, entity3);
 
         ObjectApprover.VerifyWithJson(result);
     }

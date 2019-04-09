@@ -15,8 +15,8 @@ class ConnectionRootQuery
                 name: "companies",
                 resolve: context =>
                 {
-                    var dataContext = (MyDataContext) context.UserContext;
-                    return dataContext.Companies;
+                    var dbContext = (MyDbContext) context.UserContext;
+                    return dbContext.Companies;
                 });
         }
     }
@@ -36,7 +36,7 @@ class ConnectionRootQuery
         }
     }
 
-    class MyDataContext
+    class MyDbContext
     {
         public IQueryable<Company> Companies { get; set; }
     }

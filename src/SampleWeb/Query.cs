@@ -15,8 +15,8 @@ public class Query :
             name: "companies",
             resolve: context =>
             {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies;
+                var dbContext = (MyDbContext) context.UserContext;
+                return dbContext.Companies;
             });
 
         #endregion
@@ -24,8 +24,8 @@ public class Query :
         AddSingleField(
             resolve: context =>
             {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies;
+                var dbContext = (MyDbContext) context.UserContext;
+                return dbContext.Companies;
             },
             name: "company");
 
@@ -33,16 +33,16 @@ public class Query :
             name: "companiesConnection",
             resolve: context =>
             {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Companies;
+                var dbContext = (MyDbContext) context.UserContext;
+                return dbContext.Companies;
             });
 
         AddQueryField(
             name: "employees",
             resolve: context =>
             {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Employees;
+                var dbContext = (MyDbContext) context.UserContext;
+                return dbContext.Employees;
             });
 
         AddQueryField(
@@ -50,8 +50,8 @@ public class Query :
             resolve: context =>
             {
                 var content = context.GetArgument<string>("content");
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Employees.Where(x => x.Content == content);
+                var dbContext = (MyDbContext) context.UserContext;
+                return dbContext.Employees.Where(x => x.Content == content);
             },
             arguments: new QueryArguments(
                 new QueryArgument<StringGraphType>
@@ -63,8 +63,8 @@ public class Query :
             name: "employeesConnection",
             resolve: context =>
             {
-                var dataContext = (MyDataContext) context.UserContext;
-                return dataContext.Employees;
+                var dbContext = (MyDbContext) context.UserContext;
+                return dbContext.Employees;
             });
 
         #region ManuallyApplyWhere
@@ -79,8 +79,8 @@ public class Query :
             ),
             resolve: context =>
             {
-                var dataContext = (MyDataContext) context.UserContext;
-                IQueryable<Employee> query = dataContext.Employees;
+                var dbContext = (MyDbContext) context.UserContext;
+                IQueryable<Employee> query = dbContext.Employees;
 
                 if (context.HasArgument("where"))
                 {

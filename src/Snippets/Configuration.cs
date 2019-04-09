@@ -9,21 +9,21 @@ class Configuration
     {
         #region RegisterInContainerServiceCollectionUsage
 
-        EfGraphQLConventions.RegisterInContainer(serviceCollection, MyDataContext.DataModel);
+        EfGraphQLConventions.RegisterInContainer(serviceCollection, MyDbContext.DataModel);
 
         #endregion
     }
 
-    #region DataContextWithModel
+    #region DbContextWithModel
 
-    public class MyDataContext :
+    public class MyDbContext :
         DbContext
     {
-        static MyDataContext()
+        static MyDbContext()
         {
             var builder = new DbContextOptionsBuilder();
             builder.UseSqlServer("fake");
-            using (var context = new MyDataContext(builder.Options))
+            using (var context = new MyDbContext(builder.Options))
             {
                 DataModel = context.Model;
             }
@@ -31,7 +31,7 @@ class Configuration
 
         public static readonly IModel DataModel;
 
-        public MyDataContext(DbContextOptions options) :
+        public MyDbContext(DbContextOptions options) :
             base(options)
         {
         }

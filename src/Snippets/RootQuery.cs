@@ -14,23 +14,23 @@ class RootQuery
             AddSingleField(
                 resolve: context =>
                 {
-                    var dataContext = (DataContext) context.UserContext;
-                    return dataContext.Companies;
+                    var dbContext = (DbContext) context.UserContext;
+                    return dbContext.Companies;
                 },
                 name: "company");
             AddQueryField(
                 name: "companies",
                 resolve: context =>
                 {
-                    var dataContext = (DataContext) context.UserContext;
-                    return dataContext.Companies;
+                    var dbContext = (DbContext) context.UserContext;
+                    return dbContext.Companies;
                 });
         }
     }
 
     #endregion
 
-    class DataContext
+    class DbContext
     {
         public IQueryable<Company> Companies { get; set; }
     }

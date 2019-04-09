@@ -2,7 +2,7 @@
 
 Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`. It can be extracted from a DbContext instance via the `DbContext.Model` property. Unfortunately EntityFramework conflates configuration with runtime in its API. So `DbContext` is the main API used at runtime, but it also contains the configuration API via the `OnModelCreating` method. As such a DbContext needs to be instantiated and disposed for the purposes of IModel construction. One possible approach is via a static field on the DbContext.
 
-snippet: DataContextWithModel
+snippet: DbContextWithModel
 
 Enabling is then done via registering in a container.
 
@@ -69,33 +69,33 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped(
-          provider => MyDataContextBuilder.BuildDataContext());
+          provider => MyDbContextBuilder.BuildDbContext());
     }
 }
 ```
 
-Entity Framework also provides [several helper methods](https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext#using-dbcontext-with-dependency-injection) to control a DataContexts lifecycle. For example:
+Entity Framework also provides [several helper methods](https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext#using-dbcontext-with-dependency-injection) to control a DbContexts lifecycle. For example:
 
 ```csharp
 public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<MyDataContext>(
-          provider => DataContextBuilder.BuildDataContext());
+        services.AddDbContext<MyDbContext>(
+          provider => DbContextBuilder.BuildDbContext());
     }
 }
 ```
 
 See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com/en-us/ef/core/api/microsoft.extensions.dependencyinjection.entityframeworkservicecollectionextensions)
 
-With the DataContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
+With the DbContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
 
 snippet: GraphQlController
 
-Note that the instance of the DataContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
+Note that the instance of the DbContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
 
-The same instance of the DataContext can then be accessed in the `resolve` delegate by casting the `ResolveFieldContext.UserContext` to the DataContext type:
+The same instance of the DbContext can then be accessed in the `resolve` delegate by casting the `ResolveFieldContext.UserContext` to the DbContext type:
 
 snippet: QueryUsedInController
 

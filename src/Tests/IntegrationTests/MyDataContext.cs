@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-public class MyDataContext :
+public class MyDbContext :
     DbContext
 {
     public DbSet<ParentEntity> ParentEntities { get; set; }
@@ -18,7 +18,7 @@ public class MyDataContext :
     public DbSet<Child1Entity> Child1Entities { get; set; }
     public DbSet<Child2Entity> Child2Entities { get; set; }
 
-    public MyDataContext(DbContextOptions options) :
+    public MyDbContext(DbContextOptions options) :
         base(options)
     {
     }

@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-public class MyDataContext :
+public class MyDbContext :
     DbContext
 {
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Company> Companies { get; set; }
 
-    public MyDataContext()
+    public MyDbContext()
     {
     }
-    public MyDataContext(DbContextOptions options) :
+    public MyDbContext(DbContextOptions options) :
         base(options)
     {
     }
