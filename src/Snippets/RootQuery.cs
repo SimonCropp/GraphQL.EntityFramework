@@ -30,12 +30,12 @@ class RootQuery
 
     #endregion
 
-    class DbContext
+    public class DbContext
     {
         public IQueryable<Company> Companies { get; set; }
     }
 
-    class Company
+    public class Company
     {
     }
 

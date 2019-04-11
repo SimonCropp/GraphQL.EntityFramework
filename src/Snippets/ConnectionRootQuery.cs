@@ -23,7 +23,7 @@ class ConnectionRootQuery
 
     #endregion
 
-    class Company
+    public class Company
     {
     }
 
@@ -36,7 +36,7 @@ class ConnectionRootQuery
         }
     }
 
-    class MyDbContext
+    public class MyDbContext
     {
         public IQueryable<Company> Companies { get; set; }
     }
