@@ -8,11 +8,6 @@ Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/ap
 
 This project relies on financial contributions from the community to ensure its long term viability. **It is expected that all developers [become a Patron on OpenCollective](https://opencollective.com/graphqlentityframework/order/8286).**
 
-### Contributors
-
-This project exists thanks to all the people who contribute. 
-<a href="https://github.com/SimonCropp/GraphQL.EntityFramework/graphs/contributors"><img src="https://opencollective.com/graphqlentityframework/contributors.svg?width=890&button=false" /></a>
-
 
 ### Backers
 
@@ -54,8 +49,14 @@ https://nuget.org/packages/GraphQL.EntityFramework/
  * [Filters](/pages/filters.md)
 
 
-
 All patrons: https://opencollective.com/graphqlentityframework/members/all.json
+
+
+### Contributors
+
+This project exists thanks to all the people who contribute. 
+<a href="https://github.com/SimonCropp/GraphQL.EntityFramework/graphs/contributors"><img src="https://opencollective.com/graphqlentityframework/contributors.svg?width=890&button=false" /></a>
+
 
 ## Icon
 
