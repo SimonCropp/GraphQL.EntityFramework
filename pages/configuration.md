@@ -261,7 +261,7 @@ The same instance of the DbContext can then be accessed in the `resolve` delegat
 <!-- snippet: QueryUsedInController -->
 ```cs
 public class Query :
-    EfObjectGraphType
+    QueryGraphType
 {
     public Query(IEfGraphQLService efGraphQlService) :
         base(efGraphQlService)

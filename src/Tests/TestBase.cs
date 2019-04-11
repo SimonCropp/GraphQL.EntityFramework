@@ -1,17 +1,16 @@
 ﻿using GraphQL.EntityFramework;
 using Xunit.Abstractions;
 
-public class TestBase
+public class TestBase:
+    XunitLoggingBase
 {
+    public TestBase(ITestOutputHelper output) :
+        base(output)
+    {
+    }
+
     static TestBase()
     {
         Scalars.Initialize();
     }
-
-    public TestBase(ITestOutputHelper output)
-    {
-        Output = output;
-    }
-
-    protected readonly ITestOutputHelper Output;
 }

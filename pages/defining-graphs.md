@@ -57,7 +57,7 @@ Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet
 <!-- snippet: rootQuery -->
 ```cs
 public class Query :
-    EfObjectGraphType
+    QueryGraphType
 {
     public Query(IEfGraphQLService graphQlService) :
         base(graphQlService)
@@ -124,7 +124,7 @@ public class CompanyGraph :
 <!-- snippet: ConnectionRootQuery -->
 ```cs
 public class Query :
-    EfObjectGraphType
+    QueryGraphType
 {
     public Query(IEfGraphQLService graphQlService) :
         base(graphQlService)
