@@ -10,7 +10,6 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, TReturn> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class;
 
