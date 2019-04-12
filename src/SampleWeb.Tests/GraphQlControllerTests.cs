@@ -23,10 +23,7 @@ public class GraphQlControllerTests
         client = server.CreateClient();
         websocketClient = server.CreateWebSocketClient();
         websocketClient.ConfigureRequest =
-            request =>
-            {
-                request.Headers["Sec-WebSocket-Protocol"] = "graphql-ws";
-            };
+            request => { request.Headers["Sec-WebSocket-Protocol"] = "graphql-ws"; };
     }
 
     [Fact]
@@ -137,9 +134,10 @@ query {
         {
             data = new
             {
-                employeeSummary = new[] {
-                  new { companyId = 1, averageAge = 28.0 },
-                  new { companyId = 4, averageAge = 34.0 }
+                employeeSummary = new[]
+                {
+                    new {companyId = 1, averageAge = 28.0},
+                    new {companyId = 4, averageAge = 34.0}
                 }
             }
         });
@@ -195,34 +193,38 @@ query ($id: String!)
             new GraphQLRequest
             {
                 Query = @"
-subscription {
-  companyChanged {
+subscription 
+{
+  companyChanged 
+  {
     id
   }
 }"
             },
             websocketClient);
 
-        result.OnReceive += res =>
-        {
-            if (res != null)
+        result.OnReceive +=
+            res =>
             {
+                if (res == null)
+                {
+                    return;
+                }
                 Assert.Null(res.Errors);
 
                 if (res.Data != null)
                 {
                     resetEvent.Set();
                 }
-            }
-        };
+            };
 
-        var taskCancellationSource = new CancellationTokenSource();
+        var cancellationSource = new CancellationTokenSource();
 
-        var task = result.StartAsync(taskCancellationSource.Token);
+        var task = result.StartAsync(cancellationSource.Token);
 
         Assert.True(resetEvent.WaitOne(TimeSpan.FromSeconds(10)));
 
-        taskCancellationSource.Cancel();
+        cancellationSource.Cancel();
 
         return task;
     }
