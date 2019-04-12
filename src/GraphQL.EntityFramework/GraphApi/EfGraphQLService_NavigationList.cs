@@ -51,11 +51,11 @@ namespace GraphQL.EntityFramework
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
                 Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
-                    async context =>
+                    context =>
                     {
                         var result = resolve(context);
                         result = result.ApplyGraphQlArguments(context);
-                        return await filters.ApplyFilter(result, context.UserContext);
+                        return filters.ApplyFilter(result, context.UserContext);
                     })
             };
         }
