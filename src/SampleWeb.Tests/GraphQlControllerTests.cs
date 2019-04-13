@@ -11,7 +11,8 @@ using Xunit;
 
 #region GraphQlControllerTests
 
-public class GraphQlControllerTests
+public class GraphQlControllerTests :
+    XunitLoggingBase
 {
     static HttpClient client;
 

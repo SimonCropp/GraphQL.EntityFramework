@@ -7,7 +7,8 @@ using GraphQL.Types;
 using ObjectApproval;
 using Xunit;
 
-public class ConnectionConverterTests
+public class ConnectionConverterTests :
+    XunitLoggingBase
 {
     List<string> list = new List<string>
     {

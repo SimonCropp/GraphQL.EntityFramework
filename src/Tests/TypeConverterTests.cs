@@ -1,7 +1,8 @@
 ﻿using System;
 using Xunit;
 
-public class TypeConverterTests
+public class TypeConverterTests :
+    XunitLoggingBase
 {
     [Theory]
     [InlineData(typeof(int), "12", 12)]

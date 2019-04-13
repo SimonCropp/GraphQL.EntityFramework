@@ -3,7 +3,8 @@ using GraphQL.EntityFramework;
 using ObjectApproval;
 using Xunit;
 
-public partial class IntegrationTests
+public partial class IntegrationTests :
+    XunitLoggingBase
 {
     [Fact]
     public async Task Child_filtered()

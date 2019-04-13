@@ -2,7 +2,8 @@
 using GraphQL.EntityFramework;
 using Xunit;
 
-public class CompressTests
+public class CompressTests :
+    XunitLoggingBase
 {
     [Fact]
     public void Simple()

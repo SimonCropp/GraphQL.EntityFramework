@@ -1,6 +1,7 @@
 using Xunit;
 
-public class PropertyCacheTests
+public class PropertyCacheTests :
+    XunitLoggingBase
 {
     [Fact]
     public void Property()

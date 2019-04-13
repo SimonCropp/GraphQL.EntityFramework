@@ -4,7 +4,8 @@ using System.Linq;
 using GraphQL.EntityFramework;
 using Xunit;
 
-public class FuncBuilderTests
+public class FuncBuilderTests :
+    XunitLoggingBase
 {
     public class Target
     {

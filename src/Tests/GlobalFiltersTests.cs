@@ -2,7 +2,8 @@
 using GraphQL.EntityFramework;
 using Xunit;
 
-public class GlobalFiltersTests
+public class GlobalFiltersTests :
+    XunitLoggingBase
 {
     [Fact]
     public async Task Simple()
