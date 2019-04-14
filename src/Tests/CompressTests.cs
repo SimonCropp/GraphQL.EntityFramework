@@ -1,6 +1,7 @@
 ﻿using ApprovalTests;
 using GraphQL.EntityFramework;
 using Xunit;
+using Xunit.Abstractions;
 
 public class CompressTests :
     XunitLoggingBase
@@ -17,5 +18,10 @@ query ($id: String!)
   }
 }";
         Approvals.Verify(Compress.Query(query));
+    }
+
+    public CompressTests(ITestOutputHelper output) :
+        base(output)
+    {
     }
 }

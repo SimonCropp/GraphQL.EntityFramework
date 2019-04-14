@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 #region GraphQlControllerTests
 
@@ -235,6 +236,11 @@ subscription
         var hostBuilder = new WebHostBuilder();
         hostBuilder.UseStartup<Startup>();
         return new TestServer(hostBuilder);
+    }
+
+    public GraphQlControllerTests(ITestOutputHelper output) : 
+        base(output)
+    {
     }
 }
 
