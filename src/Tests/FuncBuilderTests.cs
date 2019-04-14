@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.EntityFramework;
 using Xunit;
+using Xunit.Abstractions;
 
 public class FuncBuilderTests :
     XunitLoggingBase
@@ -326,5 +327,10 @@ public class FuncBuilderTests :
         public string Name { get; set; }
         public int Age { get; set; }
         public DateTime DateOfBirth { get; set; }
+    }
+
+    public FuncBuilderTests(ITestOutputHelper output) : 
+        base(output)
+    {
     }
 }

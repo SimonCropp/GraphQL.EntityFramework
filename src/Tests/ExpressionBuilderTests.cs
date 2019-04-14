@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.EntityFramework;
 using Xunit;
+using Xunit.Abstractions;
 
 public class ExpressionBuilderTests :
     XunitLoggingBase
@@ -412,5 +413,10 @@ public class ExpressionBuilderTests :
         public string Name { get; set; }
         public int Age { get; set; }
         public DateTime DateOfBirth { get; set; }
+    }
+
+    public ExpressionBuilderTests(ITestOutputHelper output) : 
+        base(output)
+    {
     }
 }

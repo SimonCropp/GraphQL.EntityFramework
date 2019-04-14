@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using GraphQL.EntityFramework;
 using Xunit;
+using Xunit.Abstractions;
 
 public class GlobalFiltersTests :
     XunitLoggingBase
@@ -56,5 +57,10 @@ public class GlobalFiltersTests :
     public interface ITarget
     {
         string Property { get; set; }
+    }
+
+    public GlobalFiltersTests(ITestOutputHelper output) :
+        base(output)
+    {
     }
 }

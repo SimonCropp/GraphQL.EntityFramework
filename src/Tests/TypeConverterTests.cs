@@ -1,5 +1,6 @@
 ﻿using System;
 using Xunit;
+using Xunit.Abstractions;
 
 public class TypeConverterTests :
     XunitLoggingBase
@@ -49,4 +50,8 @@ public class TypeConverterTests :
         Assert.Equal(day, result);
     }
 
+    public TypeConverterTests(ITestOutputHelper output) :
+        base(output)
+    {
+    }
 }

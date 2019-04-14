@@ -1,4 +1,5 @@
 using Xunit;
+using Xunit.Abstractions;
 
 public class PropertyCacheTests :
     XunitLoggingBase
@@ -45,5 +46,10 @@ public class PropertyCacheTests :
     public class TargetChildForPropertyNested
     {
         public string Member;
+    }
+
+    public PropertyCacheTests(ITestOutputHelper output) :
+        base(output)
+    {
     }
 }

@@ -6,6 +6,7 @@ using GraphQL.EntityFramework;
 using GraphQL.Types;
 using ObjectApproval;
 using Xunit;
+using Xunit.Abstractions;
 
 public class ConnectionConverterTests :
     XunitLoggingBase
@@ -76,5 +77,10 @@ public class ConnectionConverterTests :
         NamerFactory.AdditionalInformation = $"first_{first}_after_{after}_last_{last}_before_{before}";
         var connection = ConnectionConverter.ApplyConnectionContext(list, first, after, last, before);
         ObjectApprover.VerifyWithJson(connection);
+    }
+
+    public ConnectionConverterTests(ITestOutputHelper output) :
+        base(output)
+    {
     }
 }
