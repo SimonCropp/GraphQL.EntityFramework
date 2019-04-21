@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>Add EntityFramework Core IQueryable support to GraphQL</Description>
     <GeneratePackageOnBuild Condition="$(Configuration) == 'Release'">true</GeneratePackageOnBuild>
     <GenerateDocumentationFile Condition="$(Configuration) == 'Release'">true</GenerateDocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="ConfigureAwait.Fody" Version="3.1.0" PrivateAssets="All" />
     <PackageReference Include="Fody" Version="5.0.0" PrivateAssets="All" />
@@ -16,5 +14,4 @@
     <PackageReference Condition="$(Configuration) == 'Release'" Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
-
 </Project>
