@@ -9,7 +9,7 @@
     <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)). All rights reserved</Copyright>
     <PackageTags>EntityFrameworkCore, EntityFramework, GraphQL</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/GraphQL.EntityFramework/master/src/icon.png</PackageIconUrl>
-    <PackageProjectUrl>http://github.com/SimonCropp/GraphQL.EntityFramework</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/SimonCropp/GraphQL.EntityFramework</PackageProjectUrl>
     <PackageOutputPath>..\..\nugets</PackageOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <DebugType>embedded</DebugType>
