@@ -14,7 +14,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public partial class IntegrationTests :
-    TestBase
+    XunitLoggingBase
 {
     static IntegrationTests()
     {
