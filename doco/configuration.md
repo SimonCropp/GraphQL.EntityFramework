@@ -1,6 +1,6 @@
 <!--
 This file was generate by MarkdownSnippets.
-Source File: /pages/configuration.source.md
+Source File: /doco/mdsource/configuration.source.md
 To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/MarkdownSnippets#markdownsnippetstool) or using the api (https://github.com/SimonCropp/MarkdownSnippets#running-as-a-unit-test).
 -->
 # Configuration
@@ -284,7 +284,8 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 
 <!-- snippet: GraphQlControllerTests -->
 ```cs
-public class GraphQlControllerTests
+public class GraphQlControllerTests :
+    XunitLoggingBase
 {
     static HttpClient client;
 
@@ -508,9 +509,14 @@ subscription
         hostBuilder.UseStartup<Startup>();
         return new TestServer(hostBuilder);
     }
+
+    public GraphQlControllerTests(ITestOutputHelper output) : 
+        base(output)
+    {
+    }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L12-L240)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L247)</sup>
 <!-- endsnippet -->
 
 
