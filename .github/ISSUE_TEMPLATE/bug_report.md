@@ -8,7 +8,7 @@ Where it is clear that the below content has not read, the issue is likely to be
 
 #### You should already be a Patron
 
-To be using this project you should be a [Patron](https://opencollective.com/graphqlentityframework/order/8286). See [Licensing/Patron FAQ](https://github.com/SimonCropp/graphqlentityframework/blob/master/pages/licensing-patron-faq.md). With that in mind, it is assumed anyone raising an issue is already a Patron. As such your GitHub Id may be verified against the [OpenCollective contributors](https://opencollective.com/graphqlentityframework#contributors). This process will depend on the issue quality, your circumstances, and the impact on the larger user base.
+To be using this project you should be a [Patron](https://opencollective.com/graphqlentityframework/order/8286). See [Licensing/Patron FAQ](https://github.com/SimonCropp/graphqlentityframework/blob/master/doco/licensing-patron-faq.md). With that in mind, it is assumed anyone raising an issue is already a Patron. As such your GitHub Id may be verified against the [OpenCollective contributors](https://opencollective.com/graphqlentityframework#contributors). This process will depend on the issue quality, your circumstances, and the impact on the larger user base.
 
 
 #### Preamble

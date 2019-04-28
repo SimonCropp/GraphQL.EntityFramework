@@ -31,7 +31,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://opencollective.com/graphqlentityframework/sponsor/8/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/graphqlentityframework/sponsor/9/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/9/avatar.svg"></a>
 
-[Go to licensing FAQ](/pages/licensing-patron-faq.md) for more information.
+[Go to licensing FAQ](/doco/licensing-patron-faq.md) for more information.
 
 
 ## NuGet [![NuGet Status](http://img.shields.io/nuget/v/GraphQL.EntityFramework.svg?longCache=true&style=flat)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
@@ -43,10 +43,10 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 
 ## Documentation
 
- * [Configuration](/pages/configuration.md)
- * [Defining Graphs](/pages/defining-graphs.md)
- * [Query Usage](/pages/query-usage.md)
- * [Filters](/pages/filters.md)
+ * [Configuration](/doco/configuration.md)
+ * [Defining Graphs](/doco/defining-graphs.md)
+ * [Query Usage](/doco/query-usage.md)
+ * [Filters](/doco/filters.md)
 
 
 All patrons: https://opencollective.com/graphqlentityframework/members/all.json
