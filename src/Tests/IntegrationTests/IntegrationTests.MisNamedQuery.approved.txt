@@ -3,17 +3,17 @@
     {
       misNamedChildren: [
         {
-          id: 'Guid 1'
+          id: Guid_1
         },
         {
-          id: 'Guid 2'
+          id: Guid_2
         }
       ]
     },
     {
       misNamedChildren: [
         {
-          id: 'Guid 3'
+          id: Guid_3
         }
       ]
     }

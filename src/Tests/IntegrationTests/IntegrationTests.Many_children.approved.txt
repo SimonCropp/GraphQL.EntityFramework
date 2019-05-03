@@ -2,7 +2,7 @@
   manyChildren: [
     {
       child1: {
-        id: 'Guid 1'
+        id: Guid_1
       }
     }
   ]

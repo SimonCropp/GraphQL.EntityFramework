@@ -1,7 +1,7 @@
 ﻿{
   withNullableEntities: [
     {
-      id: 'Guid 1'
+      id: Guid_1
     }
   ]
 }
