@@ -2,8 +2,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Optimize>false</Optimize>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" Version="2.4.0" />
@@ -11,7 +9,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
     <PackageReference Include="ObjectApproval" Version="9.1.0" />
     <PackageReference Include="ModuleInit.Fody" Version="2.0.0" />
-    <PackageReference Include="Fody" Version="5.0.1" />
+    <PackageReference Include="Fody" Version="5.0.3" />
     <PackageReference Include="Xunit" Version="2.4.1" />
     <PackageReference Include="XunitLogger" Version="1.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
