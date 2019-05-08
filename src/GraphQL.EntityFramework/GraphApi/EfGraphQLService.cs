@@ -9,12 +9,9 @@ namespace GraphQL.EntityFramework
     {
         GlobalFilters filters;
 
-        internal IModel Model { get; }
-
         public EfGraphQLService(IModel model, GlobalFilters filters)
         {
             Guard.AgainstNull(nameof(model), model);
-            Model = model;
             this.filters = filters;
             includeAppender = new IncludeAppender(NavigationReader.GetNavigationProperties(model));
         }
