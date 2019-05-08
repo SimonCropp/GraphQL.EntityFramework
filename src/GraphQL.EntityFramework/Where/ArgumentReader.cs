@@ -29,6 +29,8 @@ static class ArgumentReader
 
         if (argument is List<object> lo)
             expression = lo.Select(o => o.ToString()).ToArray();
+        else if (argument is object[] oa)
+            expression = oa.Select(o => o.ToString()).ToArray();
         else
             throw new InvalidOperationException($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is unhandled.");
 
