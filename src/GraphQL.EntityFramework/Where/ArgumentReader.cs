@@ -27,12 +27,8 @@ static class ArgumentReader
             return false;
         }
 
-        if (argument is int[] ia)
-            expression = ia.Select(i => i.ToString(CultureInfo.InvariantCulture)).ToArray();
-        else if (argument is long[] la)
-            expression = la.Select(i => i.ToString(CultureInfo.InvariantCulture)).ToArray();
-        else if (argument is string[] sa)
-            expression = sa;
+        if (argument is List<object> lo)
+            expression = lo.Select(o => o.ToString()).ToArray();
         else
             throw new InvalidOperationException($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is unhandled.");
 
@@ -41,23 +37,23 @@ static class ArgumentReader
 
     public static bool TryReadId(Func<Type, string, object> getArgument, out string expression)
     {
-            var argument = getArgument(typeof(object), "id");
-            if (argument == null)
-            {
-                expression = null;
-                return false;
-            }
+        var argument = getArgument(typeof(object), "id");
+        if (argument == null)
+        {
+            expression = null;
+            return false;
+        }
 
-            if (argument is int i)
-                expression = i.ToString(CultureInfo.InvariantCulture);
-            else if (argument is long l)
-                expression = l.ToString(CultureInfo.InvariantCulture);
-            else if (argument is string s)
-                expression = s;
-            else
-                throw new InvalidOperationException($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is unhandled.");
-            
-            return true;
+        if (argument is long l)
+            expression = l.ToString(CultureInfo.InvariantCulture);
+        else if (argument is int i)
+            expression = i.ToString(CultureInfo.InvariantCulture);
+        else if (argument is string s)
+            expression = s;
+        else
+            throw new InvalidOperationException($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is unhandled.");
+
+        return true;
     }
 
 
