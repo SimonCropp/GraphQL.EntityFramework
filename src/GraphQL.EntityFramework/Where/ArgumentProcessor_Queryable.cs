@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
 
@@ -6,24 +7,28 @@ namespace GraphQL.EntityFramework
 {
     public static partial class ArgumentProcessor
     {
-        public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context)
+        public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context, List<string> keyNames = null)
+            where TItem : class
         {
             Guard.AgainstNull(nameof(queryable),queryable);
             Guard.AgainstNull(nameof(context),context);
-            return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x));
+            return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x), keyNames);
         }
 
-        static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
+        static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object> getArguments, List<string> keyNames)
+            where TItem : class
         {
             if (ArgumentReader.TryReadIds(getArguments, out var values))
             {
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
+                var keyName = GetKeyName(keyNames);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
                 queryable = queryable.Where(predicate);
             }
 
             if (ArgumentReader.TryReadId(getArguments, out var value))
             {
-                var predicate = ExpressionBuilder<TItem>.BuildSinglePredicate("Id", Comparison.Equal, value);
+                var keyName = GetKeyName(keyNames);
+                var predicate = ExpressionBuilder<TItem>.BuildSinglePredicate(keyName, Comparison.Equal, value);
                 queryable = queryable.Where(predicate);
             }
 
@@ -46,6 +51,20 @@ namespace GraphQL.EntityFramework
             }
 
             return queryable;
+        }
+
+         static string GetKeyName(List<string> keyNames)
+        {
+            if (keyNames == null)
+            {
+                return "Id";
+            }
+            if (keyNames.Count > 1)
+            {
+                throw new Exception("Only one id field is currently supported");
+            }
+
+            return keyNames[0];
         }
 
         static IQueryable<TItem> Order<TItem>(IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
