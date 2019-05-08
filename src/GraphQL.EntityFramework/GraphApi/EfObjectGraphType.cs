@@ -54,20 +54,22 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string primaryKeyName = "Id")
             where TReturn : class
         {
-            efGraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize);
+            efGraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize, primaryKeyName);
         }
 
         protected FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            string primaryKeyName = "Id")
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
+            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments, primaryKeyName);
         }
     }
 }

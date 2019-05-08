@@ -24,14 +24,14 @@ static class DbContextBuilder
         };
         var employee1 = new Employee
         {
-            Id = 2,
+            EmployeeId = 2,
             CompanyId = company1.Id,
             Content = "Employee1",
             Age = 25
         };
         var employee2 = new Employee
         {
-            Id = 3,
+            EmployeeId = 3,
             CompanyId = company1.Id,
             Content = "Employee2",
             Age = 31 
@@ -43,7 +43,7 @@ static class DbContextBuilder
         };
         var employee4 = new Employee
         {
-            Id = 5,
+            EmployeeId = 5,
             CompanyId = company2.Id,
             Content = "Employee4",
             Age = 34 

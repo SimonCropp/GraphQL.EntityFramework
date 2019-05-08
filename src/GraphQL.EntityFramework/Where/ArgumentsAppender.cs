@@ -20,17 +20,17 @@ static class ArgumentAppender
         };
     }
 
-    static QueryArgument<ListGraphType<StringGraphType>> idsArgument()
+    static QueryArgument<ListGraphType<IdGraphType>> idsArgument()
     {
-        return new QueryArgument<ListGraphType<StringGraphType>>
+        return new QueryArgument<ListGraphType<IdGraphType>>
         {
             Name = "ids"
         };
     }
 
-    static QueryArgument<StringGraphType> idArgument()
+    static QueryArgument<IdGraphType> idArgument()
     {
-        return new QueryArgument<StringGraphType>
+        return new QueryArgument<IdGraphType>
         {
             Name = "id"
         };

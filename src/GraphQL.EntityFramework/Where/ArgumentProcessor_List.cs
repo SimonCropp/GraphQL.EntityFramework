@@ -7,18 +7,18 @@ namespace GraphQL.EntityFramework
 {
   public  static partial class ArgumentProcessor
     {
-        public static IEnumerable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IEnumerable<TItem> items, ResolveFieldContext<TSource> context)
+        public static IEnumerable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IEnumerable<TItem> items, ResolveFieldContext<TSource> context, string primaryKeyName = "Id")
         {
             Guard.AgainstNull(nameof(items),items);
             Guard.AgainstNull(nameof(context),context);
-            return ApplyToAll(items, (type, x) => context.GetArgument(type, x));
+            return ApplyToAll(items, (type, x) => context.GetArgument(type, x), primaryKeyName);
         }
 
-        static IEnumerable<TItem> ApplyToAll<TItem>(this IEnumerable<TItem> items, Func<Type, string, object> getArguments)
+        static IEnumerable<TItem> ApplyToAll<TItem>(this IEnumerable<TItem> items, Func<Type, string, object> getArguments, string primaryKeyName)
         {
             if (ArgumentReader.TryReadIds(getArguments, out var values))
             {
-                var predicate = FuncBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
+                var predicate = FuncBuilder<TItem>.BuildPredicate(primaryKeyName, Comparison.In, values);
                 items = items.Where(predicate);
             }
 

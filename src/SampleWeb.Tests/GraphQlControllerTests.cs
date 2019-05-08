@@ -147,6 +147,39 @@ query {
     }
 
     [Fact]
+    public async Task Get_employee_by_id()
+    {
+        var query = @"
+query {
+  employees(id: 2) {
+    employeeId
+    companyId
+    age
+  }
+}";
+        var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        var result = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+        var expected = JObject.FromObject(new
+        {
+            data = new
+            {
+                employees = new[]
+                {
+                    new
+                    {
+                        employeeId = 2,
+                        companyId = 1,
+                        age = 25
+                    }
+                }
+            }
+        });
+        Assert.Equal(expected.ToString(), result.ToString());
+    }
+
+    [Fact]
     public async Task Post()
     {
         var query = @"

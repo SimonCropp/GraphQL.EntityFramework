@@ -14,11 +14,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            string primaryKeyName = "Id")
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve, arguments, graphType);
+            var field = BuildSingleField(name, resolve, arguments, graphType, primaryKeyName);
             return graph.AddField(field);
         }
 
@@ -27,11 +28,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            string primaryKeyName = "Id")
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve, arguments, graphType);
+            var field = BuildSingleField(name, resolve, arguments, graphType, primaryKeyName);
             return graph.AddField(field);
         }
 
@@ -40,19 +42,16 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            string primaryKeyName = "Id")
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve, arguments, graphType);
+            var field = BuildSingleField(name, resolve, arguments, graphType, primaryKeyName);
             return graph.AddField(field);
         }
 
-        FieldType BuildSingleField<TSource, TReturn>(
-            string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
-            IEnumerable<QueryArgument> arguments,
-            Type graphType)
+        FieldType BuildSingleField<TSource, TReturn>(string name, Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve, IEnumerable<QueryArgument> arguments, Type graphType, string primaryKeyName)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -69,7 +68,7 @@ namespace GraphQL.EntityFramework
                     {
                         var returnTypes = resolve(context);
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
-                        var withArguments = withIncludes.ApplyGraphQlArguments(context);
+                        var withArguments = withIncludes.ApplyGraphQlArguments(context, primaryKeyName);
 
                         var single = await withArguments.SingleOrDefaultAsync(context.CancellationToken);
                         if (await filters.ShouldInclude(context.UserContext, single))

@@ -12,7 +12,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            string primaryKeyName = "Id")
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -20,7 +21,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            string primaryKeyName = "Id")
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -28,7 +30,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            string primaryKeyName = "Id")
             where TReturn : class;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using GraphQL.EntityFramework;
 
@@ -17,31 +18,48 @@ static class ArgumentReader
 
     public static bool TryReadIds(Func<Type, string, object> getArgument, out string[] expression)
     {
-        var argument = (string[])getArgument(typeof(string[]), "ids");
+        // Get the "ids" as an object (GraphQL short-circuits the GetArgument to stop when we request an object)
+        // This lets us determine what type of array we're working with (if any)
+        var argument = getArgument(typeof(object), "ids");
         if (argument == null)
         {
             expression = null;
             return false;
         }
 
-        expression = argument;
+        if (argument is int[] ia)
+            expression = ia.Select(i => i.ToString(CultureInfo.InvariantCulture)).ToArray();
+        else if (argument is long[] la)
+            expression = la.Select(i => i.ToString(CultureInfo.InvariantCulture)).ToArray();
+        else if (argument is string[] sa)
+            expression = sa;
+        else
+            throw new InvalidOperationException($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is unhandled.");
 
         return true;
     }
 
     public static bool TryReadId(Func<Type, string, object> getArgument, out string expression)
     {
-        var argument = (string)getArgument(typeof(string), "id");
-        if (argument == null)
-        {
-            expression = null;
-            return false;
-        }
+            var argument = getArgument(typeof(object), "id");
+            if (argument == null)
+            {
+                expression = null;
+                return false;
+            }
 
-        expression = argument;
-
-        return true;
+            if (argument is int i)
+                expression = i.ToString(CultureInfo.InvariantCulture);
+            else if (argument is long l)
+                expression = l.ToString(CultureInfo.InvariantCulture);
+            else if (argument is string s)
+                expression = s;
+            else
+                throw new InvalidOperationException($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is unhandled.");
+            
+            return true;
     }
+
 
     public static bool TryReadSkip(Func<Type, string, object> getArgument, out int skip)
     {

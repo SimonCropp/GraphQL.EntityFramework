@@ -6,7 +6,7 @@ public class EmployeeGraph :
     public EmployeeGraph(IEfGraphQLService graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
+        Field(x => x.EmployeeId);
         Field(x => x.Content);
         Field(x => x.Age);
         AddNavigationField(

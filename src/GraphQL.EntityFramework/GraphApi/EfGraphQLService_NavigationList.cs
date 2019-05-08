@@ -13,11 +13,12 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            IEnumerable<string> includeNames = null,
+            string primaryKeyName = "Id")
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField(graphType, name, resolve, includeNames, arguments);
+            var field = BuildNavigationField(graphType, name, resolve, includeNames, arguments, primaryKeyName);
             return graph.AddField(field);
         }
 
@@ -26,12 +27,13 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string> includeNames,
-            IEnumerable<QueryArgument> arguments)
+            IEnumerable<QueryArgument> arguments,
+            string primaryKeyName)
             where TReturn : class
         {
             graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
             var listGraphType = MakeListGraphType(graphType);
-            return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments);
+            return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments, primaryKeyName);
         }
 
         FieldType BuildNavigationField<TSource, TReturn>(
@@ -39,7 +41,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string> includeNames,
             Type listGraphType,
-            IEnumerable<QueryArgument> arguments)
+            IEnumerable<QueryArgument> arguments,
+            string primaryKeyName)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -54,7 +57,7 @@ namespace GraphQL.EntityFramework
                     context =>
                     {
                         var result = resolve(context);
-                        result = result.ApplyGraphQlArguments(context);
+                        result = result.ApplyGraphQlArguments(context, primaryKeyName);
                         return filters.ApplyFilter(result, context.UserContext);
                     })
             };

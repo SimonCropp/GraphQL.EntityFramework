@@ -16,11 +16,12 @@ namespace GraphQL.EntityFramework
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string primaryKeyName = "Id")
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, graphType);
+            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, graphType, primaryKeyName);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
         }
@@ -30,7 +31,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string> includeName,
             int pageSize,
-            Type graphType)
+            Type graphType,
+            string primaryKeyName)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -45,7 +47,7 @@ namespace GraphQL.EntityFramework
             builder.ResolveAsync(async context =>
             {
                 var enumerable = resolve(context);
-                enumerable = enumerable.ApplyGraphQlArguments(context);
+                enumerable = enumerable.ApplyGraphQlArguments(context, primaryKeyName);
                 enumerable = await filters.ApplyFilter(enumerable, context.UserContext);
                 var page = enumerable.ToList();
 

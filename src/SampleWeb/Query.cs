@@ -43,7 +43,8 @@ public class Query :
             {
                 var dbContext = (MyDbContext) context.UserContext;
                 return dbContext.Employees;
-            });
+            },
+            primaryKeyName: nameof(Employee.EmployeeId));
 
         AddQueryField(
             name: "employeesByArgument",
@@ -57,7 +58,8 @@ public class Query :
                 new QueryArgument<StringGraphType>
                 {
                     Name = "content"
-                }));
+                }),
+            primaryKeyName: nameof(Employee.EmployeeId));
 
         AddQueryConnectionField(
             name: "employeesConnection",
@@ -65,7 +67,8 @@ public class Query :
             {
                 var dbContext = (MyDbContext) context.UserContext;
                 return dbContext.Employees;
-            });
+            },
+            primaryKeyName: nameof(Employee.EmployeeId));
 
         #region ManuallyApplyWhere
 

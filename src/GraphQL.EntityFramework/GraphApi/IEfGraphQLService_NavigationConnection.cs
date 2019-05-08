@@ -13,7 +13,8 @@ namespace GraphQL.EntityFramework
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string primaryKeyName = "Id")
             where TReturn : class;
     }
 }

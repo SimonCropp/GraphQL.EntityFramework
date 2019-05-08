@@ -6,24 +6,24 @@ namespace GraphQL.EntityFramework
 {
     public static partial class ArgumentProcessor
     {
-        public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context)
+        public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context, string primaryKeyName = "Id")
         {
             Guard.AgainstNull(nameof(queryable),queryable);
             Guard.AgainstNull(nameof(context),context);
-            return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x));
+            return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x), primaryKeyName);
         }
 
-        static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
+        static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object> getArguments, string primaryKeyName)
         {
             if (ArgumentReader.TryReadIds(getArguments, out var values))
             {
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(primaryKeyName, Comparison.In, values);
                 queryable = queryable.Where(predicate);
             }
 
             if (ArgumentReader.TryReadId(getArguments, out var value))
             {
-                var predicate = ExpressionBuilder<TItem>.BuildSinglePredicate("Id", Comparison.Equal, value);
+                var predicate = ExpressionBuilder<TItem>.BuildSinglePredicate(primaryKeyName, Comparison.Equal, value);
                 queryable = queryable.Where(predicate);
             }
 
