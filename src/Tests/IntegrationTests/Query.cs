@@ -48,6 +48,14 @@ public class Query :
             });
 
         AddQueryField(
+            name: "namedEntities",
+            resolve: context =>
+            {
+                var dbContext = (MyDbContext) context.UserContext;
+                return dbContext.NamedEntities;
+            });
+
+        AddQueryField(
             name: "misNamed",
             resolve: context =>
             {
