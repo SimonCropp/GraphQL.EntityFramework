@@ -50,7 +50,7 @@ public class GraphQlControllerTests :
     public async Task Get_single()
     {
         var query = @"
-query ($id: String!)
+query ($id: ID!)
 {
   company(id:$id)
   {
@@ -72,7 +72,7 @@ query ($id: String!)
     public async Task Get_variable()
     {
         var query = @"
-query ($id: String!)
+query ($id: ID!)
 {
   companies(ids:[$id])
   {
@@ -146,17 +146,13 @@ query {
         Assert.Equal(expected.ToString(), result.ToString());
     }
 
-    [Fact]
-    public async Task Get_employee_by_id()
+    [Theory]
+    [InlineData("query { employees(id: 2) { employeeId age content } }")]
+    [InlineData("query { employees(id: \"2\") { employeeId age content } }")]
+    [InlineData("query { employees(ids: [2]) { employeeId age content } }")]
+    [InlineData("query { employees(ids: [\"2\"]) { employeeId age content } }")]
+    public async Task Get_employee_by_id(string query)
     {
-        var query = @"
-query {
-  employees(id: 2) {
-    employeeId
-    companyId
-    age
-  }
-}";
         var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
         var result = JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -170,8 +166,8 @@ query {
                     new
                     {
                         employeeId = 2,
-                        companyId = 1,
-                        age = 25
+                        age = 25,
+                        content = "Employee1"
                     }
                 }
             }
@@ -201,7 +197,7 @@ query {
     public async Task Post_variable()
     {
         var query = @"
-query ($id: String!)
+query ($id: ID!)
 {
   companies(ids:[$id])
   {
