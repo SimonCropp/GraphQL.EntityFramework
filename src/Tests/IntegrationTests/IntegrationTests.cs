@@ -30,6 +30,7 @@ public partial class IntegrationTests :
         GraphTypeTypeRegistry.Register<Level3Entity, Level3Graph>();
         GraphTypeTypeRegistry.Register<WithMisNamedQueryParentEntity, WithMisNamedQueryParentGraph>();
         GraphTypeTypeRegistry.Register<WithNullableEntity, WithNullableGraph>();
+        GraphTypeTypeRegistry.Register<NamedIdEntity, NamedIdGraph>();
         GraphTypeTypeRegistry.Register<WithMisNamedQueryChildEntity, WithMisNamedQueryChildGraph>();
 
         using (var dbContext = BuildDbContext())
@@ -495,6 +496,31 @@ query ($value: String!)
             Property = "Value1"
         };
         var entity2 = new ParentEntity
+        {
+            Property = "Value2"
+        };
+
+        var result = await RunQuery(query, null, true, null, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result);
+    }
+
+    [Fact]
+    public async Task NamedId()
+    {
+        var query = @"
+{
+  namedEntities (ids: '00000000-0000-0000-0000-000000000001')
+  {
+    property
+  }
+}";
+
+        var entity1 = new NamedIdEntity
+        {
+            NamedId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new NamedIdEntity
         {
             Property = "Value2"
         };
@@ -1039,6 +1065,7 @@ query ($value: String!)
             Purge(dbContext.FilterChildEntities);
             Purge(dbContext.Child1Entities);
             Purge(dbContext.Child2Entities);
+            Purge(dbContext.NamedEntities);
             dbContext.SaveChanges();
         }
     }

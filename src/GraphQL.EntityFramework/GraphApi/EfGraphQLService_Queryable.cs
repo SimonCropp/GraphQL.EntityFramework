@@ -77,13 +77,26 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     async context =>
                     {
+                        var names = GetKeyNames<TReturn>();
                         var returnTypes = resolve(context);
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
-                        var withArguments = withIncludes.ApplyGraphQlArguments(context);
+                        var withArguments = withIncludes.ApplyGraphQlArguments(context,names);
                         var list = await withArguments.ToListAsync(context.CancellationToken);
                         return await filters.ApplyFilter(list, context.UserContext);
                     })
             };
+        }
+        
+        static List<string> emptyList = new List<string>();
+
+        List<string> GetKeyNames<TSource>() 
+        {
+            if (keyNames.TryGetValue(typeof(TSource), out var names))
+            {
+                return names;
+            }
+
+            return emptyList;
         }
     }
 }
