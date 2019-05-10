@@ -2,6 +2,6 @@
 
 public class WithNullableEntity
 {
-    public Guid Id { get; set; } = SimpleSequentialGuid.NewGuid();
+    public Guid Id { get; set; } = XunitLogging.Context.NextGuid();
     public int? Nullable { get; set; }
 }
