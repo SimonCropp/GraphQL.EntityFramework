@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using GraphQL.EntityFramework;
 
@@ -17,28 +18,44 @@ static class ArgumentReader
 
     public static bool TryReadIds(Func<Type, string, object> getArgument, out string[] expression)
     {
-        var argument = (string[])getArgument(typeof(string[]), "ids");
+        var argument = getArgument(typeof(object), "ids");
         if (argument == null)
         {
             expression = null;
             return false;
         }
 
-        expression = argument;
+        if (argument is IEnumerable<object> objCollection)
+            expression = objCollection.Select(o => o.ToString()).ToArray();
+        else
+            throw new InvalidOperationException($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is unhandled.");
 
         return true;
     }
 
     public static bool TryReadId(Func<Type, string, object> getArgument, out string expression)
     {
-        var argument = (string)getArgument(typeof(string), "id");
+        var argument = getArgument(typeof(object), "id");
         if (argument == null)
         {
             expression = null;
             return false;
         }
 
-        expression = argument;
+        switch (argument)
+        {
+            case long l:   
+                expression = l.ToString(CultureInfo.InvariantCulture);
+                break;
+            case int i:    
+                expression = i.ToString(CultureInfo.InvariantCulture);
+                break;
+            case string s: 
+                expression = s;
+                break;
+            default:       
+                throw new InvalidOperationException($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is unhandled.");
+        }
 
         return true;
     }
