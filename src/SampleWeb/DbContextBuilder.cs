@@ -1,20 +1,23 @@
-﻿using System.Threading.Tasks;
-using EfLocalDb;
+﻿using EfLocalDb;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 // InMemory is used to make the sample simpler.
 // Replace with a real DbContext
-static class DbContextBuilder
+public static class DbContextBuilder
 {
-    static SqlDatabase<GraphQlEfSampleDbContext> database;
-    public static async Task Initialise()
+    static SqlDatabase<GraphQlEfSampleDbContext> database; 
+    static DbContextBuilder()
     {
         var sqlInstance = new SqlInstance<GraphQlEfSampleDbContext>(
             buildTemplate: (connection, builder) => { CreateDb(builder); },
             constructInstance: builder => new GraphQlEfSampleDbContext(builder.Options));
 
-        database = await sqlInstance.Build("GraphQLEntityFrameworkSample");
+        database = sqlInstance.Build("GraphQLEntityFrameworkSample").GetAwaiter().GetResult();
+        using (var context = database.NewDbContext())
+        {
+            Model = context.Model;
+        }
     }
 
     static void CreateDb(DbContextOptionsBuilder<GraphQlEfSampleDbContext> builder)

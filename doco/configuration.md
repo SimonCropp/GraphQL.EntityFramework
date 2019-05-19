@@ -177,7 +177,7 @@ public class GraphQlController :
     [HttpPost]
     public Task<ExecutionResult> Post(
         [BindRequired, FromBody] PostBody body,
-        [FromServices] MyDbContext dbContext,
+        [FromServices] GraphQlEfSampleDbContext dbContext,
         CancellationToken cancellation)
     {
         return Execute(dbContext, body.Query, body.OperationName, body.Variables, cancellation);
@@ -195,7 +195,7 @@ public class GraphQlController :
         [FromQuery] string query,
         [FromQuery] string variables,
         [FromQuery] string operationName,
-        [FromServices] MyDbContext dbContext,
+        [FromServices] GraphQlEfSampleDbContext dbContext,
         CancellationToken cancellation)
     {
         var jObject = ParseVariables(variables);
@@ -203,7 +203,7 @@ public class GraphQlController :
     }
 
     async Task<ExecutionResult> Execute(
-        MyDbContext dbContext,
+        GraphQlEfSampleDbContext dbContext,
         string query,
         string operationName,
         JObject variables,
@@ -270,7 +270,7 @@ public class Query :
             name: "companies",
             resolve: context =>
             {
-                var dbContext = (MyDbContext) context.UserContext;
+                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
                 return dbContext.Companies;
             });
 ```

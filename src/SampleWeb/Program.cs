@@ -1,12 +1,10 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 public class Program
 {
-    public static async Task Main()
+    public static void Main()
     {
-        await DbContextBuilder.Initialise();
         var webHostBuilder = WebHost.CreateDefaultBuilder();
         var hostBuilder = webHostBuilder.UseStartup<Startup>();
         hostBuilder.Build().Run();
