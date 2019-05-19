@@ -1,15 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-public class MyDbContext :
+public class GraphQlEfSampleDbContext :
     DbContext
 {
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Company> Companies { get; set; }
 
-    public MyDbContext()
-    {
-    }
-    public MyDbContext(DbContextOptions options) :
+    public GraphQlEfSampleDbContext(DbContextOptions options) :
         base(options)
     {
     }

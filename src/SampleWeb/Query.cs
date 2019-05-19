@@ -15,7 +15,7 @@ public class Query :
             name: "companies",
             resolve: context =>
             {
-                var dbContext = (MyDbContext) context.UserContext;
+                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
                 return dbContext.Companies;
             });
 
@@ -24,7 +24,7 @@ public class Query :
         AddSingleField(
             resolve: context =>
             {
-                var dbContext = (MyDbContext) context.UserContext;
+                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
                 return dbContext.Companies;
             },
             name: "company");
@@ -33,7 +33,7 @@ public class Query :
             name: "companiesConnection",
             resolve: context =>
             {
-                var dbContext = (MyDbContext) context.UserContext;
+                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
                 return dbContext.Companies;
             });
 
@@ -41,7 +41,7 @@ public class Query :
             name: "employees",
             resolve: context =>
             {
-                var dbContext = (MyDbContext) context.UserContext;
+                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
                 return dbContext.Employees;
             });
 
@@ -50,7 +50,7 @@ public class Query :
             resolve: context =>
             {
                 var content = context.GetArgument<string>("content");
-                var dbContext = (MyDbContext) context.UserContext;
+                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
                 return dbContext.Employees.Where(x => x.Content == content);
             },
             arguments: new QueryArguments(
@@ -63,7 +63,7 @@ public class Query :
             name: "employeesConnection",
             resolve: context =>
             {
-                var dbContext = (MyDbContext) context.UserContext;
+                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
                 return dbContext.Employees;
             });
 
@@ -79,7 +79,7 @@ public class Query :
             ),
             resolve: context =>
             {
-                var dbContext = (MyDbContext) context.UserContext;
+                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
                 IQueryable<Employee> query = dbContext.Employees;
 
                 if (context.HasArgument("where"))
