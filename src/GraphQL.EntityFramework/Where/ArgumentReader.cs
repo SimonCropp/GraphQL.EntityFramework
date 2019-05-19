@@ -26,11 +26,12 @@ static class ArgumentReader
         }
 
         if (argument is IEnumerable<object> objCollection)
+        {
             expression = objCollection.Select(o => o.ToString()).ToArray();
-        else
-            throw new InvalidOperationException($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is unhandled.");
+            return true;
+        }
 
-        return true;
+        throw new Exception($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is not supported.");
     }
 
     public static bool TryReadId(Func<Type, string, object> getArgument, out string expression)
@@ -54,7 +55,7 @@ static class ArgumentReader
                 expression = s;
                 break;
             default:       
-                throw new InvalidOperationException($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is unhandled.");
+                throw new Exception($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is not supported.");
         }
 
         return true;
