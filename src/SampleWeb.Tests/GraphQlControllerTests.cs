@@ -50,7 +50,7 @@ public class GraphQlControllerTests :
     public async Task Get_single()
     {
         var query = @"
-query ($id: String!)
+query ($id: ID!)
 {
   company(id:$id)
   {
@@ -72,7 +72,7 @@ query ($id: String!)
     public async Task Get_variable()
     {
         var query = @"
-query ($id: String!)
+query ($id: ID!)
 {
   companies(ids:[$id])
   {
@@ -168,7 +168,7 @@ query {
     public async Task Post_variable()
     {
         var query = @"
-query ($id: String!)
+query ($id: ID!)
 {
   companies(ids:[$id])
   {
