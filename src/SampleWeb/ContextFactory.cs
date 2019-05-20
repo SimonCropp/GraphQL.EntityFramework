@@ -1,5 +1,5 @@
 
 public class ContextFactory
 {
-    public MyDbContext BuildContext() => DbContextBuilder.BuildDbContext();
+    public GraphQlEfSampleDbContext BuildContext() => DbContextBuilder.BuildDbContext();
 }

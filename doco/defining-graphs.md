@@ -277,7 +277,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
     ),
     resolve: context =>
     {
-        var dbContext = (MyDbContext) context.UserContext;
+        var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
         IQueryable<Employee> query = dbContext.Employees;
 
         if (context.HasArgument("where"))

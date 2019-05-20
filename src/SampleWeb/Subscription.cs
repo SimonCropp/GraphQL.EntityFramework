@@ -62,7 +62,7 @@ public class Subscription : ObjectGraphType<object>
 
     async Task<List<Company>> GetCompanies(
         ResolveEventStreamContext context,
-        MyDbContext ctx,
+        GraphQlEfSampleDbContext ctx,
         long lastId,
         int take = 1,
         CancellationToken token = default)
@@ -93,7 +93,7 @@ public class Subscription : ObjectGraphType<object>
     }
 
     ResolveFieldContext ResolveFieldContext(
-        MyDbContext ctx,
+        GraphQlEfSampleDbContext ctx,
         CancellationToken token,
         Document document,
         ISchema schema)

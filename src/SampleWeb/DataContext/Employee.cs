@@ -1,5 +1,8 @@
-﻿public class Employee
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+public class Employee
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public int Id { get; set; }
     public int CompanyId { get; set; }
     public Company Company { get; set; }
