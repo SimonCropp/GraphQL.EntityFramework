@@ -4,14 +4,14 @@
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
 
 
-## Community backed
+## Topluluk Değteği
 
 This project relies on financial contributions from the community to ensure its long term viability. **It is expected that all developers [become a Patron on OpenCollective](https://opencollective.com/graphqlentityframework/order/8286).**
 
 
-### Backers
+### Destekleyenler
 
-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/graphqlentityframework#backer)]
+Tüm destekleyenlere teşekkürler! 🙏 [[Become a backer](https://opencollective.com/graphqlentityframework#backer)]
 
 <a href="https://opencollective.com/graphqlentityframework#backers" target="_blank"><img src="https://opencollective.com/graphqlentityframework/backers.svg?width=890"></a>
 
