@@ -6,7 +6,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MarkdownSnippets.MsBuild" Version="10.2.0" />
+    <PackageReference Include="MarkdownSnippets.MsBuild" Version="10.3.0" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
     <PackageReference Include="ObjectApproval" Version="9.1.0" />
