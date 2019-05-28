@@ -22,7 +22,7 @@ public class Subscription : ObjectGraphType<object>
         {
             Name = "companyChanged",
             Type = typeof(CompanyGraph),
-            Resolver = new FuncFieldResolver<Company>(context => context.Source as Company),
+            Resolver = new FuncFieldResolver<Company>(context => (Company)context.Source),
             Subscriber = new EventStreamResolver<Company>(context => Subscribe(context, contextFactory, logger))
         });
     }
