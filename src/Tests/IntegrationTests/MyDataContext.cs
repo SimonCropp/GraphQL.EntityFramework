@@ -18,6 +18,7 @@ public class MyDbContext :
     public DbSet<WithManyChildrenEntity> WithManyChildrenEntities { get; set; }
     public DbSet<Child1Entity> Child1Entities { get; set; }
     public DbSet<Child2Entity> Child2Entities { get; set; }
+    public DbQuery<ParentEntityView> ParentEntityView { get; set; }
 
     public MyDbContext(DbContextOptions options) :
         base(options)
@@ -26,6 +27,9 @@ public class MyDbContext :
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder  .Query<ParentEntityView>()
+            .ToView("ParentEntityView")
+            .Property(v => v.Property).HasColumnName("Property");
         modelBuilder.Entity<CustomTypeEntity>();
         modelBuilder.Entity<WithNullableEntity>();
         modelBuilder.Entity<FilterParentEntity>();

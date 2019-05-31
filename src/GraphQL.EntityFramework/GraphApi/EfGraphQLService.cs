@@ -18,7 +18,13 @@ namespace GraphQL.EntityFramework
             this.filters = filters;
             foreach (var entityType in model.GetEntityTypes())
             {
-                var names = entityType.FindPrimaryKey().Properties.Select(x => x.Name).ToList();
+                var primaryKey = entityType.FindPrimaryKey();
+                //This can happen for views
+                if (primaryKey == null)
+                {
+                    continue;
+                }
+                var names = primaryKey.Properties.Select(x => x.Name).ToList();
                 keyNames.Add(entityType.ClrType, names);
             }
 

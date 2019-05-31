@@ -35,7 +35,14 @@ public partial class IntegrationTests :
 
         using (var dbContext = BuildDbContext())
         {
-            dbContext.Database.EnsureCreated();
+            var database = dbContext.Database;
+            if (database.EnsureCreated())
+            {
+                database.ExecuteSqlCommand(
+                    @"create view ParentEntityView as
+        select Property
+        from ParentEntities");
+            }
         }
     }
 
