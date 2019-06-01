@@ -12,7 +12,7 @@ namespace GraphQL.EntityFramework
         where TDbContext : DbContext
     {
         GlobalFilters filters;
-        Dictionary<Type,List<string>> keyNames = new Dictionary<Type, List<string>>();
+        Dictionary<Type, List<string>> keyNames = new Dictionary<Type, List<string>>();
 
         public EfGraphQLService(IModel model, GlobalFilters filters)
         {
@@ -26,6 +26,7 @@ namespace GraphQL.EntityFramework
                 {
                     continue;
                 }
+
                 var names = primaryKey.Properties.Select(x => x.Name).ToList();
                 keyNames.Add(entityType.ClrType, names);
             }
