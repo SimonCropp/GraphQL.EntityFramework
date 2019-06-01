@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Optimize>false</Optimize>
+    <NoWarn>EF1000</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" Version="2.4.0" />

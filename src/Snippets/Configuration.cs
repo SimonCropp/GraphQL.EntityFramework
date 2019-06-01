@@ -8,7 +8,12 @@ class Configuration
     {
         #region RegisterInContainerServiceCollectionUsage
 
-        EfGraphQLConventions.RegisterInContainer(serviceCollection, new MyDbContext());
+        var builder = new DbContextOptionsBuilder();
+        builder.UseSqlServer("fake");
+        using (var context = new MyDbContext(builder.Options))
+        {
+            EfGraphQLConventions.RegisterInContainer(serviceCollection, context);
+        }
 
         #endregion
     }
@@ -16,7 +21,8 @@ class Configuration
     public class MyDbContext :
         DbContext
     {
-        public MyDbContext()
+        public MyDbContext(DbContextOptions options):
+            base(options)
         {
         }
     }

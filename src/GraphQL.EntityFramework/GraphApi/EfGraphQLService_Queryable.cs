@@ -86,10 +86,10 @@ namespace GraphQL.EntityFramework
                     })
             };
         }
-        
+
         static List<string> emptyList = new List<string>();
 
-        List<string> GetKeyNames<TSource>() 
+        List<string> GetKeyNames<TSource>()
         {
             if (keyNames.TryGetValue(typeof(TSource), out var names))
             {
