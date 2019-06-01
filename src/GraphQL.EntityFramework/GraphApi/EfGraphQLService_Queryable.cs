@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    partial class EfGraphQLService
+    partial class EfGraphQLService<TDbContext> where TDbContext : DbContext
     {
         public FieldType AddQueryField<TReturn>(
             ObjectGraphType graph,

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    partial class EfGraphQLService
+    partial class EfGraphQLService<TDbContext> where TDbContext : DbContext
     {
         public FieldType AddNavigationField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,

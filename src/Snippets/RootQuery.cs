@@ -1,20 +1,21 @@
 ﻿using System.Linq;
 using GraphQL.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 
 class RootQuery
 {
     #region rootQuery
 
     public class Query :
-        QueryGraphType
+        QueryGraphType<MyDbContext>
     {
-        public Query(IEfGraphQLService graphQlService) :
+        public Query(IEfGraphQLService<MyDbContext> graphQlService) :
             base(graphQlService)
         {
             AddSingleField(
                 resolve: context =>
                 {
-                    var dbContext = (DbContext) context.UserContext;
+                    var dbContext = (MyDbContext) context.UserContext;
                     return dbContext.Companies;
                 },
                 name: "company");
@@ -22,7 +23,7 @@ class RootQuery
                 name: "companies",
                 resolve: context =>
                 {
-                    var dbContext = (DbContext) context.UserContext;
+                    var dbContext = (MyDbContext) context.UserContext;
                     return dbContext.Companies;
                 });
         }
@@ -30,7 +31,7 @@ class RootQuery
 
     #endregion
 
-    public class DbContext
+    public class MyDbContext:DbContext
     {
         public IQueryable<Company> Companies { get; set; }
     }
@@ -40,9 +41,9 @@ class RootQuery
     }
 
     class CompanyGraph:
-        EfObjectGraphType<Company>
+        EfObjectGraphType<MyDbContext,Company>
     {
-        public CompanyGraph(IEfGraphQLService efGraphQlService) :
+        public CompanyGraph(IEfGraphQLService<MyDbContext> efGraphQlService) :
             base(efGraphQlService)
         {
         }

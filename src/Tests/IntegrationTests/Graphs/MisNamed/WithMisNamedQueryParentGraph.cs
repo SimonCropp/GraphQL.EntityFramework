@@ -2,9 +2,9 @@
 using GraphQL.EntityFramework;
 
 public class WithMisNamedQueryParentGraph :
-    EfObjectGraphType<WithMisNamedQueryParentEntity>
+    EfObjectGraphType<MyDbContext, WithMisNamedQueryParentEntity>
 {
-    public WithMisNamedQueryParentGraph(IEfGraphQLService graphQlService) :
+    public WithMisNamedQueryParentGraph(IEfGraphQLService<MyDbContext> graphQlService) :
         base(graphQlService)
     {
         Field(x => x.Id);

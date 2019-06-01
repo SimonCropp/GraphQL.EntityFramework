@@ -9,7 +9,7 @@ class Configuration
     {
         #region RegisterInContainerServiceCollectionUsage
 
-        EfGraphQLConventions.RegisterInContainer(serviceCollection, MyDbContext.DataModel);
+        EfGraphQLConventions.RegisterInContainer<MyDbContext>(serviceCollection, MyDbContext.DataModel);
 
         #endregion
     }

@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
+using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    public class EfObjectGraphType<TSource> :
+    public class EfObjectGraphType<TDbContext,TSource> :
         ObjectGraphType<TSource>
+        where TDbContext : DbContext
     {
-        IEfGraphQLService efGraphQlService;
+        IEfGraphQLService<TDbContext> efGraphQlService;
 
-        public EfObjectGraphType(IEfGraphQLService efGraphQlService)
+        public EfObjectGraphType(IEfGraphQLService<TDbContext> efGraphQlService)
         {
             Guard.AgainstNull(nameof(efGraphQlService), efGraphQlService);
             this.efGraphQlService = efGraphQlService;

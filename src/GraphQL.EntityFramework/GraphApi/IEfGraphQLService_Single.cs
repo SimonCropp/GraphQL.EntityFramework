@@ -5,7 +5,7 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public partial interface IEfGraphQLService
+    public partial interface IEfGraphQLService<TDbContext>
     {
         FieldType AddSingleField<TReturn>(
             ObjectGraphType graph,

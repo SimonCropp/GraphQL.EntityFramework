@@ -1,9 +1,9 @@
 ﻿using GraphQL.EntityFramework;
 
 public class EmployeeGraph :
-    EfObjectGraphType<Employee>
+    EfObjectGraphType<GraphQlEfSampleDbContext, Employee>
 {
-    public EmployeeGraph(IEfGraphQLService graphQlService) :
+    public EmployeeGraph(IEfGraphQLService<GraphQlEfSampleDbContext> graphQlService) :
         base(graphQlService)
     {
         Field(x => x.Id);

@@ -1,5 +1,6 @@
 ﻿using System;
 using GraphQL.Types.Relay;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,7 +9,8 @@ namespace GraphQL.EntityFramework
     public static class EfGraphQLConventions
     {
         #region RegisterInContainerAction
-        public static void RegisterInContainer(Action<Type, object> register, IModel model, GlobalFilters filters = null)
+        public static void RegisterInContainer<TDbContext>(Action<Type, object> register, IModel model, GlobalFilters filters = null)
+            where TDbContext : DbContext
         #endregion
         {
             Guard.AgainstNull(nameof(register), register);
@@ -21,12 +23,13 @@ namespace GraphQL.EntityFramework
                 filters = new GlobalFilters();
             }
 
-            var service = new EfGraphQLService(model, filters);
-            register(typeof(IEfGraphQLService), service);
+            var service = new EfGraphQLService<TDbContext>(model, filters);
+            register(typeof(IEfGraphQLService<TDbContext>), service);
         }
 
         #region RegisterInContainerServiceCollection
-        public static void RegisterInContainer(IServiceCollection services, IModel model, GlobalFilters filters = null)
+        public static void RegisterInContainer<TDbContext>(IServiceCollection services, IModel model, GlobalFilters filters = null)
+            where TDbContext : DbContext
         #endregion
         {
             Guard.AgainstNull(nameof(services), services);
@@ -34,7 +37,7 @@ namespace GraphQL.EntityFramework
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();
-            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, model, filters);
+            RegisterInContainer<TDbContext>((type, instance) => { services.AddSingleton(type, instance); }, model, filters);
         }
 
         public static void RegisterConnectionTypesInContainer(IServiceCollection services)

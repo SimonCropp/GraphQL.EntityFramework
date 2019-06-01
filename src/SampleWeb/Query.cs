@@ -6,9 +6,9 @@ using GraphQL.Types;
 #region QueryUsedInController
 
 public class Query :
-    QueryGraphType
+    QueryGraphType<GraphQlEfSampleDbContext>
 {
-    public Query(IEfGraphQLService efGraphQlService) :
+    public Query(IEfGraphQLService<GraphQlEfSampleDbContext> efGraphQlService) :
         base(efGraphQlService)
     {
         AddQueryField(

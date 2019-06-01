@@ -4,10 +4,11 @@ using System.Linq;
 using System.Reflection;
 using GraphQL.Builders;
 using GraphQL.Types;
+using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    partial class EfGraphQLService
+    partial class EfGraphQLService<TDbContext> where TDbContext : DbContext
     {
         public void AddNavigationConnectionField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,

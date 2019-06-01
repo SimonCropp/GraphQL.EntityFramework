@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
+using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    partial class EfGraphQLService
+    partial class EfGraphQLService<TDbContext> where TDbContext : DbContext
     {
         public void AddQueryConnectionField<TReturn>(
             ObjectGraphType graph,
