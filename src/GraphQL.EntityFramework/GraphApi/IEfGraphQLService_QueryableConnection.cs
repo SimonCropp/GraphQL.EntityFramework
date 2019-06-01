@@ -7,7 +7,8 @@ namespace GraphQL.EntityFramework
 {
     public partial interface IEfGraphQLService<TDbContext>
     {
-        void AddQueryConnectionField<TReturn>(ObjectGraphType graph,
+        void AddQueryConnectionField<TReturn>(
+            ObjectGraphType graph,
             string name,
             Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
