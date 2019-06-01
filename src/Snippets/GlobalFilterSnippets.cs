@@ -1,6 +1,5 @@
 ﻿using GraphQL.EntityFramework;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 public class GlobalFilterSnippets
@@ -14,14 +13,14 @@ public class GlobalFilterSnippets
 
     #endregion
 
-    public void Add(ServiceCollection services, IModel model)
+    public void Add(ServiceCollection services, MyDbContext dbContext)
     {
         #region add-filter
 
         var filters = new GlobalFilters();
         filters.Add<MyEntity>(
             (userContext, item) => { return item.Property != "Ignore"; });
-        EfGraphQLConventions.RegisterInContainer<MyDbContext>(services, model, filters);
+        EfGraphQLConventions.RegisterInContainer(services, dbContext, filters);
 
         #endregion
     }

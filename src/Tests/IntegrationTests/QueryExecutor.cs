@@ -10,7 +10,7 @@ static class QueryExecutor
         where TDbContext : DbContext
     {
         query = query.Replace("'", "\"");
-        EfGraphQLConventions.RegisterInContainer<TDbContext>(services, dbContext.Model, filters);
+        EfGraphQLConventions.RegisterInContainer(services, dbContext, filters);
         using (var provider = services.BuildServiceProvider())
         using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
         {
