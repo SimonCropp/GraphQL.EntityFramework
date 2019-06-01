@@ -24,7 +24,6 @@ namespace GraphQL.EntityFramework
 
             var service = new EfGraphQLService<TDbContext>(dbContext.Model, filters);
             register(typeof(IEfGraphQLService<TDbContext>), service);
-            dbContext.Dispose();
         }
 
         #region RegisterInContainerServiceCollection
