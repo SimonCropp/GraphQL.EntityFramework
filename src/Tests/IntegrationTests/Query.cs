@@ -1,9 +1,9 @@
 ﻿using GraphQL.EntityFramework;
 
 public class Query :
-    QueryGraphType<MyDbContext>
+    QueryGraphType<IntegrationDbContext>
 {
-    public Query(IEfGraphQLService<MyDbContext> efGraphQlService) :
+    public Query(IEfGraphQLService<IntegrationDbContext> efGraphQlService) :
         base(efGraphQlService)
     {
         AddQueryField(

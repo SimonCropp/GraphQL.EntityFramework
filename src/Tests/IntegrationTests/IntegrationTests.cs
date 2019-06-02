@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 public partial class IntegrationTests :
     XunitLoggingBase
 {
-    static SqlInstance<MyDbContext> sqlInstance;
+    static SqlInstance<IntegrationDbContext> sqlInstance;
 
     static IntegrationTests()
     {
@@ -35,20 +35,16 @@ public partial class IntegrationTests :
         GraphTypeTypeRegistry.Register<NamedIdEntity, NamedIdGraph>();
         GraphTypeTypeRegistry.Register<WithMisNamedQueryChildEntity, WithMisNamedQueryChildGraph>();
 
-        sqlInstance = new SqlInstance<MyDbContext>(
-            buildTemplate: (connection, builder) =>
+        sqlInstance = new SqlInstance<IntegrationDbContext>(
+            buildTemplate: dbContext =>
             {
-                using (var dbContext = new MyDbContext(builder.Options))
-                {
-                    var database = dbContext.Database;
-                    database.EnsureCreated();
-                    database.ExecuteSqlCommand(
+                dbContext.Database.EnsureCreated();
+                dbContext.Database.ExecuteSqlCommand(
                         @"create view ParentEntityView as
         select Property
         from ParentEntities");
-                }
             },
-            constructInstance: builder => new MyDbContext(builder.Options));
+            constructInstance: builder => new IntegrationDbContext(builder.Options));
     }
 
     public IntegrationTests(ITestOutputHelper output) :
@@ -1028,7 +1024,7 @@ query ($value: String!)
         ObjectApprover.VerifyWithJson(result);
     }
 
-    static async Task<object> RunQuery(EfLocalDb.SqlDatabase<MyDbContext> database,string query, Inputs inputs, GlobalFilters filters, params object[] entities)
+    static async Task<object> RunQuery(EfLocalDb.SqlDatabase<IntegrationDbContext> database,string query, Inputs inputs, GlobalFilters filters, params object[] entities)
     {
         using (var dbContext = database.NewDbContext())
         {

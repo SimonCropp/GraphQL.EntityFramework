@@ -18,25 +18,9 @@ public class MultiContextTests:
         GraphTypeTypeRegistry.Register<Entity2, Entity2Graph>();
 
         var sqlInstance1 = new SqlInstance<DbContext1>(
-            buildTemplate: (connection, builder) =>
-            {
-                using (var dbContext = new DbContext1(builder.Options))
-                {
-                    var database = dbContext.Database;
-                    database.EnsureCreated();
-                }
-            },
             constructInstance: builder => new DbContext1(builder.Options));
 
         var sqlInstance2 = new SqlInstance<DbContext2>(
-            buildTemplate: (connection, builder) =>
-            {
-                using (var dbContext = new DbContext2(builder.Options))
-                {
-                    var database = dbContext.Database;
-                    database.EnsureCreated();
-                }
-            },
             constructInstance: builder => new DbContext2(builder.Options));
 
         var query = @"

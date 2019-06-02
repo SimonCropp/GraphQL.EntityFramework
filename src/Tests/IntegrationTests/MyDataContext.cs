@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-public class MyDbContext :
+public class IntegrationDbContext :
     DbContext
 {
     public DbSet<ParentEntity> ParentEntities { get; set; }
@@ -20,7 +20,7 @@ public class MyDbContext :
     public DbSet<Child2Entity> Child2Entities { get; set; }
     public DbQuery<ParentEntityView> ParentEntityView { get; set; }
 
-    public MyDbContext(DbContextOptions options) :
+    public IntegrationDbContext(DbContextOptions options) :
         base(options)
     {
     }

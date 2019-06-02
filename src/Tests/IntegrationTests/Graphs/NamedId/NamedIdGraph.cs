@@ -1,9 +1,9 @@
 ﻿using GraphQL.EntityFramework;
 
 public class NamedIdGraph :
-    EfObjectGraphType<MyDbContext, NamedIdEntity>
+    EfObjectGraphType<IntegrationDbContext, NamedIdEntity>
 {
-    public NamedIdGraph(IEfGraphQLService<MyDbContext> graphQlService) :
+    public NamedIdGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
         Field(x => x.NamedId);
