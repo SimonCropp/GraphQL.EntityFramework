@@ -20,7 +20,11 @@ public class GlobalFilterSnippets
         var filters = new GlobalFilters();
         filters.Add<MyEntity>(
             (userContext, item) => { return item.Property != "Ignore"; });
-        EfGraphQLConventions.RegisterInContainer(services, dbContext, filters);
+        EfGraphQLConventions.RegisterInContainer(
+            services,
+            dbContext,
+            userContext => (MyDbContext) userContext,
+            filters);
 
         #endregion
     }

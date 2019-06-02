@@ -13,19 +13,11 @@ class RootQuery
             base(graphQlService)
         {
             AddSingleField(
-                resolve: context =>
-                {
-                    var dbContext = (MyDbContext) context.UserContext;
-                    return dbContext.Companies;
-                },
+                resolve: context => context.DbContext.Companies,
                 name: "company");
             AddQueryField(
                 name: "companies",
-                resolve: context =>
-                {
-                    var dbContext = (MyDbContext) context.UserContext;
-                    return dbContext.Companies;
-                });
+                resolve: context => context.DbContext.Companies);
         }
     }
 

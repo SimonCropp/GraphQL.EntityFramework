@@ -11,7 +11,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddNavigationField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveFieldContext<TSource>, TReturn> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> resolve,
             Type graphType = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -23,7 +23,7 @@ namespace GraphQL.EntityFramework
 
         FieldType BuildNavigationField<TSource, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, TReturn> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> resolve,
             IEnumerable<string> includeNames,
             Type graphType)
             where TReturn : class
@@ -38,7 +38,7 @@ namespace GraphQL.EntityFramework
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(async context =>
                 {
-                    var result = resolve(context);
+                    var result = resolve(BuildEfContextFromGraphQlContext(context));
                     if (await filters.ShouldInclude(context.UserContext, result))
                     {
                         return result;

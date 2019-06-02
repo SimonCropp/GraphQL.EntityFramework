@@ -12,14 +12,14 @@ namespace GraphQL.EntityFramework
         public void AddQueryConnectionField<TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var connection = BuildQueryConnectionField(name, resolve, pageSize,graphType);
+            var connection = BuildQueryConnectionField(name, resolve, pageSize, graphType);
             var field = graph.AddField(connection.FieldType);
             field.AddWhereArgument(arguments);
         }
@@ -27,7 +27,7 @@ namespace GraphQL.EntityFramework
         public void AddQueryConnectionField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
@@ -42,7 +42,7 @@ namespace GraphQL.EntityFramework
         public void AddQueryConnectionField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
@@ -56,7 +56,7 @@ namespace GraphQL.EntityFramework
 
         ConnectionBuilder<FakeGraph, TSource> BuildQueryConnectionField<TSource, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             int pageSize,
             Type graphType)
             where TReturn : class
@@ -74,7 +74,8 @@ namespace GraphQL.EntityFramework
             builder.Resolve(
                 context =>
                 {
-                    var withIncludes = includeAppender.AddIncludes(resolve(context), context);
+                    var efFieldContext = BuildEfContextFromGraphQlContext(context);
+                    var withIncludes = includeAppender.AddIncludes(resolve(efFieldContext), context);
                     var names = GetKeyNames<TReturn>();
                     var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
                     return withArguments

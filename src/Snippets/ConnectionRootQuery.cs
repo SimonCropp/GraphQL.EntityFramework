@@ -14,11 +14,7 @@ class ConnectionRootQuery
         {
             AddQueryConnectionField(
                 name: "companies",
-                resolve: context =>
-                {
-                    var dbContext = (MyDbContext) context.UserContext;
-                    return dbContext.Companies;
-                });
+                resolve: context => context.DbContext.Companies);
         }
     }
 

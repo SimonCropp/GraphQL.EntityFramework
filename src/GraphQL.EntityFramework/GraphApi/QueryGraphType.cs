@@ -20,7 +20,7 @@ namespace GraphQL.EntityFramework
 
         protected void AddQueryConnectionField<TReturn>(
             string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
 
         protected FieldType AddQueryField<TReturn>(
             string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -40,7 +40,7 @@ namespace GraphQL.EntityFramework
         }
 
         protected FieldType AddSingleField<TReturn>(
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             string name = nameof(TReturn))
             where TReturn : class

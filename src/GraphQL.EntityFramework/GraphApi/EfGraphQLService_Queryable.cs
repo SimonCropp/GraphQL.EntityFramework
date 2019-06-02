@@ -12,7 +12,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddQueryField<TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -25,7 +25,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddQueryField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -38,7 +38,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddQueryField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -51,7 +51,7 @@ namespace GraphQL.EntityFramework
         FieldType BuildQueryField<TSource, TReturn>(
             Type graphType,
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments)
             where TReturn : class
         {
@@ -60,7 +60,7 @@ namespace GraphQL.EntityFramework
 
         FieldType BuildQueryField<TSource, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments,
             Type graphType)
             where TReturn : class
@@ -78,9 +78,9 @@ namespace GraphQL.EntityFramework
                     async context =>
                     {
                         var names = GetKeyNames<TReturn>();
-                        var returnTypes = resolve(context);
+                        var returnTypes = resolve(BuildEfContextFromGraphQlContext(context));
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
-                        var withArguments = withIncludes.ApplyGraphQlArguments(context,names);
+                        var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
                         var list = await withArguments.ToListAsync(context.CancellationToken);
                         return await filters.ApplyFilter(list, context.UserContext);
                     })

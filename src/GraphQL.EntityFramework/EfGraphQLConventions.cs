@@ -8,11 +8,16 @@ namespace GraphQL.EntityFramework
     public static class EfGraphQLConventions
     {
         #region RegisterInContainerAction
-        public static void RegisterInContainer<TDbContext>(Action<Type, object> register, TDbContext dbContext, GlobalFilters filters = null)
+        public static void RegisterInContainer<TDbContext>(
+            Action<Type, object> register,
+            TDbContext dbContext,
+            Func<object, TDbContext> dbContextFromUserContext,
+            GlobalFilters filters = null)
             where TDbContext : DbContext
         #endregion
         {
             Guard.AgainstNull(nameof(register), register);
+            Guard.AgainstNull(nameof(dbContextFromUserContext), dbContextFromUserContext);
             Guard.AgainstNull(nameof(dbContext), dbContext);
             Scalars.RegisterInContainer(register);
             ArgumentGraphs.RegisterInContainer(register);
@@ -22,12 +27,16 @@ namespace GraphQL.EntityFramework
                 filters = new GlobalFilters();
             }
 
-            var service = new EfGraphQLService<TDbContext>(dbContext.Model, filters);
+            var service = new EfGraphQLService<TDbContext>(dbContext.Model, filters,dbContextFromUserContext);
             register(typeof(IEfGraphQLService<TDbContext>), service);
         }
 
         #region RegisterInContainerServiceCollection
-        public static void RegisterInContainer<TDbContext>(IServiceCollection services, TDbContext dbContext, GlobalFilters filters = null)
+        public static void RegisterInContainer<TDbContext>(
+            IServiceCollection services,
+            TDbContext dbContext,
+            Func<object, TDbContext> dbContextFromUserContext,
+            GlobalFilters filters = null)
             where TDbContext : DbContext
         #endregion
         {
@@ -36,7 +45,7 @@ namespace GraphQL.EntityFramework
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();
-            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, dbContext, filters);
+            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, dbContext, dbContextFromUserContext, filters);
         }
 
         public static void RegisterConnectionTypesInContainer(IServiceCollection services)

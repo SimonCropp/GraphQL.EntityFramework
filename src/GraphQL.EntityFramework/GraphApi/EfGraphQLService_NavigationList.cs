@@ -11,7 +11,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddNavigationListField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
@@ -25,7 +25,7 @@ namespace GraphQL.EntityFramework
         FieldType BuildNavigationField<TSource, TReturn>(
             Type graphType,
             string name,
-            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string> includeNames,
             IEnumerable<QueryArgument> arguments)
             where TReturn : class
@@ -37,7 +37,7 @@ namespace GraphQL.EntityFramework
 
         FieldType BuildNavigationField<TSource, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string> includeNames,
             Type listGraphType,
             IEnumerable<QueryArgument> arguments)
@@ -54,7 +54,7 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     context =>
                     {
-                        var result = resolve(context);
+                        var result = resolve(BuildEfContextFromGraphQlContext(context));
                         result = result.ApplyGraphQlArguments(context);
                         return filters.ApplyFilter(result, context.UserContext);
                     })

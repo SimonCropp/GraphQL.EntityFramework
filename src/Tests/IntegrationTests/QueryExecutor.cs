@@ -6,11 +6,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 static class QueryExecutor
 {
-    public static async Task<object> ExecuteQuery<TDbContext>(string query, ServiceCollection services, TDbContext dbContext, Inputs inputs, GlobalFilters filters)
+    public static async Task<object> ExecuteQuery<TDbContext>(
+        string query,
+        ServiceCollection services,
+        TDbContext dbContext,
+        Inputs inputs,
+        GlobalFilters filters)
         where TDbContext : DbContext
     {
         query = query.Replace("'", "\"");
-        EfGraphQLConventions.RegisterInContainer(services, dbContext, filters);
+        EfGraphQLConventions.RegisterInContainer(
+            services,
+            dbContext,
+            userContext=>(TDbContext) userContext,
+            filters);
         using (var provider = services.BuildServiceProvider())
         using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
         {

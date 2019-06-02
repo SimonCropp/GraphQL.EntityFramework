@@ -13,7 +13,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddSingleField<TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -26,7 +26,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddSingleField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -39,7 +39,7 @@ namespace GraphQL.EntityFramework
         public FieldType AddSingleField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -51,7 +51,7 @@ namespace GraphQL.EntityFramework
 
         FieldType BuildSingleField<TSource, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument> arguments,
             Type graphType)
             where TReturn : class
@@ -68,7 +68,7 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(
                     async context =>
                     {
-                        var returnTypes = resolve(context);
+                        var returnTypes = resolve(BuildEfContextFromGraphQlContext(context));
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
                         var names = GetKeyNames<TReturn>();
                         var withArguments = withIncludes.ApplyGraphQlArguments(context, names);

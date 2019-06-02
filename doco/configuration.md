@@ -12,10 +12,14 @@ This can be applied to a [IServiceCollection](https://docs.microsoft.com/en-us/d
 
 <!-- snippet: RegisterInContainerServiceCollection -->
 ```cs
-public static void RegisterInContainer<TDbContext>(IServiceCollection services, TDbContext dbContext, GlobalFilters filters = null)
+public static void RegisterInContainer<TDbContext>(
+    IServiceCollection services,
+    TDbContext dbContext,
+    Func<object, TDbContext> dbContextFromUserContext,
+    GlobalFilters filters = null)
     where TDbContext : DbContext
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L29-L32)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L34-L41)</sup>
 <!-- endsnippet -->
 
 Usage:
@@ -26,7 +30,7 @@ var builder = new DbContextOptionsBuilder();
 builder.UseSqlServer("fake");
 using (var context = new MyDbContext(builder.Options))
 {
-    EfGraphQLConventions.RegisterInContainer(serviceCollection, context);
+    EfGraphQLConventions.RegisterInContainer(serviceCollection, context,x=>(MyDbContext)x);
 }
 ```
 <sup>[snippet source](/src/Snippets/Configuration.cs#L9-L18)</sup>
@@ -36,10 +40,14 @@ Or via an Action.
 
 <!-- snippet: RegisterInContainerAction -->
 ```cs
-public static void RegisterInContainer<TDbContext>(Action<Type, object> register, TDbContext dbContext, GlobalFilters filters = null)
+public static void RegisterInContainer<TDbContext>(
+    Action<Type, object> register,
+    TDbContext dbContext,
+    Func<object, TDbContext> dbContextFromUserContext,
+    GlobalFilters filters = null)
     where TDbContext : DbContext
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L10-L13)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L10-L17)</sup>
 <!-- endsnippet -->
 
 Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.

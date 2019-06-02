@@ -12,12 +12,15 @@ namespace GraphQL.EntityFramework
         where TDbContext : DbContext
     {
         GlobalFilters filters;
+        Func<object, TDbContext> dbContextFromUserContext;
         Dictionary<Type, List<string>> keyNames = new Dictionary<Type, List<string>>();
 
-        public EfGraphQLService(IModel model, GlobalFilters filters)
+        public EfGraphQLService(IModel model, GlobalFilters filters, Func<object, TDbContext> dbContextFromUserContext)
         {
             Guard.AgainstNull(nameof(model), model);
+            Guard.AgainstNull(nameof(dbContextFromUserContext), dbContextFromUserContext);
             this.filters = filters;
+            this.dbContextFromUserContext = dbContextFromUserContext;
             foreach (var entityType in model.GetEntityTypes())
             {
                 var primaryKey = entityType.FindPrimaryKey();
@@ -40,6 +43,33 @@ namespace GraphQL.EntityFramework
         {
             var listGraphType = typeof(ListGraphType<>);
             return listGraphType.MakeGenericType(graphType);
+        }
+
+        private ResolveEfFieldContext<TDbContext, TSource> BuildEfContextFromGraphQlContext<TSource>(ResolveFieldContext<TSource> context)
+        {
+            return new ResolveEfFieldContext<TDbContext, TSource>()
+            {
+                UserContext = context.UserContext,
+                Arguments = context.Arguments,
+                CancellationToken = context.CancellationToken,
+                Document = context.Document,
+                Errors = context.Errors,
+                FieldAst = context.FieldAst,
+                FieldDefinition = context.FieldDefinition,
+                FieldName = context.FieldName,
+                Fragments = context.Fragments,
+                Metrics = context.Metrics,
+                Operation = context.Operation,
+                ParentType = context.ParentType,
+                Path = context.Path,
+                ReturnType = context.ReturnType,
+                RootValue = context.RootValue,
+                Schema = context.Schema,
+                Source = context.Source,
+                SubFields = context.SubFields,
+                Variables = context.Variables,
+                DbContext = dbContextFromUserContext(context.UserContext)
+            };
         }
     }
 }
