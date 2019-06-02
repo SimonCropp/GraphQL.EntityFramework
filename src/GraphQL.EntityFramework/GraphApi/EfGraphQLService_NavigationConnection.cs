@@ -4,15 +4,17 @@ using System.Linq;
 using System.Reflection;
 using GraphQL.Builders;
 using GraphQL.Types;
+using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    partial class EfGraphQLService
+    partial class EfGraphQLService<TDbContext>
+        where TDbContext : DbContext
     {
         public void AddNavigationConnectionField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
@@ -27,7 +29,7 @@ namespace GraphQL.EntityFramework
 
         ConnectionBuilder<FakeGraph, TSource> BuildListConnectionField<TSource, TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string> includeName,
             int pageSize,
             Type graphType)
@@ -44,7 +46,7 @@ namespace GraphQL.EntityFramework
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeName);
             builder.ResolveAsync(async context =>
             {
-                var enumerable = resolve(context);
+                var enumerable = resolve(BuildEfContextFromGraphQlContext(context));
                 enumerable = enumerable.ApplyGraphQlArguments(context);
                 enumerable = await filters.ApplyFilter(enumerable, context.UserContext);
                 var page = enumerable.ToList();

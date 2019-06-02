@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
+using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    public class EfObjectGraphType<TSource> :
+    public class EfObjectGraphType<TDbContext, TSource> :
         ObjectGraphType<TSource>
+        where TDbContext : DbContext
     {
-        IEfGraphQLService efGraphQlService;
+        IEfGraphQLService<TDbContext> efGraphQlService;
 
-        public EfObjectGraphType(IEfGraphQLService efGraphQlService)
+        public EfObjectGraphType(IEfGraphQLService<TDbContext> efGraphQlService)
         {
             Guard.AgainstNull(nameof(efGraphQlService), efGraphQlService);
             this.efGraphQlService = efGraphQlService;
@@ -18,7 +20,7 @@ namespace GraphQL.EntityFramework
 
         protected void AddNavigationConnectionField<TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null,
@@ -30,7 +32,7 @@ namespace GraphQL.EntityFramework
 
         protected FieldType AddNavigationField<TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, TReturn> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> resolve,
             Type graphType = null,
             IEnumerable<string> includeNames = null)
             where TReturn : class
@@ -40,7 +42,7 @@ namespace GraphQL.EntityFramework
 
         protected FieldType AddNavigationListField<TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             IEnumerable<string> includeNames = null)
@@ -51,7 +53,7 @@ namespace GraphQL.EntityFramework
 
         protected void AddQueryConnectionField<TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
@@ -62,7 +64,7 @@ namespace GraphQL.EntityFramework
 
         protected FieldType AddQueryField<TReturn>(
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class

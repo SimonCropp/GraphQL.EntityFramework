@@ -2,8 +2,10 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Optimize>false</Optimize>
+    <NoWarn>EF1000</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="EfLocalDb" Version="0.10.0" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="ApprovalTests" Version="3.0.22" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />

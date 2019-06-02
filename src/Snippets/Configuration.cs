@@ -1,6 +1,5 @@
 ﻿using GraphQL.EntityFramework;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 class Configuration
@@ -9,33 +8,25 @@ class Configuration
     {
         #region RegisterInContainerServiceCollectionUsage
 
-        EfGraphQLConventions.RegisterInContainer(serviceCollection, MyDbContext.DataModel);
+        var builder = new DbContextOptionsBuilder();
+        builder.UseSqlServer("fake");
+        using (var context = new MyDbContext(builder.Options))
+        {
+            EfGraphQLConventions.RegisterInContainer(
+                serviceCollection,
+                dbContext: context,
+                dbContextFromUserContext: userContext => (MyDbContext) userContext);
+        }
 
         #endregion
     }
 
-    #region DbContextWithModel
-
     public class MyDbContext :
         DbContext
     {
-        static MyDbContext()
-        {
-            var builder = new DbContextOptionsBuilder();
-            builder.UseSqlServer("fake");
-            using (var context = new MyDbContext(builder.Options))
-            {
-                DataModel = context.Model;
-            }
-        }
-
-        public static readonly IModel DataModel;
-
-        public MyDbContext(DbContextOptions options) :
+        public MyDbContext(DbContextOptions options):
             base(options)
         {
         }
     }
-
-    #endregion
 }

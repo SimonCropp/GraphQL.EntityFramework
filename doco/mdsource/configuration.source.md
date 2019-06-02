@@ -1,12 +1,10 @@
 # Configuration
 
-Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`. It can be extracted from a DbContext instance via the `DbContext.Model` property. Unfortunately EntityFramework conflates configuration with runtime in its API. So `DbContext` is the main API used at runtime, but it also contains the configuration API via the `OnModelCreating` method. As such a DbContext needs to be instantiated and disposed for the purposes of IModel construction. One possible approach is via a static field on the DbContext.
+Enabling is done via registering in a container.
 
-snippet: DbContextWithModel
+Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`, hence a DbContext instance is required at configuration time. As such a DbContext needs to be instantiated and disposed for the purposes of IModel construction. EF does not allow access to the model unless 
 
-Enabling is then done via registering in a container.
-
-This can be applied to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
+The container registration can be via addin to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
 snippet: RegisterInContainerServiceCollection
 

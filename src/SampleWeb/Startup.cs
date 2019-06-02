@@ -21,7 +21,10 @@ public class Startup
 
         services.AddScoped(provider => DbContextBuilder.BuildDbContext());
 
-        EfGraphQLConventions.RegisterInContainer(services, DbContextBuilder.Model);
+        EfGraphQLConventions.RegisterInContainer(
+            services,
+            DbContextBuilder.BuildDbContext(),
+            userContext => (GraphQlEfSampleDbContext) userContext);
 
         foreach (var type in GetGraphQlTypes())
         {

@@ -5,11 +5,12 @@ using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
-    public partial interface IEfGraphQLService
+    public partial interface IEfGraphQLService<TDbContext>
     {
-        void AddQueryConnectionField<TReturn>(ObjectGraphType graph,
+        void AddQueryConnectionField<TReturn>(
+            ObjectGraphType graph,
             string name,
-            Func<ResolveFieldContext<object>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext,object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
@@ -18,7 +19,7 @@ namespace GraphQL.EntityFramework
         void AddQueryConnectionField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)
@@ -26,7 +27,7 @@ namespace GraphQL.EntityFramework
 
         void AddQueryConnectionField<TSource, TReturn>(ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveFieldContext<TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null,
             int pageSize = 10)

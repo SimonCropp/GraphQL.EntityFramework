@@ -44,15 +44,16 @@ public class MyEntity
     public string Property { get; set; }
 }
 ```
-<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L8-L15)</sup>
+<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L7-L14)</sup>
 ```cs
 var filters = new GlobalFilters();
 filters.Add<MyEntity>(
-    (userContext, item) =>
-    {
-        return item.Property != "Ignore";
-    });
-EfGraphQLConventions.RegisterInContainer(services, model, filters);
+    (userContext, item) => { return item.Property != "Ignore"; });
+EfGraphQLConventions.RegisterInContainer(
+    services,
+    dbContext,
+    userContext => (MyDbContext) userContext,
+    filters);
 ```
-<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L19-L29)</sup>
+<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L18-L29)</sup>
 <!-- endsnippet -->

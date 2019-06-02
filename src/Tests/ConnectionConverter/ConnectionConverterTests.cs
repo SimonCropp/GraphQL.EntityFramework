@@ -39,7 +39,6 @@ public class ConnectionConverterTests :
 
     //last after
     [InlineData(null, 7, 2, null)]
-
     public async Task Queryable(int? first, int? after, int? last, int? before)
     {
         NamerFactory.AdditionalInformation = $"first_{first}_after_{after}_last_{last}_before_{before}";

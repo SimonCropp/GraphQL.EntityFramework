@@ -1,6 +1,6 @@
 ﻿using System;
 using GraphQL.Types.Relay;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphQL.EntityFramework
@@ -8,11 +8,17 @@ namespace GraphQL.EntityFramework
     public static class EfGraphQLConventions
     {
         #region RegisterInContainerAction
-        public static void RegisterInContainer(Action<Type, object> register, IModel model, GlobalFilters filters = null)
+        public static void RegisterInContainer<TDbContext>(
+            Action<Type, object> register,
+            TDbContext dbContext,
+            DbContextFromUserContext<TDbContext> dbContextFromUserContext,
+            GlobalFilters filters = null)
+            where TDbContext : DbContext
         #endregion
         {
             Guard.AgainstNull(nameof(register), register);
-            Guard.AgainstNull(nameof(model), model);
+            Guard.AgainstNull(nameof(dbContextFromUserContext), dbContextFromUserContext);
+            Guard.AgainstNull(nameof(dbContext), dbContext);
             Scalars.RegisterInContainer(register);
             ArgumentGraphs.RegisterInContainer(register);
 
@@ -21,20 +27,25 @@ namespace GraphQL.EntityFramework
                 filters = new GlobalFilters();
             }
 
-            var service = new EfGraphQLService(model, filters);
-            register(typeof(IEfGraphQLService), service);
+            var service = new EfGraphQLService<TDbContext>(dbContext.Model, filters,dbContextFromUserContext);
+            register(typeof(IEfGraphQLService<TDbContext>), service);
         }
 
         #region RegisterInContainerServiceCollection
-        public static void RegisterInContainer(IServiceCollection services, IModel model, GlobalFilters filters = null)
+        public static void RegisterInContainer<TDbContext>(
+            IServiceCollection services,
+            TDbContext dbContext,
+            DbContextFromUserContext<TDbContext> dbContextFromUserContext,
+            GlobalFilters filters = null)
+            where TDbContext : DbContext
         #endregion
         {
             Guard.AgainstNull(nameof(services), services);
-            Guard.AgainstNull(nameof(model), model);
+            Guard.AgainstNull(nameof(dbContext), dbContext);
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();
-            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, model, filters);
+            RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, dbContext, dbContextFromUserContext, filters);
         }
 
         public static void RegisterConnectionTypesInContainer(IServiceCollection services)

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 // Replace with a real DbContext
 public static class DbContextBuilder
 {
-    static SqlDatabase<GraphQlEfSampleDbContext> database; 
+    static SqlDatabase<GraphQlEfSampleDbContext> database;
     static DbContextBuilder()
     {
         var sqlInstance = new SqlInstance<GraphQlEfSampleDbContext>(

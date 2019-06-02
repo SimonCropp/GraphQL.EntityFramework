@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
+using Microsoft.EntityFrameworkCore;
 
 public class TypedGraph
 {
     #region typedGraph
 
     public class CompanyGraph :
-        EfObjectGraphType<Company>
+        EfObjectGraphType<MyDbContext,Company>
     {
-        public CompanyGraph(IEfGraphQLService graphQlService) :
+        public CompanyGraph(IEfGraphQLService<MyDbContext> graphQlService) :
             base(graphQlService)
         {
             Field(x => x.Id);
@@ -35,6 +37,12 @@ public class TypedGraph
 
     public class Employee
     {
+    }
+
+    public class MyDbContext :
+        DbContext
+    {
+        public IQueryable<Company> Companies { get; set; }
     }
 
     public class EmployeeGraph :
