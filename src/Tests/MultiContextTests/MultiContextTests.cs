@@ -49,13 +49,13 @@ public class MultiContextTests:
         using (var dbContext = sqlDatabase1.NewDbContext())
         {
             dbContext.AddRange(entity1);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
 
         using (var dbContext = sqlDatabase2.NewDbContext())
         {
             dbContext.AddRange(entity2);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
 
         using (var dbContext1 = sqlDatabase1.NewDbContext())

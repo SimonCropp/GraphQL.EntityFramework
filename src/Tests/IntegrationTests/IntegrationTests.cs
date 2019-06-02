@@ -1029,7 +1029,7 @@ query ($value: String!)
         using (var dbContext = database.NewDbContext())
         {
             dbContext.AddRange(entities);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
 
         using (var dbContext = database.NewDbContext())
