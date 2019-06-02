@@ -15,7 +15,7 @@ This can be applied to a [IServiceCollection](https://docs.microsoft.com/en-us/d
 public static void RegisterInContainer<TDbContext>(
     IServiceCollection services,
     TDbContext dbContext,
-    Func<object, TDbContext> dbContextFromUserContext,
+    DbContextFromUserContext<TDbContext> dbContextFromUserContext,
     GlobalFilters filters = null)
     where TDbContext : DbContext
 ```
@@ -30,10 +30,13 @@ var builder = new DbContextOptionsBuilder();
 builder.UseSqlServer("fake");
 using (var context = new MyDbContext(builder.Options))
 {
-    EfGraphQLConventions.RegisterInContainer(serviceCollection, context,x=>(MyDbContext)x);
+    EfGraphQLConventions.RegisterInContainer(
+        serviceCollection,
+        dbContext: context,
+        dbContextFromUserContext: userContext => (MyDbContext) userContext);
 }
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L9-L18)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L9-L21)</sup>
 <!-- endsnippet -->
 
 Or via an Action.
@@ -43,7 +46,7 @@ Or via an Action.
 public static void RegisterInContainer<TDbContext>(
     Action<Type, object> register,
     TDbContext dbContext,
-    Func<object, TDbContext> dbContextFromUserContext,
+    DbContextFromUserContext<TDbContext> dbContextFromUserContext,
     GlobalFilters filters = null)
     where TDbContext : DbContext
 ```
@@ -256,13 +259,9 @@ public class Query :
     {
         AddQueryField(
             name: "companies",
-            resolve: context =>
-            {
-                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
-                return dbContext.Companies;
-            });
+            resolve: context => context.DbContext.Companies);
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L6-L22)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L6-L18)</sup>
 <!-- endsnippet -->
 
 

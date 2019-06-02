@@ -64,23 +64,15 @@ public class Query :
         base(graphQlService)
     {
         AddSingleField(
-            resolve: context =>
-            {
-                var dbContext = (MyDbContext) context.UserContext;
-                return dbContext.Companies;
-            },
+            resolve: context => context.DbContext.Companies,
             name: "company");
         AddQueryField(
             name: "companies",
-            resolve: context =>
-            {
-                var dbContext = (MyDbContext) context.UserContext;
-                return dbContext.Companies;
-            });
+            resolve: context => context.DbContext.Companies);
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L7-L32)</sup>
+<sup>[snippet source](/src/Snippets/RootQuery.cs#L7-L24)</sup>
 <!-- endsnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -132,15 +124,11 @@ public class Query :
     {
         AddQueryConnectionField(
             name: "companies",
-            resolve: context =>
-            {
-                var dbContext = (MyDbContext) context.UserContext;
-                return dbContext.Companies;
-            });
+            resolve: context => context.DbContext.Companies);
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L7-L25)</sup>
+<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L7-L21)</sup>
 <!-- endsnippet -->
 
 
@@ -301,5 +289,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L70-L105)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L49-L84)</sup>
 <!-- endsnippet -->

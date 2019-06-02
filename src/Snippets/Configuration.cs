@@ -12,7 +12,10 @@ class Configuration
         builder.UseSqlServer("fake");
         using (var context = new MyDbContext(builder.Options))
         {
-            EfGraphQLConventions.RegisterInContainer(serviceCollection, context,x=>(MyDbContext)x);
+            EfGraphQLConventions.RegisterInContainer(
+                serviceCollection,
+                dbContext: context,
+                dbContextFromUserContext: userContext => (MyDbContext) userContext);
         }
 
         #endregion

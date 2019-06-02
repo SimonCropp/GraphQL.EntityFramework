@@ -89,8 +89,8 @@ public class MultiContextTests:
             services.AddSingleton(typeof(Entity1Graph));
             services.AddSingleton(typeof(Entity2Graph));
 
-            EfGraphQLConventions.RegisterInContainer(services, dbContext1,x=>((UserContext)x).DbContext1);
-            EfGraphQLConventions.RegisterInContainer(services, dbContext2,x=>((UserContext)x).DbContext2);
+            EfGraphQLConventions.RegisterInContainer(services, dbContext1, userContext => ((UserContext) userContext).DbContext1);
+            EfGraphQLConventions.RegisterInContainer(services, dbContext2, userContext => ((UserContext) userContext).DbContext2);
             using (var provider = services.BuildServiceProvider())
             using (var schema = new MultiContextSchema(new FuncDependencyResolver(provider.GetRequiredService)))
             {
