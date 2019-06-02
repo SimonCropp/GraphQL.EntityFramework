@@ -45,7 +45,7 @@ namespace GraphQL.EntityFramework
             return listGraphType.MakeGenericType(graphType);
         }
 
-        private ResolveEfFieldContext<TDbContext, TSource> BuildEfContextFromGraphQlContext<TSource>(ResolveFieldContext<TSource> context)
+        ResolveEfFieldContext<TDbContext, TSource> BuildEfContextFromGraphQlContext<TSource>(ResolveFieldContext<TSource> context)
         {
             return new ResolveEfFieldContext<TDbContext, TSource>()
             {

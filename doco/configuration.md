@@ -6,9 +6,11 @@ To change this file edit the source file and then run MarkdownSnippets.
 -->
 # Configuration
 
-Enabling is then done via registering in a container.
+Enabling is done via registering in a container.
 
-This can be applied to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
+Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`, hence a DbContext instance is required at configuration time. As such a DbContext needs to be instantiated and disposed for the purposes of IModel construction. EF does not allow access to the model unless 
+
+The container registration can be via addin to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
 <!-- snippet: RegisterInContainerServiceCollection -->
 ```cs

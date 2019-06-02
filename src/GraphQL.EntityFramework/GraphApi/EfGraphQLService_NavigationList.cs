@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    partial class EfGraphQLService<TDbContext> where TDbContext : DbContext
+    partial class EfGraphQLService<TDbContext>
+        where TDbContext : DbContext
     {
         public FieldType AddNavigationListField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,

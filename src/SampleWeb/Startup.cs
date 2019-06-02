@@ -24,7 +24,7 @@ public class Startup
         EfGraphQLConventions.RegisterInContainer(
             services,
             DbContextBuilder.BuildDbContext(),
-            x=>(GraphQlEfSampleDbContext) x);
+            userContext => (GraphQlEfSampleDbContext) userContext);
 
         foreach (var type in GetGraphQlTypes())
         {
