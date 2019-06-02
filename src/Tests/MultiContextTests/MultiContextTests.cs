@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
+using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Utilities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ObjectApproval;
 using Xunit;
@@ -11,40 +11,34 @@ using Xunit.Abstractions;
 public class MultiContextTests:
     XunitLoggingBase
 {
-    static MultiContextTests()
+    [Fact]
+    public async Task Run()
     {
         GraphTypeTypeRegistry.Register<Entity1, Entity1Graph>();
         GraphTypeTypeRegistry.Register<Entity2, Entity2Graph>();
 
-        using (var dbContext = BuildDbContext1())
-        {
-            var database = dbContext.Database;
-            var script = database.GenerateCreateScript().Replace("GO","");
-            try
+        var sqlInstance1 = new SqlInstance<DbContext1>(
+            buildTemplate: (connection, builder) =>
             {
-                database.ExecuteSqlCommand(script);
-            }
-            catch
-            {
-            }
-        }
-        using (var dbContext = BuildDbContext2())
-        {
-            var database = dbContext.Database;
-            var script = database.GenerateCreateScript().Replace("GO","");
-            try
-            {
-                database.ExecuteSqlCommand(script);
-            }
-            catch
-            {
-            }
-        }
-    }
+                using (var dbContext = new DbContext1(builder.Options))
+                {
+                    var database = dbContext.Database;
+                    database.EnsureCreated();
+                }
+            },
+            constructInstance: builder => new DbContext1(builder.Options));
 
-    [Fact]
-    public async Task Run()
-    {
+        var sqlInstance2 = new SqlInstance<DbContext2>(
+            buildTemplate: (connection, builder) =>
+            {
+                using (var dbContext = new DbContext2(builder.Options))
+                {
+                    var database = dbContext.Database;
+                    database.EnsureCreated();
+                }
+            },
+            constructInstance: builder => new DbContext2(builder.Options));
+
         var query = @"
 {
   entity1
@@ -66,22 +60,22 @@ public class MultiContextTests:
             Property = "the entity2"
         };
 
-        Purge();
-
-        using (var dbContext = BuildDbContext1())
+        var sqlDatabase1 = await sqlInstance1.Build();
+        var sqlDatabase2 = await sqlInstance2.Build();
+        using (var dbContext = sqlDatabase1.NewDbContext())
         {
             dbContext.AddRange(entity1);
             dbContext.SaveChanges();
         }
 
-        using (var dbContext = BuildDbContext2())
+        using (var dbContext = sqlDatabase2.NewDbContext())
         {
             dbContext.AddRange(entity2);
             dbContext.SaveChanges();
         }
 
-        using (var dbContext1 = BuildDbContext1())
-        using (var dbContext2 = BuildDbContext2())
+        using (var dbContext1 = sqlDatabase1.NewDbContext())
+        using (var dbContext2 = sqlDatabase2.NewDbContext())
         {
             var services = new ServiceCollection();
 
@@ -111,40 +105,6 @@ public class MultiContextTests:
                 ObjectApprover.VerifyWithJson(executionResult.Data);
             }
         }
-    }
-
-    static void Purge()
-    {
-        using (var dbContext = BuildDbContext1())
-        {
-            Purge(dbContext.Entities);
-            dbContext.SaveChanges();
-        }
-        using (var dbContext = BuildDbContext2())
-        {
-            Purge(dbContext.Entities);
-            dbContext.SaveChanges();
-        }
-    }
-
-    static void Purge<T>(DbSet<T> dbSet)
-        where T : class
-    {
-        dbSet.RemoveRange(dbSet);
-    }
-
-    static DbContext1 BuildDbContext1()
-    {
-        var builder = new DbContextOptionsBuilder<DbContext1>();
-        builder.UseSqlServer(Connection.ConnectionString);
-        return new DbContext1(builder.Options);
-    }
-
-    static DbContext2 BuildDbContext2()
-    {
-        var builder = new DbContextOptionsBuilder<DbContext2>();
-        builder.UseSqlServer(Connection.ConnectionString);
-        return new DbContext2(builder.Options);
     }
 
     public MultiContextTests(ITestOutputHelper output) :
