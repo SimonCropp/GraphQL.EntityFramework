@@ -98,6 +98,47 @@ The same instance of the DbContext can then be accessed in the `resolve` delegat
 snippet: QueryUsedInController
 
 
+## Multiple DbContexts
+
+Multiple different DbContext types can be registered and used.
+
+
+### UserContext
+
+A user context that exposes both types.
+
+snippet: MultiUserContext
+
+
+### Register in container
+
+Register both DbContext types in the container and include how those instance can be extracted from the GraphQL context:
+
+snippet: RegisterMultipleInContainer
+
+
+### ExecutionOptions
+
+Use the user type to pass in both DbContext instances.
+
+
+snippet: MultiExecutionOptions
+
+
+### Query
+
+Use both DbContexts in a Query:
+
+snippet: MultiContextQuery.cs
+
+
+### GraphType
+
+Use a DbContext in a Graph:
+
+snippet: Entity1Graph.cs
+
+
 ## Testing the GraphQlController
 
 The `GraphQlController` can be tested using the [ASP.NET Integration tests](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests) via the [Microsoft.AspNetCore.Mvc.Testing NuGet package](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Testing).

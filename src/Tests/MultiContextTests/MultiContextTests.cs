@@ -67,13 +67,16 @@ public class MultiContextTests:
             services.AddSingleton(typeof(Entity1Graph));
             services.AddSingleton(typeof(Entity2Graph));
 
+            #region RegisterMultipleInContainer
             EfGraphQLConventions.RegisterInContainer(services, dbContext1, userContext => ((UserContext) userContext).DbContext1);
             EfGraphQLConventions.RegisterInContainer(services, dbContext2, userContext => ((UserContext) userContext).DbContext2);
+            #endregion
+
             using (var provider = services.BuildServiceProvider())
             using (var schema = new MultiContextSchema(new FuncDependencyResolver(provider.GetRequiredService)))
             {
                 var documentExecuter = new EfDocumentExecuter();
-
+                #region MultiExecutionOptions
                 var executionOptions = new ExecutionOptions
                 {
                     Schema = schema,
@@ -84,6 +87,7 @@ public class MultiContextTests:
                         DbContext2 = dbContext2
                     }
                 };
+                #endregion
 
                 var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
                 ObjectApprover.VerifyWithJson(executionResult.Data);
@@ -96,9 +100,10 @@ public class MultiContextTests:
     {
     }
 }
-
+#region MultiUserContext
 public class UserContext
 {
     public DbContext1 DbContext1;
     public DbContext2 DbContext2;
 }
+#endregion

@@ -267,6 +267,124 @@ public class Query :
 <!-- endsnippet -->
 
 
+## Multiple DbContexts
+
+Multiple different DbContext types can be registered and used.
+
+
+### UserContext
+
+A user context that exposes both types.
+
+<!-- snippet: MultiUserContext -->
+```cs
+public class UserContext
+{
+    public DbContext1 DbContext1;
+    public DbContext2 DbContext2;
+}
+```
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L103-L109)</sup>
+<!-- endsnippet -->
+
+
+### Register in container
+
+Register both DbContext types in the container and include how those instance can be extracted from the GraphQL context:
+
+<!-- snippet: RegisterMultipleInContainer -->
+```cs
+EfGraphQLConventions.RegisterInContainer(services, dbContext1, userContext => ((UserContext) userContext).DbContext1);
+EfGraphQLConventions.RegisterInContainer(services, dbContext2, userContext => ((UserContext) userContext).DbContext2);
+```
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L70-L73)</sup>
+<!-- endsnippet -->
+
+
+### ExecutionOptions
+
+Use the user type to pass in both DbContext instances.
+
+
+<!-- snippet: MultiExecutionOptions -->
+```cs
+var executionOptions = new ExecutionOptions
+{
+    Schema = schema,
+    Query = query,
+    UserContext = new UserContext
+    {
+        DbContext1 = dbContext1,
+        DbContext2 = dbContext2
+    }
+};
+```
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L79-L90)</sup>
+<!-- endsnippet -->
+
+
+### Query
+
+Use both DbContexts in a Query:
+
+<!-- snippet: MultiContextQuery.cs -->
+```cs
+using GraphQL.EntityFramework;
+using GraphQL.Types;
+
+public class MultiContextQuery :
+    ObjectGraphType
+{
+    public MultiContextQuery(
+        IEfGraphQLService<DbContext1> efGraphQlService1,
+        IEfGraphQLService<DbContext2> efGraphQlService2)
+    {
+        efGraphQlService1.AddSingleField(
+            graph: this,
+            name: "entity1",
+            resolve: context =>
+            {
+                var userContext = (UserContext) context.UserContext;
+                return userContext.DbContext1.Entities;
+            });
+        efGraphQlService2.AddSingleField(
+            graph: this,
+            name: "entity2",
+            resolve: context =>
+            {
+                var userContext = (UserContext) context.UserContext;
+                return userContext.DbContext2.Entities;
+            });
+    }
+}
+```
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextQuery.cs#L1-L28)</sup>
+<!-- endsnippet -->
+
+
+### GraphType
+
+Use a DbContext in a Graph:
+
+<!-- snippet: Entity1Graph.cs -->
+```cs
+using GraphQL.EntityFramework;
+
+public class Entity1Graph :
+    EfObjectGraphType<DbContext1, Entity1>
+{
+    public Entity1Graph(IEfGraphQLService<DbContext1> graphQlService) :
+        base(graphQlService)
+    {
+        Field(x => x.Id);
+        Field(x => x.Property);
+    }
+}
+```
+<sup>[snippet source](/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L12)</sup>
+<!-- endsnippet -->
+
+
 ## Testing the GraphQlController
 
 The `GraphQlController` can be tested using the [ASP.NET Integration tests](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests) via the [Microsoft.AspNetCore.Mvc.Testing NuGet package](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Testing).
