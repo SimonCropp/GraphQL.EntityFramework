@@ -68,8 +68,14 @@ public class MultiContextTests:
             services.AddSingleton(typeof(Entity2Graph));
 
             #region RegisterMultipleInContainer
-            EfGraphQLConventions.RegisterInContainer(services, dbContext1, userContext => ((UserContext) userContext).DbContext1);
-            EfGraphQLConventions.RegisterInContainer(services, dbContext2, userContext => ((UserContext) userContext).DbContext2);
+            EfGraphQLConventions.RegisterInContainer(
+                services,
+                dbContext1,
+                userContext => ((UserContext) userContext).DbContext1);
+            EfGraphQLConventions.RegisterInContainer(
+                services,
+                dbContext2,
+                userContext => ((UserContext) userContext).DbContext2);
             #endregion
 
             using (var provider = services.BuildServiceProvider())

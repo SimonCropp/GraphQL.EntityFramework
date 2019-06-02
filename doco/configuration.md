@@ -284,7 +284,7 @@ public class UserContext
     public DbContext2 DbContext2;
 }
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L103-L109)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L109-L115)</sup>
 <!-- endsnippet -->
 
 
@@ -294,10 +294,16 @@ Register both DbContext types in the container and include how those instance ca
 
 <!-- snippet: RegisterMultipleInContainer -->
 ```cs
-EfGraphQLConventions.RegisterInContainer(services, dbContext1, userContext => ((UserContext) userContext).DbContext1);
-EfGraphQLConventions.RegisterInContainer(services, dbContext2, userContext => ((UserContext) userContext).DbContext2);
+EfGraphQLConventions.RegisterInContainer(
+    services,
+    dbContext1,
+    userContext => ((UserContext) userContext).DbContext1);
+EfGraphQLConventions.RegisterInContainer(
+    services,
+    dbContext2,
+    userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L70-L73)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L70-L79)</sup>
 <!-- endsnippet -->
 
 
@@ -319,7 +325,7 @@ var executionOptions = new ExecutionOptions
     }
 };
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L79-L90)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L85-L96)</sup>
 <!-- endsnippet -->
 
 
