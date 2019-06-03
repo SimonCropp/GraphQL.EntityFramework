@@ -1024,7 +1024,12 @@ query ($value: String!)
         ObjectApprover.VerifyWithJson(result);
     }
 
-    static async Task<object> RunQuery(EfLocalDb.SqlDatabase<IntegrationDbContext> database,string query, Inputs inputs, GlobalFilters filters, params object[] entities)
+    static async Task<object> RunQuery(
+        SqlDatabase<IntegrationDbContext> database,
+        string query,
+        Inputs inputs,
+        GlobalFilters filters,
+        params object[] entities)
     {
         using (var dbContext = database.NewDbContext())
         {
