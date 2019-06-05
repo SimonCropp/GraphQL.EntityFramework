@@ -26,8 +26,7 @@ namespace GraphQL.EntityFramework
                         if (varDefAst.Name == "id" &&
                             varDefAst.Type is NonNullType nonNullType &&
                             nonNullType.Type is NamedType namedType &&
-                            namedType.Name == "String"
-                        )
+                            namedType.Name == "String")
                         {
                             varDefAst.Type = idNode;
                         }
