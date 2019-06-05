@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.EntityFramework;
-using GraphQL.Validation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
