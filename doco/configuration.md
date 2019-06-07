@@ -580,9 +580,9 @@ query ($id: ID!)
             new GraphQLRequest
             {
                 Query = @"
-subscription 
+subscription
 {
-  companyChanged 
+  companyChanged
   {
     id
   }
@@ -623,7 +623,7 @@ subscription
         return new TestServer(hostBuilder);
     }
 
-    public GraphQlControllerTests(ITestOutputHelper output) : 
+    public GraphQlControllerTests(ITestOutputHelper output) :
         base(output)
     {
     }

@@ -6,13 +6,13 @@ To change this file edit the source file and then run MarkdownSnippets.
 -->
 # Id type rename
 
-In version 5, the 'Id' type changed from `String` to `ID`. For queries that use named variables, this can cause type validations errors if the client and server are out of sync.
+In version 5, the `Id` type changed from `String` to `ID`. For queries that use named variables, this can cause type validations errors if the client and server are out of sync.
 
 For example:
 
 A version 4 query would look like this:
 
-```
+```graphql
 query ($id: String!)
 {
   MyEntities(id:$id)
@@ -23,7 +23,7 @@ query ($id: String!)
 ```
 A version 5 query would look like this:
 
-```
+```graphql
 query ($id: ID!)
 {
   MyEntities(id:$id)
@@ -44,7 +44,9 @@ To work around this it is necessary to use a [ValidationRule](https://graphql-do
 <!-- snippet: FixIdTypeRule.cs -->
 ```cs
 using System.Collections.Generic;
+using System.Linq;
 using GraphQL.Language.AST;
+using GraphQL.Types;
 using GraphQL.Validation;
 
 namespace GraphQL.EntityFramework
@@ -63,28 +65,39 @@ namespace GraphQL.EntityFramework
 
         public INodeVisitor Validate(ValidationContext context)
         {
-            return new EnterLeaveListener(_ =>
-            {
-                _.Match<VariableDefinition>(
-                    varDefAst =>
-                    {
-                        if (varDefAst.Name == "id" &&
-                            varDefAst.Type is NonNullType nonNullType &&
-                            nonNullType.Type is NamedType namedType &&
-                            namedType.Name == "String"
-                        )
+            Dictionary<string, VariableUsage> variableUsages = null;
+
+            return new EnterLeaveListener(
+                listener =>
+                {
+                    listener.Match<VariableDefinition>(
+                        variableDefinition =>
                         {
-                            varDefAst.Type = idNode;
+                            var variableUsage = variableUsages[variableDefinition.Name];
+                            if (variableUsage.Type is IdGraphType &&
+                                variableDefinition.Type is NonNullType nonNullType &&
+                                nonNullType.Type is NamedType namedType &&
+                                namedType.Name == "String")
+                            {
+                                variableDefinition.Type = idNode;
+                            }
+                        });
+
+                    listener.Match<Operation>(
+                        operation =>
+                        {
+                            variableUsages = context.GetRecursiveVariables(operation)
+                                .ToDictionary(x => x.Node.Name, x => x);
                         }
-                    });
-            });
+                    );
+                });
         }
 
         public static IEnumerable<IValidationRule> CoreRulesWithIdFix => validationRules;
     }
 }
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L40)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L53)</sup>
 <!-- endsnippet -->
 
 To use this rule set `ExecutionOptions.ValidationRules` to `FixIdTypeRule.CoreRulesWithIdFix`:
@@ -100,5 +113,5 @@ var executionOptions = new ExecutionOptions
     ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
 };
 ```
-<sup>[snippet source](/src/Tests/IntegrationTests/QueryExecutor.cs#L29-L38)</sup>
+<sup>[snippet source](/src/Tests/IntegrationTests/QueryExecutor.cs#L28-L37)</sup>
 <!-- endsnippet -->

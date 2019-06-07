@@ -39,7 +39,7 @@ Ideally, all navigation properties would be eagerly loaded as part of the root q
 
 Would result in the following query being performed
 
-```csharp
+```cs
 context.Heros
         .Include("Friends")
         .Include("Friends.Address");
@@ -228,7 +228,7 @@ public class CompanyGraph :
 
 ## Enums
 
-```csharp
+```cs
 public class DayOfTheWeekGraph : EnumerationGraphType<DayOfTheWeek>
 {
 }
