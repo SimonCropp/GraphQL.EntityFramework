@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using GraphQL.Language.AST;
+using GraphQL.Types;
 using GraphQL.Validation;
 
 namespace GraphQL.EntityFramework
@@ -18,20 +20,32 @@ namespace GraphQL.EntityFramework
 
         public INodeVisitor Validate(ValidationContext context)
         {
-            return new EnterLeaveListener(_ =>
-            {
-                _.Match<VariableDefinition>(
-                    varDefAst =>
-                    {
-                        if (varDefAst.Name == "id" &&
-                            varDefAst.Type is NonNullType nonNullType &&
-                            nonNullType.Type is NamedType namedType &&
-                            namedType.Name == "String")
+            Dictionary<string, VariableUsage> variableUsages = null;
+
+            return new EnterLeaveListener(
+                listener =>
+                {
+                    listener.Match<VariableDefinition>(
+                        variableDefinition =>
                         {
-                            varDefAst.Type = idNode;
+                            var variableUsage = variableUsages[variableDefinition.Name];
+                            if (variableUsage.Type is IdGraphType &&
+                                variableDefinition.Type is NonNullType nonNullType &&
+                                nonNullType.Type is NamedType namedType &&
+                                namedType.Name == "String")
+                            {
+                                variableDefinition.Type = idNode;
+                            }
+                        });
+
+                    listener.Match<Operation>(
+                        operation =>
+                        {
+                            variableUsages = context.GetRecursiveVariables(operation)
+                                .ToDictionary(x => x.Node.Name, x => x);
                         }
-                    });
-            });
+                    );
+                });
         }
 
         public static IEnumerable<IValidationRule> CoreRulesWithIdFix => validationRules;
