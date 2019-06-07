@@ -489,6 +489,37 @@ query ($value: String!)
     }
 
     [Fact]
+    public async Task Id_string_named()
+    {
+        var query = @"
+query ($entityId: String!)
+{
+  parentEntities(id:$entityId)
+  {
+    id
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Property = "Value2"
+        };
+
+        var inputs = new Inputs(
+            new Dictionary<string, object>
+            {
+                {"entityId", "00000000-0000-0000-0000-000000000001"}
+            });
+        var result = await RunQuery(await sqlInstance.Build(), query, inputs, null, entity1, entity2);
+        ObjectApprover.VerifyWithJson(result);
+    }
+
+    [Fact]
     public async Task Id_string()
     {
         var query = @"
