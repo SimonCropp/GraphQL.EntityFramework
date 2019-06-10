@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="EfLocalDb" Version="0.15.0" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
-    <PackageReference Include="ApprovalTests" Version="3.1.0" />
+    <PackageReference Include="ApprovalTests" Version="4.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
     <PackageReference Include="ObjectApproval" Version="9.1.0" />
     <PackageReference Include="ModuleInit.Fody" Version="2.0.0" />
