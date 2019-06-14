@@ -28,6 +28,16 @@ static class TypeConverter
         return list;
     }
 
+    static bool ParseBoolean(string value)
+    {
+        switch (value)
+        {
+            case "1": return true;
+            case "0": return false;
+            default: return bool.Parse(value);
+        }
+    }
+
     static IList ConvertStringsToListInternal(IEnumerable<string> values, Type type)
     {
         if (type == typeof(Guid))
@@ -37,6 +47,15 @@ static class TypeConverter
         if (type == typeof(Guid?))
         {
             return values.Select(s => new Guid?(Guid.Parse(s))).ToList();
+        }
+
+        if (type == typeof(bool))
+        {
+            return values.Select(ParseBoolean).ToList();
+        }
+        if (type == typeof(bool?))
+        {
+            return values.Select(s => new bool?(ParseBoolean(s))).ToList();
         }
 
         if (type == typeof(int))
