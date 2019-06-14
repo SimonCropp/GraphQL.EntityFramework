@@ -11,6 +11,8 @@ static class ReflectionCache
     static MethodInfo guidNullableListContains;
     static MethodInfo intListContains;
     static MethodInfo intNullableListContains;
+    static MethodInfo boolListContains;
+    static MethodInfo boolNullableListContains;
     static MethodInfo shortListContains;
     static MethodInfo shortNullableListContains;
     static MethodInfo longListContains;
@@ -42,6 +44,8 @@ static class ReflectionCache
             .MakeGenericMethod(typeof(string));
         guidListContains = GetContains<Guid>();
         guidNullableListContains = GetContains<Guid?>();
+        boolListContains = GetContains<bool>();
+        boolNullableListContains = GetContains<bool?>();
         intListContains = GetContains<int>();
         intNullableListContains = GetContains<int?>();
         shortListContains = GetContains<short>();
@@ -53,8 +57,8 @@ static class ReflectionCache
         ushortListContains = GetContains<ushort>();
         ushortNullableListContains = GetContains<ushort?>();
         ulongListContains = GetContains<ulong>();
-        ulongNullableListContains = GetContains<ushort?>();
-        dateTimeListContains = GetContains<ulong>();
+        ulongNullableListContains = GetContains<ulong?>();
+        dateTimeListContains = GetContains<DateTime>();
         dateTimeNullableListContains = GetContains<DateTime?>();
         dateTimeOffsetListContains = GetContains<DateTimeOffset>();
         dateTimeOffsetNullableListContains = GetContains<DateTimeOffset?>();
@@ -69,6 +73,15 @@ static class ReflectionCache
         if (type == typeof(Guid?))
         {
             return guidNullableListContains;
+        }
+
+        if (type == typeof(bool))
+        {
+            return boolListContains;
+        }
+        if (type == typeof(bool?))
+        {
+            return boolNullableListContains;
         }
 
         if (type == typeof(int))
