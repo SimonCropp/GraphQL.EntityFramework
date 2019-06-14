@@ -76,12 +76,16 @@ public class TypeConverterTests :
     {
         var result = TypeConverter.ConvertStringsToList(values, type);
         Assert.Equal(values.Length, result.Count);
-        for(var i = 0; i< values.Length; i++)
+        for (var i = 0; i < values.Length; i++)
         {
             var actual = result[i] is DateTime || result[i] is DateTimeOffset
                 ? string.Format("{0:yyyy-MM-dd H:mm}", result[i])
                 : Convert.ToString(result[i]);
             Assert.Equal(expected?[i] ?? values[i], actual, ignoreCase: true);
+
+            var convertType = type.IsGenericType ? type.GenericTypeArguments[0] : type;
+            var contains = (bool)ReflectionCache.GetListContains(type).Invoke(result, new[] { Convert.ChangeType(result[0], convertType) });
+            Assert.True(contains);
         }
     }
 
