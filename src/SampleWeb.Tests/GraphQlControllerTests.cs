@@ -119,6 +119,38 @@ query {
     }
 
     [Fact]
+    public async Task Get_companies_employees_paging()
+    {
+        var after = 1;
+        var query = @"
+query {
+  companies {
+    id
+    employeesConnection(first:2, after:""" + after + @""") {
+      edges {
+        cursor
+        node {
+          id
+        }
+      }
+	  pageInfo {
+		  endCursor
+		  hasNextPage
+		}
+    }
+  }
+}
+";
+        var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        var result = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+        var page = result.SelectToken("..data..companies..employeesConnection..edges[0].cursor")
+            .Value<string>();
+        Assert.NotEqual(after.ToString(), page);
+    }
+
+    [Fact]
     public async Task Get_employee_summary()
     {
         var query = @"
