@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -48,6 +49,40 @@ public class TypeConverterTests :
         var value = day.ToString().ToUpperInvariant();
         var result = TypeConverter.ConvertStringToType(value, typeof(DayOfWeek));
         Assert.Equal(day, result);
+    }
+
+    [Theory]
+    [InlineData(new[] { "876f5560-d0f8-4930-8089-d0d58a989928", "D5DE2533-ABCE-4870-A839-1C5E8781905F" }, typeof(Guid))]
+    [InlineData(new[] { "876f5560-d0f8-4930-8089-d0d58a989928", "D5DE2533-ABCE-4870-A839-1C5E8781905F" }, typeof(Guid?))]
+    [InlineData(new[] { "false", "true", "True", "False", "0", "1" }, typeof(bool), new[] { "false", "true", "true", "false", "false", "true" })]
+    [InlineData(new[] { "false", "true", "True", "False", "0", "1" }, typeof(bool?), new[] { "false", "true", "true", "false", "false", "true" })]
+    [InlineData(new[] { "0", "1", "-1", "12342" }, typeof(int))]
+    [InlineData(new[] { "0", "1", "-1", "12342" }, typeof(int?))]
+    [InlineData(new[] { "0", "1", "-1", "12342" }, typeof(short))]
+    [InlineData(new[] { "0", "1", "-1", "12342" }, typeof(short?))]
+    [InlineData(new[] { "0", "1", "-1", "12342" }, typeof(long))]
+    [InlineData(new[] { "0", "1", "-1", "12342" }, typeof(long?))]
+    [InlineData(new[] { "0", "1", "12342" }, typeof(uint))]
+    [InlineData(new[] { "0", "1", "12342" }, typeof(uint?))]
+    [InlineData(new[] { "0", "1", "12342" }, typeof(ushort))]
+    [InlineData(new[] { "0", "1", "12342" }, typeof(ushort?))]
+    [InlineData(new[] { "0", "1", "12342" }, typeof(ulong))]
+    [InlineData(new[] { "0", "1", "12342" }, typeof(ulong?))]
+    [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTime))]
+    [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTime?))]
+    [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTimeOffset))]
+    [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTimeOffset?))]
+    public void ConvertStringsToList(string[] values, Type type, string[] expected = null)
+    {
+        var result = TypeConverter.ConvertStringsToList(values, type);
+        Assert.Equal(values.Length, result.Count);
+        for(var i = 0; i< values.Length; i++)
+        {
+            var actual = result[i] is DateTime || result[i] is DateTimeOffset
+                ? string.Format("{0:yyyy-MM-dd H:mm}", result[i])
+                : Convert.ToString(result[i]);
+            Assert.Equal(expected?[i] ?? values[i], actual, ignoreCase: true);
+        }
     }
 
     public TypeConverterTests(ITestOutputHelper output) :
