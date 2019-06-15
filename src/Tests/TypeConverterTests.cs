@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -72,19 +71,29 @@ public class TypeConverterTests :
     [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTime?))]
     [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTimeOffset))]
     [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTimeOffset?))]
-    public void ConvertStringsToList(string[] values, Type type, string[] expected = null)
+    public void ConvertStringsToList(string[] values, Type type, string[] expecteds = null)
     {
-        var result = TypeConverter.ConvertStringsToList(values, type);
-        Assert.Equal(values.Length, result.Count);
+        var results = TypeConverter.ConvertStringsToList(values, type);
+        var listContains = ReflectionCache.GetListContains(type);
+        Assert.Equal(values.Length, results.Count);
         for (var i = 0; i < values.Length; i++)
         {
-            var actual = result[i] is DateTime || result[i] is DateTimeOffset
-                ? string.Format("{0:yyyy-MM-dd H:mm}", result[i])
-                : Convert.ToString(result[i]);
-            Assert.Equal(expected?[i] ?? values[i], actual, ignoreCase: true);
+            string actual;
+            var result = results[i];
+            var expected = expecteds?[i] ?? values[i];
+            if (result is DateTime || result is DateTimeOffset)
+            {
+                actual = $"{result:yyyy-MM-dd H:mm}";
+            }
+            else
+            {
+                actual = Convert.ToString(result);
+            }
+
+            Assert.Equal(expected, actual, ignoreCase: true);
 
             var convertType = type.IsGenericType ? type.GenericTypeArguments[0] : type;
-            var contains = (bool)ReflectionCache.GetListContains(type).Invoke(result, new[] { Convert.ChangeType(result[0], convertType) });
+            var contains = (bool)listContains.Invoke(results, new[] { Convert.ChangeType(results[0], convertType) });
             Assert.True(contains);
         }
     }
