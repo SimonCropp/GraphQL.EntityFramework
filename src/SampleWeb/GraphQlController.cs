@@ -76,25 +76,14 @@ public class GraphQlController :
 
         if (result.Errors?.Count > 0)
         {
-<<<<<<< HEAD
             if (result.Errors[0].ToString().Contains("Cannot return null for non-null type"))
             {
                 Response.StatusCode = (int) HttpStatusCode.NotFound;
-=======
-            
-            if (result.Errors[0].ToString().Contains("Company not found for id"))
-            {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
->>>>>>> Initial push
             }
             else
             {
                 Response.StatusCode = (int) HttpStatusCode.BadRequest;
             }
-<<<<<<< HEAD
-=======
-
->>>>>>> Initial push
         }
 
         return result;

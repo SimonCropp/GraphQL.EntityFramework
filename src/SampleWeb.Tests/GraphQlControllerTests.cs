@@ -233,23 +233,15 @@ subscription
     }
 
     [Fact]
-<<<<<<< HEAD
     public async Task Non_nullable_with_invalid_id_complains()
-=======
-    public async Task Get_single_not_found()
->>>>>>> Initial push
     {
         var query = @"
 query ($id: ID!)
 {
   companyNotNull(id:$id)
   {
-<<<<<<< HEAD
     id,
     content
-=======
-    id
->>>>>>> Initial push
   }
 }";
         var variables = new
@@ -259,7 +251,6 @@ query ($id: ID!)
 
         var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
-<<<<<<< HEAD
         Assert.True((int)response.StatusCode is 404);
         dynamic json = JsonConvert.DeserializeObject(result);
         var message = json.errors[0].message;
@@ -292,13 +283,6 @@ query ($id: ID!)
         var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
         Assert.Contains(@"{""data"":{""companyNotNull"":{""id"":1,""content"":""Company1""}}}", result);
-=======
-        dynamic json = JsonConvert.DeserializeObject(result);
-        var message = json.errors[0].message;
-        var index = message.ToString().IndexOf(Environment.NewLine);
-        message = message.ToString().Substring(0, index);
-        Assert.Contains("GraphQL.ExecutionError: Company not found for id -1", message);
->>>>>>> Initial push
     }
 
     static TestServer GetTestServer()
