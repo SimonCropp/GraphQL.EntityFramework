@@ -289,5 +289,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L49-L84)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L73-L108)</sup>
 <!-- endsnippet -->

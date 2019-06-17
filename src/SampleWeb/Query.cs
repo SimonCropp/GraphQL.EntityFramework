@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
 
@@ -45,6 +47,28 @@ public class Query :
         AddQueryConnectionField(
             name: "employeesConnection",
             resolve: context => context.DbContext.Employees);
+
+        #region NonNull test
+        Field<NonNullGraphType<CompanyGraph>>(
+            "companyNotNull",
+            arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<IdGraphType>> { Name = "id" }
+            ),
+            resolve: context =>
+            {
+                var id = context.GetArgument<string>("id");
+                var dbContext = (GraphQlEfSampleDbContext)context.UserContext;
+                IQueryable<Company> query = dbContext.Companies;
+                var company = query.FirstOrDefault(x => x.Id == Int32.Parse(id));
+                if (company is null)
+                {
+                    throw new ExecutionError($"Company not found for id {id}");
+                }
+
+                return company;
+            }
+        );
+        #endregion
 
         #region ManuallyApplyWhere
 

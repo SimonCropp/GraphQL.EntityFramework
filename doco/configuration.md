@@ -220,7 +220,16 @@ public class GraphQlController :
 
         if (result.Errors?.Count > 0)
         {
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            
+            if (result.Errors[0].ToString().Contains("Company not found for id"))
+            {
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
+            }
+            else
+            {
+                Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            }
+
         }
 
         return result;
@@ -244,7 +253,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L11-L102)</sup>
+<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L11-L111)</sup>
 <!-- endsnippet -->
 
 Note that the instance of the DbContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
@@ -263,7 +272,7 @@ public class Query :
             name: "companies",
             resolve: context => context.DbContext.Companies);
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L6-L18)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L8-L20)</sup>
 <!-- endsnippet -->
 
 
@@ -616,6 +625,31 @@ subscription
         return task;
     }
 
+    [Fact]
+    public async Task Get_single_not_found()
+    {
+        var query = @"
+query ($id: ID!)
+{
+  companyNotNull(id:$id)
+  {
+    id
+  }
+}";
+        var variables = new
+        {
+            id = "-1"
+        };
+
+        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        var result = await response.Content.ReadAsStringAsync();
+        dynamic json = JsonConvert.DeserializeObject(result);
+        var message = json.errors[0].message;
+        var index = message.ToString().IndexOf(Environment.NewLine);
+        message = message.ToString().Substring(0, index);
+        Assert.Contains("GraphQL.ExecutionError: Company not found for id -1", message);
+    }
+
     static TestServer GetTestServer()
     {
         var hostBuilder = new WebHostBuilder();
@@ -629,7 +663,7 @@ subscription
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L247)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L14-L273)</sup>
 <!-- endsnippet -->
 
 
