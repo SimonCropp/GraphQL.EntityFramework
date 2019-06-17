@@ -76,7 +76,16 @@ public class GraphQlController :
 
         if (result.Errors?.Count > 0)
         {
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            
+            if (result.Errors[0].ToString().Contains("Company not found for id"))
+            {
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
+            }
+            else
+            {
+                Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            }
+
         }
 
         return result;
