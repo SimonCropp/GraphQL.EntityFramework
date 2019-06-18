@@ -250,7 +250,13 @@ query ($id: ID!)
         };
 
         var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        var result = await response.Content.ReadAsStringAsync();
         Assert.True((int)response.StatusCode is 404);
+        dynamic json = JsonConvert.DeserializeObject(result);
+        var message = json.errors[0].message;
+        var index = message.ToString().IndexOf(Environment.NewLine);
+        message = message.ToString().Substring(0, index);
+        Assert.Contains("GraphQL.ExecutionError: Cannot return null for non-null type. Field: companyNotNull, Type: CompanyGraph!", message);
     }
 
     [Fact]
