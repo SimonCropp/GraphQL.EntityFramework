@@ -65,7 +65,7 @@ namespace GraphQL.EntityFramework
 
         public INodeVisitor Validate(ValidationContext context)
         {
-            Dictionary<string, VariableUsage> variableUsages = null;
+            Dictionary<string, List<VariableUsage>> variableUsages = null;
 
             return new EnterLeaveListener(
                 listener =>
@@ -73,21 +73,24 @@ namespace GraphQL.EntityFramework
                     listener.Match<VariableDefinition>(
                         variableDefinition =>
                         {
-                            var variableUsage = variableUsages[variableDefinition.Name];
-                            if (variableUsage.Type is IdGraphType &&
-                                variableDefinition.Type is NonNullType nonNullType &&
-                                nonNullType.Type is NamedType namedType &&
-                                namedType.Name == "String")
+                            var variableUsageValues = variableUsages[variableDefinition.Name];
+                            foreach (var variableUsage in variableUsageValues)
                             {
-                                variableDefinition.Type = idNode;
+                                if (variableUsage.Type is IdGraphType &&
+                                    variableDefinition.Type is NonNullType nonNullType &&
+                                    nonNullType.Type is NamedType namedType &&
+                                    namedType.Name == "String")
+                                {
+                                    variableDefinition.Type = idNode;
+                                }
                             }
                         });
 
                     listener.Match<Operation>(
                         operation =>
                         {
-                            variableUsages = context.GetRecursiveVariables(operation)
-                                .ToDictionary(x => x.Node.Name, x => x);
+                            variableUsages = context.GetRecursiveVariables(operation).GroupBy(o => o.Node.Name)
+                                    .ToDictionary(g => g.Key, g => g.ToList());
                         }
                     );
                 });
@@ -97,7 +100,7 @@ namespace GraphQL.EntityFramework
     }
 }
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L53)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L56)</sup>
 <!-- endsnippet -->
 
 To use this rule set `ExecutionOptions.ValidationRules` to `FixIdTypeRule.CoreRulesWithIdFix`:
