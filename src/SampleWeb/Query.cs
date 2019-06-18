@@ -60,11 +60,6 @@ public class Query :
                 var dbContext = (GraphQlEfSampleDbContext)context.UserContext;
                 IQueryable<Company> query = dbContext.Companies;
                 var company = query.FirstOrDefault(x => x.Id == Int32.Parse(id));
-                if (company is null)
-                {
-                    throw new ExecutionError($"Company not found for id {id}");
-                }
-
                 return company;
             }
         );

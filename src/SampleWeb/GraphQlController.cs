@@ -1,12 +1,12 @@
-﻿using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 #region GraphQlController
 [Route("[controller]")]
@@ -76,16 +76,14 @@ public class GraphQlController :
 
         if (result.Errors?.Count > 0)
         {
-            
-            if (result.Errors[0].ToString().Contains("Company not found for id"))
+            if (result.Errors[0].ToString().Contains("Cannot return null for non-null type"))
             {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
+                Response.StatusCode = (int) HttpStatusCode.NotFound;
             }
             else
             {
                 Response.StatusCode = (int) HttpStatusCode.BadRequest;
             }
-
         }
 
         return result;
