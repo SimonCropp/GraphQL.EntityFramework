@@ -255,7 +255,11 @@ query ($id: ID!)
         dynamic json = JsonConvert.DeserializeObject(result);
         var message = json.errors[0].message;
         var index = message.ToString().IndexOf(Environment.NewLine);
-        message = message.ToString().Substring(0, index);
+        if (index > 0)
+        {
+            message = message.ToString().Substring(0, index);
+        }
+
         Assert.Contains("GraphQL.ExecutionError: Cannot return null for non-null type. Field: companyNotNull, Type: CompanyGraph!", message);
     }
 
