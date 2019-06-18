@@ -263,6 +263,8 @@ query ($id: ID!)
         Assert.Contains("GraphQL.ExecutionError: Cannot return null for non-null type. Field: companyNotNull, Type: CompanyGraph!", message);
     }
 
+    
+
     [Fact]
     public async Task Non_nullable_with_valid_id_never_complains()
     {
