@@ -59,7 +59,16 @@ public class Query :
                 var id = context.GetArgument<string>("id");
                 var dbContext = (GraphQlEfSampleDbContext)context.UserContext;
                 IQueryable<Company> query = dbContext.Companies;
-                var company = query.FirstOrDefault(x => x.Id == Int32.Parse(id));
+                Company company = null;
+                try
+                {
+                    company = query.FirstOrDefault(x => x.Id == Int32.Parse(id));
+                }
+                catch (FormatException)
+                {
+                    return company;
+                }
+
                 return company;
             }
         );
