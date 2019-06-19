@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
 
@@ -58,6 +59,7 @@ public class Query :
                 var id = context.GetArgument<string>("id");
                 var dbContext = (GraphQlEfSampleDbContext)context.UserContext;
                 IQueryable<Company> query = dbContext.Companies;
+<<<<<<< HEAD
                 Company company = null;
                 try
                 {
@@ -66,6 +68,12 @@ public class Query :
                 catch (FormatException)
                 {
                     return company;
+=======
+                var company = query.FirstOrDefault(x => x.Id == Int32.Parse(id));
+                if (company is null)
+                {
+                    throw new ExecutionError($"Company not found for id {id}");
+>>>>>>> Initial push
                 }
 
                 return company;
