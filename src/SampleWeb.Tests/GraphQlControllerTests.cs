@@ -232,61 +232,6 @@ subscription
         return task;
     }
 
-    [Fact]
-    public async Task Non_nullable_with_invalid_id_complains()
-    {
-        var query = @"
-query ($id: ID!)
-{
-  companyNotNull(id:$id)
-  {
-    id,
-    content
-  }
-}";
-        var variables = new
-        {
-            id = "-1"
-        };
-
-        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.True((int)response.StatusCode is 404);
-        dynamic json = JsonConvert.DeserializeObject(result);
-        var message = json.errors[0].message;
-        var index = message.ToString().IndexOf(Environment.NewLine);
-        if (index > 0)
-        {
-            message = message.ToString().Substring(0, index);
-        }
-
-        Assert.Contains("GraphQL.ExecutionError: Cannot return null for non-null type. Field: companyNotNull, Type: CompanyGraph!", message);
-    }
-
-    
-
-    [Fact]
-    public async Task Non_nullable_with_valid_id_never_complains()
-    {
-        var query = @"
-query ($id: ID!)
-{
-  companyNotNull(id:$id)
-  {
-    id,
-    content
-  }
-}";
-        var variables = new
-        {
-            id = "1"
-        };
-
-        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains(@"{""data"":{""companyNotNull"":{""id"":1,""content"":""Company1""}}}", result);
-    }
-
     static TestServer GetTestServer()
     {
         var hostBuilder = new WebHostBuilder();
