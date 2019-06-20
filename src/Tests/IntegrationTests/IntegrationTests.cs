@@ -207,6 +207,34 @@ public partial class IntegrationTests :
         ObjectApprover.VerifyWithJson(result);
     }
 
+    [Fact]
+    public async Task Connection_nested()
+    {
+        var query = @"
+{
+  parentEntities {
+    id
+    childrenConnection(first:2, after:""2"") {
+      edges {
+        cursor
+        node {
+          id
+        }
+      }
+	  pageInfo {
+		  endCursor
+		  hasNextPage
+		}
+    }
+  }
+}
+";
+        var entities = BuildEntities(8);
+
+        var result = await RunQuery(await sqlInstance.Build(), query, null, null, entities.ToArray());
+        ObjectApprover.VerifyWithJson(result);
+    }
+
     static IEnumerable<ParentEntity> BuildEntities(uint length)
     {
         for (var index = 0; index < length; index++)

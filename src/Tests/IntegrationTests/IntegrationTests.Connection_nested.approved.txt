@@ -1,0 +1,84 @@
+﻿{
+  parentEntities: [
+    {
+      id: Guid_1,
+      childrenConnection: {
+        edges: [],
+        pageInfo: {
+          endCursor: '-1',
+          hasNextPage: false
+        }
+      }
+    },
+    {
+      id: Guid_2,
+      childrenConnection: {
+        edges: [],
+        pageInfo: {
+          endCursor: '-1',
+          hasNextPage: false
+        }
+      }
+    },
+    {
+      id: Guid_3,
+      childrenConnection: {
+        edges: [],
+        pageInfo: {
+          endCursor: '-1',
+          hasNextPage: false
+        }
+      }
+    },
+    {
+      id: Guid_4,
+      childrenConnection: {
+        edges: [],
+        pageInfo: {
+          endCursor: '-1',
+          hasNextPage: false
+        }
+      }
+    },
+    {
+      id: Guid_5,
+      childrenConnection: {
+        edges: [],
+        pageInfo: {
+          endCursor: '-1',
+          hasNextPage: false
+        }
+      }
+    },
+    {
+      id: Guid_6,
+      childrenConnection: {
+        edges: [],
+        pageInfo: {
+          endCursor: '-1',
+          hasNextPage: false
+        }
+      }
+    },
+    {
+      id: Guid_7,
+      childrenConnection: {
+        edges: [],
+        pageInfo: {
+          endCursor: '-1',
+          hasNextPage: false
+        }
+      }
+    },
+    {
+      id: Guid_8,
+      childrenConnection: {
+        edges: [],
+        pageInfo: {
+          endCursor: '-1',
+          hasNextPage: false
+        }
+      }
+    }
+  ]
+}

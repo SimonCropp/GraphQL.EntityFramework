@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using GraphQL.Types;
+using GraphQL.Types.Relay;
 
 static class ComplexGraphResolver
 {
@@ -51,14 +52,23 @@ static class ComplexGraphResolver
     {
         var type = graphType.GetType();
 
-        while (type.BaseType != null)
+        while (type != null)
         {
-            type = type.BaseType;
-            if (type.IsGenericType &&
-                type.GetGenericTypeDefinition() == typeof(ComplexGraphType<>))
+            if (type.IsGenericType)
             {
-                return type.GetGenericArguments().Single();
+                var genericTypeDefinition = type.GetGenericTypeDefinition();
+                if (genericTypeDefinition == typeof(ComplexGraphType<>))
+                {
+                    return type.GetGenericArguments().Single();
+                }
+                if (genericTypeDefinition == typeof(ConnectionType<>))
+                {
+                    var resolvedEntityType = type.GetGenericArguments().Single();
+                    type = resolvedEntityType.BaseType;
+                    continue;
+                }
             }
+            type = type.BaseType;
         }
 
         return null;
