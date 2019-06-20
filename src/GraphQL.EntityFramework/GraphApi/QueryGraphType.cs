@@ -42,10 +42,11 @@ namespace GraphQL.EntityFramework
         protected FieldType AddSingleField<TReturn>(
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            string name = nameof(TReturn))
+            string name = nameof(TReturn),
+            IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
-            return efGraphQlService.AddSingleField(this, name, resolve, graphType);
+            return efGraphQlService.AddSingleField(this, name, resolve, graphType, arguments);
         }
     }
 }
