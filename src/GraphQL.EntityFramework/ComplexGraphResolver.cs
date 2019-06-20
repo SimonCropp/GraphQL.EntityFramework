@@ -29,7 +29,7 @@ static class ComplexGraphResolver
 
     static Resolved GetOrAdd(FieldType fieldType)
     {
-        var orAdd = cache.GetOrAdd(fieldType.ResolvedType, graphType =>
+        return cache.GetOrAdd(fieldType.ResolvedType, graphType =>
         {
             var resolved = new Resolved();
             if (graphType is ListGraphType listGraphType)
@@ -45,7 +45,6 @@ static class ComplexGraphResolver
             resolved.EntityType = ResolvedEntityType(graphType);
             return resolved;
         });
-        return orAdd;
     }
 
     static Type ResolvedEntityType(IGraphType graphType)
