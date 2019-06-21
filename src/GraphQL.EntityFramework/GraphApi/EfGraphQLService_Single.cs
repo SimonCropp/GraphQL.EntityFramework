@@ -87,6 +87,5 @@ namespace GraphQL.EntityFramework
                     })
             };
         }
-
     }
 }

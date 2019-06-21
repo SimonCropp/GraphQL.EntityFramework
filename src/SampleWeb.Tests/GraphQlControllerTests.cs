@@ -86,7 +86,7 @@ query ($id: ID!)
 
         var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.StartsWith(@"{""data"":{""company"":null},""errors"":[{""message"":""GraphQL.ExecutionError: Not found", result);
+        Assert.Contains("Not found", result);
     }
 
     [Fact]
