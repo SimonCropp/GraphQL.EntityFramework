@@ -1127,7 +1127,6 @@ query ($id: String!)
             dbContext.AddRange(entities);
             await dbContext.SaveChangesAsync();
             var services = new ServiceCollection();
-
             services.AddSingleton<Query>();
             foreach (var type in GetGraphQlTypes())
             {
