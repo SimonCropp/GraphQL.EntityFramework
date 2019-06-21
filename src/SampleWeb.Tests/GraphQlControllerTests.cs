@@ -69,6 +69,27 @@ query ($id: ID!)
     }
 
     [Fact]
+    public async Task Get_single_not_found()
+    {
+        var query = @"
+query ($id: ID!)
+{
+  company(id:$id)
+  {
+    id
+  }
+}";
+        var variables = new
+        {
+            id = "99"
+        };
+
+        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.StartsWith(@"{""data"":{""company"":null},""errors"":[{""message"":""GraphQL.ExecutionError: Not found", result);
+    }
+
+    [Fact]
     public async Task Get_variable()
     {
         var query = @"

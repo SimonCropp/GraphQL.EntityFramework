@@ -60,10 +60,12 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(resolve), resolve);
 
             graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
+            var notNullGraph = typeof(NonNullGraphType<>);
+            var wrappedType = notNullGraph.MakeGenericType(graphType);
             return new FieldType
             {
                 Name = name,
-                Type = graphType,
+                Type = wrappedType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(
                     async context =>
@@ -74,12 +76,14 @@ namespace GraphQL.EntityFramework
                         var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
 
                         var single = await withArguments.SingleOrDefaultAsync(context.CancellationToken);
-                        if (await filters.ShouldInclude(context.UserContext, single))
+                        if (single != null)
                         {
-                            return single;
+                            if (await filters.ShouldInclude(context.UserContext, single))
+                            {
+                                return single;
+                            }
                         }
-
-                        return null;
+                        throw new ExecutionError("Not found");
                     })
             };
         }

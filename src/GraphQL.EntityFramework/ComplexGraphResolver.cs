@@ -30,22 +30,28 @@ static class ComplexGraphResolver
 
     static Resolved GetOrAdd(FieldType fieldType)
     {
-        return cache.GetOrAdd(fieldType.ResolvedType, graphType =>
-        {
-            var resolved = new Resolved();
-            if (graphType is ListGraphType listGraphType)
+        return cache.GetOrAdd(
+            fieldType.ResolvedType,
+            graphType =>
             {
-                graphType = listGraphType.ResolvedType;
-            }
+                var resolved = new Resolved();
+                if (graphType is ListGraphType listGraphType)
+                {
+                    graphType = listGraphType.ResolvedType;
+                }
+                if (graphType is NonNullGraphType nonNullGraphType)
+                {
+                    graphType = nonNullGraphType.ResolvedType;
+                }
 
-            if (graphType is IComplexGraphType complexType)
-            {
-                resolved.ComplexGraphType = complexType;
-            }
+                if (graphType is IComplexGraphType complexType)
+                {
+                    resolved.ComplexGraphType = complexType;
+                }
 
-            resolved.EntityType = ResolvedEntityType(graphType);
-            return resolved;
-        });
+                resolved.EntityType = ResolvedEntityType(graphType);
+                return resolved;
+            });
     }
 
     static Type ResolvedEntityType(IGraphType graphType)

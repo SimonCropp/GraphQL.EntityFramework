@@ -399,6 +399,20 @@ query ($value: String!)
     }
 
     [Fact]
+    public async Task Single_NotFound()
+    {
+        var query = @"
+{
+  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
+    property
+  }
+}";
+        var database = await sqlInstance.Build();
+        var error = await Assert.ThrowsAsync<ExecutionError>(() => RunQuery(database, query, null, null));
+        ObjectApprover.VerifyWithJson(error.Message);
+    }
+
+    [Fact]
     public async Task SingleParent_Child()
     {
         var query = @"
