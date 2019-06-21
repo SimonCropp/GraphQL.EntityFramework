@@ -1126,10 +1126,6 @@ query ($id: String!)
         {
             dbContext.AddRange(entities);
             await dbContext.SaveChangesAsync();
-        }
-
-        using (var dbContext = database.NewDbContext())
-        {
             var services = new ServiceCollection();
 
             services.AddSingleton<Query>();
