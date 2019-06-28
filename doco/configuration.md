@@ -454,6 +454,27 @@ query ($id: ID!)
     }
 
     [Fact]
+    public async Task Get_single_not_found()
+    {
+        var query = @"
+query ($id: ID!)
+{
+  company(id:$id)
+  {
+    id
+  }
+}";
+        var variables = new
+        {
+            id = "99"
+        };
+
+        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Not found", result);
+    }
+
+    [Fact]
     public async Task Get_variable()
     {
         var query = @"
@@ -629,7 +650,7 @@ subscription
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L247)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L268)</sup>
 <!-- endsnippet -->
 
 
