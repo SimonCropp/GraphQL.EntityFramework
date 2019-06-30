@@ -195,7 +195,7 @@ public class GraphQlController :
         return Execute(dbContext, query, operationName, jObject, cancellation);
     }
 
-    async Task<ExecutionResult> Execute(
+    Task<ExecutionResult> Execute(
         GraphQlEfSampleDbContext dbContext,
         string query,
         string operationName,
@@ -216,14 +216,7 @@ public class GraphQlController :
 #endif
         };
 
-        var result = await executer.ExecuteAsync(options);
-
-        if (result.Errors?.Count > 0)
-        {
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
-        }
-
-        return result;
+        return executer.ExecuteAsync(options);
     }
 
     static JObject ParseVariables(string variables)
@@ -244,7 +237,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L11-L102)</sup>
+<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L10-L94)</sup>
 <!-- endsnippet -->
 
 Note that the instance of the DbContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).

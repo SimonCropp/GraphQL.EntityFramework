@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using GraphQL;
@@ -51,7 +50,7 @@ public class GraphQlController :
         return Execute(dbContext, query, operationName, jObject, cancellation);
     }
 
-    async Task<ExecutionResult> Execute(
+    Task<ExecutionResult> Execute(
         GraphQlEfSampleDbContext dbContext,
         string query,
         string operationName,
@@ -72,14 +71,7 @@ public class GraphQlController :
 #endif
         };
 
-        var result = await executer.ExecuteAsync(options);
-
-        if (result.Errors?.Count > 0)
-        {
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
-        }
-
-        return result;
+        return executer.ExecuteAsync(options);
     }
 
     static JObject ParseVariables(string variables)
