@@ -36,8 +36,11 @@ public partial class IntegrationTests
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var result = await RunQuery(await sqlInstance.Build(), query, null, BuildFilters(), entity1, entity2, entity3);
-        ObjectApprover.VerifyWithJson(result);
+        using (var database = await sqlInstance.Build())
+        {
+            var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2, entity3);
+            ObjectApprover.VerifyWithJson(result);
+        }
     }
 
     static GlobalFilters BuildFilters()
@@ -68,8 +71,11 @@ public partial class IntegrationTests
             Property = "Ignore"
         };
 
-        var result = await RunQuery(await sqlInstance.Build(), query, null, BuildFilters(), entity1, entity2);
-        ObjectApprover.VerifyWithJson(result);
+        using (var database = await sqlInstance.Build())
+        {
+            var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2);
+            ObjectApprover.VerifyWithJson(result);
+        }
     }
 
     [Fact]
@@ -100,8 +106,11 @@ public partial class IntegrationTests
             Property = "Ignore"
         };
 
-        var result = await RunQuery(await sqlInstance.Build(), query, null, BuildFilters(), entity1, entity2);
-        ObjectApprover.VerifyWithJson(result);
+        using (var database = await sqlInstance.Build())
+        {
+            var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2);
+            ObjectApprover.VerifyWithJson(result);
+        }
     }
 
     [Fact(Skip = "Work out why include is not used")]
@@ -146,8 +155,10 @@ public partial class IntegrationTests
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
 
-        var result = await RunQuery(await sqlInstance.Build(), query, null, BuildFilters(), entity1, entity2, entity3);
-
-        ObjectApprover.VerifyWithJson(result);
+        using (var database = await sqlInstance.Build())
+        {
+            var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2, entity3);
+            ObjectApprover.VerifyWithJson(result);
+        }
     }
 }
