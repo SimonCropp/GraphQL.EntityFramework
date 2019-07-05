@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,16 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
+            return AddQueryField(graph,name,x => Task.FromResult(resolve(x)),graphType ,arguments);
+        }
+        public FieldType AddQueryField<TReturn>(
+            ObjectGraphType graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
+            Type graphType = null,
+            IEnumerable<QueryArgument> arguments = null)
+            where TReturn : class
+        {
             Guard.AgainstNull(nameof(graph), graph);
             var field = BuildQueryField(graphType, name, resolve, arguments);
             return graph.AddField(field);
@@ -27,6 +38,17 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+            Type graphType = null,
+            IEnumerable<QueryArgument> arguments = null)
+            where TReturn : class
+        {
+            return AddQueryField(graph,name,x => Task.FromResult(resolve(x)),graphType ,arguments);
+        }
+
+        public FieldType AddQueryField<TSource, TReturn>(
+            ObjectGraphType<TSource> graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -44,6 +66,16 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
+            return AddQueryField<TSource, TReturn>(graph,name,x => Task.FromResult(resolve(x)),graphType ,arguments);
+        }
+        public FieldType AddQueryField<TSource, TReturn>(
+            ObjectGraphType graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+            Type graphType = null,
+            IEnumerable<QueryArgument> arguments = null)
+            where TReturn : class
+        {
             Guard.AgainstNull(nameof(graph), graph);
             var field = BuildQueryField(graphType, name, resolve, arguments);
             return graph.AddField(field);
@@ -52,7 +84,7 @@ namespace GraphQL.EntityFramework
         FieldType BuildQueryField<TSource, TReturn>(
             Type graphType,
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             IEnumerable<QueryArgument> arguments)
             where TReturn : class
         {
@@ -61,7 +93,7 @@ namespace GraphQL.EntityFramework
 
         FieldType BuildQueryField<TSource, TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             IEnumerable<QueryArgument> arguments,
             Type graphType)
             where TReturn : class
@@ -79,7 +111,7 @@ namespace GraphQL.EntityFramework
                     async context =>
                     {
                         var names = GetKeyNames<TReturn>();
-                        var returnTypes = resolve(BuildEfContextFromGraphQlContext(context));
+                        var returnTypes = await resolve(BuildEfContextFromGraphQlContext(context));
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
                         var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
                         var list = await withArguments.ToListAsync(context.CancellationToken);

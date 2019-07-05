@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,17 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
+            return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+        }
+
+        public FieldType AddSingleField<TReturn>(
+            ObjectGraphType graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
+            Type graphType = null,
+            IEnumerable<QueryArgument> arguments = null)
+            where TReturn : class
+        {
             Guard.AgainstNull(nameof(graph), graph);
             var field = BuildSingleField(name, resolve, arguments, graphType);
             return graph.AddField(field);
@@ -26,7 +38,18 @@ namespace GraphQL.EntityFramework
         public FieldType AddSingleField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+            Type graphType = null,
+            IEnumerable<QueryArgument> arguments = null)
+            where TReturn : class
+        {
+            return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+        }
+
+        public FieldType AddSingleField<TSource, TReturn>(
+            ObjectGraphType<TSource> graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -39,7 +62,18 @@ namespace GraphQL.EntityFramework
         public FieldType AddSingleField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+            Type graphType = null,
+            IEnumerable<QueryArgument> arguments = null)
+            where TReturn : class
+        {
+            return AddSingleField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+        }
+
+        public FieldType AddSingleField<TSource, TReturn>(
+            ObjectGraphType graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type graphType = null,
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
@@ -51,7 +85,7 @@ namespace GraphQL.EntityFramework
 
         FieldType BuildSingleField<TSource, TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             IEnumerable<QueryArgument> arguments,
             Type graphType)
             where TReturn : class
@@ -70,7 +104,7 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(
                     async context =>
                     {
-                        var returnTypes = resolve(BuildEfContextFromGraphQlContext(context));
+                        var returnTypes = await resolve(BuildEfContextFromGraphQlContext(context));
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
                         var names = GetKeyNames<TReturn>();
                         var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
@@ -83,6 +117,7 @@ namespace GraphQL.EntityFramework
                                 return single;
                             }
                         }
+
                         throw new ExecutionError("Not found");
                     })
             };
