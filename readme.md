@@ -38,8 +38,6 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 https://nuget.org/packages/GraphQL.EntityFramework/
 
-    PM> Install-Package GraphQL.EntityFramework
-
 
 ## Documentation
 
@@ -60,4 +58,4 @@ This project exists thanks to all the people who contribute.
 
 ## Icon
 
-<a href="https://thenounproject.com/term/database/1631008/" target="_blank">memory</a> designed by H Alberto Gongora from [The Noun Project](https://thenounproject.com)
+[Memory](https://thenounproject.com/term/database/1631008/) designed by H Alberto Gongora from [The Noun Project](https://thenounproject.com)
