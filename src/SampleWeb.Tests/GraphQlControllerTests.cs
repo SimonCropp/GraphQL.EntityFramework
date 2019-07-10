@@ -38,12 +38,14 @@ public class GraphQlControllerTests :
     id
   }
 }";
-        var response = await ClientQueryExecutor.ExecuteGet(client, query);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains(
-            "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
-            result);
+        using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
+        {
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Contains(
+                "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
+                result);
+        }
     }
 
     [Fact]
@@ -62,10 +64,12 @@ query ($id: ID!)
             id = "1"
         };
 
-        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains(@"{""data"":{""company"":{""id"":1}}}", result);
+        using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
+        {
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Contains(@"{""data"":{""company"":{""id"":1}}}", result);
+        }
     }
 
     [Fact]
@@ -84,9 +88,11 @@ query ($id: ID!)
             id = "99"
         };
 
-        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Not found", result);
+        using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
+        {
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Contains("Not found", result);
+        }
     }
 
     [Fact]
@@ -105,10 +111,12 @@ query ($id: ID!)
             id = "1"
         };
 
-        var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
+        using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
+        {
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
+        }
     }
 
     [Fact]
@@ -130,13 +138,14 @@ query {
     }
   }
 }";
-        var response = await ClientQueryExecutor.ExecuteGet(client, query);
-        response.EnsureSuccessStatusCode();
-        var result = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-        var page = result.SelectToken("..data..companiesConnection..edges[0].cursor")
-            .Value<string>();
-        Assert.NotEqual(after.ToString(), page);
+        using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
+        {
+            response.EnsureSuccessStatusCode();
+            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
+            var page = result.SelectToken("..data..companiesConnection..edges[0].cursor")
+                .Value<string>();
+            Assert.NotEqual(after.ToString(), page);
+        }
     }
 
     [Fact]
@@ -149,22 +158,23 @@ query {
     averageAge
   }
 }";
-        var response = await ClientQueryExecutor.ExecuteGet(client, query);
-        response.EnsureSuccessStatusCode();
-        var result = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-        var expected = JObject.FromObject(new
+        using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
         {
-            data = new
+            response.EnsureSuccessStatusCode();
+            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
+            var expected = JObject.FromObject(new
             {
-                employeeSummary = new[]
+                data = new
                 {
-                    new {companyId = 1, averageAge = 28.0},
-                    new {companyId = 4, averageAge = 34.0}
+                    employeeSummary = new[]
+                    {
+                        new {companyId = 1, averageAge = 28.0},
+                        new {companyId = 4, averageAge = 34.0}
+                    }
                 }
-            }
-        });
-        Assert.Equal(expected.ToString(), result.ToString());
+            });
+            Assert.Equal(expected.ToString(), result.ToString());
+        }
     }
 
     [Fact]
@@ -177,12 +187,14 @@ query {
     id
   }
 }";
-        var response = await ClientQueryExecutor.ExecutePost(client, query);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains(
-            "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
-            result);
-        response.EnsureSuccessStatusCode();
+        using (var response = await ClientQueryExecutor.ExecutePost(client, query))
+        {
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Contains(
+                "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
+                result);
+            response.EnsureSuccessStatusCode();
+        }
     }
 
     [Fact]
@@ -200,10 +212,12 @@ query ($id: ID!)
         {
             id = "1"
         };
-        var response = await ClientQueryExecutor.ExecutePost(client, query, variables);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
-        response.EnsureSuccessStatusCode();
+        using (var response = await ClientQueryExecutor.ExecutePost(client, query, variables))
+        {
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
+            response.EnsureSuccessStatusCode();
+        }
     }
 
     [Fact]

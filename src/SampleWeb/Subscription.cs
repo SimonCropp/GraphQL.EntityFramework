@@ -123,7 +123,7 @@ public class Subscription : ObjectGraphType<object>
         return GetContext(executionContext, node.SubFields["companies"]);
     }
 
-    ResolveFieldContext GetContext(ExecutionContext context, ExecutionNode node)
+    static ResolveFieldContext GetContext(ExecutionContext context, ExecutionNode node)
     {
         var argumentValues = ExecutionHelper.GetArgumentValues(context.Schema,
             node.FieldDefinition.Arguments, node.Field.Arguments, context.Variables);
