@@ -27,7 +27,7 @@ public class Subscription : ObjectGraphType<object>
         });
     }
 
-    IObservable<Company> Subscribe(ResolveEventStreamContext context, ContextFactory contextFactory, ILogger logger)
+    static IObservable<Company> Subscribe(ResolveEventStreamContext context, ContextFactory contextFactory, ILogger logger)
     {
         long lastId = 0;
         var inner = Observable.Using(
@@ -60,7 +60,7 @@ public class Subscription : ObjectGraphType<object>
         return Observable.Interval(TimeSpan.FromSeconds(1)).SelectMany(_ => inner);
     }
 
-    async Task<List<Company>> GetCompanies(
+    static async Task<List<Company>> GetCompanies(
         ResolveEventStreamContext context,
         GraphQlEfSampleDbContext ctx,
         long lastId,
@@ -92,7 +92,7 @@ public class Subscription : ObjectGraphType<object>
         }";
     }
 
-    ResolveFieldContext ResolveFieldContext(
+    static ResolveFieldContext ResolveFieldContext(
         GraphQlEfSampleDbContext ctx,
         CancellationToken token,
         Document document,
