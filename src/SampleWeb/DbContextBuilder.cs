@@ -1,4 +1,5 @@
-﻿using EfLocalDb;
+﻿using System.Threading.Tasks;
+using EfLocalDb;
 
 // LocalDb is used to make the sample simpler.
 // Replace with a real DbContext
@@ -14,9 +15,9 @@ public static class DbContextBuilder
         database = sqlInstance.Build("GraphQLEntityFrameworkSample").GetAwaiter().GetResult();
     }
 
-    static void CreateDb(GraphQlEfSampleDbContext context)
+    static async Task CreateDb(GraphQlEfSampleDbContext context)
     {
-        context.Database.EnsureCreated();
+        await context.Database.EnsureCreatedAsync();
 
         var company1 = new Company
         {
@@ -60,7 +61,7 @@ public static class DbContextBuilder
             Content = "Company4"
         };
         context.AddRange(company1, employee1, employee2, company2, company3, company4, employee4);
-        context.SaveChanges();
+       await context.SaveChangesAsync();
     }
 
     public static GraphQlEfSampleDbContext BuildDbContext()

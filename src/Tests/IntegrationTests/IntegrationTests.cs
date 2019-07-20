@@ -36,10 +36,10 @@ public partial class IntegrationTests :
         GraphTypeTypeRegistry.Register<WithMisNamedQueryChildEntity, WithMisNamedQueryChildGraph>();
 
         sqlInstance = new SqlInstance<IntegrationDbContext>(
-            buildTemplate: dbContext =>
+            buildTemplate: async dbContext =>
             {
-                dbContext.Database.EnsureCreated();
-                dbContext.Database.ExecuteSqlCommand(
+                await dbContext.Database.EnsureCreatedAsync();
+                await dbContext.Database.ExecuteSqlCommandAsync(
                     @"create view ParentEntityView as
         select Property
         from ParentEntities");
