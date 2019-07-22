@@ -415,7 +415,7 @@ public class ExpressionBuilderTests :
         public DateTime DateOfBirth { get; set; }
     }
 
-    public ExpressionBuilderTests(ITestOutputHelper output) : 
+    public ExpressionBuilderTests(ITestOutputHelper output) :
         base(output)
     {
     }
