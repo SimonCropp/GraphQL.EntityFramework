@@ -66,19 +66,30 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(resolve), resolve);
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
-            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
+            //lookup the graph type if not explicitly specified
+            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            //create a ConnectionBuilder<graphType, TSource> type by invoking the static Create method on the generic type
             var fieldType = GetFieldType<TSource>(name, graphType);
+            //create a ConnectionBuilder<FakeGraph, TSource> which will be returned from this method
             var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
+            //set the page size
             builder.PageSize(pageSize);
+            //using reflection, override the private field type property of the ConnectionBuilder<FakeGraph, TSource> to be the ConnectionBuilder<graphType, TSource> object
             SetField(builder, fieldType);
 
+            //set the resolve function (note: this is not async capable)
             builder.Resolve(
                 context =>
                 {
+                    //obtain the ef context
                     var efFieldContext = BuildEfContextFromGraphQlContext(context);
+                    //run the resolve function, then include the related tables on the returned query
                     var withIncludes = includeAppender.AddIncludes(resolve(efFieldContext), context);
+                    //get field names of the table's primary key(s)
                     var names = GetKeyNames<TReturn>();
+                    //apply any query filters specified in the arguments
                     var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
+                    //apply skip/take to query as appropriate, and return the query
                     return withArguments
                         .ApplyConnectionContext(
                             context.First,
@@ -88,7 +99,10 @@ namespace GraphQL.EntityFramework
                             context,
                             context.CancellationToken,
                             filters);
+                    //note: does not apply global filters
                 });
+
+            //return the field to be added to the graph
             return builder;
         }
     }

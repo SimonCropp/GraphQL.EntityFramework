@@ -19,7 +19,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
-            return AddQueryField(graph,name,x => Task.FromResult(resolve(x)),graphType ,arguments);
+            return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
         }
         public FieldType AddQueryField<TReturn>(
             ObjectGraphType graph,
@@ -42,7 +42,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
-            return AddQueryField(graph,name,x => Task.FromResult(resolve(x)),graphType ,arguments);
+            return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
         }
 
         public FieldType AddQueryField<TSource, TReturn>(
@@ -66,7 +66,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
-            return AddQueryField<TSource, TReturn>(graph,name,x => Task.FromResult(resolve(x)),graphType ,arguments);
+            return AddQueryField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
         }
         public FieldType AddQueryField<TSource, TReturn>(
             ObjectGraphType graph,
@@ -100,21 +100,32 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
-            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
+            //lookup the graph type if not explicitly specified
+            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            //create a list graph type based on the base field graph type
             var listGraphType = MakeListGraphType(graphType);
+            //build the field
             return new FieldType
             {
                 Name = name,
                 Type = listGraphType,
+                //append the default query arguments to the specified argument list
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
+                //custom resolve function
                 Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     async context =>
                     {
+                        //get field names of the table's primary key(s)
                         var names = GetKeyNames<TReturn>();
+                        //run the specified resolve function
                         var returnTypes = await resolve(BuildEfContextFromGraphQlContext(context));
+                        //include subtables in the query based on the metadata stored for the requested graph
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        //apply any query filters specified in the arguments
                         var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
+                        //query the database
                         var list = await withArguments.ToListAsync(context.CancellationToken);
+                        //apply the global filter on each individually enumerated item
                         return await filters.ApplyFilter(list, context.UserContext);
                     })
             };
