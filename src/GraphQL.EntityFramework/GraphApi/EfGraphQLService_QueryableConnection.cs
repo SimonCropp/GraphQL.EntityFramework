@@ -20,8 +20,11 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            //build the connection field
             var connection = BuildQueryConnectionField(name, resolve, pageSize, graphType);
+            //add the field to the graph
             var field = graph.AddField(connection.FieldType);
+            //append the optional where arguments to the field
             field.AddWhereArgument(arguments);
         }
 
@@ -35,8 +38,11 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            //build the connection field
             var connection = BuildQueryConnectionField(name, resolve, pageSize, graphType);
+            //add the field to the graph
             var field = graph.AddField(connection.FieldType);
+            //append the optional where arguments to the field
             field.AddWhereArgument(arguments);
         }
 
@@ -50,8 +56,11 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            //build the connection field
             var connection = BuildQueryConnectionField(name, resolve, pageSize, graphType);
+            //add the field to the graph
             var field = graph.AddField(connection.FieldType);
+            //append the optional where arguments to the field
             field.AddWhereArgument(arguments);
         }
 
