@@ -93,23 +93,33 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
-            var notNullGraph = typeof(NonNullGraphType<>);
-            var wrappedType = notNullGraph.MakeGenericType(graphType);
+            //lookup the graph type if not explicitly specified
+            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            //construct a non-null graph type for the specified graph type
+            var wrappedType = typeof(NonNullGraphType<>).MakeGenericType(graphType);
+
+            //build the field
             return new FieldType
             {
                 Name = name,
                 Type = wrappedType,
+                //append the default query arguments to the specified argument list
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
+                //custom resolve function
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(
                     async context =>
                     {
-                        var returnTypes = await resolve(BuildEfContextFromGraphQlContext(context));
-                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        //get field names of the table's primary key(s)
                         var names = GetKeyNames<TReturn>();
+                        //run the specified resolve function
+                        var returnTypes = await resolve(BuildEfContextFromGraphQlContext(context));
+                        //include subtables in the query based on the metadata stored for the requested graph
+                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        //apply any query filters specified in the arguments
                         var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
-
+                        //run the query
                         var single = await withArguments.SingleOrDefaultAsync(context.CancellationToken);
+                        //apply global filters to the returned value
                         if (single != null)
                         {
                             if (await filters.ShouldInclude(context.UserContext, single))
@@ -117,7 +127,7 @@ namespace GraphQL.EntityFramework
                                 return single;
                             }
                         }
-
+                        //throw an error if no value was found, or if the returned value was filtered out by the global filters
                         throw new ExecutionError("Not found");
                     })
             };
