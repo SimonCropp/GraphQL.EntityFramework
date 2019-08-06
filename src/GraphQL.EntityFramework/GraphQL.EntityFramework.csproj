@@ -9,6 +9,6 @@
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.3" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.6" PrivateAssets="All" />
   </ItemGroup>
 </Project>
