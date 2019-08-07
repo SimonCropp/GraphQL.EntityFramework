@@ -21,6 +21,11 @@ public class Query :
             resolve: context => context.DbContext.Companies,
             name: "company");
 
+        AddSingleField(
+            resolve: context => context.DbContext.Companies,
+            name: "companyOrNull",
+            nullable: true);
+
         AddQueryConnectionField(
             name: "companiesConnection",
             resolve: context => context.DbContext.Companies);
