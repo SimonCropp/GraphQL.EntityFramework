@@ -96,7 +96,7 @@ public class MultiContextTests:
                 #endregion
 
                 var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-                ObjectApprover.VerifyWithJson(executionResult.Data);
+                ObjectApprover.Verify(executionResult.Data);
             }
         }
     }

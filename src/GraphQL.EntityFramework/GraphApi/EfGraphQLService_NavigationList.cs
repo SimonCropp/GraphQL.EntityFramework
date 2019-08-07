@@ -19,7 +19,11 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            //graphType should represent the graph type of the enumerated value, not the list graph type
+
+            //build the navigation field
             var field = BuildNavigationField(graphType, name, resolve, includeNames, arguments);
+            //add it to the graph
             return graph.AddField(field);
         }
 
@@ -31,8 +35,12 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments)
             where TReturn : class
         {
-            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
+            //lookup the graph type if not explicitly specified
+            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            //graphType represents the base field type, not the list graph type
+            //create a list graph type based on the graph type specified
             var listGraphType = MakeListGraphType(graphType);
+            //build the navigation field
             return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments);
         }
 
@@ -46,17 +54,25 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
+
+            //return the new field type
             return new FieldType
             {
                 Name = name,
                 Type = listGraphType,
+                //take the arguments manually specified, if any, and append the query arguments
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
+                //add the metadata for the tables to be included in the query
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
+                //specify a custom resolve function
                 Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     context =>
                     {
+                        //run the specified resolve function
                         var result = resolve(BuildEfContextFromGraphQlContext(context));
+                        //apply any query filters specified in the arguments
                         result = result.ApplyGraphQlArguments(context);
+                        //apply the global filter on each individually enumerated item
                         return filters.ApplyFilter(result, context.UserContext);
                     })
             };

@@ -329,7 +329,7 @@ public class FuncBuilderTests :
         public DateTime DateOfBirth { get; set; }
     }
 
-    public FuncBuilderTests(ITestOutputHelper output) : 
+    public FuncBuilderTests(ITestOutputHelper output) :
         base(output)
     {
     }

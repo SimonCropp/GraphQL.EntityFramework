@@ -129,7 +129,7 @@ static class TypeConverter
         {
             return values.Select(s => new DateTimeOffset?(DateTimeOffset.Parse(s))).ToList();
         }
-        
+
         if (type.TryGetEnumType(out var enumType))
         {
             return values.Select(s => Enum.Parse(enumType, s, true))
@@ -138,7 +138,6 @@ static class TypeConverter
 
         throw new Exception($"Could not convert strings to {type.FullName}.");
     }
-    
 
     public static object ConvertStringToType(string value, Type type)
     {

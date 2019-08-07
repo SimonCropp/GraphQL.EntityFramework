@@ -3,14 +3,10 @@ using GraphQL.Utilities;
 
 static class GraphTypeFinder
 {
-    public static Type FindGraphType<TReturn>(Type graphType)
+    public static Type FindGraphType<TReturn>()
         where TReturn : class
     {
-        if (graphType != null)
-        {
-            return graphType;
-        }
-        graphType = GraphTypeTypeRegistry.Get<TReturn>();
+        var graphType = GraphTypeTypeRegistry.Get<TReturn>();
         if (graphType != null)
         {
             return graphType;

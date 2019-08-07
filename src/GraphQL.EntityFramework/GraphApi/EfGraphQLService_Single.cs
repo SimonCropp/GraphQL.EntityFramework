@@ -16,10 +16,11 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            bool nullable = false)
             where TReturn : class
         {
-            return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+            return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, nullable);
         }
 
         public FieldType AddSingleField<TReturn>(
@@ -27,11 +28,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            bool nullable = false)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve, arguments, graphType);
+            var field = BuildSingleField(name, resolve, arguments, graphType, nullable);
             return graph.AddField(field);
         }
 
@@ -40,10 +42,11 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            bool nullable = false)
             where TReturn : class
         {
-            return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+            return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, nullable);
         }
 
         public FieldType AddSingleField<TSource, TReturn>(
@@ -51,11 +54,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            bool nullable = false)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve, arguments, graphType);
+            var field = BuildSingleField(name, resolve, arguments, graphType, nullable);
             return graph.AddField(field);
         }
 
@@ -64,10 +68,11 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            bool nullable = false)
             where TReturn : class
         {
-            return AddSingleField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+            return AddSingleField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, nullable);
         }
 
         public FieldType AddSingleField<TSource, TReturn>(
@@ -75,11 +80,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            bool nullable = false)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve, arguments, graphType);
+            var field = BuildSingleField(name, resolve, arguments, graphType, nullable);
             return graph.AddField(field);
         }
 
@@ -87,29 +93,40 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             IEnumerable<QueryArgument> arguments,
-            Type graphType)
+            Type graphType,
+            bool nullable)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            graphType = GraphTypeFinder.FindGraphType<TReturn>(graphType);
-            var notNullGraph = typeof(NonNullGraphType<>);
-            var wrappedType = notNullGraph.MakeGenericType(graphType);
+            //lookup the graph type if not explicitly specified
+            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            //if not nullable, construct a non-null graph type for the specified graph type
+            var wrappedType = nullable ? graphType : typeof(NonNullGraphType<>).MakeGenericType(graphType);
+
+            //build the field
             return new FieldType
             {
                 Name = name,
                 Type = wrappedType,
+                //append the default query arguments to the specified argument list
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
+                //custom resolve function
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(
                     async context =>
                     {
-                        var returnTypes = await resolve(BuildEfContextFromGraphQlContext(context));
-                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        //get field names of the table's primary key(s)
                         var names = GetKeyNames<TReturn>();
+                        //run the specified resolve function
+                        var returnTypes = await resolve(BuildEfContextFromGraphQlContext(context));
+                        //include subtables in the query based on the metadata stored for the requested graph
+                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        //apply any query filters specified in the arguments
                         var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
-
+                        //run the query
                         var single = await withArguments.SingleOrDefaultAsync(context.CancellationToken);
+                        //apply global filters to the returned value
                         if (single != null)
                         {
                             if (await filters.ShouldInclude(context.UserContext, single))
@@ -117,7 +134,9 @@ namespace GraphQL.EntityFramework
                                 return single;
                             }
                         }
-
+                        //if no value was found, or if the returned value was filtered out by the global filters,
+                        //  either return null, or throw an error if the field is not nullable
+                        if (nullable) return null;
                         throw new ExecutionError("Not found");
                     })
             };

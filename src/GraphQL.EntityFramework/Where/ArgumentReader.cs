@@ -45,16 +45,16 @@ static class ArgumentReader
 
         switch (argument)
         {
-            case long l:   
+            case long l:
                 expression = l.ToString(CultureInfo.InvariantCulture);
                 break;
-            case int i:    
+            case int i:
                 expression = i.ToString(CultureInfo.InvariantCulture);
                 break;
-            case string s: 
+            case string s:
                 expression = s;
                 break;
-            default:       
+            default:
                 throw new Exception($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is not supported.");
         }
 

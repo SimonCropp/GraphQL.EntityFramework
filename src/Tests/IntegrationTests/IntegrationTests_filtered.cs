@@ -39,7 +39,7 @@ public partial class IntegrationTests
         using (var database = await sqlInstance.Build())
         {
             var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2, entity3);
-            ObjectApprover.VerifyWithJson(result);
+            ObjectApprover.Verify(result);
         }
     }
 
@@ -74,7 +74,7 @@ public partial class IntegrationTests
         using (var database = await sqlInstance.Build())
         {
             var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2);
-            ObjectApprover.VerifyWithJson(result);
+            ObjectApprover.Verify(result);
         }
     }
 
@@ -109,7 +109,7 @@ public partial class IntegrationTests
         using (var database = await sqlInstance.Build())
         {
             var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2);
-            ObjectApprover.VerifyWithJson(result);
+            ObjectApprover.Verify(result);
         }
     }
 
@@ -158,7 +158,7 @@ public partial class IntegrationTests
         using (var database = await sqlInstance.Build())
         {
             var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2, entity3);
-            ObjectApprover.VerifyWithJson(result);
+            ObjectApprover.Verify(result);
         }
     }
 }
