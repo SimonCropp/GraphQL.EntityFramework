@@ -16,7 +16,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class;
 
-        FieldType AddSingleField<TReturn>(
+        FieldType AddSingleFieldAsync<TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
@@ -32,7 +32,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class;
 
-        FieldType AddSingleField<TSource, TReturn>(
+        FieldType AddSingleFieldAsync<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
@@ -48,7 +48,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class;
 
-        FieldType AddSingleField<TSource, TReturn>(
+        FieldType AddSingleFieldAsync<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
