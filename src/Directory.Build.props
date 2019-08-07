@@ -4,5 +4,6 @@
     <NoWarn>CS1591;NU5104</NoWarn>
     <Version>6.5.0</Version>
     <PackageTags>EntityFrameworkCore, EntityFramework, GraphQL</PackageTags>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 </Project>
