@@ -19,9 +19,9 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
-            return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+            return AddQueryFieldAsync(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
         }
-        public FieldType AddQueryField<TReturn>(
+        public FieldType AddQueryFieldAsync<TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
@@ -30,7 +30,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildQueryField(graphType, name, resolve, arguments);
+            var field = BuildQueryFieldAsync(graphType, name, resolve, arguments);
             return graph.AddField(field);
         }
 
@@ -42,10 +42,10 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
-            return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+            return AddQueryFieldAsync(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
         }
 
-        public FieldType AddQueryField<TSource, TReturn>(
+        public FieldType AddQueryFieldAsync<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
@@ -54,7 +54,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildQueryField(graphType, name, resolve, arguments);
+            var field = BuildQueryFieldAsync(graphType, name, resolve, arguments);
             return graph.AddField(field);
         }
 
@@ -66,9 +66,9 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument> arguments = null)
             where TReturn : class
         {
-            return AddQueryField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+            return AddQueryFieldAsync<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
         }
-        public FieldType AddQueryField<TSource, TReturn>(
+        public FieldType AddQueryFieldAsync<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
@@ -77,21 +77,21 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildQueryField(graphType, name, resolve, arguments);
+            var field = BuildQueryFieldAsync(graphType, name, resolve, arguments);
             return graph.AddField(field);
         }
 
-        FieldType BuildQueryField<TSource, TReturn>(
+        FieldType BuildQueryFieldAsync<TSource, TReturn>(
             Type graphType,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             IEnumerable<QueryArgument> arguments)
             where TReturn : class
         {
-            return BuildQueryField(name, resolve, arguments, graphType);
+            return BuildQueryFieldAsync(name, resolve, arguments, graphType);
         }
 
-        FieldType BuildQueryField<TSource, TReturn>(
+        FieldType BuildQueryFieldAsync<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             IEnumerable<QueryArgument> arguments,
