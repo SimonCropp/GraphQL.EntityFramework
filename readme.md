@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/SimonCropp/GraphQL.EntityFramework/master/src/icon.png" height="40px"> GraphQL.EntityFramework
+# <img src="/src/icon.png" height="40px"> GraphQL.EntityFramework
 [![Backers on Open Collective](https://opencollective.com/graphqlentityframework/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/graphqlentityframework/sponsors/badge.svg)](#sponsors) 
 
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
