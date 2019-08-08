@@ -13,23 +13,23 @@ This project relies on financial contributions from the community to ensure its 
 
 Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/graphqlentityframework#backer)]
 
-<a href="https://opencollective.com/graphqlentityframework#backers" target="_blank"><img src="https://opencollective.com/graphqlentityframework/backers.svg?width=890"></a>
+<a href="https://opencollective.com/graphqlentityframework#backers"><img src="https://opencollective.com/graphqlentityframework/backers.svg?width=890"></a>
 
 
 ### Sponsors
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/graphqlentityframework#sponsor)]
 
-<a href="https://opencollective.com/graphqlentityframework/sponsor/0/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/graphqlentityframework/sponsor/1/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/graphqlentityframework/sponsor/2/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/graphqlentityframework/sponsor/3/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/graphqlentityframework/sponsor/4/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/graphqlentityframework/sponsor/5/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/graphqlentityframework/sponsor/6/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/graphqlentityframework/sponsor/7/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/graphqlentityframework/sponsor/8/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/graphqlentityframework/sponsor/9/website" target="_blank"><img src="https://opencollective.com/graphqlentityframework/sponsor/9/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/0/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/1/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/2/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/3/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/4/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/5/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/6/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/7/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/8/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/graphqlentityframework/sponsor/9/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/9/avatar.svg"></a>
 
 [Go to licensing FAQ](/doco/licensing-patron-faq.md) for more information.
 
