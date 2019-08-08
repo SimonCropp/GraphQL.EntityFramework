@@ -4,32 +4,35 @@ using GraphQL.EntityFramework;
 using GraphQL.Types;
 using GraphQL.Utilities;
 
-static class ArgumentGraphs
+namespace GraphQL.EntityFramework
 {
-    static Dictionary<Type, GraphType> entries = new Dictionary<Type, GraphType>();
-
-    static ArgumentGraphs()
+    public static class ArgumentGraphs
     {
-        GraphTypeTypeRegistry.Register(typeof(Comparison), typeof(ComparisonGraph));
-        GraphTypeTypeRegistry.Register(typeof(StringComparison), typeof(StringComparisonGraph));
-        Add<StringComparisonGraph>();
-        Add<WhereExpressionGraph>();
-        Add<OrderByGraph>();
-        Add<ComparisonGraph>();
-    }
+        static Dictionary<Type, GraphType> entries = new Dictionary<Type, GraphType>();
 
-    public static void RegisterInContainer(Action<Type, GraphType> registerInstance)
-    {
-        foreach (var entry in entries)
+        static ArgumentGraphs()
         {
-            registerInstance(entry.Key, entry.Value);
+            GraphTypeTypeRegistry.Register(typeof(Comparison), typeof(ComparisonGraph));
+            GraphTypeTypeRegistry.Register(typeof(StringComparison), typeof(StringComparisonGraph));
+            Add<StringComparisonGraph>();
+            Add<WhereExpressionGraph>();
+            Add<OrderByGraph>();
+            Add<ComparisonGraph>();
         }
-    }
 
-    static void Add<T>()
-        where T : GraphType, new()
-    {
-        var value = new T();
-        entries.Add(typeof(T), value);
+        public static void RegisterInContainer(Action<Type, GraphType> registerInstance)
+        {
+            foreach (var entry in entries)
+            {
+                registerInstance(entry.Key, entry.Value);
+            }
+        }
+
+        static void Add<T>()
+            where T : GraphType, new()
+        {
+            var value = new T();
+            entries.Add(typeof(T), value);
+        }
     }
 }
