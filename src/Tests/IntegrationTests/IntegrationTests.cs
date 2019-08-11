@@ -9,7 +9,6 @@ using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 

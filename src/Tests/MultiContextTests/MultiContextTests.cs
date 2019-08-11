@@ -4,7 +4,6 @@ using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
-using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 

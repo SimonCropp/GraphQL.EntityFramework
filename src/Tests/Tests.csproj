@@ -8,7 +8,7 @@
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="ApprovalTests" Version="4.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.6" />
-    <PackageReference Include="ObjectApproval" Version="10.0.0" />
+    <PackageReference Include="ObjectApproval" Version="11.0.0" />
     <PackageReference Include="ModuleInit.Fody" Version="2.0.0" />
     <PackageReference Include="Fody" Version="5.1.1" />
     <PackageReference Include="Xunit" Version="2.4.1" />
@@ -16,6 +16,6 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.9" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.10" PrivateAssets="All" />
   </ItemGroup>
 </Project>

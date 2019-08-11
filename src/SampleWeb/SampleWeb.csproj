@@ -14,6 +14,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.9" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.10" PrivateAssets="All" />
   </ItemGroup>
 </Project>
