@@ -43,9 +43,6 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNull(nameof(services), services);
             Guard.AgainstNull(nameof(dbContext), dbContext);
-            services.AddTransient(typeof(ConnectionType<>));
-            services.AddTransient(typeof(EdgeType<>));
-            services.AddSingleton<PageInfoType>();
             RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, dbContext, dbContextFromUserContext, filters);
         }
 
