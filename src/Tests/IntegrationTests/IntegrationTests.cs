@@ -457,6 +457,74 @@ query ($value: String!)
     }
 
     [Fact]
+    public async Task Single_Found()
+    {
+        var query = @"
+{
+  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
+    property
+  }
+}";
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+        using (var database = await sqlInstance.Build())
+        {
+            var result = await RunQuery(database, query, null, null, entity1, entity2);
+            ObjectApprover.Verify(result);
+        }
+    }
+
+    [Fact]
+    public async Task SingleNullable_NotFound()
+    {
+        var query = @"
+{
+  parentEntityNullable(id: ""00000000-0000-0000-0000-000000000001"") {
+    property
+  }
+}";
+        using (var database = await sqlInstance.Build())
+        {
+            var result = await RunQuery(database, query, null, null);
+            ObjectApprover.Verify(result);
+        }
+    }
+
+    [Fact]
+    public async Task SingleNullable_Found()
+    {
+        var query = @"
+{
+  parentEntityNullable(id: ""00000000-0000-0000-0000-000000000001"") {
+    property
+  }
+}";
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+        using (var database = await sqlInstance.Build())
+        {
+            var result = await RunQuery(database, query, null, null, entity1, entity2);
+            ObjectApprover.Verify(result);
+        }
+    }
+
+    [Fact]
     public async Task SingleParent_Child()
     {
         var query = @"
