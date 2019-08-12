@@ -49,6 +49,14 @@ namespace GraphQL.EntityFramework
             RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); }, dbContext, dbContextFromUserContext, filters);
         }
 
+        /// <summary>
+        /// Register the necessary services with the service provider for a data context of type TDbContext
+        /// </summary>
+        /// <typeparam name="TDbContext"></typeparam>
+        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
+        /// <param name="dbContextFromUserContext">A function to obtain the TDbContext from the GraphQL user context.</param>
+        /// <param name="dbModelCreator">A function to obtain the Microsoft.EntityFrameworkCore.Metadata.IModel, or null to obtain from TDbContext via the service provider</param>
+        /// <param name="filters">A function to obtain a list of filters to apply to the returned data.</param>
         public static void RegisterInContainer<TDbContext>(
             IServiceCollection services,
             DbContextFromUserContext<TDbContext> dbContextFromUserContext,
