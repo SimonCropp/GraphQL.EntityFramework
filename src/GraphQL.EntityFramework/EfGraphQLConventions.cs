@@ -54,12 +54,14 @@ namespace GraphQL.EntityFramework
         /// <param name="dbContextFromUserContext">A function to obtain the TDbContext from the GraphQL user context.</param>
         /// <param name="dbModelCreator">A function to obtain the Microsoft.EntityFrameworkCore.Metadata.IModel, or null to obtain from TDbContext via the service provider</param>
         /// <param name="filters">A function to obtain a list of filters to apply to the returned data.</param>
+        #region RegisterInContainerViaServiceProvider
         public static void RegisterInContainer<TDbContext>(
             IServiceCollection services,
             DbContextFromUserContext<TDbContext> dbContextFromUserContext,
             Func<IServiceProvider, IModel> dbModelCreator = null,
             Func<IServiceProvider, GlobalFilters> filters = null)
             where TDbContext : DbContext
+        #endregion
         {
             Guard.AgainstNull(nameof(services), services);
             //acquire the database model via the service provider
