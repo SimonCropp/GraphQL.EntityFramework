@@ -65,10 +65,6 @@ namespace GraphQL.EntityFramework
             where TDbContext : DbContext
         {
             Guard.AgainstNull(nameof(services), services);
-            //register connection types
-            services.AddTransient(typeof(ConnectionType<>));
-            services.AddTransient(typeof(EdgeType<>));
-            services.AddSingleton<PageInfoType>();
             //acquire the database model via the service provider
             //default implmentation is below, but can be tailored by the caller
             if (dbModelCreator == null)
