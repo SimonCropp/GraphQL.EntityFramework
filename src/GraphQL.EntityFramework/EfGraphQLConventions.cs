@@ -68,7 +68,7 @@ namespace GraphQL.EntityFramework
             //default implmentation is below, but can be tailored by the caller
             if (dbModelCreator == null)
             {
-                dbModelCreator = (serviceProvider) =>
+                dbModelCreator = serviceProvider =>
                 {
                     //create a scope, as EfGraphQLService is a singleton, and databases are scoped
                     using (var scope = serviceProvider.CreateScope())
@@ -77,6 +77,7 @@ namespace GraphQL.EntityFramework
                     }
                 };
             }
+
             //register the scalars
             Scalars.RegisterInContainer((type, instance) => { services.AddSingleton(type, instance); });
             //register the argument graphs
@@ -84,7 +85,7 @@ namespace GraphQL.EntityFramework
             //register the IEfGraphQLService
             services.AddSingleton(
                 typeof(IEfGraphQLService<TDbContext>),
-                (serviceProvider) => new EfGraphQLService<TDbContext>(
+                serviceProvider => new EfGraphQLService<TDbContext>(
                     dbModelCreator(serviceProvider),
                     filters == null ? new GlobalFilters() : filters(serviceProvider),
                     dbContextFromUserContext)
