@@ -263,7 +263,7 @@ public class UserContext
     public DbContext2 DbContext2;
 }
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L106-L112) / [anchor](#snippet-multiusercontext)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L108-L114) / [anchor](#snippet-multiusercontext)</sup>
 <!-- endsnippet -->
 
 
@@ -281,7 +281,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L69-L76) / [anchor](#snippet-registermultipleincontainer)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L71-L78) / [anchor](#snippet-registermultipleincontainer)</sup>
 <!-- endsnippet -->
 
 
@@ -304,7 +304,7 @@ var executionOptions = new ExecutionOptions
     }
 };
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L82-L93) / [anchor](#snippet-multiexecutionoptions)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L84-L95) / [anchor](#snippet-multiexecutionoptions)</sup>
 <!-- endsnippet -->
 
 
