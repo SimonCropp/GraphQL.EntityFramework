@@ -18,6 +18,7 @@ namespace GraphQL.EntityFramework
         public EfGraphQLService(IModel model, GlobalFilters filters, DbContextFromUserContext<TDbContext> dbContextFromUserContext)
         {
             Guard.AgainstNull(nameof(model), model);
+            Guard.AgainstNull(nameof(filters), filters);
             Guard.AgainstNull(nameof(dbContextFromUserContext), dbContextFromUserContext);
             this.filters = filters;
             this.dbContextFromUserContext = dbContextFromUserContext;
