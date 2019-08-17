@@ -18,6 +18,7 @@ static class WhereValidator
             throw new Exception($"Cannot use {nameof(StringComparison)} when comparing {propertyType.FullName}.");
         }
     }
+
     public static void ValidateSingleObject(Type propertyType, Comparison comparison, StringComparison? @case)
     {
         ValidateObject(propertyType, comparison, @case);

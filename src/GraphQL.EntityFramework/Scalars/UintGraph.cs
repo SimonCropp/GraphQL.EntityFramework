@@ -1,11 +1,8 @@
-﻿namespace GraphQL.EntityFramework
+﻿class UintGraph :
+    ScalarGraph<uint>
 {
-    public class UintGraph :
-        ScalarGraph<uint>
+    protected override uint InnerParse(string value)
     {
-        protected override uint InnerParse(string value)
-        {
-            return uint.Parse(value);
-        }
+        return uint.Parse(value);
     }
 }

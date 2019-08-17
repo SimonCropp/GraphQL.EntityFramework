@@ -4,7 +4,6 @@ using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
-using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -64,17 +63,17 @@ public class MultiContextTests:
             var services = new ServiceCollection();
 
             services.AddSingleton<MultiContextQuery>();
-            services.AddSingleton(typeof(Entity1Graph));
-            services.AddSingleton(typeof(Entity2Graph));
+            services.AddSingleton<Entity1Graph>();
+            services.AddSingleton<Entity2Graph>();
+            services.AddSingleton(dbContext1);
+            services.AddSingleton(dbContext2);
 
             #region RegisterMultipleInContainer
             EfGraphQLConventions.RegisterInContainer(
                 services,
-                dbContext1,
                 userContext => ((UserContext) userContext).DbContext1);
             EfGraphQLConventions.RegisterInContainer(
                 services,
-                dbContext2,
                 userContext => ((UserContext) userContext).DbContext2);
             #endregion
 

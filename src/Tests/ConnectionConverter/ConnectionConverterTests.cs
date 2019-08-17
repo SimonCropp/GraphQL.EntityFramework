@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using ApprovalTests.Namers;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
-using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 

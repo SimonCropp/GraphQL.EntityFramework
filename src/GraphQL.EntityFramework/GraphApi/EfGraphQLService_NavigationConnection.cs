@@ -73,7 +73,7 @@ namespace GraphQL.EntityFramework
                     context.Last,
                     context.Before);
             });
-            
+
             //return the field to be added to the graph
             return builder;
         }

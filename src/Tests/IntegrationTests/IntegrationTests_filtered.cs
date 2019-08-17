@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using GraphQL.EntityFramework;
-using ObjectApproval;
 using Xunit;
 
 public partial class IntegrationTests

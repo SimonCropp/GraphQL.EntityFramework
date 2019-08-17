@@ -1,11 +1,8 @@
-﻿namespace GraphQL.EntityFramework
+﻿class UlongGraph :
+    ScalarGraph<ulong>
 {
-    public class UlongGraph :
-        ScalarGraph<ulong>
+    protected override ulong InnerParse(string value)
     {
-        protected override ulong InnerParse(string value)
-        {
-            return ulong.Parse(value);
-        }
+        return ulong.Parse(value);
     }
 }

@@ -54,20 +54,22 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type graphType = null,
             string name = nameof(TReturn),
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            bool nullable = false)
             where TReturn : class
         {
-            return efGraphQlService.AddSingleField(this, name, resolve, graphType, arguments);
+            return efGraphQlService.AddSingleField(this, name, resolve, graphType, arguments, nullable);
         }
 
         protected FieldType AddSingleFieldAsync<TReturn>(
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
             Type graphType = null,
             string name = nameof(TReturn),
-            IEnumerable<QueryArgument> arguments = null)
+            IEnumerable<QueryArgument> arguments = null,
+            bool nullable = false)
             where TReturn : class
         {
-            return efGraphQlService.AddSingleFieldAsync(this, name, resolve, graphType, arguments);
+            return efGraphQlService.AddSingleFieldAsync(this, name, resolve, graphType, arguments, nullable);
         }
     }
 }

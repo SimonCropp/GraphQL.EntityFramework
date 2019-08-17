@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public static class ModuleInitializer
+﻿static class ModuleInitializer
 {
     public static void Initialize()
     {

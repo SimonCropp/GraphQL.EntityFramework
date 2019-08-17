@@ -51,32 +51,6 @@ namespace GraphQL.EntityFramework
 
         Dictionary<Type, Func<object, object, Task<bool>>> funcs = new Dictionary<Type, Func<object, object, Task<bool>>>();
 
-        //internal async Task<List<T>> TryApplyFilter<T>(IQueryable<T> input, object userContext, CancellationToken token)
-        //{
-        //    if (funcs.Count == 0)
-        //    {
-        //        return null;
-        //    }
-
-        //    var filters = FindFilters<T>().ToList();
-        //    if (filters.Count == 0)
-        //    {
-        //        return null;
-        //    }
-
-        //    var list = await input.ToListAsync(token);
-        //    return list.Where(item =>
-        //        {
-        //            if (item == null)
-        //            {
-        //                return false;
-        //            }
-
-        //            return filters.All(func => func(userContext, item));
-        //        })
-        //        .ToList();
-        //}
-
         internal async Task<IEnumerable<T>> ApplyFilter<T>(IEnumerable<T> result, object userContext)
         {
             if (funcs.Count == 0)

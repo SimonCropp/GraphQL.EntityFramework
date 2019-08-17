@@ -65,5 +65,10 @@ public class Query :
         AddSingleField(
             name: "parentEntity",
             resolve: context => context.DbContext.ParentEntities);
+
+        AddSingleField(
+            name: "parentEntityNullable",
+            resolve: context => context.DbContext.ParentEntities,
+            nullable: true);
     }
 }
