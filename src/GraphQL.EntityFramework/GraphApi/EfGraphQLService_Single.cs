@@ -20,7 +20,7 @@ namespace GraphQL.EntityFramework
             bool nullable = false)
             where TReturn : class
         {
-            return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, nullable);
+            return AddSingleFieldAsync(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, nullable);
         }
 
         public FieldType AddSingleFieldAsync<TReturn>(
