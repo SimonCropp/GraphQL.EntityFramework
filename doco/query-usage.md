@@ -159,6 +159,7 @@ All string comparisons are, by default, done using no [StringComparison](https:/
 
 
 <!-- snippet: QueryClientEvaluationWarning -->
+<a id='snippet-queryclientevaluationwarning'/></a>
 ```cs
 protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 {
@@ -169,7 +170,7 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         });
 }
 ```
-<sup>[snippet source](/src/Snippets/QueryClientEvaluationWarningDataContext.cs#L7-L18)</sup>
+<sup>[snippet source](/src/Snippets/QueryClientEvaluationWarningDataContext.cs#L7-L18) / [anchor](#snippet-queryclientevaluationwarning)</sup>
 <!-- endsnippet -->
 
 

@@ -1244,6 +1244,7 @@ query ($id: String!)
         await dbContext.SaveChangesAsync();
         var services = new ServiceCollection();
         services.AddSingleton<Query>();
+        services.AddSingleton(database.Context);
         foreach (var type in GetGraphQlTypes())
         {
             services.AddSingleton(type);

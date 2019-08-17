@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GraphQL.Types;
 using GraphQL.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphQL.EntityFramework
 {
@@ -33,12 +34,12 @@ namespace GraphQL.EntityFramework
             }
         }
 
-        public static void RegisterInContainer(Action<Type, ScalarGraphType> registerInstance)
+        public static void RegisterInContainer(IServiceCollection services)
         {
             Initialize();
             foreach (var entry in entries)
             {
-                registerInstance(entry.Key, entry.Value);
+                services.AddSingleton(entry.Key, entry.Value);
             }
         }
 

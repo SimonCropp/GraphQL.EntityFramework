@@ -13,7 +13,7 @@ public class GlobalFilterSnippets
 
     #endregion
 
-    public void Add(ServiceCollection services, MyDbContext dbContext)
+    public void Add(ServiceCollection services)
     {
         #region add-filter
 
@@ -22,9 +22,8 @@ public class GlobalFilterSnippets
             (userContext, item) => { return item.Property != "Ignore"; });
         EfGraphQLConventions.RegisterInContainer(
             services,
-            dbContext,
             userContext => (MyDbContext) userContext,
-            filters);
+            x=>filters);
 
         #endregion
     }

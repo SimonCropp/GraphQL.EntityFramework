@@ -43,6 +43,7 @@ Variable "$id" of type "String!" used in position expecting type "ID".
 To work around this it is necessary to use a [ValidationRule](https://graphql-dotnet.github.io/docs/getting-started/query-validation) to change the variable type. There is an included ValidationRule included that achieves this:
 
 <!-- snippet: FixIdTypeRule.cs -->
+<a id='snippet-FixIdTypeRule.cs'/></a>
 ```cs
 using System.Collections.Generic;
 using System.Linq;
@@ -101,12 +102,13 @@ namespace GraphQL.EntityFramework
     }
 }
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L56)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L56) / [anchor](#snippet-FixIdTypeRule.cs)</sup>
 <!-- endsnippet -->
 
 To use this rule set `ExecutionOptions.ValidationRules` to `FixIdTypeRule.CoreRulesWithIdFix`:
 
 <!-- snippet: ExecutionOptionsWithFixIdTypeRule -->
+<a id='snippet-executionoptionswithfixidtyperule'/></a>
 ```cs
 var executionOptions = new ExecutionOptions
 {
@@ -117,5 +119,5 @@ var executionOptions = new ExecutionOptions
     ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
 };
 ```
-<sup>[snippet source](/src/Tests/IntegrationTests/QueryExecutor.cs#L28-L37)</sup>
+<sup>[snippet source](/src/Tests/IntegrationTests/QueryExecutor.cs#L28-L37) / [anchor](#snippet-executionoptionswithfixidtyperule)</sup>
 <!-- endsnippet -->

@@ -25,6 +25,7 @@ Notes:
 ### Signature:
 
 <!-- snippet: GlobalFiltersSignature -->
+<a id='snippet-globalfilterssignature'/></a>
 ```cs
 public class GlobalFilters
 {
@@ -32,29 +33,30 @@ public class GlobalFilters
 
     public delegate Task<bool> AsyncFilter<in T>(object userContext, T input);
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/Filter/GlobalFilters.cs#L8-L16)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/Filter/GlobalFilters.cs#L8-L16) / [anchor](#snippet-globalfilterssignature)</sup>
 <!-- endsnippet -->
 
 
 ### Usage:
 
 <!-- snippet: add-filter -->
+<a id='snippet-add-filter'/></a>
 ```cs
 public class MyEntity
 {
     public string Property { get; set; }
 }
 ```
-<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L7-L14)</sup>
+<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L7-L14) / [anchor](#snippet-add-filter)</sup>
+<a id='snippet-add-filter-1'/></a>
 ```cs
 var filters = new GlobalFilters();
 filters.Add<MyEntity>(
     (userContext, item) => { return item.Property != "Ignore"; });
 EfGraphQLConventions.RegisterInContainer(
     services,
-    dbContext,
     userContext => (MyDbContext) userContext,
-    filters);
+    x=>filters);
 ```
-<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L18-L29)</sup>
+<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L18-L28) / [anchor](#snippet-add-filter-1)</sup>
 <!-- endsnippet -->

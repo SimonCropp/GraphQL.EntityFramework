@@ -57,6 +57,7 @@ Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet
 ### Root Query
 
 <!-- snippet: rootQuery -->
+<a id='snippet-rootquery'/></a>
 ```cs
 public class Query :
     QueryGraphType<MyDbContext>
@@ -73,7 +74,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L7-L24)</sup>
+<sup>[snippet source](/src/Snippets/RootQuery.cs#L7-L24) / [anchor](#snippet-rootquery)</sup>
 <!-- endsnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -84,6 +85,7 @@ public class Query :
 ### Typed Graph
 
 <!-- snippet: typedGraph -->
+<a id='snippet-typedgraph'/></a>
 ```cs
 public class CompanyGraph :
     EfObjectGraphType<MyDbContext,Company>
@@ -103,7 +105,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/TypedGraph.cs#L9-L29)</sup>
+<sup>[snippet source](/src/Snippets/TypedGraph.cs#L9-L29) / [anchor](#snippet-typedgraph)</sup>
 <!-- endsnippet -->
 
 
@@ -116,6 +118,7 @@ public class CompanyGraph :
 #### Graph Type
 
 <!-- snippet: ConnectionRootQuery -->
+<a id='snippet-connectionrootquery'/></a>
 ```cs
 public class Query :
     QueryGraphType<MyDbContext>
@@ -129,7 +132,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L7-L21)</sup>
+<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L7-L21) / [anchor](#snippet-connectionrootquery)</sup>
 <!-- endsnippet -->
 
 
@@ -210,6 +213,7 @@ public class Query :
 ### Typed Graph
 
 <!-- snippet: ConnectionTypedGraph -->
+<a id='snippet-connectiontypedgraph'/></a>
 ```cs
 public class CompanyGraph :
     EfObjectGraphType<MyDbContext, Company>
@@ -223,7 +227,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L8-L22)</sup>
+<sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L8-L22) / [anchor](#snippet-connectiontypedgraph)</sup>
 <!-- endsnippet -->
 
 
@@ -256,6 +260,7 @@ In some cases, you may want to use `Field` instead of `AddQueryField`/`AddSingle
  * Apply the `where` argument expression using `ExpressionBuilder<T>.BuildPredicate(whereExpression)`
 
 <!-- snippet: ManuallyApplyWhere -->
+<a id='snippet-manuallyapplywhere'/></a>
 ```cs
 Field<ListGraphType<EmployeeSummaryGraph>>(
     name: "employeeSummary",
@@ -290,5 +295,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L49-L84)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L49-L84) / [anchor](#snippet-manuallyapplywhere)</sup>
 <!-- endsnippet -->

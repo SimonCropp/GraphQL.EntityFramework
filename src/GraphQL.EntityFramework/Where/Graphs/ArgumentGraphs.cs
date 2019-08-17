@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
 using GraphQL.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 
 static class ArgumentGraphs
 {
@@ -18,11 +19,11 @@ static class ArgumentGraphs
         Add<ComparisonGraph>();
     }
 
-    public static void RegisterInContainer(Action<Type, GraphType> registerInstance)
+    public static void RegisterInContainer(IServiceCollection services)
     {
         foreach (var entry in entries)
         {
-            registerInstance(entry.Key, entry.Value);
+            services.AddSingleton(entry.Key, entry.Value);
         }
     }
 
