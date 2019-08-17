@@ -50,9 +50,9 @@ namespace GraphQL.EntityFramework
         /// Register the necessary services with the service provider for a data context of type TDbContext
         /// </summary>
         /// <typeparam name="TDbContext"></typeparam>
-        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="dbContextFromUserContext">A function to obtain the TDbContext from the GraphQL user context.</param>
-        /// <param name="dbModelCreator">A function to obtain the Microsoft.EntityFrameworkCore.Metadata.IModel, or null to obtain from TDbContext via the service provider</param>
+        /// <param name="dbModelCreator">A function to obtain the <see cref="IModel"/>, or null to obtain from <typeparamref name="TDbContext"/> via the service provider</param>
         /// <param name="filters">A function to obtain a list of filters to apply to the returned data.</param>
         #region RegisterInContainerViaServiceProvider
         public static void RegisterInContainer<TDbContext>(
@@ -65,7 +65,7 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNull(nameof(services), services);
             //acquire the database model via the service provider
-            //default implmentation is below, but can be tailored by the caller
+            //default implementation is below, but can be tailored by the caller
             if (dbModelCreator == null)
             {
                 dbModelCreator = serviceProvider =>
