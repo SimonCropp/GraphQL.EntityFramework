@@ -1,0 +1,5 @@
+﻿{
+  parentEntityNullable: {
+    property: 'Value1'
+  }
+}
