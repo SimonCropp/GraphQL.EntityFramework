@@ -2,19 +2,15 @@
 
 Enabling is done via registering in a container.
 
-Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`, hence a DbContext instance is required at configuration time. As such a DbContext needs to be instantiated and disposed for the purposes of IModel construction. EF does not allow access to the model unless 
-
 The container registration can be via addin to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
-snippet: RegisterInContainerServiceCollection
+snippet: RegisterInContainerViaServiceProvider
 
 Usage:
 
-snippet: RegisterInContainerServiceCollectionUsage
+snippet: RegisterInContainerViaServiceProviderUsage
 
-Or via an Action.
-
-snippet: RegisterInContainerAction
+Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`.  By default, this will be obtained from an instance of TDbContext at runtime, created by the service provider upon first use of IEfGraphQLService.  By supplying a function to the RegisterInContainer method, you can supply your own instance of IModel.
 
 Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
 

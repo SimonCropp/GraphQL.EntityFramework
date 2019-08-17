@@ -20,6 +20,7 @@ static class QueryExecutor
             dbContext,
             userContext => (TDbContext) userContext,
             filters);
+        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         using (var provider = services.BuildServiceProvider())
         using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
         {

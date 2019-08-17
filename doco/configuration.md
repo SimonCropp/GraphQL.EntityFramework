@@ -9,52 +9,32 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 Enabling is done via registering in a container.
 
-Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`, hence a DbContext instance is required at configuration time. As such a DbContext needs to be instantiated and disposed for the purposes of IModel construction. EF does not allow access to the model unless 
-
 The container registration can be via addin to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
-<!-- snippet: RegisterInContainerServiceCollection -->
+<!-- snippet: RegisterInContainerViaServiceProvider -->
 ```cs
 public static void RegisterInContainer<TDbContext>(
     IServiceCollection services,
-    TDbContext dbContext,
     DbContextFromUserContext<TDbContext> dbContextFromUserContext,
-    GlobalFilters filters = null)
+    Func<IServiceProvider, IModel> dbModelCreator = null,
+    Func<IServiceProvider, GlobalFilters> filters = null)
     where TDbContext : DbContext
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L34-L41)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L57-L64)</sup>
 <!-- endsnippet -->
 
 Usage:
 
-<!-- snippet: RegisterInContainerServiceCollectionUsage -->
+<!-- snippet: RegisterInContainerViaServiceProviderUsage -->
 ```cs
-var builder = new DbContextOptionsBuilder();
-builder.UseSqlServer("fake");
-using (var context = new MyDbContext(builder.Options))
-{
-    EfGraphQLConventions.RegisterInContainer(
-        serviceCollection,
-        dbContext: context,
-        dbContextFromUserContext: userContext => (MyDbContext) userContext);
-}
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    serviceCollection,
+    userContext => (MyDbContext)userContext);
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L9-L21)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L26-L30)</sup>
 <!-- endsnippet -->
 
-Or via an Action.
-
-<!-- snippet: RegisterInContainerAction -->
-```cs
-public static void RegisterInContainer<TDbContext>(
-    Action<Type, object> register,
-    TDbContext dbContext,
-    DbContextFromUserContext<TDbContext> dbContextFromUserContext,
-    GlobalFilters filters = null)
-    where TDbContext : DbContext
-```
-<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L10-L17)</sup>
-<!-- endsnippet -->
+Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`.  By default, this will be obtained from an instance of TDbContext at runtime, created by the service provider upon first use of IEfGraphQLService.  By supplying a function to the RegisterInContainer method, you can supply your own instance of IModel.
 
 Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
 
