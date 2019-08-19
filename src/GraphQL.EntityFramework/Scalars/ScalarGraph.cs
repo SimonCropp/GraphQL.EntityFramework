@@ -1,37 +1,41 @@
 ﻿using GraphQL.Language.AST;
 using GraphQL.Types;
 
-abstract class ScalarGraph<T> :
-    ScalarGraphType
+
+namespace GraphQL.EntityFramework
 {
-    public ScalarGraph()
+    public abstract class ScalarGraph<T> :
+        ScalarGraphType
     {
-        Name = typeof(T).Name;
-        Description = Name;
-    }
-
-    public override object Serialize(object value)
-    {
-        return value?.ToString();
-    }
-
-    public override object ParseValue(object value)
-    {
-        Guard.AgainstNull(nameof(value), value);
-        var trim = value.ToString().Trim('"');
-        Guard.AgainstNullWhiteSpace(nameof(value), trim);
-        return InnerParse(trim);
-    }
-
-    protected abstract T InnerParse(string value);
-
-    public override object ParseLiteral(IValue value)
-    {
-        if (value is StringValue str)
+        public ScalarGraph()
         {
-            return ParseValue(str.Value);
+            Name = typeof(T).Name;
+            Description = Name;
         }
 
-        return null;
+        public override object Serialize(object value)
+        {
+            return value?.ToString();
+        }
+
+        public override object ParseValue(object value)
+        {
+            Guard.AgainstNull(nameof(value), value);
+            var trim = value.ToString().Trim('"');
+            Guard.AgainstNullWhiteSpace(nameof(value), trim);
+            return InnerParse(trim);
+        }
+
+        protected abstract T InnerParse(string value);
+
+        public override object ParseLiteral(IValue value)
+        {
+            if (value is StringValue str)
+            {
+                return ParseValue(str.Value);
+            }
+
+            return null;
+        }
     }
 }
