@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GraphQL.EntityFramework;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;

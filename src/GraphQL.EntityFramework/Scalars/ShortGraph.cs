@@ -1,8 +1,11 @@
-﻿class ShortGraph :
-    ScalarGraph<short>
+﻿namespace GraphQL.EntityFramework
 {
-    protected override short InnerParse(string value)
+    public class ShortGraph :
+        ScalarGraph<short>
     {
-        return short.Parse(value);
+        protected override short InnerParse(string value)
+        {
+            return short.Parse(value);
+        }
     }
 }
