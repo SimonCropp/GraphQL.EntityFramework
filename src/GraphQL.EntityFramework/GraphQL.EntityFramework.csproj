@@ -6,12 +6,12 @@
   <ItemGroup>
     <PackageReference Include="ConfigureAwait.Fody" Version="3.1.0" PrivateAssets="All" />
     <PackageReference Include="Fody" Version="6.0.0" PrivateAssets="all" />
-    <PackageReference Include="ModuleInit.Fody" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="ModuleInit.Fody" Version="2.1.0" PrivateAssets="All" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
     <PackageReference Include="ProjectDefaults" Version="1.0.19" PrivateAssets="All" />
-    <PackageReference Include="ModuleInit.Fody" Version="2.0.0" />
+    <PackageReference Include="ModuleInit.Fody" Version="2.1.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01" PrivateAssets="All" />
   </ItemGroup>
 </Project>
