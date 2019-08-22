@@ -19,7 +19,7 @@ public class Startup
         GraphTypeTypeRegistry.Register<EmployeeSummary, EmployeeSummaryGraph>();
         GraphTypeTypeRegistry.Register<Company, CompanyGraph>();
 
-        services.AddScoped(provider => DbContextBuilder.BuildDbContext());
+        services.AddTransient(provider => DbContextBuilder.BuildDbContext());
 
         EfGraphQLConventions.RegisterInContainer(
             services,
