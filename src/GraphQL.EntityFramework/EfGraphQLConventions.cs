@@ -22,6 +22,7 @@ namespace GraphQL.EntityFramework
             where TDbContext : DbContext
         #endregion
         {
+            Guard.AgainstNull(nameof(services), services);
             GlobalFilters Filters(IServiceProvider serviceProvider)
             {
                 if (filters == null)
@@ -32,12 +33,8 @@ namespace GraphQL.EntityFramework
                 return filters(serviceProvider) ?? new GlobalFilters();
             }
 
-            Guard.AgainstNull(nameof(services), services);
 
-            //register the scalars
-            Scalars.RegisterInContainer(services);
-            //register the argument graphs
-            ArgumentGraphs.RegisterInContainer(services);
+            RegisterScalarsAndArgs<TDbContext>(services);
             //register the IEfGraphQLService
             services.AddSingleton(
                 typeof(IEfGraphQLService<TDbContext>),
@@ -47,6 +44,14 @@ namespace GraphQL.EntityFramework
                     Filters(serviceProvider),
                     dbContextFromUserContext)
             );
+        }
+
+        static void RegisterScalarsAndArgs(IServiceCollection services)
+        {
+            //register the scalars
+            Scalars.RegisterInContainer(services);
+            //register the argument graphs
+            ArgumentGraphs.RegisterInContainer(services);
         }
 
         public static void RegisterConnectionTypesInContainer(IServiceCollection services)
