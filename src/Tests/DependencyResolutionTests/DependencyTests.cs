@@ -29,10 +29,7 @@ public class DependencyTests :
     {
     }
 
-    [Fact]
-    public async Task Simple()
-    {
-        var query = @"
+    static string query = @"
 {
   entities
   {
@@ -40,6 +37,9 @@ public class DependencyTests :
   }
 }";
 
+    [Fact]
+    public async Task Simple()
+    {
         using (var database = await sqlInstance.Build())
         {
             var result = await RunQuery(database, query, null, null);
@@ -54,34 +54,29 @@ public class DependencyTests :
         GlobalFilters filters)
     {
         var dbContext = database.Context;
-        dbContext.AddRange(new Entity {Property = "A"});
-        await dbContext.SaveChangesAsync();
+        await AddData(dbContext);
         var services = new ServiceCollection();
         services.AddSingleton<DependencyQuery>();
-        services.AddSingleton(database.Context);
         services.AddSingleton(typeof(EntityGraph));
+        services.AddSingleton(database.Context);
 
         return await ExecuteQuery(query, services, dbContext, inputs, filters);
     }
-    public static async Task<object> ExecuteQuery<TDbContext>(
+
+    static async Task<object> ExecuteQuery(
         string query,
         ServiceCollection services,
-        TDbContext dbContext,
+        DependencyDbContext dbContext,
         Inputs inputs,
         GlobalFilters filters)
-        where TDbContext : DbContext
     {
-        query = query.Replace("'", "\"");
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => (TDbContext) userContext,
+            userContext => (DependencyDbContext) userContext,
             provider => filters);
-        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         using (var provider = services.BuildServiceProvider())
-        using (var schema = new DependencySchema(new FuncDependencyResolver(provider.GetRequiredService)))
+        using (var schema = new DependencySchema(provider))
         {
-            var documentExecuter = new EfDocumentExecuter();
-
             var executionOptions = new ExecutionOptions
             {
                 Schema = schema,
@@ -90,8 +85,20 @@ public class DependencyTests :
                 Inputs = inputs
             };
 
-            var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-            return executionResult.Data;
+            return await ExecutionResultData(executionOptions);
         }
+    }
+
+    static Task AddData(DependencyDbContext dbContext)
+    {
+        dbContext.AddRange(new Entity {Property = "A"});
+        return dbContext.SaveChangesAsync();
+    }
+
+    static async Task<object> ExecutionResultData(ExecutionOptions executionOptions)
+    {
+        var documentExecuter = new EfDocumentExecuter();
+        var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
+        return executionResult.Data;
     }
 }
