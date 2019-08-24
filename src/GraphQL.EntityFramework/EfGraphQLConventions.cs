@@ -30,7 +30,7 @@ namespace GraphQL.EntityFramework
                     return new GlobalFilters();
                 }
 
-                return filters(serviceProvider) ?? new GlobalFilters();
+                return filters(serviceProvider) ?? GlobalFilters.Empty;
             }
 
 
