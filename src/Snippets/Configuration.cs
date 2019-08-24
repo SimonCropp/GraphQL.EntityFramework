@@ -12,6 +12,14 @@ class Configuration
             userContext => (MyDbContext)userContext);
         #endregion
     }
+    void RegisterInContainerExplicit(IServiceCollection serviceCollection)
+    {
+        #region RegisterInContainerViaServiceProviderUsage
+        EfGraphQLConventions.RegisterInContainer(
+            serviceCollection,
+            userContext => (MyDbContext)userContext);
+        #endregion
+    }
 
     public class MyDbContext :
         DbContext

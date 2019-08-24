@@ -15,6 +15,8 @@ namespace GraphQL.EntityFramework
 
         #endregion
 
+        internal static readonly GlobalFilters Empty = new GlobalFilters();
+
         public void Add<T>(Filter<T> filter)
         {
             Guard.AgainstNull(nameof(filter), filter);
