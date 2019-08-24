@@ -59,10 +59,7 @@ public class DependencyTests :
         var services = new ServiceCollection();
         services.AddSingleton<DependencyQuery>();
         services.AddSingleton(database.Context);
-        foreach (var type in GetGraphQlTypes())
-        {
-            services.AddSingleton(type);
-        }
+        services.AddSingleton(typeof(EntityGraph));
 
         return await ExecuteQuery(query, services, dbContext, inputs, filters);
     }
@@ -85,26 +82,16 @@ public class DependencyTests :
         {
             var documentExecuter = new EfDocumentExecuter();
 
-            #region ExecutionOptionsWithFixIdTypeRule
             var executionOptions = new ExecutionOptions
             {
                 Schema = schema,
                 Query = query,
                 UserContext = dbContext,
-                Inputs = inputs,
-                ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
+                Inputs = inputs
             };
-            #endregion
 
             var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
             return executionResult.Data;
         }
-    }
-
-    static IEnumerable<Type> GetGraphQlTypes()
-    {
-        return typeof(IntegrationTests).Assembly
-            .GetTypes()
-            .Where(x => !x.IsAbstract && typeof(GraphType).IsAssignableFrom(x));
     }
 }
