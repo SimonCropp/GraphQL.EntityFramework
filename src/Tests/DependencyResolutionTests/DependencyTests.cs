@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
-using GraphQL.Types;
 using GraphQL.Utilities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
@@ -42,51 +39,36 @@ public class DependencyTests :
     {
         using (var database = await sqlInstance.Build())
         {
-            var result = await RunQuery(database, query, null, null);
-            ObjectApprover.Verify(result);
+            var dbContext = database.Context;
+            await AddData(dbContext);
+            var services = BuildServiceCollection();
+            services.AddSingleton(database.Context);
+
+            EfGraphQLConventions.RegisterInContainer(
+                services,
+                userContext => (DependencyDbContext) userContext);
+            using (var provider = services.BuildServiceProvider())
+            using (var schema = new DependencySchema(provider))
+            {
+                var executionOptions = new ExecutionOptions
+                {
+                    Schema = schema,
+                    Query = query,
+                    UserContext = dbContext,
+                    Inputs = null
+                };
+
+                await ExecutionResultData(executionOptions);
+            }
         }
     }
 
-    static async Task<object> RunQuery(
-        SqlDatabase<DependencyDbContext> database,
-        string query,
-        Inputs inputs,
-        GlobalFilters filters)
+    static ServiceCollection BuildServiceCollection()
     {
-        var dbContext = database.Context;
-        await AddData(dbContext);
         var services = new ServiceCollection();
         services.AddSingleton<DependencyQuery>();
         services.AddSingleton(typeof(EntityGraph));
-        services.AddSingleton(database.Context);
-
-        return await ExecuteQuery(query, services, dbContext, inputs, filters);
-    }
-
-    static async Task<object> ExecuteQuery(
-        string query,
-        ServiceCollection services,
-        DependencyDbContext dbContext,
-        Inputs inputs,
-        GlobalFilters filters)
-    {
-        EfGraphQLConventions.RegisterInContainer(
-            services,
-            userContext => (DependencyDbContext) userContext,
-            provider => filters);
-        using (var provider = services.BuildServiceProvider())
-        using (var schema = new DependencySchema(provider))
-        {
-            var executionOptions = new ExecutionOptions
-            {
-                Schema = schema,
-                Query = query,
-                UserContext = dbContext,
-                Inputs = inputs
-            };
-
-            return await ExecutionResultData(executionOptions);
-        }
+        return services;
     }
 
     static Task AddData(DependencyDbContext dbContext)
@@ -95,10 +77,12 @@ public class DependencyTests :
         return dbContext.SaveChangesAsync();
     }
 
-    static async Task<object> ExecutionResultData(ExecutionOptions executionOptions)
+    static async Task ExecutionResultData(ExecutionOptions executionOptions)
     {
         var documentExecuter = new EfDocumentExecuter();
         var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        return executionResult.Data;
+        var data = (Dictionary<string,object>) executionResult.Data;
+        var objects = (List<object>) data.Single().Value;
+        Assert.Single(objects);
     }
 }
