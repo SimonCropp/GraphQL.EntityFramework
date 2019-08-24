@@ -5,6 +5,8 @@ using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Utilities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
@@ -34,6 +36,21 @@ public class DependencyTests :
   }
 }";
 
+    static class ModelBuilder
+    {
+        static ModelBuilder()
+        {
+            var builder = new DbContextOptionsBuilder();
+            builder.UseSqlServer("Fake");
+            using (var context = new DependencyDbContext(builder.Options))
+            {
+                Instance = context.Model;
+            }
+        }
+
+        public static readonly IModel Instance;
+    }
+
     [Fact]
     public async Task ExplicitModel()
     {
@@ -45,7 +62,8 @@ public class DependencyTests :
 
             EfGraphQLConventions.RegisterInContainer(
                 services,
-                userContext => (DependencyDbContext) userContext);
+                userContext => (DependencyDbContext) userContext,
+                ModelBuilder.Instance);
             using (var provider = services.BuildServiceProvider())
             using (var schema = new DependencySchema(provider))
             {
@@ -61,6 +79,7 @@ public class DependencyTests :
             }
         }
     }
+
     [Fact]
     public async Task ScopedDbContext()
     {
@@ -69,7 +88,7 @@ public class DependencyTests :
             var dbContext = database.Context;
             await AddData(dbContext);
             var services = BuildServiceCollection();
-            services.AddScoped(x=>database.Context);
+            services.AddScoped(x => { return database.Context; });
 
             EfGraphQLConventions.RegisterInContainer(
                 services,
@@ -98,7 +117,7 @@ public class DependencyTests :
             var dbContext = database.Context;
             await AddData(dbContext);
             var services = BuildServiceCollection();
-            services.AddTransient(x=>database.Context);
+            services.AddTransient(x => database.Context);
 
             EfGraphQLConventions.RegisterInContainer(
                 services,
@@ -118,6 +137,7 @@ public class DependencyTests :
             }
         }
     }
+
     [Fact]
     public async Task SingletonDbContext()
     {
@@ -165,7 +185,7 @@ public class DependencyTests :
     {
         var documentExecuter = new EfDocumentExecuter();
         var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        var data = (Dictionary<string,object>) executionResult.Data;
+        var data = (Dictionary<string, object>) executionResult.Data;
         var objects = (List<object>) data.Single().Value;
         Assert.Single(objects);
     }
