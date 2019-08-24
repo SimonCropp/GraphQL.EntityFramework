@@ -1,5 +1,6 @@
 ﻿<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
+         xsi:noNamespaceSchemaLocation="FodyWeavers.xsd"
+         GenerateXsd="false">
   <ConfigureAwait ContinueOnCapturedContext="false" />
   <ModuleInit />
 </Weavers>
