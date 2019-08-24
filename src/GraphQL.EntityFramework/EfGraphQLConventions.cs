@@ -34,7 +34,7 @@ namespace GraphQL.EntityFramework
             }
 
 
-            RegisterScalarsAndArgs<TDbContext>(services);
+            RegisterScalarsAndArgs(services);
             //register the IEfGraphQLService
             services.AddSingleton(
                 typeof(IEfGraphQLService<TDbContext>),
