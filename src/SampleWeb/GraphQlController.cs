@@ -25,10 +25,9 @@ public class GraphQlController :
     [HttpPost]
     public Task<ExecutionResult> Post(
         [BindRequired, FromBody] PostBody body,
-        [FromServices] GraphQlEfSampleDbContext dbContext,
         CancellationToken cancellation)
     {
-        return Execute(dbContext, body.Query, body.OperationName, body.Variables, cancellation);
+        return Execute(body.Query, body.OperationName, body.Variables, cancellation);
     }
 
     public class PostBody
@@ -43,16 +42,13 @@ public class GraphQlController :
         [FromQuery] string query,
         [FromQuery] string variables,
         [FromQuery] string operationName,
-        [FromServices] GraphQlEfSampleDbContext dbContext,
         CancellationToken cancellation)
     {
         var jObject = ParseVariables(variables);
-        return Execute(dbContext, query, operationName, jObject, cancellation);
+        return Execute(query, operationName, jObject, cancellation);
     }
 
-    Task<ExecutionResult> Execute(
-        GraphQlEfSampleDbContext dbContext,
-        string query,
+    Task<ExecutionResult> Execute(string query,
         string operationName,
         JObject variables,
         CancellationToken cancellation)
@@ -63,7 +59,6 @@ public class GraphQlController :
             Query = query,
             OperationName = operationName,
             Inputs = variables?.ToInputs(),
-            UserContext = dbContext,
             CancellationToken = cancellation,
 #if (DEBUG)
             ExposeExceptions = true,

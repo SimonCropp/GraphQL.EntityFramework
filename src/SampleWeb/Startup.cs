@@ -18,11 +18,12 @@ public class Startup
         GraphTypeTypeRegistry.Register<Employee, EmployeeGraph>();
         GraphTypeTypeRegistry.Register<EmployeeSummary, EmployeeSummaryGraph>();
         GraphTypeTypeRegistry.Register<Company, CompanyGraph>();
+        services.AddScoped(_ => DbContextBuilder.BuildDbContext());
+        services.AddSingleton<Func<GraphQlEfSampleDbContext>>(provider=> provider.GetRequiredService<GraphQlEfSampleDbContext>);
 
-        EfGraphQLConventions.RegisterInContainer(
+        EfGraphQLConventions.RegisterInContainer<GraphQlEfSampleDbContext>(
             services,
-            userContext => (GraphQlEfSampleDbContext) userContext,
-            GraphQlEfSampleDbContext.GetModel());
+            model: GraphQlEfSampleDbContext.GetModel());
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
 
         foreach (var type in GetGraphQlTypes())
