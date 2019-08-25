@@ -9,12 +9,10 @@ using GraphQL.Types;
 public class Query :
     QueryGraphType<GraphQlEfSampleDbContext>
 {
-    Func<GraphQlEfSampleDbContext> dbContextFunc;
 
     public Query(IEfGraphQLService<GraphQlEfSampleDbContext> efGraphQlService,Func<GraphQlEfSampleDbContext> dbContextFunc) :
         base(efGraphQlService)
     {
-        this.dbContextFunc = dbContextFunc;
         AddQueryField(
             name: "companies",
             resolve: context => context.DbContext.Companies);
