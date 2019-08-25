@@ -12,9 +12,9 @@ namespace GraphQL.EntityFramework
         /// Register the necessary services with the service provider for a data context of <typeparamref name="TDbContext"/>
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-        /// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context.</param>
+        /// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="model">The <see cref="IModel"/> to use. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
-        /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data.</param>
+        /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         #region RegisterInContainer
         public static void RegisterInContainer<TDbContext>(
                 IServiceCollection services,
@@ -28,51 +28,27 @@ namespace GraphQL.EntityFramework
 
             RegisterScalarsAndArgs(services);
 
-            services.AddSingleton<IEfGraphQLService<TDbContext>>(
-                serviceProvider =>
-                {
-                    model = model ?? ResolveModel<TDbContext>(serviceProvider);
-
-                    resolveFilters = resolveFilters ?? serviceProvider.GetService<ResolveFilters>();
-
-                    if (resolveDbContext == null)
-                    {
-                        resolveDbContext = context => serviceProvider.GetRequiredService<TDbContext>();
-                    }
-
-                    return new EfGraphQLService<TDbContext>(
-                        model,
-                        resolveDbContext,
-                        resolveFilters);
-                });
+            services.AddSingleton(
+                provider => Build(resolveDbContext, model, resolveFilters, provider));
         }
 
-        ///// <summary>
-        ///// Register the necessary services with the service provider for a data context of <typeparamref name="TDbContext"/>
-        ///// </summary>
-        ///// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-        ///// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context.</param>
-        ///// <param name="model">The <see cref="IModel"/> for <typeparamref name="TDbContext"/>.</param>
-        ///// <param name="resolveFilters">The <see cref="Filters"/> to use.</param>
-        //public static void RegisterInContainer<TDbContext>(
-        //    IServiceCollection services,
-        //    ResolveDbContext<TDbContext> resolveDbContext,
-        //    IModel model,
-        //    ResolveFilters resolveFilters = null)
-        //    where TDbContext : DbContext
-        //{
-        //    Guard.AgainstNull(nameof(services), services);
-        //    Guard.AgainstNull(nameof(model), model);
+        static IEfGraphQLService<TDbContext> Build<TDbContext>(ResolveDbContext<TDbContext> dbContext, IModel model, ResolveFilters filters, IServiceProvider serviceProvider)
+            where TDbContext : DbContext
+        {
+            model = model ?? ResolveModel<TDbContext>(serviceProvider);
 
-        //    RegisterScalarsAndArgs(services);
+            filters = filters ?? serviceProvider.GetService<ResolveFilters>();
 
-        //    services.AddSingleton<IEfGraphQLService<TDbContext>>(
-        //        serviceProvider => new EfGraphQLService<TDbContext>(
-        //            model,
-        //            resolveDbContext,
-        //            resolveFilters)
-        //    );
-        //}
+            if (dbContext == null)
+            {
+                dbContext = context => serviceProvider.GetRequiredService<TDbContext>();
+            }
+
+            return new EfGraphQLService<TDbContext>(
+                model,
+                dbContext,
+                filters);
+        }
 
         static void RegisterScalarsAndArgs(IServiceCollection services)
         {

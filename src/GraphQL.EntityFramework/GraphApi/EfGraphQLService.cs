@@ -80,16 +80,8 @@ namespace GraphQL.EntityFramework
 
         Filters ResolveFilter<TSource>(ResolveFieldContext<TSource> context)
         {
-            if (resolveFilters != null)
-            {
-                var filter = resolveFilters(context.UserContext);
-                if (filter != null)
-                {
-                    return filter;
-                }
-            }
-
-            return NullFilters.Instance;
+            var filter = resolveFilters?.Invoke(context.UserContext);
+            return filter ?? NullFilters.Instance;
         }
     }
 }
