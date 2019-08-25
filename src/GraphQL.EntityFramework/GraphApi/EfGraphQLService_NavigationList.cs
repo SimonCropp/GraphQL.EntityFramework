@@ -68,12 +68,13 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     context =>
                     {
+                        var efFieldContext = BuildEfContextFromGraphQlContext(context);
                         //run the specified resolve function
-                        var result = resolve(BuildEfContextFromGraphQlContext(context));
+                        var result = resolve(efFieldContext);
                         //apply any query filters specified in the arguments
                         result = result.ApplyGraphQlArguments(context);
                         //apply the global filter on each individually enumerated item
-                        return filters.ApplyFilter(result, context.UserContext);
+                        return efFieldContext.Filters.ApplyFilter(result, context.UserContext);
                     })
             };
         }

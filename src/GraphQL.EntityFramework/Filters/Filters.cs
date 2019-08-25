@@ -5,6 +5,21 @@ using System.Threading.Tasks;
 
 namespace GraphQL.EntityFramework
 {
+    class NullFilters :
+        Filters
+    {
+        public static NullFilters Instance = new NullFilters();
+        internal override Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
+        {
+            return Task.FromResult(result);
+        }
+
+        internal override Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item)
+        {
+            return Task.FromResult(true);
+        }
+    }
+
     #region FiltersSignature
 
     public class Filters
@@ -16,8 +31,6 @@ namespace GraphQL.EntityFramework
             where TEntity : class;
 
         #endregion
-
-        internal static readonly Filters Empty = new Filters();
 
         public void Add<TEntity>(Filter<TEntity> filter) where TEntity : class
         {
@@ -56,7 +69,7 @@ namespace GraphQL.EntityFramework
 
         Dictionary<Type, Func<object, object, Task<bool>>> funcs = new Dictionary<Type, Func<object, object, Task<bool>>>();
 
-        internal async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
+        internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
             where TEntity : class
         {
             if (funcs.Count == 0)
@@ -101,7 +114,7 @@ namespace GraphQL.EntityFramework
             return true;
         }
 
-        internal async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item)
+        internal virtual async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item)
             where TEntity : class
         {
             if (item == null)

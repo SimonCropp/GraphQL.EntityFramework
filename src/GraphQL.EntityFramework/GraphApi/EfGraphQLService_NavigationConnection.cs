@@ -57,12 +57,13 @@ namespace GraphQL.EntityFramework
             //set the custom resolver
             builder.ResolveAsync(async context =>
             {
+                var efFieldContext = BuildEfContextFromGraphQlContext(context);
                 //run the specified resolve function
-                var enumerable = resolve(BuildEfContextFromGraphQlContext(context));
+                var enumerable = resolve(efFieldContext);
                 //apply any query filters specified in the arguments
                 enumerable = enumerable.ApplyGraphQlArguments(context);
                 //apply the global filter on each individually enumerated item
-                enumerable = await filters.ApplyFilter(enumerable, context.UserContext);
+                enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext);
                 //pagination does NOT occur server-side at this point, as the query has already executed
                 var page = enumerable.ToList();
                 //return the proper page of data

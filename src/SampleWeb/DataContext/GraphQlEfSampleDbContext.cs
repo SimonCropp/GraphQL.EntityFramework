@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 public class GraphQlEfSampleDbContext :
     DbContext
@@ -9,6 +10,16 @@ public class GraphQlEfSampleDbContext :
     public GraphQlEfSampleDbContext(DbContextOptions options) :
         base(options)
     {
+    }
+
+    public static IModel GetModel()
+    {
+        var builder = new DbContextOptionsBuilder();
+        builder.UseSqlServer("Fake");
+        using (var dbContext = new GraphQlEfSampleDbContext(builder.Options))
+        {
+            return dbContext.Model;
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

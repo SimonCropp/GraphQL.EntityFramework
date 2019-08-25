@@ -107,7 +107,7 @@ namespace GraphQL.EntityFramework
                             context.Before,
                             context,
                             context.CancellationToken,
-                            filters);
+                            efFieldContext.Filters);
                     //note: does not apply global filters
                 });
 

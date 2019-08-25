@@ -19,11 +19,10 @@ public class Startup
         GraphTypeTypeRegistry.Register<EmployeeSummary, EmployeeSummaryGraph>();
         GraphTypeTypeRegistry.Register<Company, CompanyGraph>();
 
-        services.AddTransient(provider => DbContextBuilder.BuildDbContext());
-
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => (GraphQlEfSampleDbContext) userContext);
+            userContext => (GraphQlEfSampleDbContext) userContext,
+            GraphQlEfSampleDbContext.GetModel());
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
 
         foreach (var type in GetGraphQlTypes())
@@ -31,7 +30,9 @@ public class Startup
             services.AddSingleton(type);
         }
 
-        services.AddGraphQL(options => options.ExposeExceptions = true).AddWebSockets();
+        var graphQl = services.AddGraphQL(
+            options => options.ExposeExceptions = true);
+        graphQl.AddWebSockets();
         services.AddSingleton<ContextFactory>();
         services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
         services.AddSingleton<IDependencyResolver>(
