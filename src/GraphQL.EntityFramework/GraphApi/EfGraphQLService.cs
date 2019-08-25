@@ -12,16 +12,16 @@ namespace GraphQL.EntityFramework
         where TDbContext : DbContext
     {
         GlobalFilters filters;
-        DbContextFromUserContext<TDbContext> dbContextFromUserContext;
+        ResolveDbContext<TDbContext> resolveDbContext;
         Dictionary<Type, List<string>> keyNames = new Dictionary<Type, List<string>>();
 
-        public EfGraphQLService(IModel model, GlobalFilters filters, DbContextFromUserContext<TDbContext> dbContextFromUserContext)
+        public EfGraphQLService(IModel model, GlobalFilters filters, ResolveDbContext<TDbContext> resolveDbContext)
         {
             Guard.AgainstNull(nameof(model), model);
             Guard.AgainstNull(nameof(filters), filters);
-            Guard.AgainstNull(nameof(dbContextFromUserContext), dbContextFromUserContext);
+            Guard.AgainstNull(nameof(resolveDbContext), resolveDbContext);
             this.filters = filters;
-            this.dbContextFromUserContext = dbContextFromUserContext;
+            this.resolveDbContext = resolveDbContext;
             foreach (var entityType in model.GetEntityTypes())
             {
                 var primaryKey = entityType.FindPrimaryKey();
@@ -69,7 +69,7 @@ namespace GraphQL.EntityFramework
                 Source = context.Source,
                 SubFields = context.SubFields,
                 Variables = context.Variables,
-                DbContext = dbContextFromUserContext(context.UserContext)
+                DbContext = resolveDbContext(context.UserContext)
             };
         }
     }
