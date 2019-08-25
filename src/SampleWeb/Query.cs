@@ -9,8 +9,7 @@ using GraphQL.Types;
 public class Query :
     QueryGraphType<GraphQlEfSampleDbContext>
 {
-
-    public Query(IEfGraphQLService<GraphQlEfSampleDbContext> efGraphQlService,Func<GraphQlEfSampleDbContext> dbContextFunc) :
+    public Query(IEfGraphQLService<GraphQlEfSampleDbContext> efGraphQlService, Func<GraphQlEfSampleDbContext> dbContextFunc) :
         base(efGraphQlService)
     {
         AddQueryField(

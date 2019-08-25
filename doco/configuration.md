@@ -7,12 +7,36 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 # Configuration
 
+<!-- toc -->
+## Contents
+
+  * [Container Registration](#container-registration)
+    * [Inputs](#inputs)
+    * [Usage](#usage)
+  * [DocumentExecuter](#documentexecuter)
+  * [Connection Types](#connection-types)
+  * [DependencyInjection and ASP.Net Core](#dependencyinjection-and-aspnet-core)
+  * [Multiple DbContexts](#multiple-dbcontexts)
+    * [UserContext](#usercontext)
+    * [Register in container](#register-in-container)
+    * [ExecutionOptions](#executionoptions)
+    * [Query](#query)
+    * [GraphType](#graphtype)
+  * [Testing the GraphQlController](#testing-the-graphqlcontroller)
+  * [GraphQlExtensions](#graphqlextensions)
+    * [ExecuteWithErrorCheck](#executewitherrorcheck)
+<!-- endtoc -->
+
+
+
+## Container Registration
+
 Enabling is done via registering in a container.
 
-The container registration can be via addin to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
+The container registration can be done via adding to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
-<!-- snippet: RegisterInContainerViaServiceProvider -->
-<a id='snippet-registerincontainerviaserviceprovider'/></a>
+<!-- snippet: RegisterInContainer -->
+<a id='snippet-registerincontainer'/></a>
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
@@ -20,31 +44,112 @@ public static void RegisterInContainer<TDbContext>(
         IModel model = null,
         ResolveFilters resolveFilters = null)
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24) / [anchor](#snippet-registerincontainerviaserviceprovider)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24) / [anchor](#snippet-registerincontainer)</sup>
+<a id='snippet-registerincontainer-1'/></a>
+```cs
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    serviceCollection,
+    model: ModelBuilder.GetInstance());
+```
+<sup>[snippet source](/src/Snippets/Configuration.cs#L25-L29) / [anchor](#snippet-registerincontainer-1)</sup>
 <!-- endsnippet -->
 
-Usage:
 
-<!-- snippet: RegisterInContainerViaServiceProviderUsage -->
-<a id='snippet-registerincontainerviaserviceproviderusage'/></a>
+### Inputs
+
+
+#### IModel
+
+Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`. This can be passed in as a parameter, or left as null to be resolved from the container. When `IModel` is resolved from the container, `IServiceProvider.GetService` is called first on `IModel`, then on `TDbContext`. If both return null, then an exception will be thrown.
+
+To build an instance of an `IModel` at configuration time it can be helpful to have a class specifically for that purpose:
+
+<!-- snippet: ModelBuilder -->
+<a id='snippet-modelbuilder'/></a>
 ```cs
-EfGraphQLConventions.RegisterInContainer(
-    serviceCollection,
-    userContext => (MyDbContext)userContext);
+static class ModelBuilder
+{
+    public static IModel GetInstance()
+    {
+        var builder = new DbContextOptionsBuilder();
+        builder.UseSqlServer("Fake");
+        using (var context = new MyDbContext(builder.Options))
+        {
+            return context.Model;
+        }
+    }
+}
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L9-L13) / [anchor](#snippet-registerincontainerviaserviceproviderusage)</sup>
-<a id='snippet-registerincontainerviaserviceproviderusage-1'/></a>
-```cs
-EfGraphQLConventions.RegisterInContainer(
-    serviceCollection,
-    userContext => (MyDbContext)userContext);
-```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L17-L21) / [anchor](#snippet-registerincontainerviaserviceproviderusage-1)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L8-L21) / [anchor](#snippet-modelbuilder)</sup>
 <!-- endsnippet -->
 
-Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`.  By default, this will be obtained from an instance of TDbContext at runtime, created by the service provider upon first use of IEfGraphQLService.  By supplying a function to the RegisterInContainer method, you can supply your own instance of IModel.
 
-Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
+#### Resolve DbContext
+
+A delegate that resolves the DbContext.
+
+<!-- snippet: ResolveDbContext.cs -->
+<a id='snippet-ResolveDbContext.cs'/></a>
+```cs
+using Microsoft.EntityFrameworkCore;
+
+namespace GraphQL.EntityFramework
+{
+    public delegate TDbContext ResolveDbContext<out TDbContext>(object userContext)
+        where TDbContext : DbContext;
+}
+```
+<sup>[snippet source](/src/GraphQL.EntityFramework/GraphApi/ResolveDbContext.cs#L1-L7) / [anchor](#snippet-ResolveDbContext.cs)</sup>
+<!-- endsnippet -->
+
+It has access to the current GraphQL user context.
+
+If null then the DbContext will be resolved from the container.
+
+
+#### Resolve Filters 
+
+A delegate that resolves the [Filters](filters.md).
+
+<!-- snippet: ResolveFilters.cs -->
+<a id='snippet-ResolveFilters.cs'/></a>
+```cs
+namespace GraphQL.EntityFramework
+{
+    public delegate Filters ResolveFilters(object userContext);
+}
+```
+<sup>[snippet source](/src/GraphQL.EntityFramework/Filters/ResolveFilters.cs#L1-L4) / [anchor](#snippet-ResolveFilters.cs)</sup>
+<!-- endsnippet -->
+
+It has access to the current GraphQL user context.
+
+If null then the Filters will be resolved from the container.
+
+
+
+### Usage
+
+<!-- snippet: RegisterInContainer -->
+<a id='snippet-registerincontainer'/></a>
+```cs
+public static void RegisterInContainer<TDbContext>(
+        IServiceCollection services,
+        ResolveDbContext<TDbContext> resolveDbContext = null,
+        IModel model = null,
+        ResolveFilters resolveFilters = null)
+```
+<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24) / [anchor](#snippet-registerincontainer)</sup>
+<a id='snippet-registerincontainer-1'/></a>
+```cs
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    serviceCollection,
+    model: ModelBuilder.GetInstance());
+```
+<sup>[snippet source](/src/Snippets/Configuration.cs#L25-L29) / [anchor](#snippet-registerincontainer-1)</sup>
+<!-- endsnippet -->
+
+Then the `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
 
 
 ## DocumentExecuter
@@ -224,27 +329,6 @@ public class GraphQlController :
 }
 ```
 <sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L10-L89) / [anchor](#snippet-graphqlcontroller)</sup>
-<!-- endsnippet -->
-
-Note that the instance of the DbContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
-
-The same instance of the DbContext can then be accessed in the `resolve` delegate by casting the `ResolveFieldContext.UserContext` to the DbContext type:
-
-<!-- snippet: QueryUsedInController -->
-<a id='snippet-queryusedincontroller'/></a>
-```cs
-public class Query :
-    QueryGraphType<GraphQlEfSampleDbContext>
-{
-
-    public Query(IEfGraphQLService<GraphQlEfSampleDbContext> efGraphQlService,Func<GraphQlEfSampleDbContext> dbContextFunc) :
-        base(efGraphQlService)
-    {
-        AddQueryField(
-            name: "companies",
-            resolve: context => context.DbContext.Companies);
-```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L7-L20) / [anchor](#snippet-queryusedincontroller)</sup>
 <!-- endsnippet -->
 
 

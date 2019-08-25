@@ -40,7 +40,7 @@ public class DependencyTests :
     {
         static ModelBuilder()
         {
-            var builder = new DbContextOptionsBuilder();
+            var builder = new DbContextOptionsBuilder<DependencyDbContext>();
             builder.UseSqlServer("Fake");
             using (var context = new DependencyDbContext(builder.Options))
             {

@@ -1,18 +1,57 @@
 # Configuration
 
+toc
+
+
+## Container Registration
+
 Enabling is done via registering in a container.
 
-The container registration can be via addin to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
+The container registration can be done via adding to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
-snippet: RegisterInContainerViaServiceProvider
+snippet: RegisterInContainer
 
-Usage:
 
-snippet: RegisterInContainerViaServiceProviderUsage
+### Inputs
 
-Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`.  By default, this will be obtained from an instance of TDbContext at runtime, created by the service provider upon first use of IEfGraphQLService.  By supplying a function to the RegisterInContainer method, you can supply your own instance of IModel.
 
-Then the usage entry point `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
+#### IModel
+
+Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`. This can be passed in as a parameter, or left as null to be resolved from the container. When `IModel` is resolved from the container, `IServiceProvider.GetService` is called first on `IModel`, then on `TDbContext`. If both return null, then an exception will be thrown.
+
+To build an instance of an `IModel` at configuration time it can be helpful to have a class specifically for that purpose:
+
+snippet: ModelBuilder
+
+
+#### Resolve DbContext
+
+A delegate that resolves the DbContext.
+
+snippet: ResolveDbContext.cs
+
+It has access to the current GraphQL user context.
+
+If null then the DbContext will be resolved from the container.
+
+
+#### Resolve Filters 
+
+A delegate that resolves the [Filters](filters.md).
+
+snippet: ResolveFilters.cs
+
+It has access to the current GraphQL user context.
+
+If null then the Filters will be resolved from the container.
+
+
+
+### Usage
+
+snippet: RegisterInContainer
+
+Then the `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
 
 
 ## DocumentExecuter
@@ -86,12 +125,6 @@ See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com
 With the DbContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
 
 snippet: GraphQlController
-
-Note that the instance of the DbContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
-
-The same instance of the DbContext can then be accessed in the `resolve` delegate by casting the `ResolveFieldContext.UserContext` to the DbContext type:
-
-snippet: QueryUsedInController
 
 
 ## Multiple DbContexts

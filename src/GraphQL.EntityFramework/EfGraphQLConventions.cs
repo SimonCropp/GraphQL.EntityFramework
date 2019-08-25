@@ -15,7 +15,7 @@ namespace GraphQL.EntityFramework
         /// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context.</param>
         /// <param name="model">The <see cref="IModel"/> to use. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data.</param>
-        #region RegisterInContainerViaServiceProvider
+        #region RegisterInContainer
         public static void RegisterInContainer<TDbContext>(
                 IServiceCollection services,
                 ResolveDbContext<TDbContext> resolveDbContext = null,
