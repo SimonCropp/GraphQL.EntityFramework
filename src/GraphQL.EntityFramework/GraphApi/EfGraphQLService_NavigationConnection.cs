@@ -57,7 +57,7 @@ namespace GraphQL.EntityFramework
             //set the custom resolver
             builder.ResolveAsync(async context =>
             {
-                var efFieldContext = BuildEfContextFromGraphQlContext(context);
+                var efFieldContext = BuildContext(context);
                 //run the specified resolve function
                 var enumerable = resolve(efFieldContext);
                 //apply any query filters specified in the arguments

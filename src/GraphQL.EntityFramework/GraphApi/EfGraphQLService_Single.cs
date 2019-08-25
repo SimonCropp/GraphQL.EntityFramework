@@ -116,7 +116,7 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(
                     async context =>
                     {
-                        var efFieldContext = BuildEfContextFromGraphQlContext(context);
+                        var efFieldContext = BuildContext(context);
                         //get field names of the table's primary key(s)
                         var names = GetKeyNames<TReturn>();
                         //run the specified resolve function

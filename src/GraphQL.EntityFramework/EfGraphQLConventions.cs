@@ -23,6 +23,7 @@ namespace GraphQL.EntityFramework
             where TDbContext : DbContext
         {
             Guard.AgainstNull(nameof(services), services);
+            Guard.AgainstNull(nameof(resolveDbContext), resolveDbContext);
 
             RegisterScalarsAndArgs(services);
 
@@ -50,10 +51,9 @@ namespace GraphQL.EntityFramework
             IModel model,
             ResolveFilters resolveFilters = null)
             where TDbContext : DbContext
-        {   
+        {
             Guard.AgainstNull(nameof(services), services);
             Guard.AgainstNull(nameof(model), model);
-            Guard.AgainstNull(nameof(resolveFilters), resolveFilters);
 
             RegisterScalarsAndArgs(services);
 
