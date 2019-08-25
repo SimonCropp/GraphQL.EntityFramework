@@ -32,16 +32,20 @@ namespace GraphQL.EntityFramework
                 provider => Build(resolveDbContext, model, resolveFilters, provider));
         }
 
-        static IEfGraphQLService<TDbContext> Build<TDbContext>(ResolveDbContext<TDbContext> dbContext, IModel model, ResolveFilters filters, IServiceProvider serviceProvider)
+        static IEfGraphQLService<TDbContext> Build<TDbContext>(
+            ResolveDbContext<TDbContext> dbContext,
+            IModel model,
+            ResolveFilters filters,
+            IServiceProvider provider)
             where TDbContext : DbContext
         {
-            model = model ?? ResolveModel<TDbContext>(serviceProvider);
+            model = model ?? ResolveModel<TDbContext>(provider);
 
-            filters = filters ?? serviceProvider.GetService<ResolveFilters>();
+            filters = filters ?? provider.GetService<ResolveFilters>();
 
             if (dbContext == null)
             {
-                dbContext = context => serviceProvider.GetRequiredService<TDbContext>();
+                dbContext = context => provider.GetRequiredService<TDbContext>();
             }
 
             return new EfGraphQLService<TDbContext>(
@@ -64,15 +68,15 @@ namespace GraphQL.EntityFramework
             services.AddSingleton<PageInfoType>();
         }
 
-        static IModel ResolveModel<TDbContext>(IServiceProvider serviceProvider)
+        static IModel ResolveModel<TDbContext>(IServiceProvider provider)
             where TDbContext : DbContext
         {
-            var model = serviceProvider.GetService<IModel>();
+            var model = provider.GetService<IModel>();
             if (model != null)
             {
                 return model;
             }
-            var dbContext = serviceProvider.GetService<TDbContext>();
+            var dbContext = provider.GetService<TDbContext>();
             if (dbContext != null)
             {
                 return dbContext.Model;
