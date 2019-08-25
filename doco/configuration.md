@@ -16,10 +16,11 @@ The container registration can be via addin to a [IServiceCollection](https://do
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
-        ResolveDbContext<TDbContext> resolveDbContext,
-        Func<IServiceProvider, Filters> filters = null)
+        ResolveDbContext<TDbContext> resolveDbContext = null,
+        IModel model = null,
+        ResolveFilters resolveFilters = null)
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L23) / [anchor](#snippet-registerincontainerviaserviceprovider)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24) / [anchor](#snippet-registerincontainerviaserviceprovider)</sup>
 <!-- endsnippet -->
 
 Usage:
@@ -160,10 +161,9 @@ public class GraphQlController :
     [HttpPost]
     public Task<ExecutionResult> Post(
         [BindRequired, FromBody] PostBody body,
-        [FromServices] GraphQlEfSampleDbContext dbContext,
         CancellationToken cancellation)
     {
-        return Execute(dbContext, body.Query, body.OperationName, body.Variables, cancellation);
+        return Execute(body.Query, body.OperationName, body.Variables, cancellation);
     }
 
     public class PostBody
@@ -178,16 +178,13 @@ public class GraphQlController :
         [FromQuery] string query,
         [FromQuery] string variables,
         [FromQuery] string operationName,
-        [FromServices] GraphQlEfSampleDbContext dbContext,
         CancellationToken cancellation)
     {
         var jObject = ParseVariables(variables);
-        return Execute(dbContext, query, operationName, jObject, cancellation);
+        return Execute(query, operationName, jObject, cancellation);
     }
 
-    Task<ExecutionResult> Execute(
-        GraphQlEfSampleDbContext dbContext,
-        string query,
+    Task<ExecutionResult> Execute(string query,
         string operationName,
         JObject variables,
         CancellationToken cancellation)
@@ -198,7 +195,6 @@ public class GraphQlController :
             Query = query,
             OperationName = operationName,
             Inputs = variables?.ToInputs(),
-            UserContext = dbContext,
             CancellationToken = cancellation,
 #if (DEBUG)
             ExposeExceptions = true,
@@ -227,7 +223,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L10-L94) / [anchor](#snippet-graphqlcontroller)</sup>
+<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L10-L89) / [anchor](#snippet-graphqlcontroller)</sup>
 <!-- endsnippet -->
 
 Note that the instance of the DbContext is passed to the [GraphQL .net User Context](https://graphql-dotnet.github.io/docs/getting-started/user-context).
@@ -240,14 +236,15 @@ The same instance of the DbContext can then be accessed in the `resolve` delegat
 public class Query :
     QueryGraphType<GraphQlEfSampleDbContext>
 {
-    public Query(IEfGraphQLService<GraphQlEfSampleDbContext> efGraphQlService) :
+
+    public Query(IEfGraphQLService<GraphQlEfSampleDbContext> efGraphQlService,Func<GraphQlEfSampleDbContext> dbContextFunc) :
         base(efGraphQlService)
     {
         AddQueryField(
             name: "companies",
             resolve: context => context.DbContext.Companies);
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L6-L18) / [anchor](#snippet-queryusedincontroller)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L7-L20) / [anchor](#snippet-queryusedincontroller)</sup>
 <!-- endsnippet -->
 
 

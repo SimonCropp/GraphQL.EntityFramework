@@ -28,11 +28,13 @@ Notes:
 ```cs
 public class Filters
 {
-    public delegate bool Filter<in T>(object userContext, T input);
+    public delegate bool Filter<in TEntity>(object userContext, TEntity input)
+        where TEntity : class;
 
-    public delegate Task<bool> AsyncFilter<in T>(object userContext, T input);
+    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TEntity input)
+        where TEntity : class;
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/Filter/Filters.cs#L8-L16) / [anchor](#snippet-filterssignature)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/Filters/Filters.cs#L23-L33) / [anchor](#snippet-filterssignature)</sup>
 <!-- endsnippet -->
 
 
@@ -51,11 +53,10 @@ public class MyEntity
 ```cs
 var filters = new Filters();
 filters.Add<MyEntity>(
-    (userContext, item) => { return item.Property != "Ignore"; });
-EfGraphQLConventions.RegisterInContainer(
+    (userContext, item) => item.Property != "Ignore");
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
-    userContext => (MyDbContext) userContext,
-    x=>filters);
+    resolveFilters: x => filters);
 ```
-<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L18-L28) / [anchor](#snippet-add-filter-1)</sup>
+<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L18-L27) / [anchor](#snippet-add-filter-1)</sup>
 <!-- endsnippet -->
