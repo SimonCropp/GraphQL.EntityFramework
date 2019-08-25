@@ -15,12 +15,11 @@ The container registration can be via addin to a [IServiceCollection](https://do
 <a id='snippet-registerincontainerviaserviceprovider'/></a>
 ```cs
 public static void RegisterInContainer<TDbContext>(
-    IServiceCollection services,
-    DbContextFromUserContext<TDbContext> dbContextFromUserContext,
-    Func<IServiceProvider, GlobalFilters> filters = null)
-    where TDbContext : DbContext
+        IServiceCollection services,
+        ResolveDbContext<TDbContext> resolveDbContext,
+        Func<IServiceProvider, Filters> filters = null)
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L17-L23) / [anchor](#snippet-registerincontainerviaserviceprovider)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L23) / [anchor](#snippet-registerincontainerviaserviceprovider)</sup>
 <!-- endsnippet -->
 
 Usage:
@@ -33,6 +32,13 @@ EfGraphQLConventions.RegisterInContainer(
     userContext => (MyDbContext)userContext);
 ```
 <sup>[snippet source](/src/Snippets/Configuration.cs#L9-L13) / [anchor](#snippet-registerincontainerviaserviceproviderusage)</sup>
+<a id='snippet-registerincontainerviaserviceproviderusage-1'/></a>
+```cs
+EfGraphQLConventions.RegisterInContainer(
+    serviceCollection,
+    userContext => (MyDbContext)userContext);
+```
+<sup>[snippet source](/src/Snippets/Configuration.cs#L17-L21) / [anchor](#snippet-registerincontainerviaserviceproviderusage-1)</sup>
 <!-- endsnippet -->
 
 Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IModel`.  By default, this will be obtained from an instance of TDbContext at runtime, created by the service provider upon first use of IEfGraphQLService.  By supplying a function to the RegisterInContainer method, you can supply your own instance of IModel.
