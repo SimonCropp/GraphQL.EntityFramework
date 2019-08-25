@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
@@ -8,7 +9,8 @@ using GraphQL.Types;
 public class Query :
     QueryGraphType<GraphQlEfSampleDbContext>
 {
-    public Query(IEfGraphQLService<GraphQlEfSampleDbContext> efGraphQlService) :
+
+    public Query(IEfGraphQLService<GraphQlEfSampleDbContext> efGraphQlService,Func<GraphQlEfSampleDbContext> dbContextFunc) :
         base(efGraphQlService)
     {
         AddQueryField(
@@ -63,8 +65,7 @@ public class Query :
             ),
             resolve: context =>
             {
-                var dbContext = (GraphQlEfSampleDbContext) context.UserContext;
-                IQueryable<Employee> query = dbContext.Employees;
+                IQueryable<Employee> query = dbContextFunc().Employees;
 
                 if (context.HasArgument("where"))
                 {

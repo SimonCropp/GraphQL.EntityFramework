@@ -116,10 +116,11 @@ namespace GraphQL.EntityFramework
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(
                     async context =>
                     {
+                        var efFieldContext = BuildContext(context);
                         //get field names of the table's primary key(s)
                         var names = GetKeyNames<TReturn>();
                         //run the specified resolve function
-                        var returnTypes = await resolve(BuildEfContextFromGraphQlContext(context));
+                        var returnTypes = await resolve(efFieldContext);
                         //include subtables in the query based on the metadata stored for the requested graph
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
                         //apply any query filters specified in the arguments
@@ -129,7 +130,7 @@ namespace GraphQL.EntityFramework
                         //apply global filters to the returned value
                         if (single != null)
                         {
-                            if (await filters.ShouldInclude(context.UserContext, single))
+                            if (await efFieldContext.Filters.ShouldInclude(context.UserContext, single))
                             {
                                 return single;
                             }

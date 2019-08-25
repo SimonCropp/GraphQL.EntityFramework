@@ -11,16 +11,19 @@ namespace GraphQL.EntityFramework
         IEfGraphQLService<TDbContext>
         where TDbContext : DbContext
     {
-        Filters filters;
+        ResolveFilters resolveFilters;
         ResolveDbContext<TDbContext> resolveDbContext;
         Dictionary<Type, List<string>> keyNames = new Dictionary<Type, List<string>>();
 
-        public EfGraphQLService(IModel model, Filters filters, ResolveDbContext<TDbContext> resolveDbContext)
+        public EfGraphQLService(
+            IModel model,
+            ResolveDbContext<TDbContext> resolveDbContext,
+            ResolveFilters resolveFilters = null)
         {
             Guard.AgainstNull(nameof(model), model);
-            Guard.AgainstNull(nameof(filters), filters);
             Guard.AgainstNull(nameof(resolveDbContext), resolveDbContext);
-            this.filters = filters;
+            this.resolveFilters = resolveFilters;
+
             this.resolveDbContext = resolveDbContext;
             foreach (var entityType in model.GetEntityTypes())
             {
@@ -46,7 +49,8 @@ namespace GraphQL.EntityFramework
             return listGraphType.MakeGenericType(graphType);
         }
 
-        ResolveEfFieldContext<TDbContext, TSource> BuildEfContextFromGraphQlContext<TSource>(ResolveFieldContext<TSource> context)
+        ResolveEfFieldContext<TDbContext, TSource> BuildContext<TSource>(
+            ResolveFieldContext<TSource> context)
         {
             return new ResolveEfFieldContext<TDbContext, TSource>
             {
@@ -69,8 +73,23 @@ namespace GraphQL.EntityFramework
                 Source = context.Source,
                 SubFields = context.SubFields,
                 Variables = context.Variables,
-                DbContext = resolveDbContext(context.UserContext)
+                DbContext = resolveDbContext(context.UserContext),
+                Filters = ResolveFilter(context)
             };
+        }
+
+        Filters ResolveFilter<TSource>(ResolveFieldContext<TSource> context)
+        {
+            if (resolveFilters != null)
+            {
+                var filter = resolveFilters(context.UserContext);
+                if (filter != null)
+                {
+                    return filter;
+                }
+            }
+
+            return NullFilters.Instance;
         }
     }
 }

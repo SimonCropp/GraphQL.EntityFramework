@@ -44,10 +44,11 @@ namespace GraphQL.EntityFramework
                 //custom resolve function simply applies the global filters; typically it's a pass-through
                 Resolver = new AsyncFieldResolver<TSource, TReturn>(async context =>
                 {
+                    var efFieldContext = BuildContext(context);
                     //run resolve function
-                    var result = resolve(BuildEfContextFromGraphQlContext(context));
+                    var result = resolve(efFieldContext);
                     //apply global filters and return null if necessary
-                    if (await filters.ShouldInclude(context.UserContext, result))
+                    if (await efFieldContext.Filters.ShouldInclude(context.UserContext, result))
                     {
                         return result;
                     }

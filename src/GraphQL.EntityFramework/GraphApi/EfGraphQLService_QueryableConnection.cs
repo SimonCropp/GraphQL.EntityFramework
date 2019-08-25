@@ -91,7 +91,7 @@ namespace GraphQL.EntityFramework
                 context =>
                 {
                     //obtain the ef context
-                    var efFieldContext = BuildEfContextFromGraphQlContext(context);
+                    var efFieldContext = BuildContext(context);
                     //run the resolve function, then include the related tables on the returned query
                     var withIncludes = includeAppender.AddIncludes(resolve(efFieldContext), context);
                     //get field names of the table's primary key(s)
@@ -107,7 +107,7 @@ namespace GraphQL.EntityFramework
                             context.Before,
                             context,
                             context.CancellationToken,
-                            filters);
+                            efFieldContext.Filters);
                     //note: does not apply global filters
                 });
 
