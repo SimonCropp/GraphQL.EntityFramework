@@ -2,7 +2,7 @@
 
 Sometimes, in the context of constructing an EF query, it is not possible to know if any given item should be returned in the results. For example when performing authorization where the rules rules are pulled from a different system, and that information does not exist in the database.
 
-`GlobalFilters` allows a custom function to be executed after the EF query execution and determine if any given node should be included in the result.
+`Filters` allows a custom function to be executed after the EF query execution and determine if any given node should be included in the result.
 
 Notes:
 
@@ -16,7 +16,7 @@ Notes:
 
 ### Signature:
 
-snippet: GlobalFiltersSignature
+snippet: FiltersSignature
 
 
 ### Usage:

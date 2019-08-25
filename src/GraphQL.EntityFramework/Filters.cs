@@ -5,68 +5,72 @@ using System.Threading.Tasks;
 
 namespace GraphQL.EntityFramework
 {
-    #region GlobalFiltersSignature
+    #region FiltersSignature
 
-    public class GlobalFilters
+    public class Filters
     {
-        public delegate bool Filter<in T>(object userContext, T input);
+        public delegate bool Filter<in TEntity>(object userContext, TEntity input)
+            where TEntity : class;
 
-        public delegate Task<bool> AsyncFilter<in T>(object userContext, T input);
+        public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TEntity input)
+            where TEntity : class;
 
         #endregion
 
-        internal static readonly GlobalFilters Empty = new GlobalFilters();
+        internal static readonly Filters Empty = new Filters();
 
-        public void Add<T>(Filter<T> filter)
+        public void Add<TEntity>(Filter<TEntity> filter) where TEntity : class
         {
             Guard.AgainstNull(nameof(filter), filter);
-            funcs[typeof(T)] =
+            funcs[typeof(TEntity)] =
                 (context, item) =>
                 {
                     try
                     {
-                        return Task.FromResult(filter(context, (T) item));
+                        return Task.FromResult(filter(context, (TEntity) item));
                     }
                     catch (Exception exception)
                     {
-                        throw new Exception($"Failed to execute filter. T: {typeof(T)}.", exception);
+                        throw new Exception($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                     }
                 };
         }
 
-        public void Add<T>(AsyncFilter<T> filter)
+        public void Add<TEntity>(AsyncFilter<TEntity> filter)
+            where TEntity : class
         {
             Guard.AgainstNull(nameof(filter), filter);
-            funcs[typeof(T)] =
+            funcs[typeof(TEntity)] =
                 async (context, item) =>
                 {
                     try
                     {
-                        return await filter(context, (T) item);
+                        return await filter(context, (TEntity) item);
                     }
                     catch (Exception exception)
                     {
-                        throw new Exception($"Failed to execute filter. T: {typeof(T)}.", exception);
+                        throw new Exception($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                     }
                 };
         }
 
         Dictionary<Type, Func<object, object, Task<bool>>> funcs = new Dictionary<Type, Func<object, object, Task<bool>>>();
 
-        internal async Task<IEnumerable<T>> ApplyFilter<T>(IEnumerable<T> result, object userContext)
+        internal async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
+            where TEntity : class
         {
             if (funcs.Count == 0)
             {
                 return result;
             }
 
-            var filters = FindFilters<T>().ToList();
+            var filters = FindFilters<TEntity>().ToList();
             if (filters.Count == 0)
             {
                 return result;
             }
 
-            var list = new List<T>();
+            var list = new List<TEntity>();
             foreach (var item in result)
             {
                 if (await ShouldInclude(userContext, item, filters))
@@ -78,7 +82,8 @@ namespace GraphQL.EntityFramework
             return list;
         }
 
-        static async Task<bool> ShouldInclude<T>(object userContext, T item, List<Func<object, T, Task<bool>>> filters)
+        static async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item, List<Func<object, TEntity, Task<bool>>> filters)
+            where TEntity : class
         {
             if (item == null)
             {
@@ -96,7 +101,8 @@ namespace GraphQL.EntityFramework
             return true;
         }
 
-        internal async Task<bool> ShouldInclude<T>(object userContext, T item)
+        internal async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item)
+            where TEntity : class
         {
             if (item == null)
             {
@@ -108,7 +114,7 @@ namespace GraphQL.EntityFramework
                 return true;
             }
 
-            foreach (var func in FindFilters<T>())
+            foreach (var func in FindFilters<TEntity>())
             {
                 if (!await func(userContext, item))
                 {
@@ -119,9 +125,10 @@ namespace GraphQL.EntityFramework
             return true;
         }
 
-        IEnumerable<Func<object, T, Task<bool>>> FindFilters<T>()
+        IEnumerable<Func<object, TEntity, Task<bool>>> FindFilters<TEntity>()
+            where TEntity : class
         {
-            var type = typeof(T);
+            var type = typeof(TEntity);
             foreach (var pair in funcs.Where(x => x.Key.IsAssignableFrom(type)))
             {
                 yield return (context, item) => pair.Value(context, item);

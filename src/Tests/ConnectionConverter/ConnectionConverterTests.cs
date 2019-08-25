@@ -42,7 +42,7 @@ public class ConnectionConverterTests :
     {
         NamerFactory.AdditionalInformation = $"first_{first}_after_{after}_last_{last}_before_{before}";
         var queryable = new AsyncEnumerable<string>(list);
-        var connection = await ConnectionConverter.ApplyConnectionContext(queryable, first, after, last, before, new ResolveFieldContext<string>(), new GlobalFilters(), CancellationToken.None);
+        var connection = await ConnectionConverter.ApplyConnectionContext(queryable, first, after, last, before, new ResolveFieldContext<string>(), new Filters(), CancellationToken.None);
         ObjectApprover.Verify(connection);
     }
 

@@ -9,7 +9,7 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 Sometimes, in the context of constructing an EF query, it is not possible to know if any given item should be returned in the results. For example when performing authorization where the rules rules are pulled from a different system, and that information does not exist in the database.
 
-`GlobalFilters` allows a custom function to be executed after the EF query execution and determine if any given node should be included in the result.
+`Filters` allows a custom function to be executed after the EF query execution and determine if any given node should be included in the result.
 
 Notes:
 
@@ -23,16 +23,16 @@ Notes:
 
 ### Signature:
 
-<!-- snippet: GlobalFiltersSignature -->
-<a id='snippet-globalfilterssignature'/></a>
+<!-- snippet: FiltersSignature -->
+<a id='snippet-filterssignature'/></a>
 ```cs
-public class GlobalFilters
+public class Filters
 {
     public delegate bool Filter<in T>(object userContext, T input);
 
     public delegate Task<bool> AsyncFilter<in T>(object userContext, T input);
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/Filter/GlobalFilters.cs#L8-L16) / [anchor](#snippet-globalfilterssignature)</sup>
+<sup>[snippet source](/src/GraphQL.EntityFramework/Filter/Filters.cs#L8-L16) / [anchor](#snippet-filterssignature)</sup>
 <!-- endsnippet -->
 
 
@@ -49,7 +49,7 @@ public class MyEntity
 <sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L7-L14) / [anchor](#snippet-add-filter)</sup>
 <a id='snippet-add-filter-1'/></a>
 ```cs
-var filters = new GlobalFilters();
+var filters = new Filters();
 filters.Add<MyEntity>(
     (userContext, item) => { return item.Property != "Ignore"; });
 EfGraphQLConventions.RegisterInContainer(

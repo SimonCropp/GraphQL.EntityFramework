@@ -19,20 +19,20 @@ namespace GraphQL.EntityFramework
         public static void RegisterInContainer<TDbContext>(
                 IServiceCollection services,
                 ResolveDbContext<TDbContext> resolveDbContext,
-                Func<IServiceProvider, GlobalFilters> filters = null)
+                Func<IServiceProvider, Filters> filters = null)
             #endregion
             where TDbContext : DbContext
         {
             Guard.AgainstNull(nameof(services), services);
 
-            GlobalFilters Filters(IServiceProvider serviceProvider)
+            Filters Filters(IServiceProvider serviceProvider)
             {
                 if (filters == null)
                 {
-                    return new GlobalFilters();
+                    return new Filters();
                 }
 
-                return filters(serviceProvider) ?? GlobalFilters.Empty;
+                return filters(serviceProvider) ?? EntityFramework.Filters.Empty;
             }
 
             RegisterScalarsAndArgs(services);
@@ -75,7 +75,7 @@ namespace GraphQL.EntityFramework
                 services.AddSingleton<IEfGraphQLService<TDbContext>>(
                     serviceProvider => new EfGraphQLService<TDbContext>(
                         model,
-                        serviceProvider.GetRequiredService<GlobalFilters>(),
+                        serviceProvider.GetRequiredService<Filters>(),
                         resolveDbContext)
                 );
                 return;
@@ -85,7 +85,7 @@ namespace GraphQL.EntityFramework
             services.AddSingleton<IEfGraphQLService<TDbContext>>(
                 serviceProvider => new EfGraphQLService<TDbContext>(
                     model,
-                    GlobalFilters.Empty,
+                    Filters.Empty,
                     resolveDbContext)
             );
         }
@@ -97,12 +97,12 @@ namespace GraphQL.EntityFramework
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context.</param>
         /// <param name="model">The <see cref="IModel"/> for <typeparamref name="TDbContext"/>.</param>
-        /// <param name="filters">The <see cref="GlobalFilters"/> to use.</param>
+        /// <param name="filters">The <see cref="Filters"/> to use.</param>
         public static void RegisterInContainer<TDbContext>(
             IServiceCollection services,
             ResolveDbContext<TDbContext> resolveDbContext,
             IModel model,
-            GlobalFilters filters)
+            Filters filters)
             where TDbContext : DbContext
         {
             Guard.AgainstNull(nameof(services), services);

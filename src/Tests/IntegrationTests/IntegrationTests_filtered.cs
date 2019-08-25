@@ -42,9 +42,9 @@ public partial class IntegrationTests
         }
     }
 
-    static GlobalFilters BuildFilters()
+    static Filters BuildFilters()
     {
-        var filters = new GlobalFilters();
+        var filters = new Filters();
         filters.Add<FilterParentEntity>((context, item) => item.Property != "Ignore");
         filters.Add<FilterChildEntity>((context, item) => item.Property != "Ignore");
         return filters;

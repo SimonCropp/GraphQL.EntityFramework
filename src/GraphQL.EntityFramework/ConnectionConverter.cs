@@ -58,7 +58,8 @@ static class ConnectionConverter
         return Range(list, skip, take: last, count, true);
     }
 
-    static Connection<T> Range<T>(List<T> list,
+    static Connection<T> Range<T>(
+        List<T> list,
         int skip,
         int take,
         int count,
@@ -72,14 +73,16 @@ static class ConnectionConverter
         return Build(skip, take, count, page);
     }
 
-    public static Task<Connection<TItem>> ApplyConnectionContext<TSource, TItem>(this IQueryable<TItem> list,
+    public static Task<Connection<TItem>> ApplyConnectionContext<TSource, TItem>(
+        this IQueryable<TItem> list,
         int? first,
         string afterString,
         int? last,
         string beforeString,
         ResolveFieldContext<TSource> context,
         CancellationToken cancellation,
-        GlobalFilters filters)
+        Filters filters)
+        where TItem : class
     {
         Parse(afterString, beforeString, out var after, out var before);
         return ApplyConnectionContext(list, first, after, last, before, context, filters, cancellation);
@@ -92,8 +95,9 @@ static class ConnectionConverter
         int? last,
         int? before,
         ResolveFieldContext<TSource> context,
-        GlobalFilters filters,
+        Filters filters,
         CancellationToken cancellation)
+        where TItem : class
     {
         var count = await list.CountAsync(cancellation);
         cancellation.ThrowIfCancellationRequested();
@@ -112,8 +116,9 @@ static class ConnectionConverter
         int? before,
         int count,
         ResolveFieldContext<TSource> context,
-        GlobalFilters filters,
+        Filters filters,
         CancellationToken cancellation)
+        where TItem : class
     {
         int skip;
         if (before == null)
@@ -135,8 +140,9 @@ static class ConnectionConverter
         int? before,
         int count,
         ResolveFieldContext<TSource> context,
-        GlobalFilters filters,
+        Filters filters,
         CancellationToken cancellation)
+        where TItem : class
     {
         int skip;
         if (after == null)
@@ -158,9 +164,10 @@ static class ConnectionConverter
         int skip,
         int take, int count,
         ResolveFieldContext<TSource> context,
-        GlobalFilters filters,
+        Filters filters,
         CancellationToken cancellation,
         bool reverse = false)
+        where TItem : class
     {
         var page = list.Skip(skip).Take(take);
         if (reverse)

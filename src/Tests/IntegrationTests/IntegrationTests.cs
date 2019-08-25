@@ -1304,7 +1304,7 @@ query ($id: String!)
         SqlDatabase<IntegrationDbContext> database,
         string query,
         Inputs inputs,
-        GlobalFilters filters,
+        Filters filters,
         params object[] entities)
     {
         var dbContext = database.Context;
