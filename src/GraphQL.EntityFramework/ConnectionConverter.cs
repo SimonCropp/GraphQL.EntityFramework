@@ -11,12 +11,14 @@ using Microsoft.EntityFrameworkCore;
 static class ConnectionConverter
 {
     public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, string afterString, int? last, string beforeString)
+        where T : class
     {
         Parse(afterString, beforeString, out var after, out var before);
         return ApplyConnectionContext(list, first, after, last, before);
     }
 
     public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, int? after, int? last, int? before)
+        where T : class
     {
         if (last == null)
         {
@@ -27,6 +29,7 @@ static class ConnectionConverter
     }
 
     static Connection<T> First<T>(List<T> list, int first, int? after, int? before, int count)
+        where T : class
     {
         int skip;
         if (before == null)
@@ -42,6 +45,7 @@ static class ConnectionConverter
     }
 
     static Connection<T> Last<T>(List<T> list, int last, int? after, int? before, int count)
+        where T : class
     {
         int skip;
         if (after == null)
@@ -64,6 +68,7 @@ static class ConnectionConverter
         int take,
         int count,
         bool reverse = false)
+        where T : class
     {
         var page = list.Skip(skip).Take(take).ToList();
         if (reverse)
