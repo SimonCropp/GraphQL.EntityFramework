@@ -107,7 +107,7 @@ It has access to the current GraphQL user context.
 If null then the DbContext will be resolved from the container.
 
 
-#### Resolve Filters 
+#### Resolve Filters
 
 A delegate that resolves the [Filters](filters.md).
 
@@ -125,7 +125,6 @@ namespace GraphQL.EntityFramework
 It has access to the current GraphQL user context.
 
 If null then the Filters will be resolved from the container.
-
 
 
 ### Usage

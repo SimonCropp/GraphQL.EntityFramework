@@ -1,7 +1,10 @@
-# <img src="/src/icon.png" height="40px"> GraphQL.EntityFramework
-[![Backers on Open Collective](https://opencollective.com/graphqlentityframework/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/graphqlentityframework/sponsors/badge.svg)](#sponsors) 
+# <img src="/src/icon.png" height="30px"> GraphQL.EntityFramework
+
+[![Backers on Open Collective](https://opencollective.com/graphqlentityframework/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/graphqlentityframework/sponsors/badge.svg)](#sponsors) [![Build status](https://ci.appveyor.com/api/projects/status/x554cp7clu8yh2yy/branch/master?svg=true)](https://ci.appveyor.com/project/SimonCropp/EntityFramework/branch/master) [![NuGet Status](https://img.shields.io/nuget/v/GraphQL.EntityFramework.svg?cacheSeconds=86400)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
 
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
+
+toc
 
 
 ## Community backed
@@ -34,7 +37,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 [Go to licensing FAQ](/doco/licensing-patron-faq.md) for more information.
 
 
-## NuGet [![NuGet Status](http://img.shields.io/nuget/v/GraphQL.EntityFramework.svg?longCache=true&style=flat)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
+## NuGet
 
 https://nuget.org/packages/GraphQL.EntityFramework/
 
@@ -54,6 +57,11 @@ All patrons: https://opencollective.com/graphqlentityframework/members/all.json
 
 This project exists thanks to all the people who contribute. 
 <a href="https://github.com/SimonCropp/GraphQL.EntityFramework/graphs/contributors"><img src="https://opencollective.com/graphqlentityframework/contributors.svg?width=890&button=false" /></a>
+
+
+## Release Notes
+
+See [closed milestones](../../milestones?state=closed).
 
 
 ## Icon
