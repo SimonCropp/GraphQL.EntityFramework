@@ -60,7 +60,7 @@ public class Subscription : ObjectGraphType<object>
         return Observable.Interval(TimeSpan.FromSeconds(1)).SelectMany(_ => inner);
     }
 
-    static async Task<List<Company>> GetCompanies(
+    static Task<List<Company>> GetCompanies(
         ResolveEventStreamContext context,
         GraphQlEfSampleDbContext ctx,
         long lastId,
@@ -79,7 +79,7 @@ public class Subscription : ObjectGraphType<object>
             .Where(transaction => transaction.Id > lastId)
             .Take(take);
 
-        return await greaterThanLastIdAndPaged.ToListAsync(token);
+        return greaterThanLastIdAndPaged.ToListAsync(token);
     }
 
     static string SupposePersistedQuery()

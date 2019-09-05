@@ -121,7 +121,7 @@ namespace GraphQL.EntityFramework
                         var names = GetKeyNames<TReturn>();
                         //run the specified resolve function
                         var returnTypes = await resolve(efFieldContext);
-                        //include subtables in the query based on the metadata stored for the requested graph
+                        //include sub tables in the query based on the metadata stored for the requested graph
                         var withIncludes = includeAppender.AddIncludes(returnTypes, context);
                         //apply any query filters specified in the arguments
                         var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
