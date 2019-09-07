@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ApprovalTests.Namers;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
 using Xunit;
@@ -40,7 +39,6 @@ public class ConnectionConverterTests :
     [InlineData(null, 7, 2, null)]
     public async Task Queryable(int? first, int? after, int? last, int? before)
     {
-        NamerFactory.AdditionalInformation = $"first_{first}_after_{after}_last_{last}_before_{before}";
         var queryable = new AsyncEnumerable<string>(list);
         var connection = await ConnectionConverter.ApplyConnectionContext(queryable, first, after, last, before, new ResolveFieldContext<string>(), new Filters(), CancellationToken.None);
         ObjectApprover.Verify(connection);
@@ -72,7 +70,6 @@ public class ConnectionConverterTests :
 
     public void List(int? first, int? after, int? last, int? before)
     {
-        NamerFactory.AdditionalInformation = $"first_{first}_after_{after}_last_{last}_before_{before}";
         var connection = ConnectionConverter.ApplyConnectionContext(list, first, after, last, before);
         ObjectApprover.Verify(connection);
     }

@@ -466,7 +466,7 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 <a id='snippet-graphqlcontrollertests'/></a>
 ```cs
 public class GraphQlControllerTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     static HttpClient client;
     static WebSocketClient websocketClient;
