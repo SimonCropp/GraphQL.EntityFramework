@@ -4,7 +4,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class CompressTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     [Fact]
     public void Simple()

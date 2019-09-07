@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 #region GraphQlControllerTests
 
 public class GraphQlControllerTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     static HttpClient client;
     static WebSocketClient websocketClient;

@@ -2,7 +2,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class PropertyCacheTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     [Fact]
     public void Property()

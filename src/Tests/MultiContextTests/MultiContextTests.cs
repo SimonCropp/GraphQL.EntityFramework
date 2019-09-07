@@ -8,7 +8,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class MultiContextTests:
-    XunitLoggingBase
+    XunitApprovalBase
 {
     [Fact]
     public async Task Run()

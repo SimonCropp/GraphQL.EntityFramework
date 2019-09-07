@@ -12,7 +12,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class DependencyTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     static SqlInstance<DependencyDbContext> sqlInstance;
 

@@ -4,7 +4,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class GlobalFiltersTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     [Fact]
     public async Task Simple()

@@ -8,7 +8,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class ConnectionConverterTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     List<string> list = new List<string>
     {

@@ -13,7 +13,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public partial class IntegrationTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     static SqlInstance<IntegrationDbContext> sqlInstance;
 

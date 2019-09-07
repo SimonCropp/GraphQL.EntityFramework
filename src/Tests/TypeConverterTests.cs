@@ -3,7 +3,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class TypeConverterTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     [Theory]
     [InlineData(typeof(int), "12", 12)]

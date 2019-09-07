@@ -6,7 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class FuncBuilderTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     public class Target
     {
