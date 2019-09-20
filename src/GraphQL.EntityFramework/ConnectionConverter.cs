@@ -167,7 +167,8 @@ static class ConnectionConverter
     static async Task<Connection<TItem>> Range<TSource, TItem>(
         IQueryable<TItem> list,
         int skip,
-        int take, int count,
+        int take,
+        int count,
         ResolveFieldContext<TSource> context,
         Filters filters,
         CancellationToken cancellation,
