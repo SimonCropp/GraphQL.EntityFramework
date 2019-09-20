@@ -9,15 +9,27 @@
   Edges: [
     {
       Cursor: '2',
-      Node: 'c'
+      Node: {
+        Id: Guid_1,
+        Property: 'c'
+      }
     },
     {
       Cursor: '3',
-      Node: 'd'
+      Node: {
+        Id: Guid_2,
+        Property: 'd'
+      }
     }
   ],
   Items: [
-    'c',
-    'd'
+    {
+      Id: Guid_1,
+      Property: 'c'
+    },
+    {
+      Id: Guid_2,
+      Property: 'd'
+    }
   ]
 }

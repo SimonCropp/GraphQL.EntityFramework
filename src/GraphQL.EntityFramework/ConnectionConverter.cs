@@ -101,7 +101,7 @@ static class ConnectionConverter
         int? before,
         ResolveFieldContext<TSource> context,
         Filters filters,
-        CancellationToken cancellation)
+        CancellationToken cancellation = default)
         where TItem : class
     {
         var count = await list.CountAsync(cancellation);
@@ -161,7 +161,7 @@ static class ConnectionConverter
             skip = after.Value + 1;
         }
 
-        return Range(list, skip, take: last, count, context, filters, cancellation, true);
+        return Range(list, skip, take: last, count, context, filters, cancellation);
     }
 
     static async Task<Connection<TItem>> Range<TSource, TItem>(
@@ -171,15 +171,10 @@ static class ConnectionConverter
         int count,
         ResolveFieldContext<TSource> context,
         Filters filters,
-        CancellationToken cancellation,
-        bool reverse = false)
+        CancellationToken cancellation)
         where TItem : class
     {
         var page = list.Skip(skip).Take(take);
-        if (reverse)
-        {
-            page = page.Reverse();
-        }
         IEnumerable<TItem> result = await page.ToListAsync(cancellation);
         result = await filters.ApplyFilter(result, context.UserContext);
 

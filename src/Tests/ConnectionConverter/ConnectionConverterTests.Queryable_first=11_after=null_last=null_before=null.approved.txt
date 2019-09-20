@@ -7,55 +7,115 @@
   Edges: [
     {
       Cursor: '0',
-      Node: 'a'
+      Node: {
+        Id: Guid_1,
+        Property: 'a'
+      }
     },
     {
       Cursor: '1',
-      Node: 'b'
+      Node: {
+        Id: Guid_2,
+        Property: 'b'
+      }
     },
     {
       Cursor: '2',
-      Node: 'c'
+      Node: {
+        Id: Guid_3,
+        Property: 'c'
+      }
     },
     {
       Cursor: '3',
-      Node: 'd'
+      Node: {
+        Id: Guid_4,
+        Property: 'd'
+      }
     },
     {
       Cursor: '4',
-      Node: 'e'
+      Node: {
+        Id: Guid_5,
+        Property: 'e'
+      }
     },
     {
       Cursor: '5',
-      Node: 'f'
+      Node: {
+        Id: Guid_6,
+        Property: 'f'
+      }
     },
     {
       Cursor: '6',
-      Node: 'g'
+      Node: {
+        Id: Guid_7,
+        Property: 'g'
+      }
     },
     {
       Cursor: '7',
-      Node: 'h'
+      Node: {
+        Id: Guid_8,
+        Property: 'h'
+      }
     },
     {
       Cursor: '8',
-      Node: 'i'
+      Node: {
+        Id: Guid_9,
+        Property: 'i'
+      }
     },
     {
       Cursor: '9',
-      Node: 'j'
+      Node: {
+        Id: Guid_10,
+        Property: 'j'
+      }
     }
   ],
   Items: [
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j'
+    {
+      Id: Guid_1,
+      Property: 'a'
+    },
+    {
+      Id: Guid_2,
+      Property: 'b'
+    },
+    {
+      Id: Guid_3,
+      Property: 'c'
+    },
+    {
+      Id: Guid_4,
+      Property: 'd'
+    },
+    {
+      Id: Guid_5,
+      Property: 'e'
+    },
+    {
+      Id: Guid_6,
+      Property: 'f'
+    },
+    {
+      Id: Guid_7,
+      Property: 'g'
+    },
+    {
+      Id: Guid_8,
+      Property: 'h'
+    },
+    {
+      Id: Guid_9,
+      Property: 'i'
+    },
+    {
+      Id: Guid_10,
+      Property: 'j'
+    }
   ]
 }
