@@ -2,11 +2,11 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using ApprovalTests;
 using GraphQL.Common.Request;
 using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -48,10 +48,7 @@ public class GraphQlControllerTests :
         using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
         {
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains(
-                "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
-                result);
+            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
         }
     }
 
@@ -75,8 +72,7 @@ query ($id: ID!)
         using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
         {
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains(@"{""data"":{""company"":{""id"":1}}}", result);
+            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
         }
     }
 
@@ -124,8 +120,7 @@ query ($id: ID!)
         using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
         {
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
+            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
         }
     }
 
@@ -152,10 +147,7 @@ query {
         using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
         {
             response.EnsureSuccessStatusCode();
-            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
-            var page = result.SelectToken("..data..companiesConnection..edges[0].cursor")
-                .Value<string>();
-            Assert.NotEqual(after.ToString(), page);
+            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
         }
     }
 
@@ -173,19 +165,7 @@ query {
         using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
         {
             response.EnsureSuccessStatusCode();
-            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
-            var expected = JObject.FromObject(new
-            {
-                data = new
-                {
-                    employeeSummary = new[]
-                    {
-                        new {companyId = 1, averageAge = 28.0},
-                        new {companyId = 4, averageAge = 34.0}
-                    }
-                }
-            });
-            Assert.Equal(expected.ToString(), result.ToString());
+            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
         }
     }
 

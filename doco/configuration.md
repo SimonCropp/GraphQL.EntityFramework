@@ -626,6 +626,7 @@ query {
         using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
         {
             response.EnsureSuccessStatusCode();
+            Approv
             var result = JObject.Parse(await response.Content.ReadAsStringAsync());
             var expected = JObject.FromObject(new
             {
@@ -747,7 +748,7 @@ subscription
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L297) / [anchor](#snippet-graphqlcontrollertests)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L298) / [anchor](#snippet-graphqlcontrollertests)</sup>
 <!-- endsnippet -->
 
 
