@@ -155,24 +155,6 @@ All string comparisons are, by default, done using no [StringComparison](https:/
 }
 ```
 
-**Note that many [Database Providers](https://docs.microsoft.com/en-us/ef/core/providers/), including [SQL Server](https://docs.microsoft.com/en-us/ef/core/providers/sql-server/index), cannot correctly convert a case insensitive comparison to a server side query.** Hence this will result in the query being [resolved client side](https://docs.microsoft.com/en-us/ef/core/querying/client-eval#client-evaluation). If this is a concern it is recommended to [Disabling client evaluation](https://docs.microsoft.com/en-us/ef/core/querying/client-eval#disabling-client-evaluation).
-
-
-<!-- snippet: QueryClientEvaluationWarning -->
-<a id='snippet-queryclientevaluationwarning'/></a>
-```cs
-protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-{
-    optionsBuilder.ConfigureWarnings(
-        warnings =>
-        {
-            warnings.Throw(RelationalEventId.QueryClientEvaluationWarning);
-        });
-}
-```
-<sup>[snippet source](/src/Snippets/QueryClientEvaluationWarningDataContext.cs#L7-L18) / [anchor](#snippet-queryclientevaluationwarning)</sup>
-<!-- endsnippet -->
-
 
 #### Null
 
