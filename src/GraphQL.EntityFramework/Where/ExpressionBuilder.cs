@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace GraphQL.EntityFramework
 {
     public static class ExpressionBuilder<T>
     {
+        private static readonly string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
+
         public static Expression<Func<T, bool>> BuildPredicate(WhereExpression where)
         {
             Guard.AgainstNull(nameof(where), where);
@@ -14,54 +18,128 @@ namespace GraphQL.EntityFramework
 
         internal static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
         {
-            var property = PropertyCache<T>.GetProperty(path);
+            Property<T> property;
 
-            if (property.PropertyType == typeof(string))
+            if (HasListInPath(path))
             {
-                WhereValidator.ValidateString(comparison, stringComparison);
-                switch (comparison)
-                {
-                    case Comparison.In:
-                        return BuildStringIn(values, property, stringComparison);
+                // Get the path pertaining to individual list items
+                var listPath = Regex.Match(path, LIST_PROPERTY_PATTERN).Groups[1].Value;
+                // Remove the part of the path that leads into list item properties
+                path = Regex.Replace(path, LIST_PROPERTY_PATTERN, "");
 
-                    case Comparison.NotIn:
-                        return BuildStringIn(values, property, stringComparison, true);
+                // Get the property on the current object up to the list member
+                property = PropertyCache<T>.GetProperty(path);
 
-                    default:
-                        var value = values?.Single();
-                        return BuildStringCompare(comparison, value, property, stringComparison);
-                }
+                // Get the list item type details
+                var listItemType = property.PropertyType.GetGenericArguments().Single();
+                var listItemParam = Expression.Parameter(listItemType, "i");
+
+                // Generate the predicate for the list item type
+                var subPredicate = typeof(ExpressionBuilder<>)
+                    .MakeGenericType(listItemType)
+                    .GetMethod("BuildPredicate", BindingFlags.NonPublic | BindingFlags.Static)
+                    .Invoke(new object(), new object[] { listPath, comparison, values, stringComparison }) as Expression;
+
+                // Generate a method info for the Any Enumerable Static Method
+                var anyInfo = typeof(Enumerable)
+                            .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                            .First(m => m.Name == "Any" && m.GetParameters().Count() == 2)
+                            .MakeGenericMethod(listItemType);
+
+                // Create Any Expression Call
+                var expression = Expression.Call(anyInfo, property.Left, subPredicate);
+
+                // Return built lambda expression
+                return Expression.Lambda<Func<T, bool>>(expression, property.SourceParameter);
             }
             else
             {
-                WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
-                switch (comparison)
+                property = PropertyCache<T>.GetProperty(path);
+
+                if (property.PropertyType == typeof(string))
                 {
-                    case Comparison.In:
-                        return BuildObjectIn(values, property);
+                    WhereValidator.ValidateString(comparison, stringComparison);
+                    switch (comparison)
+                    {
+                        case Comparison.In:
+                            return BuildStringIn(values, property, stringComparison);
 
-                    case Comparison.NotIn:
-                        return BuildObjectIn(values, property, true);
+                        case Comparison.NotIn:
+                            return BuildStringIn(values, property, stringComparison, true);
 
-                    default:
-                        var value = values?.Single();
-                        return BuildObjectCompare(comparison, value, property);
+                        default:
+                            var value = values?.Single();
+                            return BuildStringCompare(comparison, value, property, stringComparison);
+                    }
+                }
+                else
+                {
+                    WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
+                    switch (comparison)
+                    {
+                        case Comparison.In:
+                            return BuildObjectIn(values, property);
+
+                        case Comparison.NotIn:
+                            return BuildObjectIn(values, property, true);
+
+                        default:
+                            var value = values?.Single();
+                            return BuildObjectCompare(comparison, value, property);
+                    }
                 }
             }
         }
 
         internal static Expression<Func<T, bool>> BuildSinglePredicate(string path, Comparison comparison, string value, StringComparison? stringComparison = null)
         {
-            var property = PropertyCache<T>.GetProperty(path);
+            Property<T> property;
 
-            if (property.PropertyType == typeof(string))
+            if (HasListInPath(path))
             {
-                WhereValidator.ValidateSingleString(comparison, stringComparison);
-                return BuildStringCompare(comparison, value, property, stringComparison);
-            }
+                // Get the path pertaining to individual list items
+                var listPath = Regex.Match(path, LIST_PROPERTY_PATTERN).Groups[1].Value;
+                // Remove the part of the path that leads into list item properties
+                path = Regex.Replace(path, LIST_PROPERTY_PATTERN, "");
 
-            WhereValidator.ValidateSingleObject(property.PropertyType, comparison, stringComparison);
-            return BuildObjectCompare(comparison, value, property);
+                // Get the property on the current object up to the list member
+                property = PropertyCache<T>.GetProperty(path);
+
+                // Get the list item type details
+                var listItemType = property.PropertyType.GetGenericArguments().Single();
+                var listItemParam = Expression.Parameter(listItemType, "i");
+
+                // Generate the predicate for the list item type
+                var subPredicate = typeof(ExpressionBuilder<>)
+                    .MakeGenericType(listItemType)
+                    .GetMethod("BuildSinglePredicate", BindingFlags.NonPublic | BindingFlags.Static)
+                    .Invoke(new object(), new object[] { listPath, comparison, value, stringComparison }) as Expression;
+
+                // Generate a method info for the Any Enumerable Static Method
+                var anyInfo = typeof(Enumerable)
+                            .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                            .First(m => m.Name == "Any" && m.GetParameters().Count() == 2)
+                            .MakeGenericMethod(listItemType);
+
+                // Create Any Expression Call
+                var expression = Expression.Call(anyInfo, property.Left, subPredicate);
+
+                // Return built lambda expression
+                return Expression.Lambda<Func<T, bool>>(expression, property.SourceParameter);
+            }
+            else
+            {
+                property = PropertyCache<T>.GetProperty(path);
+
+                if (property.PropertyType == typeof(string))
+                {
+                    WhereValidator.ValidateSingleString(comparison, stringComparison);
+                    return BuildStringCompare(comparison, value, property, stringComparison);
+                }
+
+                WhereValidator.ValidateSingleObject(property.PropertyType, comparison, stringComparison);
+                return BuildObjectCompare(comparison, value, property);
+            }
         }
 
         static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, Property<T> property, StringComparison? stringComparison)
@@ -177,6 +255,11 @@ namespace GraphQL.EntityFramework
             }
 
             throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
+        }
+
+        private static bool HasListInPath(string path)
+        {
+            return Regex.IsMatch(path, LIST_PROPERTY_PATTERN);
         }
     }
 }

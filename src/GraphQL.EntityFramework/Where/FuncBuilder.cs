@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Linq;
 using GraphQL.EntityFramework;
+using System.Text.RegularExpressions;
+using System.Reflection;
 
 static class FuncBuilder<TInput>
 {
+    private static readonly string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
+
     public static Func<TInput, bool> BuildPredicate(WhereExpression where)
     {
         return BuildPredicate(where.Path, where.Comparison.GetValueOrDefault(), where.Value, where.Case);
@@ -11,39 +15,76 @@ static class FuncBuilder<TInput>
 
     public static Func<TInput, bool> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
     {
-        var propertyFunc = PropertyCache<TInput>.GetProperty(path);
+        Property<TInput> propertyFunc;
 
-        if (propertyFunc.PropertyType == typeof(string))
+        if (HasListInPath(path))
         {
-            WhereValidator.ValidateString(comparison, stringComparison);
-            var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
-            switch (comparison)
+            // Get the path pertaining to individual list items
+            var listPath = Regex.Match(path, LIST_PROPERTY_PATTERN).Groups[1].Value;
+            // Remove the part of the path that leads into list item properties
+            path = Regex.Replace(path, LIST_PROPERTY_PATTERN, "");
+
+            // Get the property on the current object up to the list member
+            propertyFunc = PropertyCache<TInput>.GetProperty(path);
+
+            // Get the list item type details
+            var listItemType = propertyFunc.PropertyType.GetGenericArguments().Single();
+            //var listItemParam = Expression.Parameter(listItemType, "i");
+
+            // Generate the predicate for the list item type
+            var subPredicate = typeof(FuncBuilder<>)
+                .MakeGenericType(listItemType)
+                .GetMethod("BuildPredicate", BindingFlags.Public | BindingFlags.Static)
+                .Invoke(new object(), new object[] { listPath, comparison, values, stringComparison }) as Func<TInput, bool>;
+
+            // Generate a method info for the Any Enumerable Static Method
+            var anyInfo = typeof(Enumerable)
+                        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                        .First(m => m.Name == "Any" && m.GetParameters().Count() == 2)
+                        .MakeGenericMethod(listItemType);
+
+            return target =>
             {
-                case Comparison.In:
-                    return BuildStringIn(propertyFunc, values, stringComparisonValue);
-
-                case Comparison.NotIn:
-                    return BuildStringIn(propertyFunc, values, stringComparisonValue, true);
-
-                default:
-                    var value = values?.Single();
-                    return target => BuildStringCompare(comparison, value, propertyFunc, target, stringComparisonValue);
-            }
+                var listProp = propertyFunc.Func(target); // Get the property value
+                return (bool)anyInfo.Invoke(null, new[] { listProp, subPredicate }); // Invoke the any method with the list value and the subpredicate
+            };
         }
         else
         {
-            WhereValidator.ValidateObject(propertyFunc.PropertyType, comparison, stringComparison);
-            switch (comparison)
+            propertyFunc = PropertyCache<TInput>.GetProperty(path);
+
+            if (propertyFunc.PropertyType == typeof(string))
             {
-                case Comparison.In:
-                    return BuildObjectIn(propertyFunc, values);
+                WhereValidator.ValidateString(comparison, stringComparison);
+                var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
+                switch (comparison)
+                {
+                    case Comparison.In:
+                        return BuildStringIn(propertyFunc, values, stringComparisonValue);
 
-                case Comparison.NotIn:
-                    return BuildObjectIn(propertyFunc, values, true);
+                    case Comparison.NotIn:
+                        return BuildStringIn(propertyFunc, values, stringComparisonValue, true);
 
-                default:
-                    var value = values?.Single();
-                    return target => BuildObjectCompare(comparison, value, propertyFunc, target);
+                    default:
+                        var value = values?.Single();
+                        return target => BuildStringCompare(comparison, value, propertyFunc, target, stringComparisonValue);
+                }
+            }
+            else
+            {
+                WhereValidator.ValidateObject(propertyFunc.PropertyType, comparison, stringComparison);
+                switch (comparison)
+                {
+                    case Comparison.In:
+                        return BuildObjectIn(propertyFunc, values);
+
+                    case Comparison.NotIn:
+                        return BuildObjectIn(propertyFunc, values, true);
+
+                    default:
+                        var value = values?.Single();
+                        return target => BuildObjectCompare(comparison, value, propertyFunc, target);
+                }
             }
         }
     }
@@ -204,4 +245,8 @@ static class FuncBuilder<TInput>
         };
     }
 
+    private static bool HasListInPath(string path)
+    {
+        return Regex.IsMatch(path, LIST_PROPERTY_PATTERN);
+    }
 }
