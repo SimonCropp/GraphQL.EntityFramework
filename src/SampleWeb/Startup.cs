@@ -21,10 +21,17 @@ public class Startup
         services.AddScoped(_ => DbContextBuilder.BuildDbContext());
         services.AddSingleton<Func<GraphQlEfSampleDbContext>>(provider=> provider.GetRequiredService<GraphQlEfSampleDbContext>);
 
-        EfGraphQLConventions.RegisterInContainer<GraphQlEfSampleDbContext>(
-            services,
-            model: GraphQlEfSampleDbContext.GetModel());
-        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
+        using (var scope = services.BuildServiceProvider().CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<GraphQlEfSampleDbContext>();
+
+            EfGraphQLConventions.RegisterInContainer<GraphQlEfSampleDbContext>(services, (userContext) =>
+            {
+                return (GraphQlEfSampleDbContext)userContext;
+            },
+            dbContext.Model);
+            EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
+        }
 
         foreach (var type in GetGraphQlTypes())
         {

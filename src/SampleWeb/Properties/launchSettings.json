@@ -10,7 +10,7 @@
   "profiles": {
     "SampleWeb": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "graphiql",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
