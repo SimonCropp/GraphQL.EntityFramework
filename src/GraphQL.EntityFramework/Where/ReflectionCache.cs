@@ -64,7 +64,7 @@ static class ReflectionCache
         dateTimeOffsetNullableListContains = GetContains<DateTimeOffset?>();
     }
 
-    public static MethodInfo GetListContains(Type type)
+    public static MethodInfo? GetListContains(Type type)
     {
         if (type == typeof(Guid))
         {
@@ -156,7 +156,7 @@ static class ReflectionCache
             return dateTimeOffsetNullableListContains;
         }
 
-        throw new Exception($"Could not find Contains method for {type.FullName}.");
+        return null;
     }
 
     static MethodInfo GetContains<T>()

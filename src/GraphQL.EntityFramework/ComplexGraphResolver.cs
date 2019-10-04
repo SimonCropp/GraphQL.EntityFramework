@@ -8,8 +8,13 @@ static class ComplexGraphResolver
 {
     class Resolved
     {
-        public IComplexGraphType ComplexGraphType;
-        public Type EntityType;
+        public Resolved(Type? entityType, IComplexGraphType? complexGraphType)
+        {
+            EntityType = entityType;
+            ComplexGraphType = complexGraphType;
+        }
+        public readonly IComplexGraphType? ComplexGraphType;
+        public readonly Type? EntityType;
     }
 
     static ConcurrentDictionary<IGraphType, Resolved> cache = new ConcurrentDictionary<IGraphType, Resolved>();
@@ -34,23 +39,23 @@ static class ComplexGraphResolver
             fieldType.ResolvedType,
             graphType =>
             {
-                var resolved = new Resolved();
                 if (graphType is ListGraphType listGraphType)
                 {
                     graphType = listGraphType.ResolvedType;
                 }
+
                 if (graphType is NonNullGraphType nonNullGraphType)
                 {
                     graphType = nonNullGraphType.ResolvedType;
                 }
 
+                IComplexGraphType? complexGraphType = null;
                 if (graphType is IComplexGraphType complexType)
                 {
-                    resolved.ComplexGraphType = complexType;
+                    complexGraphType = complexType;
                 }
 
-                resolved.EntityType = ResolvedEntityType(graphType);
-                return resolved;
+                return new Resolved(ResolvedEntityType(graphType), complexGraphType);
             });
     }
 

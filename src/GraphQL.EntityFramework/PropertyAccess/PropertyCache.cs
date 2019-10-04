@@ -20,14 +20,14 @@ static class PropertyCache<TInput>
                 var compile = lambda.Compile();
                 var listContainsMethod = ReflectionCache.GetListContains(left.Type);
                 return new Property<TInput>
-                {
-                    Left = left,
-                    Lambda = lambda,
-                    SourceParameter = parameter,
-                    Func = compile,
-                    PropertyType = left.Type,
-                    ListContainsMethod = listContainsMethod
-                };
+                (
+                    left: left,
+                    lambda: lambda,
+                    sourceParameter: parameter,
+                    func: compile,
+                    propertyType: left.Type,
+                    listContainsMethod: listContainsMethod
+                );
             });
     }
 
