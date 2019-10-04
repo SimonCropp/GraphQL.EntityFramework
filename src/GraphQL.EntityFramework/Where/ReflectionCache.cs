@@ -156,7 +156,7 @@ static class ReflectionCache
             return dateTimeOffsetNullableListContains;
         }
 
-        return null;
+        throw new Exception($"Could not find Contains method for {type.FullName}.");
     }
 
     static MethodInfo GetContains<T>()
