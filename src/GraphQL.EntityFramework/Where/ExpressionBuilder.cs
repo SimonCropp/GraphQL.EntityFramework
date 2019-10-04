@@ -157,7 +157,7 @@ namespace GraphQL.EntityFramework
             throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
         }
 
-        static Expression MakeObjectComparison(Expression left, Comparison comparison, object value)
+        static Expression MakeObjectComparison(Expression left, Comparison comparison, object? value)
         {
             var constant = Expression.Constant(value, left.Type);
             switch (comparison)

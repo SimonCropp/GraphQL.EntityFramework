@@ -139,7 +139,7 @@ static class TypeConverter
         throw new Exception($"Could not convert strings to {type.FullName}.");
     }
 
-    public static object ConvertStringToType(string value, Type type)
+    public static object? ConvertStringToType(string value, Type type)
     {
         var underlyingType = Nullable.GetUnderlyingType(type);
         if (underlyingType != null)

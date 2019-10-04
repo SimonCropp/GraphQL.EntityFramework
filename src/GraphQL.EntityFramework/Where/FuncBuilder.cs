@@ -93,7 +93,7 @@ static class FuncBuilder<TInput>
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }
 
-    static int Compare(object a, object b)
+    static int Compare(object? a, object? b)
     {
         if (a == null && b == null)
         {
@@ -103,6 +103,10 @@ static class FuncBuilder<TInput>
         if (a == null)
         {
             return -1;
+        }
+        if (b == null)
+        {
+            return 1;
         }
 
         var ac = (IComparable) a;
