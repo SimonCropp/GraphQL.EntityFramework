@@ -19,14 +19,14 @@ static class ComplexGraphResolver
 
     static ConcurrentDictionary<IGraphType, Resolved> cache = new ConcurrentDictionary<IGraphType, Resolved>();
 
-    public static bool TryGetComplexGraph(this FieldType fieldType, out IComplexGraphType complexGraph)
+    public static bool TryGetComplexGraph(this FieldType fieldType, out IComplexGraphType? complexGraph)
     {
         var orAdd = GetOrAdd(fieldType);
         complexGraph = orAdd.ComplexGraphType;
         return complexGraph != null;
     }
 
-    public static bool TryGetEntityTypeForField(this FieldType fieldType, out Type entityType)
+    public static bool TryGetEntityTypeForField(this FieldType fieldType, out Type? entityType)
     {
         var orAdd = GetOrAdd(fieldType);
         entityType = orAdd.EntityType;
@@ -89,7 +89,7 @@ static class ComplexGraphResolver
     {
         if (TryGetComplexGraph(fieldType, out var complex))
         {
-            return complex;
+            return complex!;
         }
 
         throw new Exception($"Could not find resolve a {nameof(IComplexGraphType)} for {fieldType.GetType().FullName}.");
