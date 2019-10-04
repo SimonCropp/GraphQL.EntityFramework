@@ -33,8 +33,8 @@ namespace GraphQL.EntityFramework
         protected FieldType AddNavigationField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> resolve,
-            Type graphType = null,
-            IEnumerable<string> includeNames = null)
+            Type? graphType = null,
+            IEnumerable<string>? includeNames = null)
             where TReturn : class
         {
             return efGraphQlService.AddNavigationField(this, name, resolve, graphType, includeNames);
@@ -43,9 +43,9 @@ namespace GraphQL.EntityFramework
         protected FieldType AddNavigationListField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            IEnumerable<string>? includeNames = null)
             where TReturn : class
         {
             return efGraphQlService.AddNavigationListField(this, name, resolve, graphType, arguments, includeNames);
@@ -54,8 +54,8 @@ namespace GraphQL.EntityFramework
         protected void AddQueryConnectionField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
             where TReturn : class
         {
@@ -65,8 +65,8 @@ namespace GraphQL.EntityFramework
         protected FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);

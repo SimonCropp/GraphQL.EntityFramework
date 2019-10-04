@@ -48,7 +48,7 @@ static class FuncBuilder<TInput>
         }
     }
 
-    static bool BuildObjectCompare(Comparison comparison, string value, Property<TInput> propertyFunc, TInput target)
+    static bool BuildObjectCompare(Comparison comparison, string? value, Property<TInput> propertyFunc, TInput target)
     {
         var propertyValue = propertyFunc.Func(target);
         var typedValue = TypeConverter.ConvertStringToType(value, propertyFunc.PropertyType);
@@ -73,7 +73,7 @@ static class FuncBuilder<TInput>
         throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
     }
 
-    static bool BuildStringCompare(Comparison comparison, string value, Property<TInput> propertyFunc, TInput x, StringComparison stringComparison)
+    static bool BuildStringCompare(Comparison comparison, string? value, Property<TInput> propertyFunc, TInput x, StringComparison stringComparison)
     {
         var propertyValue = (string) propertyFunc.Func(x);
         switch (comparison)

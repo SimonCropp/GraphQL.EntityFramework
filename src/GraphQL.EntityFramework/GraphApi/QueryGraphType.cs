@@ -22,8 +22,8 @@ namespace GraphQL.EntityFramework
         protected void AddQueryConnectionField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
             where TReturn : class
         {
@@ -33,8 +33,8 @@ namespace GraphQL.EntityFramework
         protected FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
@@ -43,8 +43,8 @@ namespace GraphQL.EntityFramework
         protected FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);

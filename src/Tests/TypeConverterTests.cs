@@ -71,7 +71,7 @@ public class TypeConverterTests :
     [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTime?))]
     [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTimeOffset))]
     [InlineData(new[] { "2019-06-14 0:00", "1970-01-01 14:33", "2233-03-22 0:00" }, typeof(DateTimeOffset?))]
-    public void ConvertStringsToList(string[] values, Type type, string[] expecteds = null)
+    public void ConvertStringsToList(string[] values, Type type, string[] expectedValues = null)
     {
         var results = TypeConverter.ConvertStringsToList(values, type);
         var listContains = ReflectionCache.GetListContains(type);
@@ -80,7 +80,7 @@ public class TypeConverterTests :
         {
             string actual;
             var result = results[i];
-            var expected = expecteds?[i] ?? values[i];
+            var expected = expectedValues?[i] ?? values[i];
             if (result is DateTime || result is DateTimeOffset)
             {
                 actual = $"{result:yyyy-MM-dd H:mm}";

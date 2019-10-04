@@ -15,9 +15,9 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            IEnumerable<string>? includeNames = null,
             int pageSize = 10)
             where TReturn : class
         {
@@ -33,9 +33,9 @@ namespace GraphQL.EntityFramework
         ConnectionBuilder<FakeGraph, TSource> BuildListConnectionField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
-            IEnumerable<string> includeName,
+            IEnumerable<string>? includeName,
             int pageSize,
-            Type graphType)
+            Type? graphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);

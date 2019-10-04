@@ -59,7 +59,7 @@ static class ComplexGraphResolver
             });
     }
 
-    static Type ResolvedEntityType(IGraphType graphType)
+    static Type? ResolvedEntityType(IGraphType graphType)
     {
         var type = graphType.GetType();
 

@@ -279,7 +279,7 @@ public class GraphQlController :
     public Task<ExecutionResult> Get(
         [FromQuery] string query,
         [FromQuery] string variables,
-        [FromQuery] string operationName,
+        [FromQuery] string? operationName,
         CancellationToken cancellation)
     {
         var jObject = ParseVariables(variables);
@@ -287,8 +287,8 @@ public class GraphQlController :
     }
 
     Task<ExecutionResult> Execute(string query,
-        string operationName,
-        JObject variables,
+        string? operationName,
+        JObject? variables,
         CancellationToken cancellation)
     {
         var options = new ExecutionOptions

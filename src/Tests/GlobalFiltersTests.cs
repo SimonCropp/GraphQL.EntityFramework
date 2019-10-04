@@ -31,11 +31,11 @@ public class GlobalFiltersTests :
 
     public class NonTarget
     {
-        public string Property { get; set; }
+        public string? Property { get; set; }
     }
     public class Target
     {
-        public string Property { get; set; }
+        public string? Property { get; set; }
     }
 
     public class ChildTarget :
@@ -45,18 +45,18 @@ public class GlobalFiltersTests :
 
     public class BaseTarget
     {
-        public string Property { get; set; }
+        public string? Property { get; set; }
     }
 
     public class ImplementationTarget :
         ITarget
     {
-        public string Property { get; set; }
+        public string? Property { get; set; }
     }
 
     public interface ITarget
     {
-        string Property { get; set; }
+        string? Property { get; set; }
     }
 
     public GlobalFiltersTests(ITestOutputHelper output) :

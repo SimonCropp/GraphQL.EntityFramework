@@ -64,13 +64,13 @@ namespace GraphQL.EntityFramework
             return BuildObjectCompare(comparison, value, property);
         }
 
-        static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, Property<T> property, StringComparison? stringComparison)
+        static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string? value, Property<T> property, StringComparison? stringComparison)
         {
             var body = MakeStringComparison(property.Left, comparison, value, stringComparison);
             return Expression.Lambda<Func<T, bool>>(body, property.SourceParameter);
         }
 
-        static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string value, Property<T> property)
+        static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string? value, Property<T> property)
         {
             var valueObject = TypeConverter.ConvertStringToType(value, property.PropertyType);
             var body = MakeObjectComparison(property.Left, comparison, valueObject);
@@ -102,7 +102,7 @@ namespace GraphQL.EntityFramework
             return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(anyBody) : (Expression) anyBody, property.SourceParameter);
         }
 
-        static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison? stringComparison)
+        static Expression MakeStringComparison(Expression left, Comparison comparison, string? value, StringComparison? stringComparison)
         {
             var valueConstant = Expression.Constant(value, typeof(string));
             var nullCheck = Expression.NotEqual(left, ExpressionCache.Null);

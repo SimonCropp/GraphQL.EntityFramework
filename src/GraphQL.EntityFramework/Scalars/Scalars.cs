@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 static class Scalars
 {
-    static Dictionary<Type, ScalarGraphType> entries;
+    private static Dictionary<Type, ScalarGraphType>? entries;
     static object locker = new object();
 
     public static void Initialize()
@@ -36,7 +36,7 @@ static class Scalars
     public static void RegisterInContainer(IServiceCollection services)
     {
         Initialize();
-        foreach (var entry in entries)
+        foreach (var entry in entries!)
         {
             services.AddSingleton(entry.Key, entry.Value);
         }
@@ -49,7 +49,7 @@ static class Scalars
         {
             GraphTypeTypeRegistry.Register(type, typeof(T));
             var value = new T();
-            entries.Add(typeof(T), value);
+            entries!.Add(typeof(T), value);
         }
     }
 }
