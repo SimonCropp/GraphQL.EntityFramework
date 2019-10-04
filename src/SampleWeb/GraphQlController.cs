@@ -69,7 +69,7 @@ public class GraphQlController :
         return executer.ExecuteAsync(options);
     }
 
-    static JObject ParseVariables(string variables)
+    static JObject? ParseVariables(string variables)
     {
         if (variables == null)
         {

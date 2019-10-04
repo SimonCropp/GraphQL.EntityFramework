@@ -30,9 +30,9 @@ public class TypedGraph
 
     public class Company
     {
-        public object Id { get; set; }
-        public object Content { get; set; }
-        public List<Employee> Employees { get; set; }
+        public object? Id { get; set; }
+        public object? Content { get; set; }
+        public List<Employee>? Employees { get; set; }
     }
 
     public class Employee

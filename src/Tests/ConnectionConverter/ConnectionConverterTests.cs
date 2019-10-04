@@ -107,7 +107,7 @@ public class ConnectionConverterTests :
     public class MyContext :
         DbContext
     {
-        public DbSet<Entity> Entities { get; set; }
+        public DbSet<Entity> Entities { get; set; } = null!;
 
         public MyContext(DbContextOptions options) :
             base(options)

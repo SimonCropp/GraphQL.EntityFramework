@@ -1227,8 +1227,8 @@ query ($id: String!)
     static async Task<object> RunQuery(
         SqlDatabase<IntegrationDbContext> database,
         string query,
-        Inputs inputs,
-        Filters filters,
+        Inputs? inputs,
+        Filters? filters,
         params object[] entities)
     {
         var dbContext = database.Context;

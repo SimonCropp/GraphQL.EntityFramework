@@ -40,9 +40,9 @@ The container registration can be done via adding to a [IServiceCollection](http
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
-        ResolveDbContext<TDbContext> resolveDbContext = null,
-        IModel model = null,
-        ResolveFilters resolveFilters = null)
+        ResolveDbContext<TDbContext>? resolveDbContext = null,
+        IModel? model = null,
+        ResolveFilters? resolveFilters = null)
 ```
 <sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24) / [anchor](#snippet-registerincontainer)</sup>
 <a id='snippet-registerincontainer-1'/></a>
@@ -132,9 +132,9 @@ If null then the Filters will be resolved from the container.
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
-        ResolveDbContext<TDbContext> resolveDbContext = null,
-        IModel model = null,
-        ResolveFilters resolveFilters = null)
+        ResolveDbContext<TDbContext>? resolveDbContext = null,
+        IModel? model = null,
+        ResolveFilters? resolveFilters = null)
 ```
 <sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24) / [anchor](#snippet-registerincontainer)</sup>
 <a id='snippet-registerincontainer-1'/></a>
@@ -307,7 +307,7 @@ public class GraphQlController :
         return executer.ExecuteAsync(options);
     }
 
-    static JObject ParseVariables(string variables)
+    static JObject? ParseVariables(string variables)
     {
         if (variables == null)
         {

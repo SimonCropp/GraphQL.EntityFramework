@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 public class GraphQlEfSampleDbContext :
     DbContext
 {
-    public DbSet<Employee> Employees { get; set; }
-    public DbSet<Company> Companies { get; set; }
+    public DbSet<Employee> Employees { get; set; } = null!;
+    public DbSet<Company> Companies { get; set; } = null!;
 
     public GraphQlEfSampleDbContext(DbContextOptions options) :
         base(options)

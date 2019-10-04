@@ -10,8 +10,8 @@ static class QueryExecutor
         string query,
         ServiceCollection services,
         TDbContext dbContext,
-        Inputs inputs,
-        Filters filters)
+        Inputs? inputs,
+        Filters? filters)
         where TDbContext : DbContext
     {
         query = query.Replace("'", "\"");

@@ -42,19 +42,20 @@ namespace GraphQL.EntityFramework
                 //add the metadata for the tables to be included in the query
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
                 //custom resolve function simply applies the global filters; typically it's a pass-through
-                Resolver = new AsyncFieldResolver<TSource, TReturn>(async context =>
-                {
-                    var efFieldContext = BuildContext(context);
-                    //run resolve function
-                    var result = resolve(efFieldContext);
-                    //apply global filters and return null if necessary
-                    if (await efFieldContext.Filters.ShouldInclude(context.UserContext, result))
+                Resolver = new AsyncFieldResolver<TSource, TReturn?>(
+                    async context =>
                     {
-                        return result;
-                    }
+                        var efFieldContext = BuildContext(context);
+                        //run resolve function
+                        var result = resolve(efFieldContext);
+                        //apply global filters and return null if necessary
+                        if (await efFieldContext.Filters.ShouldInclude(context.UserContext, result))
+                        {
+                            return result;
+                        }
 
-                    return null;
-                })
+                        return null;
+                    })
             };
         }
     }

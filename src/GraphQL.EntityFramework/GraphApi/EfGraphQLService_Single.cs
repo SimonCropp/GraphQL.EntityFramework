@@ -113,7 +113,7 @@ namespace GraphQL.EntityFramework
                 //append the default query arguments to the specified argument list
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 //custom resolve function
-                Resolver = new AsyncFieldResolver<TSource, TReturn>(
+                Resolver = new AsyncFieldResolver<TSource, TReturn?>(
                     async context =>
                     {
                         var efFieldContext = BuildContext(context);

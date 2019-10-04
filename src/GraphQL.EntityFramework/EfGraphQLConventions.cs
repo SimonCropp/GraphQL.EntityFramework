@@ -18,9 +18,9 @@ namespace GraphQL.EntityFramework
         #region RegisterInContainer
         public static void RegisterInContainer<TDbContext>(
                 IServiceCollection services,
-                ResolveDbContext<TDbContext> resolveDbContext = null,
-                IModel model = null,
-                ResolveFilters resolveFilters = null)
+                ResolveDbContext<TDbContext>? resolveDbContext = null,
+                IModel? model = null,
+                ResolveFilters? resolveFilters = null)
             #endregion
             where TDbContext : DbContext
         {
@@ -33,9 +33,9 @@ namespace GraphQL.EntityFramework
         }
 
         static IEfGraphQLService<TDbContext> Build<TDbContext>(
-            ResolveDbContext<TDbContext> dbContext,
-            IModel model,
-            ResolveFilters filters,
+            ResolveDbContext<TDbContext>? dbContext,
+            IModel? model,
+            ResolveFilters? filters,
             IServiceProvider provider)
             where TDbContext : DbContext
         {
