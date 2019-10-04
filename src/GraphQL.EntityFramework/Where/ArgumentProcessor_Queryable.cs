@@ -21,20 +21,20 @@ namespace GraphQL.EntityFramework
             if (ArgumentReader.TryReadIds(getArguments, out var values))
             {
                 var keyName = GetKeyName(keyNames);
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
+                var predicate = FilterBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
                 queryable = queryable.Where(predicate);
             }
 
             if (ArgumentReader.TryReadId(getArguments, out var value))
             {
                 var keyName = GetKeyName(keyNames);
-                var predicate = ExpressionBuilder<TItem>.BuildSinglePredicate(keyName, Comparison.Equal, value);
+                var predicate = FilterBuilder<TItem>.BuildPredicate(keyName, Comparison.Equal, new[] { value });
                 queryable = queryable.Where(predicate);
             }
 
-            foreach (var where in ArgumentReader.ReadWhere(getArguments))
+            if (ArgumentReader.TryReadWhere(getArguments, out var wheres))
             {
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(where);
+                var predicate = FilterBuilder<TItem>.BuildPredicate(wheres);
                 queryable = queryable.Where(predicate);
             }
 
