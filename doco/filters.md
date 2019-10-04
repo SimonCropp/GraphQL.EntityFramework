@@ -45,7 +45,7 @@ public class Filters
 ```cs
 public class MyEntity
 {
-    public string Property { get; set; }
+    public string? Property { get; set; }
 }
 ```
 <sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L7-L14) / [anchor](#snippet-add-filter)</sup>

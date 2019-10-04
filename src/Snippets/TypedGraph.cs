@@ -30,9 +30,9 @@ public class TypedGraph
 
     public class Company
     {
-        public object Id { get; set; }
-        public object Content { get; set; }
-        public List<Employee> Employees { get; set; }
+        public object Id { get; set; } = null!;
+        public object? Content { get; set; }
+        public List<Employee> Employees { get; set; } = null!;
     }
 
     public class Employee
@@ -42,7 +42,7 @@ public class TypedGraph
     public class MyDbContext :
         DbContext
     {
-        public IQueryable<Company> Companies { get; set; }
+        public IQueryable<Company> Companies { get; set; } = null!;
     }
 
     public class EmployeeGraph :
