@@ -36,7 +36,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             //lookup the graph type if not explicitly specified
-            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             //graphType represents the base field type, not the list graph type
             //create a list graph type based on the graph type specified
             var listGraphType = MakeListGraphType(graphType);

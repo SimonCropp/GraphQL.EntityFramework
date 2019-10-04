@@ -39,9 +39,9 @@ namespace GraphQL.EntityFramework
             IServiceProvider provider)
             where TDbContext : DbContext
         {
-            model = model ?? ResolveModel<TDbContext>(provider);
+            model ??= ResolveModel<TDbContext>(provider);
 
-            filters = filters ?? provider.GetService<ResolveFilters>();
+            filters ??= provider.GetService<ResolveFilters>();
 
             if (dbContext == null)
             {

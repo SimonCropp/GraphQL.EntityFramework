@@ -101,7 +101,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(resolve), resolve);
 
             //lookup the graph type if not explicitly specified
-            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             //if not nullable, construct a non-null graph type for the specified graph type
             var wrappedType = nullable ? graphType : typeof(NonNullGraphType<>).MakeGenericType(graphType);
 
@@ -135,9 +135,14 @@ namespace GraphQL.EntityFramework
                                 return single;
                             }
                         }
+
                         //if no value was found, or if the returned value was filtered out by the global filters,
                         //  either return null, or throw an error if the field is not nullable
-                        if (nullable) return null;
+                        if (nullable)
+                        {
+                            return null;
+                        }
+
                         throw new ExecutionError("Not found");
                     })
             };

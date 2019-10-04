@@ -33,7 +33,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(resolve), resolve);
 
             //lookup the graph type if not explicitly specified
-            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             //build field
             return new FieldType
             {

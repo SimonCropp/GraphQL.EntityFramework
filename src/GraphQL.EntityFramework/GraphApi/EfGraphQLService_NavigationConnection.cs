@@ -43,7 +43,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
             //lookup the graph type if not explicitly specified
-            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             //create a ConnectionBuilder<graphType, TSource> type by invoking the static Create method on the generic type
             var fieldType = GetFieldType<TSource>(name, graphType);
             //create a ConnectionBuilder<FakeGraph, TSource> which will be returned from this method
