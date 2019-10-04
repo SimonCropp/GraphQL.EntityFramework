@@ -16,10 +16,8 @@ public class GraphQlEfSampleDbContext :
     {
         var builder = new DbContextOptionsBuilder();
         builder.UseSqlServer("Fake");
-        using (var dbContext = new GraphQlEfSampleDbContext(builder.Options))
-        {
-            return dbContext.Model;
-        }
+        using var dbContext = new GraphQlEfSampleDbContext(builder.Options);
+        return dbContext.Model;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

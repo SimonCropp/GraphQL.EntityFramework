@@ -21,24 +21,22 @@ static class QueryExecutor
             dbContext.Model,
             userContext => filters);
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
-        using (var provider = services.BuildServiceProvider())
-        using (var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService)))
+        using var provider = services.BuildServiceProvider();
+        using var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService));
+        var documentExecuter = new EfDocumentExecuter();
+
+        #region ExecutionOptionsWithFixIdTypeRule
+        var executionOptions = new ExecutionOptions
         {
-            var documentExecuter = new EfDocumentExecuter();
+            Schema = schema,
+            Query = query,
+            UserContext = dbContext,
+            Inputs = inputs,
+            ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
+        };
+        #endregion
 
-            #region ExecutionOptionsWithFixIdTypeRule
-            var executionOptions = new ExecutionOptions
-            {
-                Schema = schema,
-                Query = query,
-                UserContext = dbContext,
-                Inputs = inputs,
-                ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
-            };
-            #endregion
-
-            var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-            return executionResult.Data;
-        }
+        var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
+        return executionResult.Data;
     }
 }

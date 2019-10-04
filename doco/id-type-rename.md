@@ -119,5 +119,5 @@ var executionOptions = new ExecutionOptions
     ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
 };
 ```
-<sup>[snippet source](/src/Tests/IntegrationTests/QueryExecutor.cs#L29-L38) / [anchor](#snippet-executionoptionswithfixidtyperule)</sup>
+<sup>[snippet source](/src/Tests/IntegrationTests/QueryExecutor.cs#L28-L37) / [anchor](#snippet-executionoptionswithfixidtyperule)</sup>
 <!-- endsnippet -->

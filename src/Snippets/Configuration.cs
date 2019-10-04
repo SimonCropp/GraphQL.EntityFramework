@@ -12,10 +12,8 @@ class Configuration
         {
             var builder = new DbContextOptionsBuilder();
             builder.UseSqlServer("Fake");
-            using (var context = new MyDbContext(builder.Options))
-            {
-                return context.Model;
-            }
+            using var context = new MyDbContext(builder.Options);
+            return context.Model;
         }
     }
     #endregion

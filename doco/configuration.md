@@ -51,7 +51,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L25-L29) / [anchor](#snippet-registerincontainer-1)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L23-L27) / [anchor](#snippet-registerincontainer-1)</sup>
 <!-- endsnippet -->
 
 
@@ -73,14 +73,12 @@ static class ModelBuilder
     {
         var builder = new DbContextOptionsBuilder();
         builder.UseSqlServer("Fake");
-        using (var context = new MyDbContext(builder.Options))
-        {
-            return context.Model;
-        }
+        using var context = new MyDbContext(builder.Options);
+        return context.Model;
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L8-L21) / [anchor](#snippet-modelbuilder)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L8-L19) / [anchor](#snippet-modelbuilder)</sup>
 <!-- endsnippet -->
 
 
@@ -145,7 +143,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L25-L29) / [anchor](#snippet-registerincontainer-1)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L23-L27) / [anchor](#snippet-registerincontainer-1)</sup>
 <!-- endsnippet -->
 
 Then the `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
@@ -349,7 +347,7 @@ public class UserContext
     public DbContext2 DbContext2;
 }
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L108-L114) / [anchor](#snippet-multiusercontext)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L104-L110) / [anchor](#snippet-multiusercontext)</sup>
 <!-- endsnippet -->
 
 
@@ -367,7 +365,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L71-L78) / [anchor](#snippet-registermultipleincontainer)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L70-L77) / [anchor](#snippet-registermultipleincontainer)</sup>
 <!-- endsnippet -->
 
 
@@ -390,7 +388,7 @@ var executionOptions = new ExecutionOptions
     }
 };
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L84-L95) / [anchor](#snippet-multiexecutionoptions)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L82-L93) / [anchor](#snippet-multiexecutionoptions)</sup>
 <!-- endsnippet -->
 
 
@@ -498,11 +496,9 @@ public class GraphQlControllerTests :
     id
   }
 }";
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
-        {
-            response.EnsureSuccessStatusCode();
-            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -522,11 +518,9 @@ query ($id: ID!)
             id = "1"
         };
 
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
-        {
-            response.EnsureSuccessStatusCode();
-            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -546,11 +540,9 @@ query ($id: ID!)
             id = "99"
         };
 
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
-        {
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains("Not found", result);
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Not found", result);
     }
 
     [Fact]
@@ -570,11 +562,9 @@ query ($id: ID!)
             id = "1"
         };
 
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
-        {
-            response.EnsureSuccessStatusCode();
-            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -597,11 +587,9 @@ query {
     }
   }
 }";
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
-        {
-            response.EnsureSuccessStatusCode();
-            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -615,11 +603,9 @@ query {
     averageAge
   }
 }";
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
-        {
-            response.EnsureSuccessStatusCode();
-            Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -633,14 +619,12 @@ query {
     id
   }
 }";
-        using (var response = await ClientQueryExecutor.ExecutePost(client, query))
-        {
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains(
-                "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
-                result);
-            response.EnsureSuccessStatusCode();
-        }
+        using var response = await ClientQueryExecutor.ExecutePost(client, query);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains(
+            "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
+            result);
+        response.EnsureSuccessStatusCode();
     }
 
     [Fact]
@@ -659,12 +643,10 @@ query ($id: ID!)
         {
             id = "1"
         };
-        using (var response = await ClientQueryExecutor.ExecutePost(client, query, variables))
-        {
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
-            response.EnsureSuccessStatusCode();
-        }
+        using var response = await ClientQueryExecutor.ExecutePost(client, query, variables);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
+        response.EnsureSuccessStatusCode();
     }
 
     [Fact]
@@ -727,7 +709,7 @@ subscription
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L277) / [anchor](#snippet-graphqlcontrollertests)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L261) / [anchor](#snippet-graphqlcontrollertests)</sup>
 <!-- endsnippet -->
 
 

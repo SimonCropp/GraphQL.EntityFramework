@@ -9,18 +9,14 @@ public static class SqlHelper
 
         var masterConnection = connectionString.Replace(builder.InitialCatalog, "master");
 
-        using (var connection = new SqlConnection(masterConnection))
-        {
-            connection.Open();
+        using var connection = new SqlConnection(masterConnection);
+        connection.Open();
 
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = $@"
+        using var command = connection.CreateCommand();
+        command.CommandText = $@"
 if(db_id('{database}') is null)
     create database [{database}]
 ";
-                command.ExecuteNonQuery();
-            }
-        }
+        command.ExecuteNonQuery();
     }
 }
