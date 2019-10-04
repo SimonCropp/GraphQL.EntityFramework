@@ -15,8 +15,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -27,8 +27,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -41,8 +41,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -53,8 +53,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -67,8 +67,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -79,8 +79,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -92,8 +92,8 @@ namespace GraphQL.EntityFramework
         FieldType BuildSingleField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            IEnumerable<QueryArgument> arguments,
-            Type graphType,
+            IEnumerable<QueryArgument>? arguments,
+            Type? graphType,
             bool nullable)
             where TReturn : class
         {

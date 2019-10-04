@@ -52,9 +52,9 @@ namespace GraphQL.EntityFramework
 
         protected FieldType AddSingleField<TReturn>(
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
+            Type? graphType = null,
             string name = nameof(TReturn),
-            IEnumerable<QueryArgument> arguments = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -63,9 +63,9 @@ namespace GraphQL.EntityFramework
 
         protected FieldType AddSingleField<TReturn>(
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
+            Type? graphType = null,
             string name = nameof(TReturn),
-            IEnumerable<QueryArgument> arguments = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {

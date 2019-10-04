@@ -21,7 +21,7 @@ static class ArgumentReader
         var argument = getArgument(typeof(object), "ids");
         if (argument == null)
         {
-            expression = null;
+            expression = Array.Empty<string>();
             return false;
         }
 
@@ -39,7 +39,7 @@ static class ArgumentReader
         var argument = getArgument(typeof(object), "id");
         if (argument == null)
         {
-            expression = null;
+            expression = string.Empty;
             return false;
         }
 

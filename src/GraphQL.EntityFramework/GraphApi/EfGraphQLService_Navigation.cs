@@ -13,8 +13,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> resolve,
-            Type graphType = null,
-            IEnumerable<string> includeNames = null)
+            Type? graphType = null,
+            IEnumerable<string>? includeNames = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -25,8 +25,8 @@ namespace GraphQL.EntityFramework
         FieldType BuildNavigationField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> resolve,
-            IEnumerable<string> includeNames,
-            Type graphType)
+            IEnumerable<string>? includeNames,
+            Type? graphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
