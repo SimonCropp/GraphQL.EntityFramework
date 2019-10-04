@@ -10,7 +10,7 @@ public class ExpressionBuilderTests :
 {
     public class Target
     {
-        public string Member { get; set; }
+        public string? Member { get; set; }
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class ExpressionBuilderTests :
 
     public class TargetChildForPropertyNestedExpression
     {
-        public string Member;
+        public string? Member;
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public class ExpressionBuilderTests :
 
     public class TargetForIn
     {
-        public string Member;
+        public string? Member;
     }
 
     [Fact]
@@ -327,7 +327,7 @@ public class ExpressionBuilderTests :
 
     public class TargetWithField
     {
-        public string Field;
+        public string? Field;
     }
 
     [Theory]

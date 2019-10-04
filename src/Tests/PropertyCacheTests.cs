@@ -19,7 +19,7 @@ public class PropertyCacheTests :
 
     public class TargetForProperty
     {
-        public string Member;
+        public string? Member;
     }
 
     [Fact]
