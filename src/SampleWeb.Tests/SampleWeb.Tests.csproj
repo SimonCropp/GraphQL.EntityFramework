@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL.Common" Version="1.0.3" />
@@ -11,6 +12,6 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
     <ProjectReference Include="..\SampleWeb\SampleWeb.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.25" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.26" PrivateAssets="All" />
   </ItemGroup>
 </Project>
