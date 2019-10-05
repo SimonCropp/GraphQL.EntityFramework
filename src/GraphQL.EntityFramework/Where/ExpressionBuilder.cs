@@ -22,10 +22,10 @@ namespace GraphQL.EntityFramework
                 switch (comparison)
                 {
                     case Comparison.In:
-                        return BuildStringIn(values, property, stringComparison);
+                        return BuildStringIn(values!, property, stringComparison);
 
                     case Comparison.NotIn:
-                        return BuildStringIn(values, property, stringComparison, true);
+                        return BuildStringIn(values!, property, stringComparison, true);
 
                     default:
                         var value = values?.Single();
@@ -38,10 +38,10 @@ namespace GraphQL.EntityFramework
                 switch (comparison)
                 {
                     case Comparison.In:
-                        return BuildObjectIn(values, property);
+                        return BuildObjectIn(values!, property);
 
                     case Comparison.NotIn:
-                        return BuildObjectIn(values, property, true);
+                        return BuildObjectIn(values!, property, true);
 
                     default:
                         var value = values?.Single();
