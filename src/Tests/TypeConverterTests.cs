@@ -87,13 +87,13 @@ public class TypeConverterTests :
             }
             else
             {
-                actual = Convert.ToString(result);
+                actual = Convert.ToString(result)!;
             }
 
             Assert.Equal(expected, actual, ignoreCase: true);
 
             var convertType = type.IsGenericType ? type.GenericTypeArguments[0] : type;
-            var contains = (bool)listContains.Invoke(results, new[] { Convert.ChangeType(results[0], convertType) });
+            var contains = (bool)listContains.Invoke(results, new[] { Convert.ChangeType(results[0], convertType) })!;
             Assert.True(contains);
         }
     }
