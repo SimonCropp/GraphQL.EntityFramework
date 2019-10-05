@@ -186,7 +186,7 @@ public class FuncBuilderTests :
 
     public class TargetForIn
     {
-        public string Member;
+        public string? Member;
     }
 
     [Fact]
@@ -281,7 +281,7 @@ public class FuncBuilderTests :
 
     public class TargetWithField
     {
-        public string Field;
+        public string? Field;
     }
 
     [Theory]
