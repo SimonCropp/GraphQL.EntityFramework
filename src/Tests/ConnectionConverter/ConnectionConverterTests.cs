@@ -101,7 +101,7 @@ public class ConnectionConverterTests :
     public class Entity
     {
         public Guid Id { get; set; } = XunitLogging.Context.NextGuid();
-        public string Property { get; set; }
+        public string? Property { get; set; }
     }
 
     public class MyContext :

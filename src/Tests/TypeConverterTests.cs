@@ -74,7 +74,7 @@ public class TypeConverterTests :
     public void ConvertStringsToList(string[] values, Type type, string[]? expectedValues = null)
     {
         var results = TypeConverter.ConvertStringsToList(values, type);
-        var listContains = ReflectionCache.GetListContains(type);
+        var listContains = ReflectionCache.GetListContains(type)!;
         Assert.Equal(values.Length, results.Count);
         for (var i = 0; i < values.Length; i++)
         {
