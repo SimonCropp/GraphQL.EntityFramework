@@ -18,15 +18,16 @@ public class GraphQLHttpSubscriptionResult
 
     WebSocketClient clientWebSocket;
 
-    public event Action<GraphQLResponse> OnReceive;
+    Action<GraphQLResponse> onReceive;
 
     public GraphQLResponse LastResponse { get; private set; }
 
-    internal GraphQLHttpSubscriptionResult(Uri webSocketUri, GraphQLRequest graphQLRequest, WebSocketClient clientWebSocket)
+    internal GraphQLHttpSubscriptionResult(Uri webSocketUri, GraphQLRequest graphQLRequest, WebSocketClient clientWebSocket, Action<GraphQLResponse> onReceive)
     {
         this.webSocketUri = webSocketUri;
         this.graphQLRequest = graphQLRequest;
         this.clientWebSocket = clientWebSocket;
+        this.onReceive = onReceive;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = default)
@@ -69,7 +70,7 @@ public class GraphQLHttpSubscriptionResult
                 if (subscriptionResponse != null)
                 {
                     LastResponse = subscriptionResponse.Payload;
-                    OnReceive?.Invoke(subscriptionResponse.Payload);
+                    onReceive.Invoke(subscriptionResponse.Payload);
                 }
             }
         }

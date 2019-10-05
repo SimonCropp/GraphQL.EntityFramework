@@ -670,22 +670,17 @@ subscription
   }
 }"
             },
-            websocketClient);
-
-        result.OnReceive +=
-            res =>
-            {
-                if (res == null)
+            websocketClient,response => {
+                if (response == null)
                 {
                     return;
                 }
-                Assert.Null(res.Errors);
+                Assert.Null(response.Errors);
 
-                if (res.Data != null)
+                if (response.Data != null)
                 {
                     resetEvent.Set();
-                }
-            };
+                }});
 
         var cancellationSource = new CancellationTokenSource();
 
@@ -711,7 +706,7 @@ subscription
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L261) / [anchor](#snippet-graphqlcontrollertests)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L257) / [anchor](#snippet-graphqlcontrollertests)</sup>
 <!-- endsnippet -->
 
 

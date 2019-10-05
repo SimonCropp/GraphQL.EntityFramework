@@ -217,22 +217,18 @@ subscription
   }
 }"
             },
-            websocketClient);
-
-        result.OnReceive +=
-            res =>
-            {
-                if (res == null)
+            websocketClient,response => {
+                if (response == null)
                 {
                     return;
                 }
-                Assert.Null(res.Errors);
+                Assert.Null(response.Errors);
 
-                if (res.Data != null)
+                if (response.Data != null)
                 {
                     resetEvent.Set();
-                }
-            };
+                }});
+
 
         var cancellationSource = new CancellationTokenSource();
 
