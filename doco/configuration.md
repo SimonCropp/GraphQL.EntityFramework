@@ -270,15 +270,15 @@ public class GraphQlController :
 
     public class PostBody
     {
-        public string OperationName;
-        public string Query;
-        public JObject Variables;
+        public string? OperationName;
+        public string Query = null!;
+        public JObject? Variables;
     }
 
     [HttpGet]
     public Task<ExecutionResult> Get(
         [FromQuery] string query,
-        [FromQuery] string variables,
+        [FromQuery] string? variables,
         [FromQuery] string? operationName,
         CancellationToken cancellation)
     {
@@ -307,7 +307,7 @@ public class GraphQlController :
         return executer.ExecuteAsync(options);
     }
 
-    static JObject? ParseVariables(string variables)
+    static JObject? ParseVariables(string? variables)
     {
         if (variables == null)
         {
