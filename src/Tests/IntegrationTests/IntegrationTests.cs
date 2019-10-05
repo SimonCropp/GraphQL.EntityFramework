@@ -38,7 +38,7 @@ public partial class IntegrationTests :
             buildTemplate: async dbContext =>
             {
                 await dbContext.Database.EnsureCreatedAsync();
-                await dbContext.Database.ExecuteSqlCommandAsync(
+                await dbContext.Database.ExecuteSqlRawAsync(
                     @"create view ParentEntityView as
         select Property
         from ParentEntities");

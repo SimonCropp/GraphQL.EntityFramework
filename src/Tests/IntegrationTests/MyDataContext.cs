@@ -18,7 +18,7 @@ public class IntegrationDbContext :
     public DbSet<WithManyChildrenEntity> WithManyChildrenEntities { get; set; } = null!;
     public DbSet<Child1Entity> Child1Entities { get; set; } = null!;
     public DbSet<Child2Entity> Child2Entities { get; set; } = null!;
-    public DbQuery<ParentEntityView> ParentEntityView { get; set; } = null!;
+    public DbSet<ParentEntityView> ParentEntityView { get; set; } = null!;
 
     public IntegrationDbContext(DbContextOptions options) :
         base(options)
@@ -27,8 +27,9 @@ public class IntegrationDbContext :
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder  .Query<ParentEntityView>()
+        modelBuilder.Entity<ParentEntityView>()
             .ToView("ParentEntityView")
+            .HasNoKey()
             .Property(v => v.Property).HasColumnName("Property");
         modelBuilder.Entity<CustomTypeEntity>();
         modelBuilder.Entity<WithNullableEntity>();
