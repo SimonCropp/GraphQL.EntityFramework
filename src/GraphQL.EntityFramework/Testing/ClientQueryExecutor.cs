@@ -47,11 +47,11 @@ namespace GraphQL.EntityFramework.Testing
             return client.SendAsync(request);
         }
 
-        static string ToJson(object target)
+        static string ToJson(object? target)
         {
             if (target == null)
             {
-                return "";
+                return string.Empty;
             }
 
             return JsonConvert.SerializeObject(target);
