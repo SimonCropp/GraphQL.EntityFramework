@@ -84,11 +84,7 @@ public class MultiContextTests:
         {
             Schema = schema,
             Query = query,
-            UserContext = new UserContext
-            {
-                DbContext1 = dbContext1,
-                DbContext2 = dbContext2
-            }
+            UserContext = new UserContext(dbContext1,dbContext2)
         };
         #endregion
 
@@ -104,7 +100,13 @@ public class MultiContextTests:
 #region MultiUserContext
 public class UserContext
 {
-    public DbContext1 DbContext1;
-    public DbContext2 DbContext2;
+    public UserContext(DbContext1 context1, DbContext2 context2)
+    {
+        DbContext1 = context1;
+        DbContext2 = context2;
+    }
+
+    public readonly DbContext1 DbContext1;
+    public readonly DbContext2 DbContext2;
 }
 #endregion

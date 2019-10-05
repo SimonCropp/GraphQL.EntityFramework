@@ -9,7 +9,7 @@ static class FuncBuilder<TInput>
         return BuildPredicate(where.Path, where.Comparison.GetValueOrDefault(), where.Value, where.Case);
     }
 
-    public static Func<TInput, bool> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
+    public static Func<TInput, bool> BuildPredicate(string path, Comparison comparison, string[]? values, StringComparison? stringComparison = null)
     {
         var propertyFunc = PropertyCache<TInput>.GetProperty(path);
 
@@ -20,10 +20,10 @@ static class FuncBuilder<TInput>
             switch (comparison)
             {
                 case Comparison.In:
-                    return BuildStringIn(propertyFunc, values, stringComparisonValue);
+                    return BuildStringIn(propertyFunc, values!, stringComparisonValue);
 
                 case Comparison.NotIn:
-                    return BuildStringIn(propertyFunc, values, stringComparisonValue, true);
+                    return BuildStringIn(propertyFunc, values!, stringComparisonValue, true);
 
                 default:
                     var value = values?.Single();
@@ -36,10 +36,10 @@ static class FuncBuilder<TInput>
             switch (comparison)
             {
                 case Comparison.In:
-                    return BuildObjectIn(propertyFunc, values);
+                    return BuildObjectIn(propertyFunc, values!);
 
                 case Comparison.NotIn:
-                    return BuildObjectIn(propertyFunc, values, true);
+                    return BuildObjectIn(propertyFunc, values!, true);
 
                 default:
                     var value = values?.Single();

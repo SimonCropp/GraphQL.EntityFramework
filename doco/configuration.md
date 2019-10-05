@@ -343,11 +343,17 @@ A user context that exposes both types.
 ```cs
 public class UserContext
 {
-    public DbContext1 DbContext1;
-    public DbContext2 DbContext2;
+    public UserContext(DbContext1 context1, DbContext2 context2)
+    {
+        DbContext1 = context1;
+        DbContext2 = context2;
+    }
+
+    public readonly DbContext1 DbContext1;
+    public readonly DbContext2 DbContext2;
 }
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L104-L110) / [anchor](#snippet-multiusercontext)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L100-L112) / [anchor](#snippet-multiusercontext)</sup>
 <!-- endsnippet -->
 
 
@@ -381,14 +387,10 @@ var executionOptions = new ExecutionOptions
 {
     Schema = schema,
     Query = query,
-    UserContext = new UserContext
-    {
-        DbContext1 = dbContext1,
-        DbContext2 = dbContext2
-    }
+    UserContext = new UserContext(dbContext1,dbContext2)
 };
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L82-L93) / [anchor](#snippet-multiexecutionoptions)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L82-L89) / [anchor](#snippet-multiexecutionoptions)</sup>
 <!-- endsnippet -->
 
 
