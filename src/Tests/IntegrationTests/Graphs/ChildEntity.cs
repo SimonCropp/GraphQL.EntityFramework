@@ -6,5 +6,5 @@ public class ChildEntity
     public string Property { get; set; }
     public int? Nullable { get; set; }
     public Guid? ParentId { get; set; }
-    public ParentEntity Parent { get; set; }
+    public ParentEntity? Parent { get; set; }
 }

@@ -12,7 +12,7 @@ namespace GraphQL.EntityFramework
             return BuildPredicate(where.Path, where.Comparison.GetValueOrDefault(), where.Value, where.Case);
         }
 
-        internal static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
+        internal static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[] values, StringComparison? stringComparison = null)
         {
             var property = PropertyCache<T>.GetProperty(path);
 
