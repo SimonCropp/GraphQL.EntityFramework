@@ -43,7 +43,7 @@ class IncludeAppender
         return list;
     }
 
-    void AddField(List<string> list, Field field, string parentPath, FieldType fieldType, List<Navigation> parentNavigationProperties)
+    void AddField(List<string> list, Field field, string? parentPath, FieldType fieldType, List<Navigation> parentNavigationProperties)
     {
         if (!fieldType.TryGetComplexGraph(out var complexGraph))
         {
@@ -81,7 +81,7 @@ class IncludeAppender
         ProcessSubFields(list, paths.First(), subFields, complexGraph!, navigations[entityType!]);
     }
 
-    static IEnumerable<string> GetPaths(string parentPath, string[] includeNames)
+    static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)
     {
         if (parentPath == null)
         {
@@ -91,7 +91,7 @@ class IncludeAppender
         return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-    void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<Navigation> navigationProperties)
+    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<Navigation> navigationProperties)
     {
         foreach (var subField in subFields)
         {
