@@ -64,7 +64,7 @@ public class GraphQLHttpSubscriptionResult
 
                 var webSocketReceiveResult = await clientSocket.ReceiveAsync(arraySegment, cancellationToken);
 
-                var response = Encoding.UTF8.GetString(arraySegment.Array, 0, webSocketReceiveResult.Count);
+                var response = Encoding.UTF8.GetString(arraySegment.Array!, 0, webSocketReceiveResult.Count);
 
                 var subscriptionResponse = JsonConvert.DeserializeObject<GraphQLSubscriptionResponse>(response);
                 if (subscriptionResponse != null)
