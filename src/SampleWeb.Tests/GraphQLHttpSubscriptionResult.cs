@@ -20,7 +20,7 @@ public class GraphQLHttpSubscriptionResult
 
     Action<GraphQLResponse> onReceive;
 
-    public GraphQLResponse LastResponse { get; private set; }
+    public GraphQLResponse LastResponse { get; private set; } = null!;
 
     internal GraphQLHttpSubscriptionResult(Uri webSocketUri, GraphQLRequest graphQLRequest, WebSocketClient clientWebSocket, Action<GraphQLResponse> onReceive)
     {
