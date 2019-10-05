@@ -5,21 +5,6 @@ using System.Threading.Tasks;
 
 namespace GraphQL.EntityFramework
 {
-    class NullFilters :
-        Filters
-    {
-        public static NullFilters Instance = new NullFilters();
-        internal override Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
-        {
-            return Task.FromResult(result);
-        }
-
-        internal override Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item)
-        {
-            return Task.FromResult(true);
-        }
-    }
-
     #region FiltersSignature
 
     public class Filters

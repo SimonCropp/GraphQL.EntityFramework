@@ -114,7 +114,7 @@ A delegate that resolves the [Filters](filters.md).
 ```cs
 namespace GraphQL.EntityFramework
 {
-    public delegate Filters ResolveFilters(object userContext);
+    public delegate Filters? ResolveFilters(object userContext);
 }
 ```
 <sup>[snippet source](/src/GraphQL.EntityFramework/Filters/ResolveFilters.cs#L1-L4) / [anchor](#snippet-ResolveFilters.cs)</sup>
@@ -468,8 +468,8 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 public class GraphQlControllerTests :
     XunitApprovalBase
 {
-    static HttpClient client;
-    static WebSocketClient websocketClient;
+    static HttpClient client = null!;
+    static WebSocketClient websocketClient = null!;
     static Task startTask;
 
     static GraphQlControllerTests()

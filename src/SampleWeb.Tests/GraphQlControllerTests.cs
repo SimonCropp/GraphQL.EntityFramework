@@ -15,8 +15,8 @@ using Xunit.Abstractions;
 public class GraphQlControllerTests :
     XunitApprovalBase
 {
-    static HttpClient client;
-    static WebSocketClient websocketClient;
+    static HttpClient client = null!;
+    static WebSocketClient websocketClient = null!;
     static Task startTask;
 
     static GraphQlControllerTests()

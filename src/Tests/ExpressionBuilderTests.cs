@@ -81,7 +81,7 @@ public class ExpressionBuilderTests :
         };
 
         var resultFromNull = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {(string) null}))
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {(string?) null}))
             .Single();
 
         Assert.Null(resultFromNull.Field);
