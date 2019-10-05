@@ -10,7 +10,7 @@ public class FuncBuilderTests :
 {
     public class Target
     {
-        public string Member { get; set; }
+        public string? Member { get; set; }
     }
 
     [Fact]

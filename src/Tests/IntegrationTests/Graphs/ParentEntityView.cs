@@ -1,4 +1,4 @@
 ﻿public class ParentEntityView
 {
-    public string Property { get; set; }
+    public string? Property { get; set; }
 }
