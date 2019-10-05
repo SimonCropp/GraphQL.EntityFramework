@@ -6,7 +6,7 @@ using GraphQL;
 
 static class TypeConverter
 {
-    public static IList ConvertStringsToList(string[] values, Type type)
+    public static IList ConvertStringsToList(string?[] values, Type type)
     {
         if (values.Length != values.Distinct().Count())
         {
@@ -20,7 +20,7 @@ static class TypeConverter
             throw new Exception($"Null passed to In expression for non nullable type '{type.FullName}'.");
         }
 
-        var list = ConvertStringsToListInternal(values.Where(x => x != null), type);
+        var list = ConvertStringsToListInternal(values.Where(x => x != null).Select(x=>x!), type);
         if (hasNull)
         {
             list.Add(null);
