@@ -8,11 +8,19 @@
         GreaterThanOrEqual,
         LessThan,
         LessThanOrEqual,
+        Between,
         Contains,
+        NotContains,
+        IsNull,
+        IsNotNull,
         StartsWith,
+        IsEmpty,
+        IsNotEmpty,
         EndsWith,
+        IsNullOrWhiteSpace,
+        IsNotNullNorWhiteSpace,
         In,
-        Like,
-        NotIn
+        NotIn,
+        Like
     }
 }

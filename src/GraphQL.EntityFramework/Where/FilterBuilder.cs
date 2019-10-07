@@ -11,6 +11,35 @@ namespace GraphQL.EntityFramework
     {
         const string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
 
+        private static readonly MethodInfo StringContains = typeof(string).GetMethod("Contains");
+        private static readonly MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
+        private static readonly MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
+        private static readonly MethodInfo StringTrim = typeof(string).GetMethod("Trim", new Type[0]);
+        private static readonly MethodInfo StringToLower = typeof(string).GetMethod("ToLower", new Type[0]);
+
+        //private static readonly Dictionary<Comparison, Func<Expression, Expression, Expression, Expression>> Expressions = new Dictionary<Comparison, Func<Expression, Expression, Expression, Expression>>
+        //    {
+        //        { Comparison.Equal, (member, constant, constant2) => Expression.Equal(member, constant) },
+        //        { Comparison.NotEqual, (member, constant, constant2) => Expression.NotEqual(member, constant) },
+        //        { Comparison.GreaterThan, (member, constant, constant2) => Expression.GreaterThan(member, constant) },
+        //        { Comparison.GreaterThanOrEqual, (member, constant, constant2) => Expression.GreaterThanOrEqual(member, constant) },
+        //        { Comparison.LessThan, (member, constant, constant2) => Expression.LessThan(member, constant) },
+        //        { Comparison.LessThanOrEqual, (member, constant, constant2) => Expression.LessThanOrEqual(member, constant) },
+        //        { Comparison.Contains, (member, constant, constant2) => Contains(member, constant) },
+        //        { Comparison.NotContains, (member, constant, constant2) => Expression.Not(Contains(member, constant)) },
+        //        { Comparison.StartsWith, (member, constant, constant2) => Expression.Call(member, StringStartsWith, constant) },
+        //        { Comparison.EndsWith, (member, constant, constant2) => Expression.Call(member, StringEndsWith, constant) },
+        //        { Comparison.Between, (member, constant, constant2) => Between(member, constant, constant2) },
+        //        { Comparison.In, (member, constant, constant2) => Contains(member, constant) },
+        //        { Comparison.NotIn, (member, constant, constant2) => Expression.Not(Contains(member, constant)) },
+        //        { Comparison.IsNull, (member, constant, constant2) => Expression.Equal(member, Expression.Constant(null)) },
+        //        { Comparison.IsNotNull, (member, constant, constant2) => Expression.NotEqual(member, Expression.Constant(null)) },
+        //        { Comparison.IsEmpty, (member, constant, constant2) => Expression.Equal(member, Expression.Constant(string.Empty)) },
+        //        { Comparison.IsNotEmpty, (member, constant, constant2) => Expression.NotEqual(member, Expression.Constant(string.Empty)) },
+        //        { Comparison.IsNullOrWhiteSpace, (member, constant, constant2) => IsNullOrWhiteSpace(member) },
+        //        { Comparison.IsNotNullNorWhiteSpace, (member, constant, constant2) => IsNotNullNorWhiteSpace(member) }
+        //    };
+
         #region Conditional List
 
         /// <summary>
@@ -344,6 +373,57 @@ namespace GraphQL.EntityFramework
 
             throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
         }
+
+        #endregion
+
+
+        #region New Operations
+
+        //private static Expression CombineExpressions(Expression expr1, Expression expr2, Connector connector)
+        //{
+        //    return connector == Connector.And ? Expression.AndAlso(expr1, expr2) : Expression.OrElse(expr1, expr2);
+        //}
+
+        //private static Expression Contains(Expression member, Expression expression)
+        //{
+        //    MethodCallExpression contains = null;
+        //    if (expression is ConstantExpression constant && typeof(IEnumerable<>).IsAssignableFrom(constant.Value.GetType()))
+        //    {
+        //        var type = constant.Value.GetType();
+        //        var containsInfo = type.GetMethod("Contains", new[] { type.GetGenericArguments()[0] });
+        //        contains = Expression.Call(constant, containsInfo, member);
+        //    }
+
+        //    return contains ?? Expression.Call(member, StringContains, expression); ;
+        //}
+
+        //private static Expression Between(Expression member, Expression constant, Expression constant2)
+        //{
+        //    var left = Expressions[Comparison.GreaterThanOrEqual].Invoke(member, constant, null);
+        //    var right = Expressions[Comparison.LessThanOrEqual].Invoke(member, constant2, null);
+
+        //    return CombineExpressions(left, right, Connector.And);
+        //}
+
+        //private static Expression IsNullOrWhiteSpace(Expression member)
+        //{
+        //    Expression exprNull = Expression.Constant(null);
+        //    var trimMemberCall = Expression.Call(member, StringTrim);
+        //    Expression exprEmpty = Expression.Constant(string.Empty);
+        //    return Expression.OrElse(
+        //                            Expression.Equal(member, exprNull),
+        //                            Expression.Equal(trimMemberCall, exprEmpty));
+        //}
+
+        //private static Expression IsNotNullNorWhiteSpace(Expression member)
+        //{
+        //    Expression exprNull = Expression.Constant(null);
+        //    var trimMemberCall = Expression.Call(member, StringTrim);
+        //    Expression exprEmpty = Expression.Constant(string.Empty);
+        //    return Expression.AndAlso(
+        //                            Expression.NotEqual(member, exprNull),
+        //                            Expression.NotEqual(trimMemberCall, exprEmpty));
+        //}
 
         #endregion
 
