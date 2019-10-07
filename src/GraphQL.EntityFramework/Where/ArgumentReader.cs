@@ -8,16 +8,14 @@ static class ArgumentReader
 {
     public static bool TryReadWhere(Func<Type, string, object> getArgument, out IEnumerable<WhereExpression> expression)
     {
-        var arguments = getArgument.ReadList<WhereExpression>("where");
+        expression = getArgument.ReadList<WhereExpression>("where");
 
-        if(arguments.Count() > 0)
+        if(expression.Count() > 0)
         {
-            expression = arguments;
             return true;
         }
         else
         {
-            expression = null;
             return false;
         }
     }

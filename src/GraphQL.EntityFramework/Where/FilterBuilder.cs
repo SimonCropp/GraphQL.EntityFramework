@@ -34,8 +34,8 @@ namespace GraphQL.EntityFramework
         /// <returns></returns>
         private static Expression MakePredicateBody(IEnumerable<WhereExpression> wheres)
         {
-            Expression mainExpression = null;
-            WhereExpression previousWhere = null;
+            Expression? mainExpression = null;
+            var previousWhere = new WhereExpression();
 
             // Iterate over wheres
             foreach (var where in wheres)
@@ -78,7 +78,7 @@ namespace GraphQL.EntityFramework
                 previousWhere = where;
             }
 
-            return mainExpression;
+            return mainExpression ?? Expression.Constant(false);
         }
 
         #endregion
@@ -94,7 +94,7 @@ namespace GraphQL.EntityFramework
         /// <param name="values"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
-        public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, bool not = false, StringComparison? stringComparison = null)
+        public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool not = false, StringComparison? stringComparison = null)
         {
             var expressionBody = MakePredicateBody(path, comparison, values, not, stringComparison);
             var param = PropertyCache<T>.GetSourceParameter();
@@ -111,7 +111,7 @@ namespace GraphQL.EntityFramework
         /// <param name="values"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
-        private static Expression MakePredicateBody(string path, Comparison comparison, string[] values, bool not = false, StringComparison? stringComparison = null)
+        private static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool not = false, StringComparison? stringComparison = null)
         {
             Expression expressionBody;
 
@@ -119,7 +119,7 @@ namespace GraphQL.EntityFramework
             if (HasListInPath(path))
             {
                 // Handle a list path
-                expressionBody = ProcessList(path, comparison, values, stringComparison);
+                expressionBody = ProcessList(path, comparison, values!, stringComparison);
             }
             // Otherwise linear property access
             else
@@ -149,7 +149,7 @@ namespace GraphQL.EntityFramework
         /// <param name="param"></param>
         /// <param name="where"></param>
         /// <returns></returns>
-        private static Expression ProcessList(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
+        private static Expression ProcessList(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
         {
             // Get the path pertaining to individual list items
             var listPath = Regex.Match(path, LIST_PROPERTY_PATTERN).Groups[1].Value;
@@ -168,7 +168,7 @@ namespace GraphQL.EntityFramework
                 .MakeGenericType(listItemType)
                 .GetMethods(BindingFlags.Public | BindingFlags.Static)
                 .Where(m => m.Name.Equals("BuildPredicate") && m.GetParameters().Length == 5).Single()
-                .Invoke(new object(), new object[] { path, comparison, values, false, stringComparison }) as Expression;
+                .Invoke(new object(), new object[] { path, comparison, values!, false, stringComparison! }) as Expression;
 
             // Generate a method info for the Any Enumerable Static Method
             var anyInfo = typeof(Enumerable)
@@ -190,7 +190,7 @@ namespace GraphQL.EntityFramework
         /// <param name="values"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
-        private static Expression GetExpression(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
+        private static Expression GetExpression(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
         {
             var property = PropertyCache<T>.GetProperty(path);
             Expression expressionBody;
@@ -201,7 +201,7 @@ namespace GraphQL.EntityFramework
                 {
                     case Comparison.In:
                         WhereValidator.ValidateString(comparison, stringComparison);
-                        expressionBody = MakeStringIn(values, property, stringComparison);
+                        expressionBody = MakeStringIn(values!, property, stringComparison);
                         break;
 
                     default:
@@ -217,7 +217,7 @@ namespace GraphQL.EntityFramework
                 {
                     case Comparison.In:
                         WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
-                        expressionBody = MakeObjectIn(values, property);
+                        expressionBody = MakeObjectIn(values!, property);
                         break;
 
                     default:
@@ -293,7 +293,7 @@ namespace GraphQL.EntityFramework
         /// <param name="property"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
-        static Expression MakeStringComparison(Comparison comparison, string value, Property<T> property, StringComparison? stringComparison)
+        static Expression MakeStringComparison(Comparison comparison, string? value, Property<T> property, StringComparison? stringComparison)
         {
             var left = property.Left;
 
@@ -351,7 +351,7 @@ namespace GraphQL.EntityFramework
         /// <param name="value"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        static Expression MakeObjectComparison(Comparison comparison, object value, Property<T> property)
+        static Expression MakeObjectComparison(Comparison comparison, object? value, Property<T> property)
         {
             var left = property.Left;
             var constant = Expression.Constant(value, left.Type);

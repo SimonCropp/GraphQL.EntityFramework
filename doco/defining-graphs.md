@@ -277,11 +277,9 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
         if (context.HasArgument("where"))
         {
             var wheres = context.GetArgument<List<WhereExpression>>("where");
-            foreach (var where in wheres)
-            {
-                var predicate = ExpressionBuilder<Employee>.BuildPredicate(where);
-                query = query.Where(predicate);
-            }
+
+            var predicate = FilterBuilder<Employee>.BuildPredicate(wheres);
+            query = query.Where(predicate);
         }
 
         return from q in query
@@ -294,5 +292,5 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L55-L89) / [anchor](#snippet-manuallyapplywhere)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L55-L87) / [anchor](#snippet-manuallyapplywhere)</sup>
 <!-- endsnippet -->

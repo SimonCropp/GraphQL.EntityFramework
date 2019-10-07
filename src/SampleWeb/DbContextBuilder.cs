@@ -52,8 +52,14 @@ public static class DbContextBuilder
             Id = 7,
             Content = "Company4"
         };
-        context.AddRange(company1, employee1, employee2, company2, company3, company4, employee4);
-       await context.SaveChangesAsync();
+        var employee5 = new Employee
+        {
+            Id = 8,
+            Content = null,
+            CompanyId = company2.Id
+        };
+        context.AddRange(company1, employee1, employee2, company2, company3, company4, employee4, employee5);
+        await context.SaveChangesAsync();
     }
 
     public static GraphQlEfSampleDbContext BuildDbContext()

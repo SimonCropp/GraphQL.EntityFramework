@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 static class PropertyCache<TInput>
 {
-    static ParameterExpression sourceParam;
+    static ParameterExpression? sourceParam;
     static ConcurrentDictionary<string, Property<TInput>> properties = new ConcurrentDictionary<string, Property<TInput>>();
 
     public static Property<TInput> GetProperty(string path)

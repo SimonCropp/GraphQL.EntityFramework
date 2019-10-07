@@ -253,11 +253,13 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
+    GraphQlEfSampleDbContext dbContext;
 
-    public GraphQlController(ISchema schema, IDocumentExecuter executer)
+    public GraphQlController(ISchema schema, IDocumentExecuter executer, GraphQlEfSampleDbContext dbContext)
     {
         this.schema = schema;
         this.executer = executer;
+        this.dbContext = dbContext;
     }
 
     [HttpPost]
@@ -298,6 +300,7 @@ public class GraphQlController :
             OperationName = operationName,
             Inputs = variables?.ToInputs(),
             CancellationToken = cancellation,
+            UserContext = dbContext,
 #if (DEBUG)
             ExposeExceptions = true,
             EnableMetrics = true,
@@ -325,7 +328,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L10-L89) / [anchor](#snippet-graphqlcontroller)</sup>
+<sup>[snippet source](/src/SampleWeb/GraphQlController.cs#L10-L92) / [anchor](#snippet-graphqlcontroller)</sup>
 <!-- endsnippet -->
 
 
