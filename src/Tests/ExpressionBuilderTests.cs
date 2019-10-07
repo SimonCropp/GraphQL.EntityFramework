@@ -408,10 +408,96 @@ public class ExpressionBuilderTests :
         Assert.Equal(expectedName, result.Name);
     }
 
+    [Theory]
+    [InlineData("Employees[Name]", Comparison.Equal, "Person 1", "Company 1", null)]
+    [InlineData("Employees[Name]", Comparison.NotEqual, "Person 3", "Company 2", null)]
+    [InlineData("Employees[Name]", Comparison.Contains, "son 2", "Company 1", null)]
+    [InlineData("Employees[Name]", Comparison.StartsWith, "Person 2", "Company 1", null)]
+    [InlineData("Employees[Name]", Comparison.EndsWith, "son 2", "Company 1", null)]
+    [InlineData("Employees[Name]", Comparison.EndsWith, "person 2", "Company 1", StringComparison.OrdinalIgnoreCase)]
+    [InlineData("Employees[Age]", Comparison.Equal, "12", "Company 2", null)]
+    [InlineData("Employees[Age]", Comparison.GreaterThan, "12", "Company 2", null)]
+    [InlineData("Employees[Age]", Comparison.NotEqual, "12", "Company 2", null)]
+    [InlineData("Employees[Age]", Comparison.GreaterThanOrEqual, "31", "Company 2", null)]
+    [InlineData("Employees[Age]", Comparison.LessThan, "13", "Company 1", null)]
+    [InlineData("Employees[Age]", Comparison.LessThanOrEqual, "12", "Company 1", null)]
+    [InlineData("Employees[DateOfBirth]", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Company 1", null)]
+    [InlineData("Employees[DateOfBirth.Day]", Comparison.Equal, "11", "Company 2", null)]
+    [InlineData("Employees[Company.Employees[Name]]", Comparison.Contains, "son 2", "Company 1", null)]
+    public void ListMemberQueryCombos(string name, Comparison expression, string value, string expectedName, StringComparison? stringComparison)
+    {
+        var companies = new List<Company>
+        {
+            new Company
+            {
+                Name = "Company 1",
+                Employees = new List<Person>
+                {
+                    new Person
+                    {
+                        Name = "Person 1",
+                        Age = 12,
+                        DateOfBirth = new DateTime(1999, 10, 10, 10, 10, 10, DateTimeKind.Utc)
+                    },
+                    new Person
+                    {
+                        Name = "Person 2",
+                        Age = 12,
+                        DateOfBirth = new DateTime(2001, 10, 10, 10, 10, 10, DateTimeKind.Utc)
+                    }
+                }
+            },
+
+            new Company
+            {
+                Name = "Company 2",
+                Employees = new List<Person>
+                {
+                    new Person
+                    {
+                        Name = "Person 3",
+                        Age = 34,
+                        DateOfBirth = new DateTime(1977, 10, 11, 10, 10, 10, DateTimeKind.Utc)
+                    },
+                    new Person
+                    {
+                        Name = "Person 4",
+                        Age = 31,
+                        DateOfBirth = new DateTime(1980, 10, 11, 10, 10, 10, DateTimeKind.Utc)
+                    },
+                }
+            }
+        };
+
+        for (var i = 0; i < companies.Count(); i++)
+        {
+            var company = companies[i];
+
+            for (var j = 0; j < company.Employees.Count(); j++)
+            {
+                var employee = company.Employees[j];
+
+                employee.Company = company;
+            }
+        }
+
+        var result = companies.AsQueryable()
+            .Where(ExpressionBuilder<Company>.BuildSinglePredicate(name, expression, value, stringComparison))
+            .Single();
+        Assert.Equal(expectedName, result.Name);
+    }
+
+    public class Company
+    {
+        public string? Name { get; set; }
+        public List<Person> Employees { get; set; } = null!;
+    }
+
     public class Person
     {
         public string? Name { get; set; }
         public int Age { get; set; }
+        public Company? Company { get; set; }
         public DateTime DateOfBirth { get; set; }
     }
 
