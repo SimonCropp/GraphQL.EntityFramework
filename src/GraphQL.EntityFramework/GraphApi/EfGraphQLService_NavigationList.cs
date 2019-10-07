@@ -13,9 +13,9 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
-            IEnumerable<string> includeNames = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            IEnumerable<string>? includeNames = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -28,15 +28,15 @@ namespace GraphQL.EntityFramework
         }
 
         FieldType BuildNavigationField<TSource, TReturn>(
-            Type graphType,
+            Type? graphType,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
-            IEnumerable<string> includeNames,
-            IEnumerable<QueryArgument> arguments)
+            IEnumerable<string>? includeNames,
+            IEnumerable<QueryArgument>? arguments)
             where TReturn : class
         {
             //lookup the graph type if not explicitly specified
-            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             //graphType represents the base field type, not the list graph type
             //create a list graph type based on the graph type specified
             var listGraphType = MakeListGraphType(graphType);
@@ -47,9 +47,9 @@ namespace GraphQL.EntityFramework
         FieldType BuildNavigationField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
-            IEnumerable<string> includeNames,
+            IEnumerable<string>? includeNames,
             Type listGraphType,
-            IEnumerable<QueryArgument> arguments)
+            IEnumerable<QueryArgument>? arguments)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);

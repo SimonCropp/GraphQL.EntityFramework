@@ -7,7 +7,7 @@ namespace GraphQL.EntityFramework
         ResolveFieldContext<TSource>
         where TDbContext : DbContext
     {
-        public TDbContext DbContext { get; set; }
-        public Filters Filters { get; set; }
+        public TDbContext DbContext { get; set; } = null!;
+        public Filters Filters { get; set; } = null!;
     }
 }

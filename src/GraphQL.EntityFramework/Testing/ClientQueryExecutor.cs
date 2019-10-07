@@ -17,7 +17,7 @@ namespace GraphQL.EntityFramework.Testing
             ClientQueryExecutor.uri = uri;
         }
 
-        public static Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object variables = null, Action<HttpHeaders> headerAction = null)
+        public static Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
         {
             Guard.AgainstNull(nameof(client), client);
             Guard.AgainstNullWhiteSpace(nameof(query), query);
@@ -35,7 +35,7 @@ namespace GraphQL.EntityFramework.Testing
             return client.SendAsync(request);
         }
 
-        public static Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query, object variables = null, Action<HttpHeaders> headerAction = null)
+        public static Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
         {
             Guard.AgainstNull(nameof(client), client);
             Guard.AgainstNullWhiteSpace(nameof(query), query);
@@ -47,11 +47,11 @@ namespace GraphQL.EntityFramework.Testing
             return client.SendAsync(request);
         }
 
-        static string ToJson(object target)
+        static string ToJson(object? target)
         {
             if (target == null)
             {
-                return "";
+                return string.Empty;
             }
 
             return JsonConvert.SerializeObject(target);

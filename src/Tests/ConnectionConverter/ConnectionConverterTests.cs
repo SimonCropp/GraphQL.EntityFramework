@@ -57,12 +57,10 @@ public class ConnectionConverterTests :
     public async Task Queryable(int? first, int? after, int? last, int? before)
     {
         var fieldContext = new ResolveFieldContext<string>();
-        using (var database = await sqlInstance.BuildWithRollback())
-        {
-            var entities = database.Context.Entities;
-            var connection = await ConnectionConverter.ApplyConnectionContext(entities, first, after, last, before, fieldContext, new Filters());
-            ObjectApprover.Verify(connection);
-        }
+        using var database = await sqlInstance.BuildWithRollback();
+        var entities = database.Context.Entities;
+        var connection = await ConnectionConverter.ApplyConnectionContext(entities, first, after, last, before, fieldContext, new Filters());
+        ObjectApprover.Verify(connection);
     }
 
     [Theory]
@@ -103,13 +101,13 @@ public class ConnectionConverterTests :
     public class Entity
     {
         public Guid Id { get; set; } = XunitLogging.Context.NextGuid();
-        public string Property { get; set; }
+        public string? Property { get; set; }
     }
 
     public class MyContext :
         DbContext
     {
-        public DbSet<Entity> Entities { get; set; }
+        public DbSet<Entity> Entities { get; set; } = null!;
 
         public MyContext(DbContextOptions options) :
             base(options)

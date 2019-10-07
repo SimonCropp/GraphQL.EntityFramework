@@ -15,8 +15,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
@@ -25,8 +25,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -38,8 +38,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
@@ -49,8 +49,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -62,8 +62,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             return AddQueryField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
@@ -72,8 +72,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null)
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -82,10 +82,10 @@ namespace GraphQL.EntityFramework
         }
 
         FieldType BuildQueryField<TSource, TReturn>(
-            Type graphType,
+            Type? graphType,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            IEnumerable<QueryArgument> arguments)
+            IEnumerable<QueryArgument>? arguments)
             where TReturn : class
         {
             return BuildQueryField(name, resolve, arguments, graphType);
@@ -94,14 +94,14 @@ namespace GraphQL.EntityFramework
         FieldType BuildQueryField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            IEnumerable<QueryArgument> arguments,
-            Type graphType)
+            IEnumerable<QueryArgument>? arguments,
+            Type? graphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
             //lookup the graph type if not explicitly specified
-            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             //create a list graph type based on the base field graph type
             var listGraphType = MakeListGraphType(graphType);
             //build the field
