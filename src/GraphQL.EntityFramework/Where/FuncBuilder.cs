@@ -6,7 +6,7 @@ using System.Reflection;
 
 static class FuncBuilder<TInput>
 {
-    private static readonly string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
+    private const string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
 
     public static Func<TInput, bool> BuildPredicate(WhereExpression where)
     {
@@ -34,12 +34,13 @@ static class FuncBuilder<TInput>
             // Generate the predicate for the list item type
             var subPredicate = typeof(FuncBuilder<>)
                 .MakeGenericType(listItemType)
-                .GetMethod("BuildPredicate", BindingFlags.Public | BindingFlags.Static)
-                .Invoke(new object(), new object[] { listPath, comparison, values!, stringComparison! }) as Func<TInput, bool>;
+                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(m => m.Name.Equals("BuildPredicate") && m.GetParameters().Length == 4).Single()
+                .Invoke(new object(), new object[] { listPath, comparison, values!, stringComparison! });
 
             // Generate a method info for the Any Enumerable Static Method
             var anyInfo = typeof(Enumerable)
-                        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                        .GetMethods(BindingFlags.Public | BindingFlags.Static)
                         .First(m => m.Name == "Any" && m.GetParameters().Count() == 2)
                         .MakeGenericMethod(listItemType);
 
@@ -53,33 +54,33 @@ static class FuncBuilder<TInput>
         {
             propertyFunc = PropertyCache<TInput>.GetProperty(path);
 
-        if (propertyFunc.PropertyType == typeof(string))
-        {
-            WhereValidator.ValidateString(comparison, stringComparison);
-            var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
-            switch (comparison)
+            if (propertyFunc.PropertyType == typeof(string))
             {
-                case Comparison.In:
-                    return BuildStringIn(propertyFunc, values!, stringComparisonValue);
+                WhereValidator.ValidateString(comparison, stringComparison);
+                var stringComparisonValue = stringComparison.GetValueOrDefault(StringComparison.OrdinalIgnoreCase);
+                switch (comparison)
+                {
+                    case Comparison.In:
+                        return BuildStringIn(propertyFunc, values!, stringComparisonValue);
 
-                case Comparison.NotIn:
-                    return BuildStringIn(propertyFunc, values!, stringComparisonValue, true);
+                    case Comparison.NotIn:
+                        return BuildStringIn(propertyFunc, values!, stringComparisonValue, true);
 
-                default:
-                    var value = values?.Single();
-                    return target => BuildStringCompare(comparison, value, propertyFunc, target, stringComparisonValue);
+                    default:
+                        var value = values?.Single();
+                        return target => BuildStringCompare(comparison, value, propertyFunc, target, stringComparisonValue);
+                }
             }
-        }
-        else
-        {
-            WhereValidator.ValidateObject(propertyFunc.PropertyType, comparison, stringComparison);
-            switch (comparison)
+            else
             {
-                case Comparison.In:
-                    return BuildObjectIn(propertyFunc, values!);
+                WhereValidator.ValidateObject(propertyFunc.PropertyType, comparison, stringComparison);
+                switch (comparison)
+                {
+                    case Comparison.In:
+                        return BuildObjectIn(propertyFunc, values!);
 
-                case Comparison.NotIn:
-                    return BuildObjectIn(propertyFunc, values!, true);
+                    case Comparison.NotIn:
+                        return BuildObjectIn(propertyFunc, values!, true);
 
                     default:
                         var value = values?.Single();

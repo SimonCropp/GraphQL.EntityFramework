@@ -8,7 +8,7 @@ namespace GraphQL.EntityFramework
 {
     public static class ExpressionBuilder<T>
     {
-        private static readonly string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
+        private const string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
 
         public static Expression<Func<T, bool>> BuildPredicate(WhereExpression where)
         {
@@ -37,7 +37,8 @@ namespace GraphQL.EntityFramework
                 // Generate the predicate for the list item type
                 var subPredicate = typeof(ExpressionBuilder<>)
                     .MakeGenericType(listItemType)
-                    .GetMethod("BuildPredicate", BindingFlags.NonPublic | BindingFlags.Static)
+                    .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
+                    .Where(m => m.Name.Equals("BuildPredicate") && m.GetParameters().Length == 4).Single()
                     .Invoke(new object(), new object[] { listPath, comparison, values!, stringComparison! }) as Expression;
 
                 // Generate a method info for the Any Enumerable Static Method

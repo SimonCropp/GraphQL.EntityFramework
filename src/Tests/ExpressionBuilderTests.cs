@@ -410,12 +410,12 @@ public class ExpressionBuilderTests :
 
     [Theory]
     [InlineData("Employees[Name]", Comparison.Equal, "Person 1", "Company 1", null)]
-    [InlineData("Employees[Name]", Comparison.NotEqual, "Person 3", "Company 2", null)]
+    [InlineData("Employees[Name]", Comparison.NotEqual, "Person 3", "Company 1", null)]
     [InlineData("Employees[Name]", Comparison.Contains, "son 2", "Company 1", null)]
     [InlineData("Employees[Name]", Comparison.StartsWith, "Person 2", "Company 1", null)]
     [InlineData("Employees[Name]", Comparison.EndsWith, "son 2", "Company 1", null)]
     [InlineData("Employees[Name]", Comparison.EndsWith, "person 2", "Company 1", StringComparison.OrdinalIgnoreCase)]
-    [InlineData("Employees[Age]", Comparison.Equal, "12", "Company 2", null)]
+    [InlineData("Employees[Age]", Comparison.Equal, "12", "Company 1", null)]
     [InlineData("Employees[Age]", Comparison.GreaterThan, "12", "Company 2", null)]
     [InlineData("Employees[Age]", Comparison.NotEqual, "12", "Company 2", null)]
     [InlineData("Employees[Age]", Comparison.GreaterThanOrEqual, "31", "Company 2", null)]
@@ -461,7 +461,7 @@ public class ExpressionBuilderTests :
                     },
                     new Person
                     {
-                        Name = "Person 4",
+                        Name = "Person 3",
                         Age = 31,
                         DateOfBirth = new DateTime(1980, 10, 11, 10, 10, 10, DateTimeKind.Utc)
                     },
