@@ -11,35 +11,6 @@ namespace GraphQL.EntityFramework
     {
         const string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
 
-        private static readonly MethodInfo StringContains = typeof(string).GetMethod("Contains");
-        private static readonly MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
-        private static readonly MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
-        private static readonly MethodInfo StringTrim = typeof(string).GetMethod("Trim", new Type[0]);
-        private static readonly MethodInfo StringToLower = typeof(string).GetMethod("ToLower", new Type[0]);
-
-        //private static readonly Dictionary<Comparison, Func<Expression, Expression, Expression, Expression>> Expressions = new Dictionary<Comparison, Func<Expression, Expression, Expression, Expression>>
-        //    {
-        //        { Comparison.Equal, (member, constant, constant2) => Expression.Equal(member, constant) },
-        //        { Comparison.NotEqual, (member, constant, constant2) => Expression.NotEqual(member, constant) },
-        //        { Comparison.GreaterThan, (member, constant, constant2) => Expression.GreaterThan(member, constant) },
-        //        { Comparison.GreaterThanOrEqual, (member, constant, constant2) => Expression.GreaterThanOrEqual(member, constant) },
-        //        { Comparison.LessThan, (member, constant, constant2) => Expression.LessThan(member, constant) },
-        //        { Comparison.LessThanOrEqual, (member, constant, constant2) => Expression.LessThanOrEqual(member, constant) },
-        //        { Comparison.Contains, (member, constant, constant2) => Contains(member, constant) },
-        //        { Comparison.NotContains, (member, constant, constant2) => Expression.Not(Contains(member, constant)) },
-        //        { Comparison.StartsWith, (member, constant, constant2) => Expression.Call(member, StringStartsWith, constant) },
-        //        { Comparison.EndsWith, (member, constant, constant2) => Expression.Call(member, StringEndsWith, constant) },
-        //        { Comparison.Between, (member, constant, constant2) => Between(member, constant, constant2) },
-        //        { Comparison.In, (member, constant, constant2) => Contains(member, constant) },
-        //        { Comparison.NotIn, (member, constant, constant2) => Expression.Not(Contains(member, constant)) },
-        //        { Comparison.IsNull, (member, constant, constant2) => Expression.Equal(member, Expression.Constant(null)) },
-        //        { Comparison.IsNotNull, (member, constant, constant2) => Expression.NotEqual(member, Expression.Constant(null)) },
-        //        { Comparison.IsEmpty, (member, constant, constant2) => Expression.Equal(member, Expression.Constant(string.Empty)) },
-        //        { Comparison.IsNotEmpty, (member, constant, constant2) => Expression.NotEqual(member, Expression.Constant(string.Empty)) },
-        //        { Comparison.IsNullOrWhiteSpace, (member, constant, constant2) => IsNullOrWhiteSpace(member) },
-        //        { Comparison.IsNotNullNorWhiteSpace, (member, constant, constant2) => IsNotNullNorWhiteSpace(member) }
-        //    };
-
         #region Conditional List
 
         /// <summary>
@@ -76,12 +47,19 @@ namespace GraphQL.EntityFramework
                 {
                     // Recurse with new set of expression
                     nextExpression = MakePredicateBody(where.GroupedExpressions);
+
+                    // If the whole group is to be negated
+                    if (where.Negate)
+                    {
+                        // Negate it
+                        nextExpression = NegateExpression(nextExpression);
+                    }
                 }
                 // Otherwise handle single expressions
                 else
                 {
                     // Get the predicate body for the single expression
-                    nextExpression = MakePredicateBody(where.Path, where.Comparison ?? Comparison.Equal, where.Value, where.Case);
+                    nextExpression = MakePredicateBody(where.Path, where.Comparison, where.Value, where.Negate, where.Case);
                 }
 
                 // If this is the first where processed
@@ -93,7 +71,7 @@ namespace GraphQL.EntityFramework
                 else
                 {
                     // Otherwise combine expression by specified connector or default (AND) if not provided
-                    mainExpression = CombineExpressions(previousWhere.Connector ?? Connector.And, mainExpression, nextExpression);
+                    mainExpression = CombineExpressions(previousWhere.Connector, mainExpression, nextExpression);
                 }
 
                 // Save the previous where so the connector can be retrieved
@@ -116,9 +94,9 @@ namespace GraphQL.EntityFramework
         /// <param name="values"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
-        public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
+        public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, bool not = false, StringComparison? stringComparison = null)
         {
-            var expressionBody = MakePredicateBody(path, comparison, values, stringComparison);
+            var expressionBody = MakePredicateBody(path, comparison, values, not, stringComparison);
             var param = PropertyCache<T>.GetSourceParameter();
 
             return Expression.Lambda<Func<T, bool>>(expressionBody, param);
@@ -133,24 +111,31 @@ namespace GraphQL.EntityFramework
         /// <param name="values"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
-        private static Expression MakePredicateBody(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
+        private static Expression MakePredicateBody(string path, Comparison comparison, string[] values, bool not = false, StringComparison? stringComparison = null)
         {
-            Expression expression;
+            Expression expressionBody;
 
             // If path includes list property access
             if (HasListInPath(path))
             {
                 // Handle a list path
-                expression = ProcessList(path, comparison, values, stringComparison);
+                expressionBody = ProcessList(path, comparison, values, stringComparison);
             }
             // Otherwise linear property access
             else
             {
                 // Just get expression
-                expression = GetExpression(path, comparison, values, stringComparison);
+                expressionBody = GetExpression(path, comparison, values, stringComparison);
             }
 
-            return expression;
+            // If the expression should be negated
+            if (not)
+            {
+                // Not it
+                expressionBody = NegateExpression(expressionBody);
+            }
+
+            return expressionBody;
         }
 
         #endregion
@@ -182,8 +167,8 @@ namespace GraphQL.EntityFramework
             var subPredicate = typeof(FilterBuilder<>)
                 .MakeGenericType(listItemType)
                 .GetMethods(BindingFlags.Public | BindingFlags.Static)
-                .Where(m => m.Name.Equals("BuildPredicate") && m.GetParameters().Length == 4).Single()
-                .Invoke(new object(), new object[] { path, comparison, values, stringComparison }) as Expression;
+                .Where(m => m.Name.Equals("BuildPredicate") && m.GetParameters().Length == 5).Single()
+                .Invoke(new object(), new object[] { path, comparison, values, false, stringComparison }) as Expression;
 
             // Generate a method info for the Any Enumerable Static Method
             var anyInfo = typeof(Enumerable)
@@ -212,39 +197,34 @@ namespace GraphQL.EntityFramework
 
             if (property.PropertyType == typeof(string))
             {
-                WhereValidator.ValidateString(comparison, stringComparison);
                 switch (comparison)
                 {
                     case Comparison.In:
+                        WhereValidator.ValidateString(comparison, stringComparison);
                         expressionBody = MakeStringIn(values, property, stringComparison);
                         break;
 
-                    case Comparison.NotIn:
-                        expressionBody = MakeStringIn(values, property, stringComparison, true);
-                        break;
-
                     default:
+                        WhereValidator.ValidateSingleString(comparison, stringComparison);
                         var value = values?.Single();
-                        expressionBody = MakeStringCompare(comparison, value, property, stringComparison);
+                        expressionBody = MakeStringComparison(comparison, value, property, stringComparison);
                         break;
                 }
             }
             else
             {
-                WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
                 switch (comparison)
                 {
                     case Comparison.In:
+                        WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
                         expressionBody = MakeObjectIn(values, property);
                         break;
 
-                    case Comparison.NotIn:
-                        expressionBody = MakeObjectIn(values, property, true);
-                        break;
-
                     default:
+                        WhereValidator.ValidateSingleObject(property.PropertyType, comparison, null);
                         var value = values?.Single();
-                        expressionBody = MakeObjectCompare(comparison, value, property);
+                        var valueObject = TypeConverter.ConvertStringToType(value, property.PropertyType);
+                        expressionBody = MakeObjectComparison(comparison, valueObject, property);
                         break;
                 }
             }
@@ -256,49 +236,67 @@ namespace GraphQL.EntityFramework
 
 
         #region Operations
-
-        static Expression MakeStringCompare(Comparison comparison, string value, Property<T> property, StringComparison? stringComparison)
+        
+        /// <summary>
+        /// Make Object List In Comparision
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        static Expression MakeObjectIn(string[] values, Property<T> property)
         {
-            WhereValidator.ValidateSingleString(comparison, stringComparison);
-            var body = MakeStringComparison(property.Left, comparison, value, stringComparison);
-            return body;
-        }
-
-        static Expression MakeObjectCompare(Comparison comparison, string value, Property<T> property)
-        {
-            WhereValidator.ValidateSingleObject(property.PropertyType, comparison, null);
-            var valueObject = TypeConverter.ConvertStringToType(value, property.PropertyType);
-            var body = MakeObjectComparison(property.Left, comparison, valueObject);
-            return body;
-        }
-
-        static Expression MakeObjectIn(string[] values, Property<T> property, bool not = false)
-        {
+            // Attempt to convert the string values to the object type
             var objects = TypeConverter.ConvertStringsToList(values, property.PropertyType);
+            // Make the object values a constant expression
             var constant = Expression.Constant(objects);
-            var body = Expression.Call(constant, property.ListContainsMethod, property.Left);
-            return not ? Expression.Not(body) : (Expression)body;
+            // Build and return the expression body
+            return Expression.Call(constant, property.ListContainsMethod, property.Left);
         }
 
-        static Expression MakeStringIn(string[] array, Property<T> property, StringComparison? comparison, bool not = false)
+        /// <summary>
+        /// Make String List In Comparison
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="property"></param>
+        /// <param name="comparison"></param>
+        /// <returns></returns>
+        static Expression MakeStringIn(string[] values, Property<T> property, StringComparison? comparison)
         {
             MethodCallExpression equalsBody;
+
+            // If string comparison not provided
             if (comparison == null)
             {
+                // Do basic string compare
                 equalsBody = Expression.Call(null, ReflectionCache.StringEqual, ExpressionCache.StringParam, property.Left);
             }
+            // Otherwise
             else
             {
+                // String comparison with comparison type value
                 equalsBody = Expression.Call(null, ReflectionCache.StringEqualComparison, ExpressionCache.StringParam, property.Left, Expression.Constant(comparison));
             }
 
+            // Make lambda for comparing each string value against property value
             var itemEvaluate = Expression.Lambda<Func<string, bool>>(equalsBody, ExpressionCache.StringParam);
-            var anyBody = Expression.Call(null, ReflectionCache.StringAny, Expression.Constant(array), itemEvaluate);
-            return not ? Expression.Not(anyBody) : (Expression)anyBody;
+
+            // Build Expression body to check if any string values match the property value
+            return Expression.Call(null, ReflectionCache.StringAny, Expression.Constant(values), itemEvaluate);
         }
 
-        static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison? stringComparison)
+
+        /// <summary>
+        /// Make String based single value comparisons
+        /// </summary>
+        /// <param name="comparison"></param>
+        /// <param name="value"></param>
+        /// <param name="property"></param>
+        /// <param name="stringComparison"></param>
+        /// <returns></returns>
+        static Expression MakeStringComparison(Comparison comparison, string value, Property<T> property, StringComparison? stringComparison)
         {
+            var left = property.Left;
+
             var valueConstant = Expression.Constant(value, typeof(string));
             var nullCheck = Expression.NotEqual(left, ExpressionCache.Null);
 
@@ -310,9 +308,6 @@ namespace GraphQL.EntityFramework
                         return Expression.Call(ReflectionCache.StringEqual, left, valueConstant);
                     case Comparison.Like:
                         return Expression.Call(null, ReflectionCache.StringLike, ExpressionCache.EfFunction, left, valueConstant);
-                    case Comparison.NotEqual:
-                        var notEqualsCall = Expression.Call(ReflectionCache.StringEqual, left, valueConstant);
-                        return Expression.Not(notEqualsCall);
                     case Comparison.StartsWith:
                         var startsWithExpression = Expression.Call(left, ReflectionCache.StringStartsWith, valueConstant);
                         return Expression.AndAlso(nullCheck, startsWithExpression);
@@ -332,9 +327,6 @@ namespace GraphQL.EntityFramework
                 {
                     case Comparison.Equal:
                         return Expression.Call(ReflectionCache.StringEqualComparison, left, valueConstant, comparisonConstant);
-                    case Comparison.NotEqual:
-                        var notEqualsCall = Expression.Call(ReflectionCache.StringEqualComparison, left, valueConstant, comparisonConstant);
-                        return Expression.Not(notEqualsCall);
                     case Comparison.StartsWith:
                         var startsWithExpression = Expression.Call(left, ReflectionCache.StringStartsWithComparison, valueConstant, comparisonConstant);
                         return Expression.AndAlso(nullCheck, startsWithExpression);
@@ -352,15 +344,22 @@ namespace GraphQL.EntityFramework
             throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
         }
 
-        static Expression MakeObjectComparison(Expression left, Comparison comparison, object value)
+        /// <summary>
+        /// Make Object based single value comparisons
+        /// </summary>
+        /// <param name="comparison"></param>
+        /// <param name="value"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        static Expression MakeObjectComparison(Comparison comparison, object value, Property<T> property)
         {
+            var left = property.Left;
             var constant = Expression.Constant(value, left.Type);
+
             switch (comparison)
             {
                 case Comparison.Equal:
                     return Expression.MakeBinary(ExpressionType.Equal, left, constant);
-                case Comparison.NotEqual:
-                    return Expression.MakeBinary(ExpressionType.NotEqual, left, constant);
                 case Comparison.GreaterThan:
                     return Expression.MakeBinary(ExpressionType.GreaterThan, left, constant);
                 case Comparison.GreaterThanOrEqual:
@@ -373,57 +372,6 @@ namespace GraphQL.EntityFramework
 
             throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
         }
-
-        #endregion
-
-
-        #region New Operations
-
-        //private static Expression CombineExpressions(Expression expr1, Expression expr2, Connector connector)
-        //{
-        //    return connector == Connector.And ? Expression.AndAlso(expr1, expr2) : Expression.OrElse(expr1, expr2);
-        //}
-
-        //private static Expression Contains(Expression member, Expression expression)
-        //{
-        //    MethodCallExpression contains = null;
-        //    if (expression is ConstantExpression constant && typeof(IEnumerable<>).IsAssignableFrom(constant.Value.GetType()))
-        //    {
-        //        var type = constant.Value.GetType();
-        //        var containsInfo = type.GetMethod("Contains", new[] { type.GetGenericArguments()[0] });
-        //        contains = Expression.Call(constant, containsInfo, member);
-        //    }
-
-        //    return contains ?? Expression.Call(member, StringContains, expression); ;
-        //}
-
-        //private static Expression Between(Expression member, Expression constant, Expression constant2)
-        //{
-        //    var left = Expressions[Comparison.GreaterThanOrEqual].Invoke(member, constant, null);
-        //    var right = Expressions[Comparison.LessThanOrEqual].Invoke(member, constant2, null);
-
-        //    return CombineExpressions(left, right, Connector.And);
-        //}
-
-        //private static Expression IsNullOrWhiteSpace(Expression member)
-        //{
-        //    Expression exprNull = Expression.Constant(null);
-        //    var trimMemberCall = Expression.Call(member, StringTrim);
-        //    Expression exprEmpty = Expression.Constant(string.Empty);
-        //    return Expression.OrElse(
-        //                            Expression.Equal(member, exprNull),
-        //                            Expression.Equal(trimMemberCall, exprEmpty));
-        //}
-
-        //private static Expression IsNotNullNorWhiteSpace(Expression member)
-        //{
-        //    Expression exprNull = Expression.Constant(null);
-        //    var trimMemberCall = Expression.Call(member, StringTrim);
-        //    Expression exprEmpty = Expression.Constant(string.Empty);
-        //    return Expression.AndAlso(
-        //                            Expression.NotEqual(member, exprNull),
-        //                            Expression.NotEqual(trimMemberCall, exprEmpty));
-        //}
 
         #endregion
 
@@ -458,6 +406,16 @@ namespace GraphQL.EntityFramework
             }
 
             throw new NotSupportedException($"Invalid connector operator '{connector}'.");
+        }
+
+        /// <summary>
+        /// Negates a supplied expression
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        static Expression NegateExpression(Expression expression)
+        {
+            return Expression.Not(expression);
         }
 
         #endregion

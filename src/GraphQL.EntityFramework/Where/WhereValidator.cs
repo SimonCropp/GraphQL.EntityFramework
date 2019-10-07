@@ -22,8 +22,7 @@ static class WhereValidator
     public static void ValidateSingleObject(Type propertyType, Comparison comparison, StringComparison? @case)
     {
         ValidateObject(propertyType, comparison, @case);
-        if (comparison == Comparison.In ||
-            comparison == Comparison.NotIn)
+        if (comparison == Comparison.In)
         {
             throw new Exception($"Cannot perform {comparison} on {propertyType.FullName}.");
         }
@@ -48,8 +47,7 @@ static class WhereValidator
     public static void ValidateSingleString(Comparison comparison, StringComparison? @case)
     {
         ValidateString(comparison, @case);
-        if (comparison == Comparison.In ||
-            comparison == Comparison.NotIn)
+        if (comparison == Comparison.In)
         {
             throw new Exception($"Cannot perform {comparison} on a single String.");
         }
