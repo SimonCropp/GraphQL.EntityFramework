@@ -42,10 +42,8 @@ public class DependencyTests :
         {
             var builder = new DbContextOptionsBuilder<DependencyDbContext>();
             builder.UseSqlServer("Fake");
-            using (var context = new DependencyDbContext(builder.Options))
-            {
-                Instance = context.Model;
-            }
+            using var context = new DependencyDbContext(builder.Options);
+            Instance = context.Model;
         }
 
         public static readonly IModel Instance;
@@ -54,117 +52,101 @@ public class DependencyTests :
     [Fact]
     public async Task ExplicitModel()
     {
-        using (var database = await sqlInstance.Build())
+        using var database = await sqlInstance.Build();
+        var dbContext = database.Context;
+        await AddData(dbContext);
+        var services = BuildServiceCollection();
+
+        EfGraphQLConventions.RegisterInContainer(
+            services,
+            userContext => (DependencyDbContext) userContext,
+            ModelBuilder.Instance);
+        using var provider = services.BuildServiceProvider();
+        using var schema = new DependencySchema(provider);
+        var executionOptions = new ExecutionOptions
         {
-            var dbContext = database.Context;
-            await AddData(dbContext);
-            var services = BuildServiceCollection();
+            Schema = schema,
+            Query = query,
+            UserContext = dbContext,
+            Inputs = null
+        };
 
-            EfGraphQLConventions.RegisterInContainer(
-                services,
-                userContext => (DependencyDbContext) userContext,
-                ModelBuilder.Instance);
-            using (var provider = services.BuildServiceProvider())
-            using (var schema = new DependencySchema(provider))
-            {
-                var executionOptions = new ExecutionOptions
-                {
-                    Schema = schema,
-                    Query = query,
-                    UserContext = dbContext,
-                    Inputs = null
-                };
-
-                await ExecutionResultData(executionOptions);
-            }
-        }
+        await ExecutionResultData(executionOptions);
     }
 
     [Fact]
     public async Task ScopedDbContext()
     {
-        using (var database = await sqlInstance.Build())
+        using var database = await sqlInstance.Build();
+        var dbContext = database.Context;
+        await AddData(dbContext);
+        var services = BuildServiceCollection();
+        services.AddScoped(x => { return database.Context; });
+
+        EfGraphQLConventions.RegisterInContainer(
+            services,
+            userContext => (DependencyDbContext) userContext);
+        using var provider = services.BuildServiceProvider();
+        using var schema = new DependencySchema(provider);
+        var executionOptions = new ExecutionOptions
         {
-            var dbContext = database.Context;
-            await AddData(dbContext);
-            var services = BuildServiceCollection();
-            services.AddScoped(x => { return database.Context; });
+            Schema = schema,
+            Query = query,
+            UserContext = dbContext,
+            Inputs = null
+        };
 
-            EfGraphQLConventions.RegisterInContainer(
-                services,
-                userContext => (DependencyDbContext) userContext);
-            using (var provider = services.BuildServiceProvider())
-            using (var schema = new DependencySchema(provider))
-            {
-                var executionOptions = new ExecutionOptions
-                {
-                    Schema = schema,
-                    Query = query,
-                    UserContext = dbContext,
-                    Inputs = null
-                };
-
-                await ExecutionResultData(executionOptions);
-            }
-        }
+        await ExecutionResultData(executionOptions);
     }
 
     [Fact]
     public async Task TransientDbContext()
     {
-        using (var database = await sqlInstance.Build())
+        using var database = await sqlInstance.Build();
+        var dbContext = database.Context;
+        await AddData(dbContext);
+        var services = BuildServiceCollection();
+        services.AddTransient(x => database.Context);
+
+        EfGraphQLConventions.RegisterInContainer(
+            services,
+            userContext => (DependencyDbContext) userContext);
+        using var provider = services.BuildServiceProvider();
+        using var schema = new DependencySchema(provider);
+        var executionOptions = new ExecutionOptions
         {
-            var dbContext = database.Context;
-            await AddData(dbContext);
-            var services = BuildServiceCollection();
-            services.AddTransient(x => database.Context);
+            Schema = schema,
+            Query = query,
+            UserContext = dbContext,
+            Inputs = null
+        };
 
-            EfGraphQLConventions.RegisterInContainer(
-                services,
-                userContext => (DependencyDbContext) userContext);
-            using (var provider = services.BuildServiceProvider())
-            using (var schema = new DependencySchema(provider))
-            {
-                var executionOptions = new ExecutionOptions
-                {
-                    Schema = schema,
-                    Query = query,
-                    UserContext = dbContext,
-                    Inputs = null
-                };
-
-                await ExecutionResultData(executionOptions);
-            }
-        }
+        await ExecutionResultData(executionOptions);
     }
 
     [Fact]
     public async Task SingletonDbContext()
     {
-        using (var database = await sqlInstance.Build())
+        using var database = await sqlInstance.Build();
+        var dbContext = database.Context;
+        await AddData(dbContext);
+        var services = BuildServiceCollection();
+        services.AddSingleton(database.Context);
+
+        EfGraphQLConventions.RegisterInContainer(
+            services,
+            userContext => (DependencyDbContext) userContext);
+        using var provider = services.BuildServiceProvider();
+        using var schema = new DependencySchema(provider);
+        var executionOptions = new ExecutionOptions
         {
-            var dbContext = database.Context;
-            await AddData(dbContext);
-            var services = BuildServiceCollection();
-            services.AddSingleton(database.Context);
+            Schema = schema,
+            Query = query,
+            UserContext = dbContext,
+            Inputs = null
+        };
 
-            EfGraphQLConventions.RegisterInContainer(
-                services,
-                userContext => (DependencyDbContext) userContext);
-            using (var provider = services.BuildServiceProvider())
-            using (var schema = new DependencySchema(provider))
-            {
-                var executionOptions = new ExecutionOptions
-                {
-                    Schema = schema,
-                    Query = query,
-                    UserContext = dbContext,
-                    Inputs = null
-                };
-
-                await ExecutionResultData(executionOptions);
-            }
-        }
+        await ExecutionResultData(executionOptions);
     }
 
     static ServiceCollection BuildServiceCollection()

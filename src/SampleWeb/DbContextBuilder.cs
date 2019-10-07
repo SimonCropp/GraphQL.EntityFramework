@@ -5,7 +5,7 @@ using EfLocalDb;
 // Replace with a real DbContext
 public static class DbContextBuilder
 {
-    static SqlDatabase<GraphQlEfSampleDbContext> database;
+    static SqlDatabase<GraphQlEfSampleDbContext> database = null!;
 
     static async Task CreateDb(GraphQlEfSampleDbContext context)
     {

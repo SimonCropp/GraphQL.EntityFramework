@@ -15,8 +15,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -27,8 +27,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -41,8 +41,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -53,8 +53,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -67,8 +67,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -79,8 +79,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false)
             where TReturn : class
         {
@@ -92,8 +92,8 @@ namespace GraphQL.EntityFramework
         FieldType BuildSingleField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            IEnumerable<QueryArgument> arguments,
-            Type graphType,
+            IEnumerable<QueryArgument>? arguments,
+            Type? graphType,
             bool nullable)
             where TReturn : class
         {
@@ -101,7 +101,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(resolve), resolve);
 
             //lookup the graph type if not explicitly specified
-            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             //if not nullable, construct a non-null graph type for the specified graph type
             var wrappedType = nullable ? graphType : typeof(NonNullGraphType<>).MakeGenericType(graphType);
 
@@ -113,7 +113,7 @@ namespace GraphQL.EntityFramework
                 //append the default query arguments to the specified argument list
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 //custom resolve function
-                Resolver = new AsyncFieldResolver<TSource, TReturn>(
+                Resolver = new AsyncFieldResolver<TSource, TReturn?>(
                     async context =>
                     {
                         var efFieldContext = BuildContext(context);
@@ -135,9 +135,14 @@ namespace GraphQL.EntityFramework
                                 return single;
                             }
                         }
+
                         //if no value was found, or if the returned value was filtered out by the global filters,
                         //  either return null, or throw an error if the field is not nullable
-                        if (nullable) return null;
+                        if (nullable)
+                        {
+                            return null;
+                        }
+
                         throw new ExecutionError("Not found");
                     })
             };

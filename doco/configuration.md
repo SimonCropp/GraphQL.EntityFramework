@@ -40,9 +40,9 @@ The container registration can be done via adding to a [IServiceCollection](http
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
-        ResolveDbContext<TDbContext> resolveDbContext = null,
-        IModel model = null,
-        ResolveFilters resolveFilters = null)
+        ResolveDbContext<TDbContext>? resolveDbContext = null,
+        IModel? model = null,
+        ResolveFilters? resolveFilters = null)
 ```
 <sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24) / [anchor](#snippet-registerincontainer)</sup>
 <a id='snippet-registerincontainer-1'/></a>
@@ -51,7 +51,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L25-L29) / [anchor](#snippet-registerincontainer-1)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L23-L27) / [anchor](#snippet-registerincontainer-1)</sup>
 <!-- endsnippet -->
 
 
@@ -73,14 +73,12 @@ static class ModelBuilder
     {
         var builder = new DbContextOptionsBuilder();
         builder.UseSqlServer("Fake");
-        using (var context = new MyDbContext(builder.Options))
-        {
-            return context.Model;
-        }
+        using var context = new MyDbContext(builder.Options);
+        return context.Model;
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L8-L21) / [anchor](#snippet-modelbuilder)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L8-L19) / [anchor](#snippet-modelbuilder)</sup>
 <!-- endsnippet -->
 
 
@@ -116,7 +114,7 @@ A delegate that resolves the [Filters](filters.md).
 ```cs
 namespace GraphQL.EntityFramework
 {
-    public delegate Filters ResolveFilters(object userContext);
+    public delegate Filters? ResolveFilters(object userContext);
 }
 ```
 <sup>[snippet source](/src/GraphQL.EntityFramework/Filters/ResolveFilters.cs#L1-L4) / [anchor](#snippet-ResolveFilters.cs)</sup>
@@ -134,9 +132,9 @@ If null then the Filters will be resolved from the container.
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
-        ResolveDbContext<TDbContext> resolveDbContext = null,
-        IModel model = null,
-        ResolveFilters resolveFilters = null)
+        ResolveDbContext<TDbContext>? resolveDbContext = null,
+        IModel? model = null,
+        ResolveFilters? resolveFilters = null)
 ```
 <sup>[snippet source](/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24) / [anchor](#snippet-registerincontainer)</sup>
 <a id='snippet-registerincontainer-1'/></a>
@@ -145,7 +143,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup>[snippet source](/src/Snippets/Configuration.cs#L25-L29) / [anchor](#snippet-registerincontainer-1)</sup>
+<sup>[snippet source](/src/Snippets/Configuration.cs#L23-L27) / [anchor](#snippet-registerincontainer-1)</sup>
 <!-- endsnippet -->
 
 Then the `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
@@ -272,16 +270,16 @@ public class GraphQlController :
 
     public class PostBody
     {
-        public string OperationName;
-        public string Query;
-        public JObject Variables;
+        public string? OperationName;
+        public string Query = null!;
+        public JObject? Variables;
     }
 
     [HttpGet]
     public Task<ExecutionResult> Get(
         [FromQuery] string query,
-        [FromQuery] string variables,
-        [FromQuery] string operationName,
+        [FromQuery] string? variables,
+        [FromQuery] string? operationName,
         CancellationToken cancellation)
     {
         var jObject = ParseVariables(variables);
@@ -289,8 +287,8 @@ public class GraphQlController :
     }
 
     Task<ExecutionResult> Execute(string query,
-        string operationName,
-        JObject variables,
+        string? operationName,
+        JObject? variables,
         CancellationToken cancellation)
     {
         var options = new ExecutionOptions
@@ -309,7 +307,7 @@ public class GraphQlController :
         return executer.ExecuteAsync(options);
     }
 
-    static JObject ParseVariables(string variables)
+    static JObject? ParseVariables(string? variables)
     {
         if (variables == null)
         {
@@ -345,11 +343,17 @@ A user context that exposes both types.
 ```cs
 public class UserContext
 {
-    public DbContext1 DbContext1;
-    public DbContext2 DbContext2;
+    public UserContext(DbContext1 context1, DbContext2 context2)
+    {
+        DbContext1 = context1;
+        DbContext2 = context2;
+    }
+
+    public readonly DbContext1 DbContext1;
+    public readonly DbContext2 DbContext2;
 }
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L108-L114) / [anchor](#snippet-multiusercontext)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L100-L112) / [anchor](#snippet-multiusercontext)</sup>
 <!-- endsnippet -->
 
 
@@ -367,7 +371,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L71-L78) / [anchor](#snippet-registermultipleincontainer)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L70-L77) / [anchor](#snippet-registermultipleincontainer)</sup>
 <!-- endsnippet -->
 
 
@@ -383,14 +387,10 @@ var executionOptions = new ExecutionOptions
 {
     Schema = schema,
     Query = query,
-    UserContext = new UserContext
-    {
-        DbContext1 = dbContext1,
-        DbContext2 = dbContext2
-    }
+    UserContext = new UserContext(dbContext1,dbContext2)
 };
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L84-L95) / [anchor](#snippet-multiexecutionoptions)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L82-L89) / [anchor](#snippet-multiexecutionoptions)</sup>
 <!-- endsnippet -->
 
 
@@ -468,8 +468,8 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 public class GraphQlControllerTests :
     XunitApprovalBase
 {
-    static HttpClient client;
-    static WebSocketClient websocketClient;
+    static HttpClient client = null!;
+    static WebSocketClient websocketClient = null!;
     static Task startTask;
 
     static GraphQlControllerTests()
@@ -498,14 +498,9 @@ public class GraphQlControllerTests :
     id
   }
 }";
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
-        {
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains(
-                "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
-                result);
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -525,12 +520,9 @@ query ($id: ID!)
             id = "1"
         };
 
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
-        {
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains(@"{""data"":{""company"":{""id"":1}}}", result);
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -550,11 +542,9 @@ query ($id: ID!)
             id = "99"
         };
 
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
-        {
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains("Not found", result);
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Not found", result);
     }
 
     [Fact]
@@ -574,12 +564,9 @@ query ($id: ID!)
             id = "1"
         };
 
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query, variables))
-        {
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -602,14 +589,9 @@ query {
     }
   }
 }";
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
-        {
-            response.EnsureSuccessStatusCode();
-            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
-            var page = result.SelectToken("..data..companiesConnection..edges[0].cursor")
-                .Value<string>();
-            Assert.NotEqual(after.ToString(), page);
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -623,24 +605,9 @@ query {
     averageAge
   }
 }";
-        using (var response = await ClientQueryExecutor.ExecuteGet(client, query))
-        {
-            response.EnsureSuccessStatusCode();
-            Approv
-            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
-            var expected = JObject.FromObject(new
-            {
-                data = new
-                {
-                    employeeSummary = new[]
-                    {
-                        new {companyId = 1, averageAge = 28.0},
-                        new {companyId = 4, averageAge = 34.0}
-                    }
-                }
-            });
-            Assert.Equal(expected.ToString(), result.ToString());
-        }
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        response.EnsureSuccessStatusCode();
+        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -654,14 +621,12 @@ query {
     id
   }
 }";
-        using (var response = await ClientQueryExecutor.ExecutePost(client, query))
-        {
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains(
-                "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
-                result);
-            response.EnsureSuccessStatusCode();
-        }
+        using var response = await ClientQueryExecutor.ExecutePost(client, query);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains(
+            "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
+            result);
+        response.EnsureSuccessStatusCode();
     }
 
     [Fact]
@@ -680,12 +645,10 @@ query ($id: ID!)
         {
             id = "1"
         };
-        using (var response = await ClientQueryExecutor.ExecutePost(client, query, variables))
-        {
-            var result = await response.Content.ReadAsStringAsync();
-            Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
-            response.EnsureSuccessStatusCode();
-        }
+        using var response = await ClientQueryExecutor.ExecutePost(client, query, variables);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
+        response.EnsureSuccessStatusCode();
     }
 
     [Fact]
@@ -707,22 +670,17 @@ subscription
   }
 }"
             },
-            websocketClient);
-
-        result.OnReceive +=
-            res =>
-            {
-                if (res == null)
+            websocketClient,response => {
+                if (response == null)
                 {
                     return;
                 }
-                Assert.Null(res.Errors);
+                Assert.Null(response.Errors);
 
-                if (res.Data != null)
+                if (response.Data != null)
                 {
                     resetEvent.Set();
-                }
-            };
+                }});
 
         var cancellationSource = new CancellationTokenSource();
 
@@ -748,7 +706,7 @@ subscription
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L298) / [anchor](#snippet-graphqlcontrollertests)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L257) / [anchor](#snippet-graphqlcontrollertests)</sup>
 <!-- endsnippet -->
 
 

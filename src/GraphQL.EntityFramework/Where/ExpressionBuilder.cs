@@ -16,7 +16,7 @@ namespace GraphQL.EntityFramework
             return BuildPredicate(where.Path, where.Comparison.GetValueOrDefault(), where.Value, where.Case);
         }
 
-        internal static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string[] values, StringComparison? stringComparison = null)
+        internal static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
         {
             Property<T> property;
 
@@ -38,7 +38,7 @@ namespace GraphQL.EntityFramework
                 var subPredicate = typeof(ExpressionBuilder<>)
                     .MakeGenericType(listItemType)
                     .GetMethod("BuildPredicate", BindingFlags.NonPublic | BindingFlags.Static)
-                    .Invoke(new object(), new object[] { listPath, comparison, values, stringComparison }) as Expression;
+                    .Invoke(new object(), new object[] { listPath, comparison, values!, stringComparison! }) as Expression;
 
                 // Generate a method info for the Any Enumerable Static Method
                 var anyInfo = typeof(Enumerable)
@@ -56,32 +56,32 @@ namespace GraphQL.EntityFramework
             {
                 property = PropertyCache<T>.GetProperty(path);
 
-                if (property.PropertyType == typeof(string))
+            if (property.PropertyType == typeof(string))
+            {
+                WhereValidator.ValidateString(comparison, stringComparison);
+                switch (comparison)
                 {
-                    WhereValidator.ValidateString(comparison, stringComparison);
-                    switch (comparison)
-                    {
-                        case Comparison.In:
-                            return BuildStringIn(values, property, stringComparison);
+                    case Comparison.In:
+                        return BuildStringIn(values!, property, stringComparison);
 
-                        case Comparison.NotIn:
-                            return BuildStringIn(values, property, stringComparison, true);
+                    case Comparison.NotIn:
+                        return BuildStringIn(values!, property, stringComparison, true);
 
-                        default:
-                            var value = values?.Single();
-                            return BuildStringCompare(comparison, value, property, stringComparison);
-                    }
+                    default:
+                        var value = values?.Single();
+                        return BuildStringCompare(comparison, value, property, stringComparison);
                 }
-                else
+            }
+            else
+            {
+                WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
+                switch (comparison)
                 {
-                    WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
-                    switch (comparison)
-                    {
-                        case Comparison.In:
-                            return BuildObjectIn(values, property);
+                    case Comparison.In:
+                        return BuildObjectIn(values!, property);
 
-                        case Comparison.NotIn:
-                            return BuildObjectIn(values, property, true);
+                    case Comparison.NotIn:
+                        return BuildObjectIn(values!, property, true);
 
                         default:
                             var value = values?.Single();
@@ -113,7 +113,7 @@ namespace GraphQL.EntityFramework
                 var subPredicate = typeof(ExpressionBuilder<>)
                     .MakeGenericType(listItemType)
                     .GetMethod("BuildSinglePredicate", BindingFlags.NonPublic | BindingFlags.Static)
-                    .Invoke(new object(), new object[] { listPath, comparison, value, stringComparison }) as Expression;
+                    .Invoke(new object(), new object[] { listPath, comparison, value, stringComparison! }) as Expression;
 
                 // Generate a method info for the Any Enumerable Static Method
                 var anyInfo = typeof(Enumerable)
@@ -142,13 +142,13 @@ namespace GraphQL.EntityFramework
             }
         }
 
-        static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string value, Property<T> property, StringComparison? stringComparison)
+        static Expression<Func<T, bool>> BuildStringCompare(Comparison comparison, string? value, Property<T> property, StringComparison? stringComparison)
         {
             var body = MakeStringComparison(property.Left, comparison, value, stringComparison);
             return Expression.Lambda<Func<T, bool>>(body, property.SourceParameter);
         }
 
-        static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string value, Property<T> property)
+        static Expression<Func<T, bool>> BuildObjectCompare(Comparison comparison, string? value, Property<T> property)
         {
             var valueObject = TypeConverter.ConvertStringToType(value, property.PropertyType);
             var body = MakeObjectComparison(property.Left, comparison, valueObject);
@@ -180,7 +180,7 @@ namespace GraphQL.EntityFramework
             return Expression.Lambda<Func<T, bool>>(not ? Expression.Not(anyBody) : (Expression) anyBody, property.SourceParameter);
         }
 
-        static Expression MakeStringComparison(Expression left, Comparison comparison, string value, StringComparison? stringComparison)
+        static Expression MakeStringComparison(Expression left, Comparison comparison, string? value, StringComparison? stringComparison)
         {
             var valueConstant = Expression.Constant(value, typeof(string));
             var nullCheck = Expression.NotEqual(left, ExpressionCache.Null);
@@ -235,7 +235,7 @@ namespace GraphQL.EntityFramework
             throw new NotSupportedException($"Invalid comparison operator '{comparison}'.");
         }
 
-        static Expression MakeObjectComparison(Expression left, Comparison comparison, object value)
+        static Expression MakeObjectComparison(Expression left, Comparison comparison, object? value)
         {
             var constant = Expression.Constant(value, left.Type);
             switch (comparison)

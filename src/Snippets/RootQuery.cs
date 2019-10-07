@@ -23,9 +23,10 @@ class RootQuery
 
     #endregion
 
-    public class MyDbContext:DbContext
+    public class MyDbContext :
+        DbContext
     {
-        public IQueryable<Company> Companies { get; set; }
+        public IQueryable<Company> Companies { get; set; } = null!;
     }
 
     public class Company
