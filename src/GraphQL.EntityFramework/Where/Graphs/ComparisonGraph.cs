@@ -22,7 +22,7 @@ class ComparisonGraph :
         AddValue("startsWith", null, Comparison.StartsWith);
     }
 
-    public override object ParseLiteral(IValue value)
+    public override object? ParseLiteral(IValue value)
     {
         var literal = base.ParseLiteral(value);
         if (literal != null)

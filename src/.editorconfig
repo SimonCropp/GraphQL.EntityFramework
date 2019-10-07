@@ -89,6 +89,9 @@ dotnet_diagnostic.CS8600.severity = none
 # CS8602: Dereference of a possibly null reference.
 dotnet_diagnostic.CS8602.severity = none
 
+# ASP0000: Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
+dotnet_diagnostic.ASP0000.severity = none
+
 [*.{csproj,targets,props}]
 indent_size = 2
 

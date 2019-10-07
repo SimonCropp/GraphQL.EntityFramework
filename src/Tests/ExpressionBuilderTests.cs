@@ -10,7 +10,7 @@ public class ExpressionBuilderTests :
 {
     public class Target
     {
-        public string Member { get; set; }
+        public string? Member { get; set; }
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class ExpressionBuilderTests :
         };
 
         var resultFromNull = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {(string) null}))
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {(string?) null}))
             .Single();
 
         Assert.Null(resultFromNull.Field);
@@ -137,7 +137,7 @@ public class ExpressionBuilderTests :
 
     public class TargetChildForPropertyNestedExpression
     {
-        public string Member;
+        public string? Member;
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public class ExpressionBuilderTests :
 
     public class TargetForIn
     {
-        public string Member;
+        public string? Member;
     }
 
     [Fact]
@@ -327,7 +327,7 @@ public class ExpressionBuilderTests :
 
     public class TargetWithField
     {
-        public string Field;
+        public string? Field;
     }
 
     [Theory]
@@ -410,7 +410,7 @@ public class ExpressionBuilderTests :
 
     public class Person
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public int Age { get; set; }
         public DateTime DateOfBirth { get; set; }
     }

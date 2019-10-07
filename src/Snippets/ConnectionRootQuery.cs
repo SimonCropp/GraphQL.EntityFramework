@@ -36,6 +36,6 @@ class ConnectionRootQuery
     public class MyDbContext :
         DbContext
     {
-        public IQueryable<Company> Companies { get; set; }
+        public IQueryable<Company> Companies { get; set; } = null!;
     }
 }

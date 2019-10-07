@@ -6,6 +6,6 @@ class OrderByGraph :
     public OrderByGraph()
     {
         Field(x => x.Path);
-        Field(x => x.Descending,true);
+        Field(x => x.Descending, true);
     }
 }

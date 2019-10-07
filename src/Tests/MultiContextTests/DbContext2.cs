@@ -3,7 +3,7 @@
 public class DbContext2 :
     DbContext
 {
-    public DbSet<Entity2> Entities { get; set; }
+    public DbSet<Entity2> Entities { get; set; } = null!;
 
     public DbContext2(DbContextOptions options) :
         base(options)

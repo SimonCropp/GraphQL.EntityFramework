@@ -52,7 +52,7 @@ static class ArgumentAppender
         };
     }
 
-    public static void AddWhereArgument(this FieldType field, IEnumerable<QueryArgument> extra)
+    public static void AddWhereArgument(this FieldType field, IEnumerable<QueryArgument>? extra)
     {
         var arguments = field.Arguments;
         arguments.Add(whereArgument());
@@ -67,7 +67,7 @@ static class ArgumentAppender
         }
     }
 
-    public static QueryArguments GetQueryArguments(IEnumerable<QueryArgument> extra)
+    public static QueryArguments GetQueryArguments(IEnumerable<QueryArgument>? extra)
     {
         var arguments = new QueryArguments
         {

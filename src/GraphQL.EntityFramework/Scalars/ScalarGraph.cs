@@ -15,7 +15,7 @@ namespace GraphQL.EntityFramework
 
         public override object Serialize(object value)
         {
-            return value?.ToString();
+            return value?.ToString()!;
         }
 
         public override object ParseValue(object value)
@@ -23,12 +23,12 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(value), value);
             var trim = value.ToString().Trim('"');
             Guard.AgainstNullWhiteSpace(nameof(value), trim);
-            return InnerParse(trim);
+            return InnerParse(trim)!;
         }
 
         protected abstract T InnerParse(string value);
 
-        public override object ParseLiteral(IValue value)
+        public override object? ParseLiteral(IValue value)
         {
             if (value is StringValue str)
             {

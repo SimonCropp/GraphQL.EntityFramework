@@ -34,16 +34,16 @@ public class GraphQlController :
 
     public class PostBody
     {
-        public string OperationName;
-        public string Query;
-        public JObject Variables;
+        public string? OperationName;
+        public string Query = null!;
+        public JObject? Variables;
     }
 
     [HttpGet]
     public Task<ExecutionResult> Get(
         [FromQuery] string query,
-        [FromQuery] string variables,
-        [FromQuery] string operationName,
+        [FromQuery] string? variables,
+        [FromQuery] string? operationName,
         CancellationToken cancellation)
     {
         var jObject = ParseVariables(variables);
@@ -51,8 +51,8 @@ public class GraphQlController :
     }
 
     Task<ExecutionResult> Execute(string query,
-        string operationName,
-        JObject variables,
+        string? operationName,
+        JObject? variables,
         CancellationToken cancellation)
     {
         var options = new ExecutionOptions
@@ -72,7 +72,7 @@ public class GraphQlController :
         return executer.ExecuteAsync(options);
     }
 
-    static JObject ParseVariables(string variables)
+    static JObject? ParseVariables(string? variables)
     {
         if (variables == null)
         {
