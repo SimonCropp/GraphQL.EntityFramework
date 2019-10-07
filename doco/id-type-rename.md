@@ -67,7 +67,7 @@ namespace GraphQL.EntityFramework
 
         public INodeVisitor Validate(ValidationContext context)
         {
-            Dictionary<string, List<VariableUsage>> variableUsages = null;
+            Dictionary<string, List<VariableUsage>>? variableUsages = null;
 
             return new EnterLeaveListener(
                 listener =>
@@ -75,7 +75,7 @@ namespace GraphQL.EntityFramework
                     listener.Match<VariableDefinition>(
                         variableDefinition =>
                         {
-                            var variableUsageValues = variableUsages[variableDefinition.Name];
+                            var variableUsageValues = variableUsages![variableDefinition.Name];
                             foreach (var variableUsage in variableUsageValues)
                             {
                                 if (variableUsage.Type is IdGraphType &&
@@ -119,5 +119,5 @@ var executionOptions = new ExecutionOptions
     ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
 };
 ```
-<sup>[snippet source](/src/Tests/IntegrationTests/QueryExecutor.cs#L29-L38) / [anchor](#snippet-executionoptionswithfixidtyperule)</sup>
+<sup>[snippet source](/src/Tests/IntegrationTests/QueryExecutor.cs#L28-L37) / [anchor](#snippet-executionoptionswithfixidtyperule)</sup>
 <!-- endsnippet -->

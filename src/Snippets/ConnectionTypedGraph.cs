@@ -28,7 +28,7 @@ class ConnectionTypedGraph
 
     public class Company
     {
-        public List<Employee> Employees { get; set; }
+        public List<Employee> Employees { get; set; } = null!;
     }
 
     public class Employee

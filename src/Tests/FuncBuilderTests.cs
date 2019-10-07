@@ -10,7 +10,7 @@ public class FuncBuilderTests :
 {
     public class Target
     {
-        public string Member { get; set; }
+        public string? Member { get; set; }
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class FuncBuilderTests :
 
     public class TargetForIn
     {
-        public string Member;
+        public string? Member;
     }
 
     [Fact]
@@ -281,7 +281,7 @@ public class FuncBuilderTests :
 
     public class TargetWithField
     {
-        public string Field;
+        public string? Field;
     }
 
     [Theory]
@@ -324,7 +324,7 @@ public class FuncBuilderTests :
 
     public class Person
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public int Age { get; set; }
         public DateTime DateOfBirth { get; set; }
     }

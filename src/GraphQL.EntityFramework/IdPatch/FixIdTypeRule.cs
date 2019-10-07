@@ -20,7 +20,7 @@ namespace GraphQL.EntityFramework
 
         public INodeVisitor Validate(ValidationContext context)
         {
-            Dictionary<string, List<VariableUsage>> variableUsages = null;
+            Dictionary<string, List<VariableUsage>>? variableUsages = null;
 
             return new EnterLeaveListener(
                 listener =>
@@ -28,7 +28,7 @@ namespace GraphQL.EntityFramework
                     listener.Match<VariableDefinition>(
                         variableDefinition =>
                         {
-                            var variableUsageValues = variableUsages[variableDefinition.Name];
+                            var variableUsageValues = variableUsages![variableDefinition.Name];
                             foreach (var variableUsage in variableUsageValues)
                             {
                                 if (variableUsage.Type is IdGraphType &&

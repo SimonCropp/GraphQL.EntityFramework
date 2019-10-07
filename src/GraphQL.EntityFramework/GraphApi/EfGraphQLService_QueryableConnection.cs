@@ -14,8 +14,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
             where TReturn : class
         {
@@ -32,8 +32,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
             where TReturn : class
         {
@@ -50,8 +50,8 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type graphType = null,
-            IEnumerable<QueryArgument> arguments = null,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
             where TReturn : class
         {
@@ -68,7 +68,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             int pageSize,
-            Type graphType)
+            Type? graphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -76,7 +76,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
             //lookup the graph type if not explicitly specified
-            graphType = graphType ?? GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             //create a ConnectionBuilder<graphType, TSource> type by invoking the static Create method on the generic type
             var fieldType = GetFieldType<TSource>(name, graphType);
             //create a ConnectionBuilder<FakeGraph, TSource> which will be returned from this method

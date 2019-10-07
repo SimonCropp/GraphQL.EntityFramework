@@ -38,7 +38,7 @@ public partial class IntegrationTests :
             buildTemplate: async dbContext =>
             {
                 await dbContext.Database.EnsureCreatedAsync();
-                await dbContext.Database.ExecuteSqlCommandAsync(
+                await dbContext.Database.ExecuteSqlRawAsync(
                     @"create view ParentEntityView as
         select Property
         from ParentEntities");
@@ -81,11 +81,9 @@ public partial class IntegrationTests :
             Property = "Value3"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2, entity3);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -99,11 +97,9 @@ public partial class IntegrationTests :
             Nullable = 10
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -117,11 +113,9 @@ public partial class IntegrationTests :
             Nullable = 10
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -138,11 +132,9 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -165,11 +157,9 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -192,11 +182,9 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -220,11 +208,9 @@ public partial class IntegrationTests :
 ";
         var entities = BuildEntities(8);
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entities.ToArray());
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entities.ToArray());
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -251,11 +237,9 @@ public partial class IntegrationTests :
 ";
         var entities = BuildEntities(8);
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entities.ToArray());
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entities.ToArray());
+        ObjectApprover.Verify(result);
     }
 
     static IEnumerable<ParentEntity> BuildEntities(uint length)
@@ -290,11 +274,9 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -317,11 +299,9 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity2, entity1);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity2, entity1);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -344,11 +324,9 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -371,11 +349,9 @@ public partial class IntegrationTests :
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -405,11 +381,9 @@ query ($value: String!)
             {
                 {"value", "value2"}
             });
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, inputs, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, inputs, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -432,11 +406,9 @@ query ($value: String!)
             Property = 3
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -448,11 +420,9 @@ query ($value: String!)
     property
   }
 }";
-        using (var database = await sqlInstance.Build())
-        {
-            var error = await Assert.ThrowsAsync<ExecutionError>(() => RunQuery(database, query, null, null));
-            ObjectApprover.Verify(error.Message);
-        }
+        using var database = await sqlInstance.Build();
+        var error = await Assert.ThrowsAsync<ExecutionError>(() => RunQuery(database, query, null, null));
+        ObjectApprover.Verify(error.Message);
     }
 
     [Fact]
@@ -474,11 +444,9 @@ query ($value: String!)
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -490,11 +458,9 @@ query ($value: String!)
     property
   }
 }";
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -516,11 +482,9 @@ query ($value: String!)
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -565,11 +529,9 @@ query ($value: String!)
         };
         entity4.Children.Add(entity5);
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -592,11 +554,9 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -619,11 +579,9 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact(Skip = "Work out how to eval server side")]
@@ -646,11 +604,9 @@ query ($value: String!)
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -680,11 +636,9 @@ query ($entityId: String!)
             {
                 {"entityId", "00000000-0000-0000-0000-000000000001"}
             });
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, inputs, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, inputs, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -714,11 +668,9 @@ query ($id: String!)
             {
                 {"id", "00000000-0000-0000-0000-000000000001"}
             });
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, inputs, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, inputs, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -742,11 +694,9 @@ query ($id: String!)
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -770,11 +720,9 @@ query ($id: String!)
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -805,11 +753,9 @@ query ($id: String!)
             Property = "Value3"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2, entity3);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -832,11 +778,9 @@ query ($id: String!)
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -860,11 +804,9 @@ query ($id: String!)
             Property = "Value2"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        ObjectApprover.Verify(result);
     }
 
     [Fact(Skip = "Work out why include is not used")]
@@ -918,11 +860,9 @@ query ($id: String!)
         };
         entity4.Children.Add(entity5);
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -966,11 +906,9 @@ query ($id: String!)
         };
         entity4.Children.Add(entity5);
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -1035,11 +973,9 @@ query ($id: String!)
             Level2Entity = level2
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, level1, level2, level3);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, level1, level2, level3);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -1079,11 +1015,9 @@ query ($id: String!)
             Level2Entity = level2b
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, level1b, level2b, level1a, level2a, level3a);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, level1b, level2b, level1a, level2a, level3a);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -1128,11 +1062,9 @@ query ($id: String!)
         };
         entity4.Children.Add(entity5);
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -1172,11 +1104,9 @@ query ($id: String!)
             Property = "Value5"
         };
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity5);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity5);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -1211,11 +1141,9 @@ query ($id: String!)
         };
         entity4.Children.Add(entity5);
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -1260,11 +1188,9 @@ query ($id: String!)
         };
         entity4.Children.Add(entity5);
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        ObjectApprover.Verify(result);
     }
 
     [Fact]
@@ -1293,18 +1219,16 @@ query ($id: String!)
         parent.Child1 = child1;
         parent.Child2 = child2;
 
-        using (var database = await sqlInstance.Build())
-        {
-            var result = await RunQuery(database, query, null, null, parent, child1, child2);
-            ObjectApprover.Verify(result);
-        }
+        using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, parent, child1, child2);
+        ObjectApprover.Verify(result);
     }
 
     static async Task<object> RunQuery(
         SqlDatabase<IntegrationDbContext> database,
         string query,
-        Inputs inputs,
-        Filters filters,
+        Inputs? inputs,
+        Filters? filters,
         params object[] entities)
     {
         var dbContext = database.Context;

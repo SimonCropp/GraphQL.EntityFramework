@@ -19,7 +19,7 @@ public class PropertyCacheTests :
 
     public class TargetForProperty
     {
-        public string Member;
+        public string? Member;
     }
 
     [Fact]
@@ -40,12 +40,12 @@ public class PropertyCacheTests :
 
     public class TargetForPropertyNested
     {
-        public TargetChildForPropertyNested Child;
+        public TargetChildForPropertyNested? Child;
     }
 
     public class TargetChildForPropertyNested
     {
-        public string Member;
+        public string? Member;
     }
 
     public PropertyCacheTests(ITestOutputHelper output) :

@@ -64,12 +64,13 @@ static class ReflectionCache
         dateTimeOffsetNullableListContains = GetContains<DateTimeOffset?>();
     }
 
-    public static MethodInfo GetListContains(Type type)
+    public static MethodInfo? GetListContains(Type type)
     {
         if (type == typeof(Guid))
         {
             return guidListContains;
         }
+
         if (type == typeof(Guid?))
         {
             return guidNullableListContains;
@@ -79,6 +80,7 @@ static class ReflectionCache
         {
             return boolListContains;
         }
+
         if (type == typeof(bool?))
         {
             return boolNullableListContains;
@@ -88,6 +90,7 @@ static class ReflectionCache
         {
             return intListContains;
         }
+
         if (type == typeof(int?))
         {
             return intNullableListContains;
@@ -97,6 +100,7 @@ static class ReflectionCache
         {
             return shortListContains;
         }
+
         if (type == typeof(short?))
         {
             return shortNullableListContains;
@@ -106,6 +110,7 @@ static class ReflectionCache
         {
             return longListContains;
         }
+
         if (type == typeof(long?))
         {
             return longNullableListContains;
@@ -115,6 +120,7 @@ static class ReflectionCache
         {
             return uintListContains;
         }
+
         if (type == typeof(uint?))
         {
             return uintNullableListContains;
@@ -124,6 +130,7 @@ static class ReflectionCache
         {
             return ushortListContains;
         }
+
         if (type == typeof(ushort?))
         {
             return ushortNullableListContains;
@@ -133,6 +140,7 @@ static class ReflectionCache
         {
             return ulongListContains;
         }
+
         if (type == typeof(ulong?))
         {
             return ulongNullableListContains;
@@ -142,6 +150,7 @@ static class ReflectionCache
         {
             return dateTimeListContains;
         }
+
         if (type == typeof(DateTime?))
         {
             return dateTimeNullableListContains;
@@ -151,6 +160,7 @@ static class ReflectionCache
         {
             return dateTimeOffsetListContains;
         }
+
         if (type == typeof(DateTimeOffset?))
         {
             return dateTimeOffsetNullableListContains;
@@ -163,7 +173,8 @@ static class ReflectionCache
     {
         return typeof(List<T>).GetMethod("Contains");
     }
-   public static bool TryGetEnumType(this Type type, out Type enumType)
+
+    public static bool TryGetEnumType(this Type type, out Type enumType)
     {
         if (type.IsEnum)
         {
@@ -174,7 +185,7 @@ static class ReflectionCache
         var underlying = Nullable.GetUnderlyingType(type);
         if (underlying == null)
         {
-            enumType = null;
+            enumType = typeof(object);
             return false;
         }
 
@@ -184,7 +195,7 @@ static class ReflectionCache
             return true;
         }
 
-        enumType = null;
+        enumType = typeof(object);
         return false;
     }
 }

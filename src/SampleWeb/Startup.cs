@@ -46,8 +46,9 @@ public class Startup
         services.AddSingleton<IDependencyResolver>(
             provider => new FuncDependencyResolver(provider.GetRequiredService));
         services.AddSingleton<ISchema, Schema>();
-        var mvc = services.AddMvc();
+        var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
         mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
+        mvc.AddNewtonsoftJson();
     }
 
     static IEnumerable<Type> GetGraphQlTypes()

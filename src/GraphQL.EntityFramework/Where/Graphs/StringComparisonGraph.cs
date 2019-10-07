@@ -5,7 +5,7 @@ using GraphQL.Types;
 class StringComparisonGraph :
     EnumerationGraphType<StringComparison>
 {
-    public override object ParseLiteral(IValue value)
+    public override object? ParseLiteral(IValue value)
     {
         var literal = base.ParseLiteral(value);
         if (literal != null)

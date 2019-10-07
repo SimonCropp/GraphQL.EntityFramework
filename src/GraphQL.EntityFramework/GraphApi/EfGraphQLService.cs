@@ -11,14 +11,14 @@ namespace GraphQL.EntityFramework
         IEfGraphQLService<TDbContext>
         where TDbContext : DbContext
     {
-        ResolveFilters resolveFilters;
+        ResolveFilters? resolveFilters;
         ResolveDbContext<TDbContext> resolveDbContext;
         Dictionary<Type, List<string>> keyNames = new Dictionary<Type, List<string>>();
 
         public EfGraphQLService(
             IModel model,
             ResolveDbContext<TDbContext> resolveDbContext,
-            ResolveFilters resolveFilters = null)
+            ResolveFilters? resolveFilters = null)
         {
             Guard.AgainstNull(nameof(model), model);
             Guard.AgainstNull(nameof(resolveDbContext), resolveDbContext);

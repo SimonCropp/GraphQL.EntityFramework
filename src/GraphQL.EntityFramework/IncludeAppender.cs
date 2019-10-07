@@ -43,7 +43,7 @@ class IncludeAppender
         return list;
     }
 
-    void AddField(List<string> list, Field field, string parentPath, FieldType fieldType, List<Navigation> parentNavigationProperties)
+    void AddField(List<string> list, Field field, string? parentPath, FieldType fieldType, List<Navigation> parentNavigationProperties)
     {
         if (!fieldType.TryGetComplexGraph(out var complexGraph))
         {
@@ -55,7 +55,7 @@ class IncludeAppender
         {
             if (subFields.Count > 0)
             {
-                ProcessSubFields(list, parentPath, subFields, complexGraph, parentNavigationProperties);
+                ProcessSubFields(list, parentPath, subFields, complexGraph!, parentNavigationProperties);
             }
 
             return;
@@ -78,10 +78,10 @@ class IncludeAppender
             list.Add(path);
         }
 
-        ProcessSubFields(list, paths.First(), subFields, complexGraph, navigations[entityType]);
+        ProcessSubFields(list, paths.First(), subFields, complexGraph!, navigations[entityType!]);
     }
 
-    static IEnumerable<string> GetPaths(string parentPath, string[] includeNames)
+    static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)
     {
         if (parentPath == null)
         {
@@ -91,7 +91,7 @@ class IncludeAppender
         return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-    void ProcessSubFields(List<string> list, string parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<Navigation> navigationProperties)
+    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<Navigation> navigationProperties)
     {
         foreach (var subField in subFields)
         {
@@ -109,19 +109,19 @@ class IncludeAppender
         return name == "edges" || name == "items" || name == "node";
     }
 
-    public static Dictionary<string, object> GetIncludeMetadata(string fieldName, IEnumerable<string> value)
+    public static Dictionary<string, object> GetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames)
     {
         var metadata = new Dictionary<string, object>();
-        SetIncludeMetadata(fieldName, value, metadata);
+        SetIncludeMetadata(fieldName, includeNames, metadata);
         return metadata;
     }
 
-    public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string> includeNames)
+    public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string>? includeNames)
     {
         SetIncludeMetadata(fieldName, includeNames, fieldType.Metadata);
     }
 
-    static void SetIncludeMetadata(string fieldName, IEnumerable<string> includeNames, IDictionary<string, object> metadata)
+    static void SetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames, IDictionary<string, object> metadata)
     {
         if (includeNames == null)
         {
@@ -146,7 +146,7 @@ class IncludeAppender
             return true;
         }
 
-        value = null;
+        value = Array.Empty<string>();
         return false;
     }
 }
