@@ -92,11 +92,49 @@ namespace GraphQL.EntityFramework
         /// <param name="path"></param>
         /// <param name="comparison"></param>
         /// <param name="values"></param>
+        /// <returns></returns>
+        public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values)
+        {
+            return BuildPredicate(path, comparison, values, null);
+        }
+
+        /// <summary>
+        /// Create a single predicate for the single set of supplied conditional arguments
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="comparison"></param>
+        /// <param name="values"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
-        public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool not = false, StringComparison? stringComparison = null)
+        public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison)
         {
-            var expressionBody = MakePredicateBody(path, comparison, values, not, stringComparison);
+            return BuildPredicate(path, comparison, values, false, stringComparison);
+        }
+
+        /// <summary>
+        /// Create a single predicate for the single set of supplied conditional arguments
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="comparison"></param>
+        /// <param name="values"></param>
+        /// <param name="negate"></param>
+        /// <returns></returns>
+        public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate)
+        {
+            return BuildPredicate(path, comparison, values, negate, null);
+        }
+
+        /// <summary>
+        /// Create a single predicate for the single set of supplied conditional arguments
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="comparison"></param>
+        /// <param name="values"></param>
+        /// <param name="stringComparison"></param>
+        /// <returns></returns>
+        public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate, StringComparison? stringComparison)
+        {
+            var expressionBody = MakePredicateBody(path, comparison, values, negate, stringComparison);
             var param = PropertyCache<T>.GetSourceParameter();
 
             return Expression.Lambda<Func<T, bool>>(expressionBody, param);
@@ -111,7 +149,7 @@ namespace GraphQL.EntityFramework
         /// <param name="values"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
-        private static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool not = false, StringComparison? stringComparison = null)
+        private static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate = false, StringComparison? stringComparison = null)
         {
             Expression expressionBody;
 
@@ -129,7 +167,7 @@ namespace GraphQL.EntityFramework
             }
 
             // If the expression should be negated
-            if (not)
+            if (negate)
             {
                 // Not it
                 expressionBody = NegateExpression(expressionBody);
