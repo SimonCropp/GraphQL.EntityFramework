@@ -1,0 +1,16 @@
+﻿{
+    "data": {
+        "employeesConnection": {
+            "items": [
+                {
+                    "content": "Employee2",
+                    "age": 31
+                },
+                {
+                    "content": "Employee4",
+                    "age": 34
+                }
+            ]
+        }
+    }
+}

@@ -614,6 +614,31 @@ query {
     }
 
     [Fact]
+    public async Task Get_complex_query_result()
+    {
+        await startTask;
+        var query = @"
+query {
+  employees (
+    where: [
+      {groupedExpressions: [
+        {path: ""content"", comparison: ""contains"", value: ""4"", connector: ""or""},
+
+          { path: ""content"", comparison: ""contains"", value: ""2""}
+      ], connector: ""and""},
+      {path: ""age"", comparison: ""greaterThanOrEqual"", value: ""31""}
+  	]
+  ) {
+    id
+  }
+}";
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("{\"employees\":[{\"id\":3},{\"id\":5}]}", result);
+        response.EnsureSuccessStatusCode();
+    }
+
+    [Fact]
     public async Task Post()
     {
         await startTask;
@@ -709,7 +734,7 @@ subscription
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L257) / [anchor](#snippet-graphqlcontrollertests)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L282) / [anchor](#snippet-graphqlcontrollertests)</sup>
 <!-- endsnippet -->
 
 
