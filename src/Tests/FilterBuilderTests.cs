@@ -5,7 +5,7 @@ using GraphQL.EntityFramework;
 using Xunit;
 using Xunit.Abstractions;
 
-public class ExpressionBuilderTests :
+public class FilterBuilderTests :
     XunitApprovalBase
 {
     public class Target
@@ -29,7 +29,7 @@ public class ExpressionBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder<Target>.BuildPredicate("Member.Length", Comparison.Equal, new[] {"2"}))
+            .Where(FilterBuilder<Target>.BuildPredicate("Member.Length", Comparison.Equal, new[] {"2"}))
             .Single();
         Assert.Equal("bb", result.Member);
     }
@@ -51,13 +51,13 @@ public class ExpressionBuilderTests :
         };
 
         var resultFromString = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] {guid.ToString()}))
+            .Where(FilterBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] {guid.ToString()}))
             .Single();
 
         Assert.Equal(guid, resultFromString.Field);
 
         var nullResult = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, null))
+            .Where(FilterBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, null))
             .Single();
 
         Assert.Null(nullResult.Field);
@@ -81,7 +81,7 @@ public class ExpressionBuilderTests :
         };
 
         var resultFromNull = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {(string?) null}))
+            .Where(FilterBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {(string?) null}))
             .Single();
 
         Assert.Null(resultFromNull.Field);
@@ -415,7 +415,7 @@ public class ExpressionBuilderTests :
         public DateTime DateOfBirth { get; set; }
     }
 
-    public ExpressionBuilderTests(ITestOutputHelper output) :
+    public FilterBuilderTests(ITestOutputHelper output) :
         base(output)
     {
     }
