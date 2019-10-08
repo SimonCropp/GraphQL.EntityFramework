@@ -130,6 +130,7 @@ namespace GraphQL.EntityFramework
         /// <param name="path"></param>
         /// <param name="comparison"></param>
         /// <param name="values"></param>
+        /// <param name="negate"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
         public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate, StringComparison? stringComparison)
@@ -143,10 +144,10 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Makes the predicate body from the single set of supplied conditional arguments
         /// </summary>
-        /// <param name="param"></param>
         /// <param name="path"></param>
         /// <param name="comparison"></param>
         /// <param name="values"></param>
+        /// <param name="negate"></param>
         /// <param name="stringComparison"></param>
         /// <returns></returns>
         private static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate = false, StringComparison? stringComparison = null)
@@ -184,8 +185,10 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Process a list based item inside the property path
         /// </summary>
-        /// <param name="param"></param>
-        /// <param name="where"></param>
+        /// <param name="path"></param>
+        /// <param name="comparison"></param>
+        /// <param name="values"></param>
+        /// <param name="stringComparison"></param>
         /// <returns></returns>
         private static Expression ProcessList(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
         {
@@ -222,7 +225,6 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Build an expression from provided where parameters
         /// </summary>
-        /// <param name="param"></param>
         /// <param name="path"></param>
         /// <param name="comparison"></param>
         /// <param name="values"></param>
