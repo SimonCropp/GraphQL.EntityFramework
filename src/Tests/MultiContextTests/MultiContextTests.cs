@@ -45,20 +45,20 @@ public class MultiContextTests:
 
         var sqlDatabase1 = await sqlInstance1.Build();
         var sqlDatabase2 = await sqlInstance2.Build();
-        using (var dbContext = sqlDatabase1.NewDbContext())
+        await using (var dbContext = sqlDatabase1.NewDbContext())
         {
             dbContext.AddRange(entity1);
             await dbContext.SaveChangesAsync();
         }
 
-        using (var dbContext = sqlDatabase2.NewDbContext())
+        await using (var dbContext = sqlDatabase2.NewDbContext())
         {
             dbContext.AddRange(entity2);
             await dbContext.SaveChangesAsync();
         }
 
-        using var dbContext1 = sqlDatabase1.NewDbContext();
-        using var dbContext2 = sqlDatabase2.NewDbContext();
+        await using var dbContext1 = sqlDatabase1.NewDbContext();
+        await using var dbContext2 = sqlDatabase2.NewDbContext();
         var services = new ServiceCollection();
 
         services.AddSingleton<MultiContextQuery>();
@@ -76,7 +76,7 @@ public class MultiContextTests:
             userContext => ((UserContext) userContext).DbContext2);
         #endregion
 
-        using var provider = services.BuildServiceProvider();
+        await using var provider = services.BuildServiceProvider();
         using var schema = new MultiContextSchema(new FuncDependencyResolver(provider.GetRequiredService));
         var documentExecuter = new EfDocumentExecuter();
         #region MultiExecutionOptions

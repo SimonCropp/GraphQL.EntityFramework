@@ -35,7 +35,7 @@ public partial class IntegrationTests
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2, entity3);
         ObjectApprover.Verify(result);
     }
@@ -68,7 +68,7 @@ public partial class IntegrationTests
             Property = "Ignore"
         };
 
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2);
         ObjectApprover.Verify(result);
     }
@@ -101,7 +101,7 @@ public partial class IntegrationTests
             Property = "Ignore"
         };
 
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2);
         ObjectApprover.Verify(result);
     }
@@ -148,7 +148,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
 
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2, entity3);
         ObjectApprover.Verify(result);
     }

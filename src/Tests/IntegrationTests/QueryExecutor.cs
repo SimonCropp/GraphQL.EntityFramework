@@ -21,7 +21,7 @@ static class QueryExecutor
             dbContext.Model,
             userContext => filters);
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
-        using var provider = services.BuildServiceProvider();
+        await using var provider = services.BuildServiceProvider();
         using var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService));
         var documentExecuter = new EfDocumentExecuter();
 

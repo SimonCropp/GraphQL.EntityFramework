@@ -57,7 +57,7 @@ public class ConnectionConverterTests :
     public async Task Queryable(int? first, int? after, int? last, int? before)
     {
         var fieldContext = new ResolveFieldContext<string>();
-        using var database = await sqlInstance.BuildWithRollback();
+        await using var database = await sqlInstance.BuildWithRollback();
         var entities = database.Context.Entities;
         var connection = await ConnectionConverter.ApplyConnectionContext(entities, first, after, last, before, fieldContext, new Filters());
         ObjectApprover.Verify(connection);
