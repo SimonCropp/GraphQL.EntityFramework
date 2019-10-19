@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ConfigureAwait.Fody" Version="3.2.0" PrivateAssets="All" />
-    <PackageReference Include="Fody" Version="6.0.1" PrivateAssets="All" />
+    <PackageReference Include="Fody" Version="6.0.2" PrivateAssets="all" />
     <PackageReference Include="ModuleInit.Fody" Version="2.1.0" PrivateAssets="All" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
