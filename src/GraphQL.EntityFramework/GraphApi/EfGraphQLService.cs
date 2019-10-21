@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -13,7 +12,7 @@ namespace GraphQL.EntityFramework
     {
         ResolveFilters? resolveFilters;
         ResolveDbContext<TDbContext> resolveDbContext;
-        Dictionary<Type, List<string>> keyNames = new Dictionary<Type, List<string>>();
+        IReadOnlyDictionary<Type, List<string>> keyNames;
 
         public EfGraphQLService(
             IModel model,
@@ -25,21 +24,12 @@ namespace GraphQL.EntityFramework
             this.resolveFilters = resolveFilters;
 
             this.resolveDbContext = resolveDbContext;
-            foreach (var entityType in model.GetEntityTypes())
-            {
-                var primaryKey = entityType.FindPrimaryKey();
-                //This can happen for views
-                if (primaryKey == null)
-                {
-                    continue;
-                }
 
-                var names = primaryKey.Properties.Select(x => x.Name).ToList();
-                keyNames.Add(entityType.ClrType, names);
-            }
+            keyNames = model.GetKeyNames();
 
             includeAppender = new IncludeAppender(NavigationReader.GetNavigationProperties(model));
         }
+
 
         IncludeAppender includeAppender;
 
