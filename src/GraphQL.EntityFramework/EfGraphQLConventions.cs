@@ -27,7 +27,8 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(services), services);
 
             RegisterScalarsAndArgs(services);
-
+            services.AddHttpContextAccessor();
+            services.AddTransient<HttpContextCapture>();
             services.AddSingleton(
                 provider => Build(resolveDbContext, model, resolveFilters, provider));
         }
@@ -45,7 +46,23 @@ namespace GraphQL.EntityFramework
 
             if (dbContext == null)
             {
-                dbContext = context => provider.GetRequiredService<TDbContext>();
+                dbContext = context =>
+                {
+                    var httpContextCapture = provider.GetService<HttpContextCapture>();
+                    var httpContextAccessor = httpContextCapture.HttpContextAccessor;
+                    var dbContextFromHttpContext = httpContextAccessor?.HttpContext.RequestServices.GetService<TDbContext>();
+                    if (dbContextFromHttpContext != null)
+                    {
+                        return dbContextFromHttpContext;
+                    }
+
+                    var dbContextFromRootProvider = provider.GetService<TDbContext>();
+                    if (dbContextFromRootProvider != null)
+                    {
+                        return dbContextFromRootProvider;
+                    }
+                    throw new Exception($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
+                };
             }
 
             return new EfGraphQLService<TDbContext>(

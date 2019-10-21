@@ -81,7 +81,7 @@ public class DependencyTests :
         var dbContext = database.Context;
         await AddData(dbContext);
         var services = BuildServiceCollection();
-        services.AddScoped(x => { return database.Context; });
+        services.AddScoped(x => database.Context);
 
         EfGraphQLConventions.RegisterInContainer(
             services,
