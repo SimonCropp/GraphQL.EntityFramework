@@ -19,33 +19,27 @@ public class Startup
         GraphTypeTypeRegistry.Register<EmployeeSummary, EmployeeSummaryGraph>();
         GraphTypeTypeRegistry.Register<Company, CompanyGraph>();
         services.AddScoped(_ => DbContextBuilder.BuildDbContext());
-        services.AddSingleton<Func<GraphQlEfSampleDbContext>>(provider=> provider.GetRequiredService<GraphQlEfSampleDbContext>);
+        services.AddScoped<Func<GraphQlEfSampleDbContext>>(provider=> provider.GetRequiredService<GraphQlEfSampleDbContext>);
 
-        using (var scope = services.BuildServiceProvider().CreateScope())
+        EfGraphQLConventions.RegisterInContainer<GraphQlEfSampleDbContext>(services, (userContext) =>
         {
-            var dbContext = scope.ServiceProvider.GetRequiredService<GraphQlEfSampleDbContext>();
-
-            EfGraphQLConventions.RegisterInContainer<GraphQlEfSampleDbContext>(services, (userContext) =>
-            {
-                return (GraphQlEfSampleDbContext)userContext;
-            },
-            dbContext.Model);
+            return (GraphQlEfSampleDbContext)userContext;
+        });
             EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
-        }
 
         foreach (var type in GetGraphQlTypes())
         {
-            services.AddSingleton(type);
+            services.AddScoped(type);
         }
 
         var graphQl = services.AddGraphQL(
             options => options.ExposeExceptions = true);
         graphQl.AddWebSockets();
-        services.AddSingleton<ContextFactory>();
-        services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
-        services.AddSingleton<IDependencyResolver>(
+        services.AddScoped<ContextFactory>();
+        services.AddScoped<IDocumentExecuter, EfDocumentExecuter>();
+        services.AddScoped<IDependencyResolver>(
             provider => new FuncDependencyResolver(provider.GetRequiredService));
-        services.AddSingleton<ISchema, Schema>();
+        services.AddScoped<ISchema, Schema>();
         var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
         mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
         mvc.AddNewtonsoftJson();

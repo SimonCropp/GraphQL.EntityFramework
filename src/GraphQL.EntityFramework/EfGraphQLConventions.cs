@@ -3,6 +3,7 @@ using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace GraphQL.EntityFramework
 {
@@ -15,12 +16,14 @@ namespace GraphQL.EntityFramework
         /// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="model">The <see cref="IModel"/> to use. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
+        /// <param name="lifetime">The service lifetime the GQL service should be registered with</param>
         #region RegisterInContainer
         public static void RegisterInContainer<TDbContext>(
                 IServiceCollection services,
                 ResolveDbContext<TDbContext>? resolveDbContext = null,
                 IModel? model = null,
-                ResolveFilters? resolveFilters = null)
+                ResolveFilters? resolveFilters = null,
+                ServiceLifetime lifetime = ServiceLifetime.Scoped)
             #endregion
             where TDbContext : DbContext
         {
@@ -28,8 +31,9 @@ namespace GraphQL.EntityFramework
 
             RegisterScalarsAndArgs(services);
 
-            services.AddSingleton(
-                provider => Build(resolveDbContext, model, resolveFilters, provider));
+            Func<IServiceProvider, IEfGraphQLService<TDbContext>> gqlServiceFactory = (provider => Build(resolveDbContext, model, resolveFilters, provider));
+
+            services.TryAdd(new ServiceDescriptor(typeof(IEfGraphQLService<TDbContext>), gqlServiceFactory, lifetime));
         }
 
         static IEfGraphQLService<TDbContext> Build<TDbContext>(
