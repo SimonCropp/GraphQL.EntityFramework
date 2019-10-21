@@ -180,3 +180,10 @@ In some cases, you may want to use `Field` instead of `AddQueryField`/`AddSingle
  * Apply the `where` argument expression using `ExpressionBuilder<T>.BuildPredicate(whereExpression)`
 
 snippet: ManuallyApplyWhere
+
+
+## Resolving DbContext
+
+Sometimes it is necessary to access the current DbContext from withing the base `QueryGraphType.Field` method. in this case the custom `ResolveEfFieldContext` is not available. In this scenario `QueryGraphType.ResolveDbContext` can be used to resolve the current DbContext.
+
+snippet: QueryResolveDbContext

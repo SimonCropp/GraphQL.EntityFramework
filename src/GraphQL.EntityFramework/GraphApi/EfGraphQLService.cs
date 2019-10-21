@@ -63,9 +63,15 @@ namespace GraphQL.EntityFramework
                 Source = context.Source,
                 SubFields = context.SubFields,
                 Variables = context.Variables,
-                DbContext = resolveDbContext(context.UserContext),
+                DbContext = ResolveDbContext(context),
                 Filters = ResolveFilter(context)
             };
+        }
+
+        public TDbContext ResolveDbContext<TSource>(ResolveFieldContext<TSource> context)
+        {
+            Guard.AgainstNull(nameof(context), context);
+            return resolveDbContext(context.UserContext);
         }
 
         Filters ResolveFilter<TSource>(ResolveFieldContext<TSource> context)

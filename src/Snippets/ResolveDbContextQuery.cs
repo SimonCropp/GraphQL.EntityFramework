@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using GraphQL.EntityFramework;
+using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
-class RootQuery
+class ResolveDbContextQuery
 {
-    #region rootQuery
+    #region QueryResolveDbContext
 
     public class Query :
         QueryGraphType<MyDbContext>
@@ -12,12 +13,14 @@ class RootQuery
         public Query(IEfGraphQLService<MyDbContext> graphQlService) :
             base(graphQlService)
         {
-            AddSingleField(
-                resolve: context => context.DbContext.Companies,
-                name: "company");
-            AddQueryField(
-                name: "companies",
-                resolve: context => context.DbContext.Companies);
+            Field<ListGraphType<CompanyGraph>>(
+                name: "oldCompanies",
+                resolve: context =>
+                {
+                    // uses the base QueryGraphType to resolve the db context
+                    var dbContext = ResolveDbContext(context);
+                    return dbContext.Companies.Where(x => x.Age > 10);
+                });
         }
     }
 
@@ -31,10 +34,11 @@ class RootQuery
 
     public class Company
     {
+        public int Age { get; set; }
     }
 
-    class CompanyGraph :
-        EfObjectGraphType<MyDbContext, Company>
+    class CompanyGraph:
+        EfObjectGraphType<MyDbContext,Company>
     {
         public CompanyGraph(IEfGraphQLService<MyDbContext> efGraphQlService) :
             base(efGraphQlService)

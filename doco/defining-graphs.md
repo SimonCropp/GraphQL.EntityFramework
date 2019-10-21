@@ -272,7 +272,8 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
     ),
     resolve: context =>
     {
-        IQueryable<Employee> query = dbContextFunc().Employees;
+        var dbContext = ResolveDbContext(context);
+        IQueryable<Employee> query = dbContext.Employees;
 
         if (context.HasArgument("where"))
         {
@@ -294,5 +295,33 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L55-L89) / [anchor](#snippet-manuallyapplywhere)</sup>
+<sup>[snippet source](/src/SampleWeb/Query.cs#L54-L89) / [anchor](#snippet-manuallyapplywhere)</sup>
+<!-- endsnippet -->
+
+
+## Resolving DbContext
+
+Sometimes it is necessary to access the current DbContext from withing the base `QueryGraphType.Field` method. in this case the custom `ResolveEfFieldContext` is not available. In this scenario `QueryGraphType.ResolveDbContext` can be used to resolve the current DbContext.
+
+<!-- snippet: QueryResolveDbContext -->
+<a id='snippet-queryresolvedbcontext'/></a>
+```cs
+public class Query :
+    QueryGraphType<MyDbContext>
+{
+    public Query(IEfGraphQLService<MyDbContext> graphQlService) :
+        base(graphQlService)
+    {
+        Field<ListGraphType<CompanyGraph>>(
+            name: "oldCompanies",
+            resolve: context =>
+            {
+                // uses the base QueryGraphType to resolve the db context
+                var dbContext = ResolveDbContext(context);
+                return dbContext.Companies.Where(x => x.Age > 10);
+            });
+    }
+}
+```
+<sup>[snippet source](/src/Snippets/ResolveDbContextQuery.cs#L8-L27) / [anchor](#snippet-queryresolvedbcontext)</sup>
 <!-- endsnippet -->

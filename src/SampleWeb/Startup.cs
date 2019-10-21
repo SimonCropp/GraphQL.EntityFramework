@@ -19,7 +19,6 @@ public class Startup
         GraphTypeTypeRegistry.Register<EmployeeSummary, EmployeeSummaryGraph>();
         GraphTypeTypeRegistry.Register<Company, CompanyGraph>();
         services.AddScoped(_ => DbContextBuilder.BuildDbContext());
-        services.AddSingleton<Func<GraphQlEfSampleDbContext>>(provider=> provider.GetRequiredService<GraphQlEfSampleDbContext>);
         EfGraphQLConventions.RegisterInContainer<GraphQlEfSampleDbContext>(
             services,
             model: GraphQlEfSampleDbContext.GetModel());

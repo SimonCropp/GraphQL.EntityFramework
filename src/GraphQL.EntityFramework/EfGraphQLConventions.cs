@@ -34,7 +34,7 @@ namespace GraphQL.EntityFramework
         }
 
         static IEfGraphQLService<TDbContext> Build<TDbContext>(
-            ResolveDbContext<TDbContext>? dbContext,
+            ResolveDbContext<TDbContext>? dbContextResolver,
             IModel? model,
             ResolveFilters? filters,
             IServiceProvider provider)
@@ -44,31 +44,35 @@ namespace GraphQL.EntityFramework
 
             filters ??= provider.GetService<ResolveFilters>();
 
-            if (dbContext == null)
+            if (dbContextResolver == null)
             {
-                dbContext = context =>
-                {
-                    var httpContextCapture = provider.GetService<HttpContextCapture>();
-                    var httpContextAccessor = httpContextCapture.HttpContextAccessor;
-                    var dbContextFromHttpContext = httpContextAccessor?.HttpContext.RequestServices.GetService<TDbContext>();
-                    if (dbContextFromHttpContext != null)
-                    {
-                        return dbContextFromHttpContext;
-                    }
-
-                    var dbContextFromRootProvider = provider.GetService<TDbContext>();
-                    if (dbContextFromRootProvider != null)
-                    {
-                        return dbContextFromRootProvider;
-                    }
-                    throw new Exception($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
-                };
+                dbContextResolver = context => DbContextFromProvider<TDbContext>(provider);
             }
 
             return new EfGraphQLService<TDbContext>(
                 model,
-                dbContext,
+                dbContextResolver,
                 filters);
+        }
+
+        static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider)
+            where TDbContext : DbContext
+        {
+            var httpContextCapture = provider.GetService<HttpContextCapture>();
+            var httpContextAccessor = httpContextCapture.HttpContextAccessor;
+            var dbContextFromHttpContext = httpContextAccessor?.HttpContext.RequestServices.GetService<TDbContext>();
+            if (dbContextFromHttpContext != null)
+            {
+                return dbContextFromHttpContext;
+            }
+
+            var dbContextFromRootProvider = provider.GetService<TDbContext>();
+            if (dbContextFromRootProvider != null)
+            {
+                return dbContextFromRootProvider;
+            }
+
+            throw new Exception($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
         }
 
         static void RegisterScalarsAndArgs(IServiceCollection services)
