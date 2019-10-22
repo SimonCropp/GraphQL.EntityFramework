@@ -187,3 +187,13 @@ snippet: ManuallyApplyWhere
 Sometimes it is necessary to access the current DbContext from withing the base `QueryGraphType.Field` method. in this case the custom `ResolveEfFieldContext` is not available. In this scenario `QueryGraphType.ResolveDbContext` can be used to resolve the current DbContext.
 
 snippet: QueryResolveDbContext
+
+
+## ArgumentProcessor
+
+`ArgumentProcessor` (via the method `ApplyGraphQlArguments`) is responsible for extracting the various parts of the [GraphQL query argument](query-usage.md) and applying them to an `IQueryable<T>`. So, for example, each [where argument](query-usage.md#where) is mapped to a [IQueryable.Where](https://docs.microsoft.com/en-us/dotnet/api/system.linq.queryable.where) and each [skip argument](query-usage.md#skip) is mapped to a [IQueryable.Where](https://docs.microsoft.com/en-us/dotnet/api/system.linq.queryable.skip). 
+
+The arguments are parsed and mapped each time a query is executer.
+
+ArgumentProcessor is generally considered an internal API and not for public use. However there are some advanced scenarios, for example when building subscriptions, that ArgumentProcessor is useful.
+
