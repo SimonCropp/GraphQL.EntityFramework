@@ -49,6 +49,35 @@ context.Heros
 The string for the include is taken from the field name when using `AddNavigationField` or `AddNavigationConnectionField` with the first character upper cased. This value can be overridden using the optional parameter `includeNames` . Note that `includeNames` is an `IEnumerable<string>` so that multiple navigation properties can optionally be included for a single node.
 
 
+### Omitting includes
+
+When using `AddQueryField`, sometime it is desired to use custom includes and not use the above inferred includes. This can be done using `inferIncludes: false`:
+
+<!-- snippet: inferIncludes -->
+<a id='snippet-inferincludes'/></a>
+```cs
+public class Query :
+    QueryGraphType<MyDbContext>
+{
+    public Query(IEfGraphQLService<MyDbContext> graphQlService) :
+        base(graphQlService)
+    {
+        AddQueryField(
+            name: "newCompanies",
+            inferIncludes: false,
+            resolve: context =>
+            {
+                return context.DbContext.Companies
+                    .Include(x => x.Employees)
+                    .Where(x => x.Age > 10);
+            });
+    }
+}
+```
+<sup>[snippet source](/src/Snippets/RootQuery - Copy.cs#L8-L28) / [anchor](#snippet-inferincludes)</sup>
+<!-- endsnippet -->
+
+
 ## Fields
 
 Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet.github.io/docs/getting-started/introduction#queries). Fields can be mapped to Entity Framework by using `IEfGraphQLService`. `IEfGraphQLService` can be used in either a root query or a nested query via dependency injection. Alternatively the base type `EfObjectGraphType` or `EfObjectGraphType<TSource>` can be used for root or nested graphs respectively. The below samples all use the base type approach as it results in slightly less code.

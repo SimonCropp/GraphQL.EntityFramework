@@ -14,6 +14,6 @@ public class ParentGraph :
         AddNavigationConnectionField(
             name: "childrenConnection",
             resolve: context => context.Source.Children,
-            includeNames: new[] { "Children"});
+            includeNames: new[] { "Children" });
     }
 }

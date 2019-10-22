@@ -50,7 +50,7 @@ namespace GraphQL.EntityFramework
             bool inferIncludes = true)
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments,inferIncludes);
+            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments, inferIncludes);
         }
 
         protected FieldType AddQueryField<TReturn>(
