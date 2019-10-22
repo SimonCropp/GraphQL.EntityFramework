@@ -16,21 +16,24 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null)
+            IEnumerable<QueryArgument>? arguments = null,
+            bool inferIncludes = true)
             where TReturn : class
         {
-            return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
+            return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, inferIncludes);
         }
+
         public FieldType AddQueryField<TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null)
+            IEnumerable<QueryArgument>? arguments = null,
+            bool inferIncludes = true)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildQueryField(graphType, name, resolve, arguments);
+            var field = BuildQueryField(graphType, name, resolve, inferIncludes, arguments);
             return graph.AddField(field);
         }
 
@@ -39,7 +42,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null)
+            IEnumerable<QueryArgument>? arguments = null,
+            bool inferIncludes = true)
             where TReturn : class
         {
             return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
@@ -50,11 +54,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null)
+            IEnumerable<QueryArgument>? arguments = null,
+            bool inferIncludes = true)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildQueryField(graphType, name, resolve, arguments);
+            var field = BuildQueryField(graphType, name, resolve, inferIncludes, arguments);
             return graph.AddField(field);
         }
 
@@ -63,21 +68,24 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null)
+            IEnumerable<QueryArgument>? arguments = null,
+            bool inferIncludes = true)
             where TReturn : class
         {
             return AddQueryField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
         }
+
         public FieldType AddQueryField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null)
+            IEnumerable<QueryArgument>? arguments = null,
+            bool inferIncludes = true)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildQueryField(graphType, name, resolve, arguments);
+            var field = BuildQueryField(graphType, name, resolve, inferIncludes, arguments);
             return graph.AddField(field);
         }
 
@@ -85,16 +93,18 @@ namespace GraphQL.EntityFramework
             Type? graphType,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+            bool inferIncludes,
             IEnumerable<QueryArgument>? arguments)
             where TReturn : class
         {
-            return BuildQueryField(name, resolve, arguments, graphType);
+            return BuildQueryField(name, resolve, arguments,inferIncludes, graphType);
         }
 
         FieldType BuildQueryField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             IEnumerable<QueryArgument>? arguments,
+            bool inferIncludes,
             Type? graphType)
             where TReturn : class
         {
@@ -119,13 +129,16 @@ namespace GraphQL.EntityFramework
                         //get field names of the table's primary key(s)
                         var names = GetKeyNames<TReturn>();
                         //run the specified resolve function
-                        var returnTypes = await resolve(efFieldContext);
+                        var query = await resolve(efFieldContext);
                         //include sub tables in the query based on the metadata stored for the requested graph
-                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        if (inferIncludes)
+                        {
+                            query = includeAppender.AddIncludes(query, context);
+                        }
                         //apply any query filters specified in the arguments
-                        var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
+                        query = query.ApplyGraphQlArguments(context, names);
                         //query the database
-                        var list = await withArguments.ToListAsync(context.CancellationToken);
+                        var list = await query.ToListAsync(context.CancellationToken);
                         //apply the global filter on each individually enumerated item
                         return await efFieldContext.Filters.ApplyFilter(list, context.UserContext);
                     })

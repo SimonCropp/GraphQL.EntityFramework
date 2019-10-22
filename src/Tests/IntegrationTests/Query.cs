@@ -18,6 +18,7 @@ public class Query :
 
         AddQueryField(
             name: "queryFieldWithInclude",
+            inferIncludes:false,
             resolve: context =>
             {
                 var dataContext = context.DbContext;
