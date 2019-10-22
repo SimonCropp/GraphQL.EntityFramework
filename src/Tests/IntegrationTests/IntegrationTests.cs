@@ -913,7 +913,7 @@ query ($id: String!)
         ObjectApprover.Verify(result);
     }
 
-    [Fact(Skip = "Explicit")]
+    [Fact]
     public async Task Multiple_nested_AddQueryField()
     {
         var query = @"
