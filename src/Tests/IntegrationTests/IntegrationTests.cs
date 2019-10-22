@@ -926,7 +926,6 @@ query ($id: String!)
     }
   }
 }";
-
         var level2 = new IncludeNonQueryableA();
         var level1 = new IncludeNonQueryableB
         {
@@ -938,6 +937,7 @@ query ($id: String!)
         var result = await RunQuery(database, query, null, null, level1, level2);
         ObjectApprover.Verify(result);
     }
+
     [Fact]
     public async Task Skip_level()
     {
