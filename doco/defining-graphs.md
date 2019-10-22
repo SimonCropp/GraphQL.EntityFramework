@@ -74,7 +74,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery - Copy.cs#L8-L28) / [anchor](#snippet-inferincludes)</sup>
+<sup>[snippet source](/src/Snippets/DontInferIncludes.cs#L8-L28) / [anchor](#snippet-inferincludes)</sup>
 <!-- endsnippet -->
 
 
