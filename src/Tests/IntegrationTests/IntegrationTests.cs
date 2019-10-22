@@ -29,6 +29,8 @@ public partial class IntegrationTests :
         GraphTypeTypeRegistry.Register<Level1Entity, Level1Graph>();
         GraphTypeTypeRegistry.Register<Level2Entity, Level2Graph>();
         GraphTypeTypeRegistry.Register<Level3Entity, Level3Graph>();
+        GraphTypeTypeRegistry.Register<IncludeNonQueryableB, IncludeNonQueryableBGraph>();
+        GraphTypeTypeRegistry.Register<IncludeNonQueryableA, IncludeNonQueryableAGraph>();
         GraphTypeTypeRegistry.Register<WithMisNamedQueryParentEntity, WithMisNamedQueryParentGraph>();
         GraphTypeTypeRegistry.Register<WithNullableEntity, WithNullableGraph>();
         GraphTypeTypeRegistry.Register<NamedIdEntity, NamedIdGraph>();
@@ -911,6 +913,31 @@ query ($id: String!)
         ObjectApprover.Verify(result);
     }
 
+    [Fact(Skip = "Explicit")]
+    public async Task Multiple_nested_AddQueryField()
+    {
+        var query = @"
+{
+  field
+  {
+    includeNonQueryableB
+    {
+      id
+    }
+  }
+}";
+
+        var level2 = new IncludeNonQueryableA();
+        var level1 = new IncludeNonQueryableB
+        {
+            IncludeNonQueryableA = level2,
+        };
+        level1.IncludeNonQueryableA = level2;
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, level1, level2);
+        ObjectApprover.Verify(result);
+    }
     [Fact]
     public async Task Skip_level()
     {

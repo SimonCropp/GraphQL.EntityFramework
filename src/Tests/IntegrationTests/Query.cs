@@ -1,4 +1,5 @@
-﻿using GraphQL.EntityFramework;
+﻿using System.Linq;
+using GraphQL.EntityFramework;
 
 public class Query :
     QueryGraphType<IntegrationDbContext>
@@ -14,6 +15,15 @@ public class Query :
             name: "skipLevel",
             resolve: context => context.DbContext.Level1Entities,
             graphType: typeof(SkipLevelGraph));
+
+        AddQueryField(
+            name: "field",
+            resolve: context =>
+            {
+                var dataContext = context.DbContext;
+                return dataContext.IncludeNonQueryableBs.AsQueryable()
+                    .Select(p => p.IncludeNonQueryableA);
+            });
 
         AddQueryField(
             name: "manyChildren",
