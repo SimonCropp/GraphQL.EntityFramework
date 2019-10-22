@@ -17,7 +17,7 @@ public class Query :
             graphType: typeof(SkipLevelGraph));
 
         AddQueryField(
-            name: "field",
+            name: "queryFieldWithInclude",
             resolve: context =>
             {
                 var dataContext = context.DbContext;

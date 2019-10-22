@@ -918,7 +918,7 @@ query ($id: String!)
     {
         var query = @"
 {
-  field
+  queryFieldWithInclude
   {
     includeNonQueryableB
     {
