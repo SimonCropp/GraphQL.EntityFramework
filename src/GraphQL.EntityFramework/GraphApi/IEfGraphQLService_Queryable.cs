@@ -13,8 +13,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext,object>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool inferIncludes = true)
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class;
 
         FieldType AddQueryField<TReturn>(
@@ -22,8 +21,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext,object>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool inferIncludes = true)
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
@@ -31,8 +29,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool inferIncludes = true)
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
@@ -40,8 +37,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext,TSource>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool inferIncludes = true)
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
@@ -49,8 +45,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool inferIncludes = true)
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
@@ -58,8 +53,7 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext,TSource>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool inferIncludes = true)
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class;
     }
 }

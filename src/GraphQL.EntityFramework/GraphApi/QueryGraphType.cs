@@ -46,22 +46,20 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool inferIncludes = true)
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments, inferIncludes);
+            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
         }
 
         protected FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool inferIncludes = true)
+            IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments, inferIncludes);
+            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
         }
 
         protected FieldType AddSingleField<TReturn>(
