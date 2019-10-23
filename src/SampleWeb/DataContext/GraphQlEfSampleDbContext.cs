@@ -6,13 +6,14 @@ public class GraphQlEfSampleDbContext :
 {
     public DbSet<Employee> Employees { get; set; } = null!;
     public DbSet<Company> Companies { get; set; } = null!;
+    public static IModel StaticModel { get; } = BuildStaticModel();
 
     public GraphQlEfSampleDbContext(DbContextOptions options) :
         base(options)
     {
     }
 
-    public static IModel GetModel()
+    static IModel BuildStaticModel()
     {
         var builder = new DbContextOptionsBuilder();
         builder.UseSqlServer("Fake");
