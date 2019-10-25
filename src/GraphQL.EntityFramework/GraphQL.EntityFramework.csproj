@@ -4,7 +4,7 @@
     <Description>Add EntityFramework Core IQueryable support to GraphQL</Description>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ConfigureAwait.Fody" Version="3.2.0" PrivateAssets="All" />
+    <PackageReference Include="ConfigureAwait.Fody" Version="3.3.0" PrivateAssets="All" />
     <PackageReference Include="Fody" Version="6.0.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="ModuleInit.Fody" Version="2.1.0" PrivateAssets="All" />
