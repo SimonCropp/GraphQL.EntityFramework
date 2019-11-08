@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
@@ -19,14 +20,14 @@ static class ComplexGraphResolver
 
     static ConcurrentDictionary<IGraphType, Resolved> cache = new ConcurrentDictionary<IGraphType, Resolved>();
 
-    public static bool TryGetComplexGraph(this FieldType fieldType, out IComplexGraphType? complexGraph)
+    public static bool TryGetComplexGraph(this FieldType fieldType, [NotNullWhen(returnValue: true)] out IComplexGraphType? complexGraph)
     {
         var orAdd = GetOrAdd(fieldType);
         complexGraph = orAdd.ComplexGraphType;
         return complexGraph != null;
     }
 
-    public static bool TryGetEntityTypeForField(this FieldType fieldType, out Type? entityType)
+    public static bool TryGetEntityTypeForField(this FieldType fieldType, [NotNullWhen(returnValue: true)] out Type? entityType)
     {
         var orAdd = GetOrAdd(fieldType);
         entityType = orAdd.EntityType;

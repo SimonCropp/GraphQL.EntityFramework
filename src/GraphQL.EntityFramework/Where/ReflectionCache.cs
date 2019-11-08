@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -174,7 +175,7 @@ static class ReflectionCache
         return typeof(List<T>).GetMethod("Contains");
     }
 
-    public static bool TryGetEnumType(this Type type, out Type enumType)
+    public static bool TryGetEnumType(this Type type, [NotNullWhen(returnValue: true)] out Type? enumType)
     {
         if (type.IsEnum)
         {
@@ -195,7 +196,7 @@ static class ReflectionCache
             return true;
         }
 
-        enumType = typeof(object);
+        enumType = null;
         return false;
     }
 }
