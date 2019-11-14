@@ -17,7 +17,7 @@ using ExecutionContext = GraphQL.Execution.ExecutionContext;
 public class Subscription :
     ObjectGraphType<object>
 {
-    public Subscription(ContextFactory contextFactory, ILogger<Subscription> logger)
+    public Subscription(Func<SampleDbContext> contextFactory, ILogger<Subscription> logger)
     {
         AddField(new EventStreamFieldType
         {
@@ -28,11 +28,11 @@ public class Subscription :
         });
     }
 
-    static IObservable<Company> Subscribe(ResolveEventStreamContext context, ContextFactory contextFactory, ILogger logger)
+    static IObservable<Company> Subscribe(ResolveEventStreamContext context, Func<SampleDbContext> contextFactory, ILogger logger)
     {
         long lastId = 0;
         var inner = Observable.Using(
-            token => Task.FromResult(contextFactory.BuildContext()),
+            token => Task.FromResult(contextFactory()),
             async (dbContext, token) =>
             {
                 try
