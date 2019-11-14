@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-public class GraphQlEfSampleDbContext :
+public class SampleDbContext :
     DbContext
 {
     public DbSet<Employee> Employees { get; set; } = null!;
     public DbSet<Company> Companies { get; set; } = null!;
     public static IModel StaticModel { get; } = BuildStaticModel();
 
-    public GraphQlEfSampleDbContext(DbContextOptions options) :
+    public SampleDbContext(DbContextOptions options) :
         base(options)
     {
     }
@@ -17,7 +17,7 @@ public class GraphQlEfSampleDbContext :
     {
         var builder = new DbContextOptionsBuilder();
         builder.UseSqlServer("Fake");
-        using var dbContext = new GraphQlEfSampleDbContext(builder.Options);
+        using var dbContext = new SampleDbContext(builder.Options);
         return dbContext.Model;
     }
 

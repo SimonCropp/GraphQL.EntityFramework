@@ -1,6 +1,7 @@
 ﻿using GraphQL;
 
-public class Schema : GraphQL.Types.Schema
+public class Schema :
+    GraphQL.Types.Schema
 {
     public Schema(IDependencyResolver resolver) :
         base(resolver)

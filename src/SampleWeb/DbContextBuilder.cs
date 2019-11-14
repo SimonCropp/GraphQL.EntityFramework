@@ -5,9 +5,9 @@ using EfLocalDb;
 // Replace with a real DbContext
 public static class DbContextBuilder
 {
-    static SqlDatabase<GraphQlEfSampleDbContext> database = null!;
+    static SqlDatabase<SampleDbContext> database = null!;
 
-    static async Task CreateDb(GraphQlEfSampleDbContext context)
+    static async Task CreateDb(SampleDbContext context)
     {
         await context.Database.EnsureCreatedAsync();
 
@@ -56,16 +56,16 @@ public static class DbContextBuilder
        await context.SaveChangesAsync();
     }
 
-    public static GraphQlEfSampleDbContext BuildDbContext()
+    public static SampleDbContext BuildDbContext()
     {
         return database.NewDbContext();
     }
 
     public static async Task Start()
     {
-        var sqlInstance = new SqlInstance<GraphQlEfSampleDbContext>(
+        var sqlInstance = new SqlInstance<SampleDbContext>(
             buildTemplate: CreateDb,
-            constructInstance: builder => new GraphQlEfSampleDbContext(builder.Options));
+            constructInstance: builder => new SampleDbContext(builder.Options));
 
         database = await sqlInstance.Build("GraphQLEntityFrameworkSample");
     }
