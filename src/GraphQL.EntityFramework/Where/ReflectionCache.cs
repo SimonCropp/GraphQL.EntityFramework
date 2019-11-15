@@ -175,7 +175,7 @@ static class ReflectionCache
         return typeof(List<T>).GetMethod("Contains");
     }
 
-    public static bool TryGetEnumType(this Type type, [NotNullWhen(returnValue: true)] out Type? enumType)
+    public static bool TryGetEnumType(this Type type, [NotNullWhen(true)] out Type? enumType)
     {
         if (type.IsEnum)
         {
