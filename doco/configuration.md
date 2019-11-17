@@ -470,16 +470,9 @@ public class GraphQlControllerTests :
 {
     static HttpClient client = null!;
     static WebSocketClient websocketClient = null!;
-    static Task startTask;
 
     static GraphQlControllerTests()
     {
-        startTask = Start();
-    }
-
-    static async Task Start()
-    {
-        await DbContextBuilder.Start();
         var server = GetTestServer();
         client = server.CreateClient();
         websocketClient = server.CreateWebSocketClient();
@@ -490,7 +483,6 @@ public class GraphQlControllerTests :
     [Fact]
     public async Task Get()
     {
-        await startTask;
         var query = @"
 {
   companies
@@ -506,7 +498,6 @@ public class GraphQlControllerTests :
     [Fact]
     public async Task Get_single()
     {
-        await startTask;
         var query = @"
 query ($id: ID!)
 {
@@ -528,7 +519,6 @@ query ($id: ID!)
     [Fact]
     public async Task Get_single_not_found()
     {
-        await startTask;
         var query = @"
 query ($id: ID!)
 {
@@ -550,7 +540,6 @@ query ($id: ID!)
     [Fact]
     public async Task Get_variable()
     {
-        await startTask;
         var query = @"
 query ($id: ID!)
 {
@@ -572,7 +561,6 @@ query ($id: ID!)
     [Fact]
     public async Task Get_companies_paging()
     {
-        await startTask;
         var after = 1;
         var query = @"
 query {
@@ -597,7 +585,6 @@ query {
     [Fact]
     public async Task Get_employee_summary()
     {
-        await startTask;
         var query = @"
 query {
   employeeSummary {
@@ -613,7 +600,6 @@ query {
     [Fact]
     public async Task Post()
     {
-        await startTask;
         var query = @"
 {
   companies
@@ -632,7 +618,6 @@ query {
     [Fact]
     public async Task Post_variable()
     {
-        await startTask;
         var query = @"
 query ($id: ID!)
 {
@@ -654,7 +639,6 @@ query ($id: ID!)
     [Fact]
     public async Task Should_subscribe_to_companies()
     {
-        await startTask;
         var resetEvent = new AutoResetEvent(false);
 
         var result = new GraphQLHttpSubscriptionResult(
@@ -706,7 +690,7 @@ subscription
     }
 }
 ```
-<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L257) / [anchor](#snippet-graphqlcontrollertests)</sup>
+<sup>[snippet source](/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L241) / [anchor](#snippet-graphqlcontrollertests)</sup>
 <!-- endsnippet -->
 
 
