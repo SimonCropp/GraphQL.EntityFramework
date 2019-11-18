@@ -20,7 +20,7 @@
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RedundantCast_002E0/@EntryIndexedValue">ERROR</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RedundantCatchClause/@EntryIndexedValue">ERROR</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RedundantCheckBeforeAssignment/@EntryIndexedValue">ERROR</s:String>
-	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RedundantDefaultMemberInitializer/@EntryIndexedValue">ERROR</s:String>
+	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RedundantDefaultMemberInitializer/@EntryIndexedValue">WARNING</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RedundantEmptyFinallyBlock/@EntryIndexedValue">ERROR</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RedundantEmptyObjectOrCollectionInitializer/@EntryIndexedValue">ERROR</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RedundantEnumerableCastCall/@EntryIndexedValue">ERROR</s:String>
