@@ -4,11 +4,12 @@ using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 public class MultiContextTests:
-    XunitApprovalBase
+    VerifyBase
 {
     [Fact]
     public async Task Run()
@@ -89,7 +90,7 @@ public class MultiContextTests:
         #endregion
 
         var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        ObjectApprover.Verify(executionResult.Data);
+        await Verify(executionResult.Data);
     }
 
     public MultiContextTests(ITestOutputHelper output) :

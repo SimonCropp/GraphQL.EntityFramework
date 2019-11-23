@@ -1,8 +1,9 @@
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 public class PropertyCacheTests :
-    XunitApprovalBase
+    VerifyBase
 {
     [Fact]
     public void Property()

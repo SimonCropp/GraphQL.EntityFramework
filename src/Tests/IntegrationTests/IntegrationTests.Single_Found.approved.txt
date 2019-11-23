@@ -1,5 +1,0 @@
-﻿{
-  parentEntity: {
-    property: 'Value1'
-  }
-}

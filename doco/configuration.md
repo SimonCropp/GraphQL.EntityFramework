@@ -353,7 +353,7 @@ public class UserContext
     public readonly DbContext2 DbContext2;
 }
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L100-L112) / [anchor](#snippet-multiusercontext)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L101-L113) / [anchor](#snippet-multiusercontext)</sup>
 <!-- endsnippet -->
 
 
@@ -371,7 +371,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L70-L77) / [anchor](#snippet-registermultipleincontainer)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L71-L78) / [anchor](#snippet-registermultipleincontainer)</sup>
 <!-- endsnippet -->
 
 
@@ -390,7 +390,7 @@ var executionOptions = new ExecutionOptions
     UserContext = new UserContext(dbContext1,dbContext2)
 };
 ```
-<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L82-L89) / [anchor](#snippet-multiexecutionoptions)</sup>
+<sup>[snippet source](/src/Tests/MultiContextTests/MultiContextTests.cs#L83-L90) / [anchor](#snippet-multiexecutionoptions)</sup>
 <!-- endsnippet -->
 
 
@@ -466,7 +466,7 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 <a id='snippet-graphqlcontrollertests'/></a>
 ```cs
 public class GraphQlControllerTests :
-    XunitApprovalBase
+    VerifyBase
 {
     static HttpClient client = null!;
     static WebSocketClient websocketClient = null!;
@@ -492,7 +492,7 @@ public class GraphQlControllerTests :
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -513,7 +513,7 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -555,7 +555,7 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -579,7 +579,7 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -594,7 +594,7 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]

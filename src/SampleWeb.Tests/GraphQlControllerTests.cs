@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using ApprovalTests;
+using VerifyXunit;
 using GraphQL.Common.Request;
 using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 #region GraphQlControllerTests
 
 public class GraphQlControllerTests :
-    XunitApprovalBase
+    VerifyBase
 {
     static HttpClient client = null!;
     static WebSocketClient websocketClient = null!;
@@ -39,7 +39,7 @@ public class GraphQlControllerTests :
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -60,7 +60,7 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -102,7 +102,7 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -126,7 +126,7 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -141,7 +141,7 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]

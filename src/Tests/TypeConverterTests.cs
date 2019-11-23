@@ -1,9 +1,10 @@
 ﻿using System;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 public class TypeConverterTests :
-    XunitApprovalBase
+    VerifyBase
 {
     [Theory]
     [InlineData(typeof(int), "12", 12)]

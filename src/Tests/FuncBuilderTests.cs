@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.EntityFramework;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 public class FuncBuilderTests :
-    XunitApprovalBase
+    VerifyBase
 {
     public class Target
     {

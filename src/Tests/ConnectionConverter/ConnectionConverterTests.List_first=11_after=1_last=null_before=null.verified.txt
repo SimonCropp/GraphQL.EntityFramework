@@ -1,0 +1,56 @@
+{
+  TotalCount: 10,
+  PageInfo: {
+    StartCursor: '1',
+    EndCursor: '9'
+  },
+  Edges: [
+    {
+      Cursor: '1',
+      Node: 'b'
+    },
+    {
+      Cursor: '2',
+      Node: 'c'
+    },
+    {
+      Cursor: '3',
+      Node: 'd'
+    },
+    {
+      Cursor: '4',
+      Node: 'e'
+    },
+    {
+      Cursor: '5',
+      Node: 'f'
+    },
+    {
+      Cursor: '6',
+      Node: 'g'
+    },
+    {
+      Cursor: '7',
+      Node: 'h'
+    },
+    {
+      Cursor: '8',
+      Node: 'i'
+    },
+    {
+      Cursor: '9',
+      Node: 'j'
+    }
+  ],
+  Items: [
+    'b',
+    'c',
+    'd',
+    'e',
+    'f',
+    'g',
+    'h',
+    'i',
+    'j'
+  ]
+}

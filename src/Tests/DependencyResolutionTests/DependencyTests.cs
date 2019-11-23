@@ -8,11 +8,12 @@ using GraphQL.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 public class DependencyTests :
-    XunitApprovalBase
+    VerifyBase
 {
     static SqlInstance<DependencyDbContext> sqlInstance;
 

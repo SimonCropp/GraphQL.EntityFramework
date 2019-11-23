@@ -1,0 +1,27 @@
+{
+  parentEntitiesConnection: {
+    totalCount: 8,
+    edges: [
+      {
+        cursor: '1',
+        node: {
+          property: 'Value2'
+        }
+      },
+      {
+        cursor: '2',
+        node: {
+          property: 'Value3'
+        }
+      }
+    ],
+    items: [
+      {
+        property: 'Value2'
+      },
+      {
+        property: 'Value3'
+      }
+    ]
+  }
+}

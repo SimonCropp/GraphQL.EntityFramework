@@ -1,9 +1,0 @@
-﻿{
-  skipLevel: [
-    {
-      level3Entity: {
-        property: 'Value'
-      }
-    }
-  ]
-}

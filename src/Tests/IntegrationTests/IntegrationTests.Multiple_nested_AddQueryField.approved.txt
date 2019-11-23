@@ -1,9 +1,0 @@
-﻿{
-  queryFieldWithInclude: [
-    {
-      includeNonQueryableB: {
-        id: Guid_1
-      }
-    }
-  ]
-}
