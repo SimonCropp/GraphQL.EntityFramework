@@ -10,25 +10,25 @@
     {
       Cursor: '1',
       Node: {
-        Id: Guid_1,
+        Id: Guid_2,
         Property: 'b'
       }
     },
     {
       Cursor: '2',
       Node: {
-        Id: Guid_2,
+        Id: Guid_3,
         Property: 'c'
       }
     }
   ],
   Items: [
     {
-      Id: Guid_1,
+      Id: Guid_2,
       Property: 'b'
     },
     {
-      Id: Guid_2,
+      Id: Guid_3,
       Property: 'c'
     }
   ]
