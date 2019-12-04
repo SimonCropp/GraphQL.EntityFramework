@@ -30,7 +30,6 @@ namespace GraphQL.EntityFramework
             includeAppender = new IncludeAppender(NavigationReader.GetNavigationProperties(model));
         }
 
-
         IncludeAppender includeAppender;
 
         static Type MakeListGraphType(Type graphType)

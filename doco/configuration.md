@@ -24,9 +24,7 @@ To change this file edit the source file and then run MarkdownSnippets.
     * [GraphType](#graphtype)
   * [Testing the GraphQlController](#testing-the-graphqlcontroller)
   * [GraphQlExtensions](#graphqlextensions)
-    * [ExecuteWithErrorCheck](#executewitherrorcheck)
-<!-- endtoc -->
-
+    * [ExecuteWithErrorCheck](#executewitherrorcheck)<!-- endtoc -->
 
 
 ## Container Registration
