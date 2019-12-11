@@ -74,7 +74,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L7-L24) / [anchor](#snippet-rootquery)</sup>
+<sup><a href='/src/Snippets/RootQuery.cs#L7-L24' title='File snippet `rootquery` was extracted from'>snippet source</a> | <a href='#snippet-rootquery' title='Navigate to start of snippet `rootquery`'>anchor</a></sup>
 <!-- endsnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -105,7 +105,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/TypedGraph.cs#L9-L29) / [anchor](#snippet-typedgraph)</sup>
+<sup><a href='/src/Snippets/TypedGraph.cs#L9-L29' title='File snippet `typedgraph` was extracted from'>snippet source</a> | <a href='#snippet-typedgraph' title='Navigate to start of snippet `typedgraph`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -132,7 +132,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L7-L21) / [anchor](#snippet-connectionrootquery)</sup>
+<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L7-L21' title='File snippet `connectionrootquery` was extracted from'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Navigate to start of snippet `connectionrootquery`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -227,7 +227,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L8-L22) / [anchor](#snippet-connectiontypedgraph)</sup>
+<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L8-L22' title='File snippet `connectiontypedgraph` was extracted from'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Navigate to start of snippet `connectiontypedgraph`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -295,7 +295,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L54-L89) / [anchor](#snippet-manuallyapplywhere)</sup>
+<sup><a href='/src/SampleWeb/Query.cs#L54-L89' title='File snippet `manuallyapplywhere` was extracted from'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Navigate to start of snippet `manuallyapplywhere`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -323,7 +323,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ResolveDbContextQuery.cs#L8-L27) / [anchor](#snippet-queryresolvedbcontext)</sup>
+<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L8-L27' title='File snippet `queryresolvedbcontext` was extracted from'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Navigate to start of snippet `queryresolvedbcontext`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
