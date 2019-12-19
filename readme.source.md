@@ -3,7 +3,7 @@
 [![Backers on Open Collective](https://opencollective.com/graphqlentityframework/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/graphqlentityframework/sponsors/badge.svg)](#sponsors)
 [![Build status](https://ci.appveyor.com/api/projects/status/x554cp7clu8yh2yy/branch/master?svg=true)](https://ci.appveyor.com/project/SimonCropp/graphql-entityframework)
-[![NuGet Status](https://img.shields.io/nuget/v/GraphQL.EntityFramework.svg?cacheSeconds=86400)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
+[![NuGet Status](https://img.shields.io/nuget/v/GraphQL.EntityFramework.svg)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
 
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
 
