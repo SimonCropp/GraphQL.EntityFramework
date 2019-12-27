@@ -475,7 +475,11 @@ public class GraphQlControllerTests :
         client = server.CreateClient();
         websocketClient = server.CreateWebSocketClient();
         websocketClient.ConfigureRequest =
-            request => { request.Headers["Sec-WebSocket-Protocol"] = "graphql-ws"; };
+            request =>
+            {
+                var headers = request.Headers;
+                headers["Sec-WebSocket-Protocol"] = "graphql-ws";
+            };
     }
 
     [Fact]
@@ -688,7 +692,7 @@ subscription
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L241' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L245' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -704,11 +708,13 @@ Wraps the `DocumentExecuter.ExecuteAsync` to throw if there are any errors.
 <!-- snippet: ExecuteWithErrorCheck -->
 <a id='snippet-executewitherrorcheck'/></a>
 ```cs
-public static async Task<ExecutionResult> ExecuteWithErrorCheck(this IDocumentExecuter documentExecuter, ExecutionOptions executionOptions)
+public static async Task<ExecutionResult> ExecuteWithErrorCheck(
+    this IDocumentExecuter executer,
+    ExecutionOptions options)
 {
-    Guard.AgainstNull(nameof(documentExecuter), documentExecuter);
-    Guard.AgainstNull(nameof(executionOptions), executionOptions);
-    var executionResult = await documentExecuter.ExecuteAsync(executionOptions);
+    Guard.AgainstNull(nameof(executer), executer);
+    Guard.AgainstNull(nameof(options), options);
+    var executionResult = await executer.ExecuteAsync(options);
 
     var errors = executionResult.Errors;
     if (errors != null && errors.Count > 0)
@@ -724,5 +730,5 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(this IDocumentEx
     return executionResult;
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L9-L31' title='File snippet `executewitherrorcheck` was extracted from'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Navigate to start of snippet `executewitherrorcheck`'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L9-L33' title='File snippet `executewitherrorcheck` was extracted from'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Navigate to start of snippet `executewitherrorcheck`'>anchor</a></sup>
 <!-- endsnippet -->

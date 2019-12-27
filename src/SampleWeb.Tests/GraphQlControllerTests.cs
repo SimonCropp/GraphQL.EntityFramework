@@ -24,7 +24,11 @@ public class GraphQlControllerTests :
         client = server.CreateClient();
         websocketClient = server.CreateWebSocketClient();
         websocketClient.ConfigureRequest =
-            request => { request.Headers["Sec-WebSocket-Protocol"] = "graphql-ws"; };
+            request =>
+            {
+                var headers = request.Headers;
+                headers["Sec-WebSocket-Protocol"] = "graphql-ws";
+            };
     }
 
     [Fact]
