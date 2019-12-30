@@ -45,7 +45,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 [Go to licensing FAQ](/doco/licensing-patron-faq.md) for more information.
 
 
-## NuGet
+## NuGet Package
 
 https://nuget.org/packages/GraphQL.EntityFramework/
 
