@@ -60,6 +60,11 @@ This project exists thanks to all the people who contribute.
 <a href="https://github.com/SimonCropp/GraphQL.EntityFramework/graphs/contributors"><img src="https://opencollective.com/graphqlentityframework/contributors.svg?width=890&button=false" /></a>
 
 
+## Security contact information
+
+To report a security vulnerability, please use the [Tidelift security contact](https://tidelift.com/security). Tidelift will coordinate the fix and disclosure.
+
+
 ## Release Notes
 
 See [closed milestones](../../milestones?state=closed).
