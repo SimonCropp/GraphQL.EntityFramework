@@ -70,7 +70,7 @@ public class Query :
                 {
                     var wheres = context.GetArgument<List<WhereExpression>>("where");
 
-                    var predicate = FilterBuilder<Employee>.BuildPredicate(wheres);
+                    var predicate = ExpressionBuilder<Employee>.BuildPredicate(wheres);
                     query = query.Where(predicate);
                 }
 

@@ -64,11 +64,6 @@ csharp_new_line_before_members_in_anonymous_types = true:error
 #csharp_prefer_braces = true:error
 
 # msbuild
-
-
-# ASP0000: Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
-dotnet_diagnostic.ASP0000.severity = none
-
 [*.{csproj,targets,props}]
 indent_size = 2
 

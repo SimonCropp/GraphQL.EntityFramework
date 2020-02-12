@@ -600,6 +600,30 @@ query {
     }
 
     [Fact]
+    public async Task Get_complex_query_result()
+    {
+        var query = @"
+query {
+  employees (
+    where: [
+      {groupedExpressions: [
+        {path: ""content"", comparison: ""contains"", value: ""4"", connector: ""or""},
+
+          { path: ""content"", comparison: ""contains"", value: ""2""}
+      ], connector: ""and""},
+      {path: ""age"", comparison: ""greaterThanOrEqual"", value: ""31""}
+  	]
+  ) {
+    id
+  }
+}";
+        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Contains("{\"employees\":[{\"id\":3},{\"id\":5}]}", result);
+        response.EnsureSuccessStatusCode();
+    }
+
+    [Fact]
     public async Task Post()
     {
         var query = @"
@@ -692,7 +716,7 @@ subscription
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L245' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L269' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
 <!-- endsnippet -->
 
 

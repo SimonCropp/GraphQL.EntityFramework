@@ -10,6 +10,6 @@ namespace GraphQL.EntityFramework
         public string[]? Value { get; set; }
         public bool Negate { get; set; } = false;
         public Connector Connector { get; set; } = Connector.And;
-        public WhereExpression[]? GroupedExpressions { get; set;  }
+        public WhereExpression[]? GroupedExpressions { get; set; }
     }
 }

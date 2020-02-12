@@ -278,11 +278,9 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
         if (context.HasArgument("where"))
         {
             var wheres = context.GetArgument<List<WhereExpression>>("where");
-            foreach (var where in wheres)
-            {
-                var predicate = ExpressionBuilder<Employee>.BuildPredicate(where);
-                query = query.Where(predicate);
-            }
+
+            var predicate = ExpressionBuilder<Employee>.BuildPredicate(wheres);
+            query = query.Where(predicate);
         }
 
         return from q in query
@@ -295,7 +293,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L54-L89' title='File snippet `manuallyapplywhere` was extracted from'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Navigate to start of snippet `manuallyapplywhere`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L54-L87' title='File snippet `manuallyapplywhere` was extracted from'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Navigate to start of snippet `manuallyapplywhere`'>anchor</a></sup>
 <!-- endsnippet -->
 
 

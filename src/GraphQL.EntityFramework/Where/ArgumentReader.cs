@@ -11,7 +11,7 @@ static class ArgumentReader
     {
         expression = getArgument.ReadList<WhereExpression>("where");
 
-        if(expression.Count() > 0)
+        if (expression.Count() > 0)
         {
             return true;
         }

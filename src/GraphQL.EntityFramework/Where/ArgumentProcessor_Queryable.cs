@@ -10,8 +10,8 @@ namespace GraphQL.EntityFramework
         public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context, List<string>? keyNames = null)
             where TItem : class
         {
-            Guard.AgainstNull(nameof(queryable),queryable);
-            Guard.AgainstNull(nameof(context),context);
+            Guard.AgainstNull(nameof(queryable), queryable);
+            Guard.AgainstNull(nameof(context), context);
             return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x), keyNames);
         }
 
@@ -21,20 +21,20 @@ namespace GraphQL.EntityFramework
             if (ArgumentReader.TryReadIds(getArguments, out var values))
             {
                 var keyName = GetKeyName(keyNames);
-                var predicate = FilterBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
                 queryable = queryable.Where(predicate);
             }
 
             if (ArgumentReader.TryReadId(getArguments, out var value))
             {
                 var keyName = GetKeyName(keyNames);
-                var predicate = FilterBuilder<TItem>.BuildPredicate(keyName, Comparison.Equal, new[] { value });
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.Equal, new[] { value });
                 queryable = queryable.Where(predicate);
             }
 
             if (ArgumentReader.TryReadWhere(getArguments, out var wheres))
             {
-                var predicate = FilterBuilder<TItem>.BuildPredicate(wheres);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
                 queryable = queryable.Where(predicate);
             }
 
@@ -53,7 +53,7 @@ namespace GraphQL.EntityFramework
             return queryable;
         }
 
-         static string GetKeyName(List<string>? keyNames)
+        static string GetKeyName(List<string>? keyNames)
         {
             if (keyNames == null)
             {

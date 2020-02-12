@@ -151,7 +151,6 @@ query {
     [Fact]
     public async Task Get_complex_query_result()
     {
-        await startTask;
         var query = @"
 query {
   employees (

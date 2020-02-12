@@ -15,13 +15,11 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
-    GraphQlEfSampleDbContext dbContext;
 
-    public GraphQlController(ISchema schema, IDocumentExecuter executer, GraphQlEfSampleDbContext dbContext)
+    public GraphQlController(ISchema schema, IDocumentExecuter executer)
     {
         this.schema = schema;
         this.executer = executer;
-        this.dbContext = dbContext;
     }
 
     [HttpPost]
@@ -62,7 +60,6 @@ public class GraphQlController :
             OperationName = operationName,
             Inputs = variables?.ToInputs(),
             CancellationToken = cancellation,
-            UserContext = dbContext,
 #if (DEBUG)
             ExposeExceptions = true,
             EnableMetrics = true,

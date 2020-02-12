@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace GraphQL.EntityFramework
 {
-    public static class FilterBuilder<T>
+    public static class ExpressionBuilder<T>
     {
         const string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
 
@@ -205,7 +205,7 @@ namespace GraphQL.EntityFramework
             var listItemParam = Expression.Parameter(listItemType, "i");
 
             // Generate the predicate for the list item type
-            var subPredicate = typeof(FilterBuilder<>)
+            var subPredicate = typeof(ExpressionBuilder<>)
                 .MakeGenericType(listItemType)
                 .GetMethods(BindingFlags.Public | BindingFlags.Static)
                 .Where(m => m.Name.Equals("BuildPredicate") && m.GetParameters().Length == 5).Single()
@@ -276,7 +276,7 @@ namespace GraphQL.EntityFramework
 
 
         #region Operations
-        
+
         /// <summary>
         /// Make Object List In Comparision
         /// </summary>
