@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using GraphQL.Language.AST;
 using GraphQL.Types;
@@ -138,7 +139,7 @@ class IncludeAppender
         return new[] {char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1)};
     }
 
-    static bool TryGetIncludeMetadata(FieldType fieldType, out string[] value)
+    static bool TryGetIncludeMetadata(FieldType fieldType, [NotNullWhen(true)] out string[]? value)
     {
         if (fieldType.Metadata.TryGetValue("_EF_IncludeName", out var fieldNameObject))
         {
@@ -146,7 +147,7 @@ class IncludeAppender
             return true;
         }
 
-        value = Array.Empty<string>();
+        value = null;
         return false;
     }
 }

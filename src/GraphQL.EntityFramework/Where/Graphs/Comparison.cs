@@ -6,7 +6,7 @@
         Equal,
         In,
 
-        // Object
+        // Object/ List
         GreaterThan,
         GreaterThanOrEqual,
         LessThan,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using GraphQL.EntityFramework;
@@ -25,12 +26,12 @@ static class ArgumentReader
         return getArgument.ReadList<OrderBy>("orderBy");
     }
 
-    public static bool TryReadIds(Func<Type, string, object> getArgument, out string[] expression)
+    public static bool TryReadIds(Func<Type, string, object> getArgument, [NotNullWhen(returnValue: true)] out string[]? expression)
     {
         var argument = getArgument(typeof(object), "ids");
         if (argument == null)
         {
-            expression = Array.Empty<string>();
+            expression = null;
             return false;
         }
 
@@ -43,12 +44,12 @@ static class ArgumentReader
         throw new Exception($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is not supported.");
     }
 
-    public static bool TryReadId(Func<Type, string, object> getArgument, out string expression)
+    public static bool TryReadId(Func<Type, string, object> getArgument, [NotNullWhen(returnValue: true)] out string? expression)
     {
         var argument = getArgument(typeof(object), "id");
         if (argument == null)
         {
-            expression = string.Empty;
+            expression = null;
             return false;
         }
 

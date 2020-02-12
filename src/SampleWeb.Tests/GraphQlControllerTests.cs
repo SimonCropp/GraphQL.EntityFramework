@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using ApprovalTests;
+using VerifyXunit;
 using GraphQL.Common.Request;
 using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;
@@ -13,31 +13,27 @@ using Xunit.Abstractions;
 #region GraphQlControllerTests
 
 public class GraphQlControllerTests :
-    XunitApprovalBase
+    VerifyBase
 {
     static HttpClient client = null!;
     static WebSocketClient websocketClient = null!;
-    static Task startTask;
 
     static GraphQlControllerTests()
     {
-        startTask = Start();
-    }
-
-    static async Task Start()
-    {
-        await DbContextBuilder.Start();
         var server = GetTestServer();
         client = server.CreateClient();
         websocketClient = server.CreateWebSocketClient();
         websocketClient.ConfigureRequest =
-            request => { request.Headers["Sec-WebSocket-Protocol"] = "graphql-ws"; };
+            request =>
+            {
+                var headers = request.Headers;
+                headers["Sec-WebSocket-Protocol"] = "graphql-ws";
+            };
     }
 
     [Fact]
     public async Task Get()
     {
-        await startTask;
         var query = @"
 {
   companies
@@ -47,13 +43,12 @@ public class GraphQlControllerTests :
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
     public async Task Get_single()
     {
-        await startTask;
         var query = @"
 query ($id: ID!)
 {
@@ -69,13 +64,12 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
     public async Task Get_single_not_found()
     {
-        await startTask;
         var query = @"
 query ($id: ID!)
 {
@@ -97,7 +91,6 @@ query ($id: ID!)
     [Fact]
     public async Task Get_variable()
     {
-        await startTask;
         var query = @"
 query ($id: ID!)
 {
@@ -113,13 +106,12 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
     public async Task Get_companies_paging()
     {
-        await startTask;
         var after = 1;
         var query = @"
 query {
@@ -138,13 +130,12 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
     public async Task Get_employee_summary()
     {
-        await startTask;
         var query = @"
 query {
   employeeSummary {
@@ -154,7 +145,7 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        Approvals.VerifyJson(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -185,7 +176,6 @@ query {
     [Fact]
     public async Task Post()
     {
-        await startTask;
         var query = @"
 {
   companies
@@ -204,7 +194,6 @@ query {
     [Fact]
     public async Task Post_variable()
     {
-        await startTask;
         var query = @"
 query ($id: ID!)
 {
@@ -226,7 +215,6 @@ query ($id: ID!)
     [Fact]
     public async Task Should_subscribe_to_companies()
     {
-        await startTask;
         var resetEvent = new AutoResetEvent(false);
 
         var result = new GraphQLHttpSubscriptionResult(

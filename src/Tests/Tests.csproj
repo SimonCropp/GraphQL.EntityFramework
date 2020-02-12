@@ -1,20 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <NoWarn>EF1000</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EfLocalDb" Version="4.0.0" />
+    <PackageReference Include="EfLocalDb" Version="6.1.0" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
-    <PackageReference Include="ApprovalTests" Version="4.2.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
-    <PackageReference Include="ObjectApproval" Version="11.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
     <PackageReference Include="Xunit" Version="2.4.1" />
-    <PackageReference Include="Xunit.ApprovalTests" Version="3.2.1" />
-    <PackageReference Include="XunitLogger" Version="3.2.1" />
+    <PackageReference Include="XunitContext" Version="1.8.0" />
+    <PackageReference Include="Verify.Xunit" Version="1.19.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.26" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.41" PrivateAssets="All" />
   </ItemGroup>
 </Project>

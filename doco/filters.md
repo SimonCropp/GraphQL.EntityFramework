@@ -34,7 +34,7 @@ public class Filters
     public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TEntity input)
         where TEntity : class;
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/Filters/Filters.cs#L8-L18) / [anchor](#snippet-filterssignature)</sup>
+<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L8-L18' title='File snippet `filterssignature` was extracted from'>snippet source</a> | <a href='#snippet-filterssignature' title='Navigate to start of snippet `filterssignature`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -48,7 +48,7 @@ public class MyEntity
     public string? Property { get; set; }
 }
 ```
-<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L7-L14) / [anchor](#snippet-add-filter)</sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L7-L14' title='File snippet `add-filter` was extracted from'>snippet source</a> | <a href='#snippet-add-filter' title='Navigate to start of snippet `add-filter`'>anchor</a></sup>
 <a id='snippet-add-filter-1'/></a>
 ```cs
 var filters = new Filters();
@@ -58,5 +58,5 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: x => filters);
 ```
-<sup>[snippet source](/src/Snippets/GlobalFilterSnippets.cs#L18-L27) / [anchor](#snippet-add-filter-1)</sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L18-L27' title='File snippet `add-filter` was extracted from'>snippet source</a> | <a href='#snippet-add-filter-1' title='Navigate to start of snippet `add-filter`'>anchor</a></sup>
 <!-- endsnippet -->

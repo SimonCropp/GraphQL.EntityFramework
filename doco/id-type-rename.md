@@ -102,7 +102,7 @@ namespace GraphQL.EntityFramework
     }
 }
 ```
-<sup>[snippet source](/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L56) / [anchor](#snippet-FixIdTypeRule.cs)</sup>
+<sup><a href='/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L56' title='File snippet `FixIdTypeRule.cs` was extracted from'>snippet source</a> | <a href='#snippet-FixIdTypeRule.cs' title='Navigate to start of snippet `FixIdTypeRule.cs`'>anchor</a></sup>
 <!-- endsnippet -->
 
 To use this rule set `ExecutionOptions.ValidationRules` to `FixIdTypeRule.CoreRulesWithIdFix`:
@@ -119,5 +119,5 @@ var executionOptions = new ExecutionOptions
     ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
 };
 ```
-<sup>[snippet source](/src/Tests/IntegrationTests/QueryExecutor.cs#L28-L37) / [anchor](#snippet-executionoptionswithfixidtyperule)</sup>
+<sup><a href='/src/Tests/IntegrationTests/QueryExecutor.cs#L28-L37' title='File snippet `executionoptionswithfixidtyperule` was extracted from'>snippet source</a> | <a href='#snippet-executionoptionswithfixidtyperule' title='Navigate to start of snippet `executionoptionswithfixidtyperule`'>anchor</a></sup>
 <!-- endsnippet -->

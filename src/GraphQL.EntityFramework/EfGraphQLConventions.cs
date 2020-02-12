@@ -3,7 +3,6 @@ using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace GraphQL.EntityFramework
 {
@@ -16,28 +15,26 @@ namespace GraphQL.EntityFramework
         /// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="model">The <see cref="IModel"/> to use. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
-        /// <param name="lifetime">The service lifetime the GQL service should be registered with</param>
         #region RegisterInContainer
         public static void RegisterInContainer<TDbContext>(
                 IServiceCollection services,
                 ResolveDbContext<TDbContext>? resolveDbContext = null,
                 IModel? model = null,
-                ResolveFilters? resolveFilters = null,
-                ServiceLifetime lifetime = ServiceLifetime.Scoped)
+                ResolveFilters? resolveFilters = null)
             #endregion
             where TDbContext : DbContext
         {
             Guard.AgainstNull(nameof(services), services);
 
             RegisterScalarsAndArgs(services);
-
-            Func<IServiceProvider, IEfGraphQLService<TDbContext>> gqlServiceFactory = (provider => Build(resolveDbContext, model, resolveFilters, provider));
-
-            services.TryAdd(new ServiceDescriptor(typeof(IEfGraphQLService<TDbContext>), gqlServiceFactory, lifetime));
+            services.AddHttpContextAccessor();
+            services.AddTransient<HttpContextCapture>();
+            services.AddSingleton(
+                provider => Build(resolveDbContext, model, resolveFilters, provider));
         }
 
         static IEfGraphQLService<TDbContext> Build<TDbContext>(
-            ResolveDbContext<TDbContext>? dbContext,
+            ResolveDbContext<TDbContext>? dbContextResolver,
             IModel? model,
             ResolveFilters? filters,
             IServiceProvider provider)
@@ -47,15 +44,35 @@ namespace GraphQL.EntityFramework
 
             filters ??= provider.GetService<ResolveFilters>();
 
-            if (dbContext == null)
+            if (dbContextResolver == null)
             {
-                dbContext = context => provider.GetRequiredService<TDbContext>();
+                dbContextResolver = context => DbContextFromProvider<TDbContext>(provider);
             }
 
             return new EfGraphQLService<TDbContext>(
                 model,
-                dbContext,
+                dbContextResolver,
                 filters);
+        }
+
+        static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider)
+            where TDbContext : DbContext
+        {
+            var httpContextCapture = provider.GetService<HttpContextCapture>();
+            var httpContextAccessor = httpContextCapture.HttpContextAccessor;
+            var dbContextFromHttpContext = httpContextAccessor?.HttpContext.RequestServices.GetService<TDbContext>();
+            if (dbContextFromHttpContext != null)
+            {
+                return dbContextFromHttpContext;
+            }
+
+            var dbContextFromRootProvider = provider.GetService<TDbContext>();
+            if (dbContextFromRootProvider != null)
+            {
+                return dbContextFromRootProvider;
+            }
+
+            throw new Exception($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
         }
 
         static void RegisterScalarsAndArgs(IServiceCollection services)

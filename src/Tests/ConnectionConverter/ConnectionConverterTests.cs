@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EfLocalDb;
-using GraphQL.EntityFramework;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
+using Filters = GraphQL.EntityFramework.Filters;
 
 public class ConnectionConverterTests :
-    XunitApprovalBase
+    VerifyBase
 {
     static ConnectionConverterTests()
     {
@@ -57,10 +58,10 @@ public class ConnectionConverterTests :
     public async Task Queryable(int? first, int? after, int? last, int? before)
     {
         var fieldContext = new ResolveFieldContext<string>();
-        using var database = await sqlInstance.BuildWithRollback();
+        await using var database = await sqlInstance.BuildWithRollback();
         var entities = database.Context.Entities;
         var connection = await ConnectionConverter.ApplyConnectionContext(entities, first, after, last, before, fieldContext, new Filters());
-        ObjectApprover.Verify(connection);
+        await Verify(connection);
     }
 
     [Theory]
@@ -87,10 +88,10 @@ public class ConnectionConverterTests :
     //last after
     [InlineData(null, 7, 2, null)]
 
-    public void List(int? first, int? after, int? last, int? before)
+    public Task List(int? first, int? after, int? last, int? before)
     {
         var connection = ConnectionConverter.ApplyConnectionContext(list, first, after, last, before);
-        ObjectApprover.Verify(connection);
+        return Verify(connection);
     }
 
     public ConnectionConverterTests(ITestOutputHelper output) :
@@ -100,7 +101,7 @@ public class ConnectionConverterTests :
 
     public class Entity
     {
-        public Guid Id { get; set; } = XunitLogging.Context.NextGuid();
+        public Guid Id { get; set; } = XunitContext.Context.NextGuid();
         public string? Property { get; set; }
     }
 

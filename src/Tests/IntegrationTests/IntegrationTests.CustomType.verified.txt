@@ -1,0 +1,10 @@
+{
+  customType: [
+    {
+      property: 9223372036854775807
+    },
+    {
+      property: 3
+    }
+  ]
+}

@@ -17,7 +17,8 @@ namespace GraphQL.EntityFramework
 
         #endregion
 
-        public void Add<TEntity>(Filter<TEntity> filter) where TEntity : class
+        public void Add<TEntity>(Filter<TEntity> filter)
+            where TEntity : class
         {
             Guard.AgainstNull(nameof(filter), filter);
             funcs[typeof(TEntity)] =

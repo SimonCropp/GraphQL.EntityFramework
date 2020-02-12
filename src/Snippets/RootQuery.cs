@@ -33,8 +33,8 @@ class RootQuery
     {
     }
 
-    class CompanyGraph:
-        EfObjectGraphType<MyDbContext,Company>
+    class CompanyGraph :
+        EfObjectGraphType<MyDbContext, Company>
     {
         public CompanyGraph(IEfGraphQLService<MyDbContext> efGraphQlService) :
             base(efGraphQlService)

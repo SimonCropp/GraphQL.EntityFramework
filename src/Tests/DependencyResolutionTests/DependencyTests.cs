@@ -8,11 +8,12 @@ using GraphQL.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 public class DependencyTests :
-    XunitApprovalBase
+    VerifyBase
 {
     static SqlInstance<DependencyDbContext> sqlInstance;
 
@@ -52,7 +53,7 @@ public class DependencyTests :
     [Fact]
     public async Task ExplicitModel()
     {
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var dbContext = database.Context;
         await AddData(dbContext);
         var services = BuildServiceCollection();
@@ -61,7 +62,7 @@ public class DependencyTests :
             services,
             userContext => (DependencyDbContext) userContext,
             ModelBuilder.Instance);
-        using var provider = services.BuildServiceProvider();
+        await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
         var executionOptions = new ExecutionOptions
         {
@@ -77,16 +78,16 @@ public class DependencyTests :
     [Fact]
     public async Task ScopedDbContext()
     {
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var dbContext = database.Context;
         await AddData(dbContext);
         var services = BuildServiceCollection();
-        services.AddScoped(x => { return database.Context; });
+        services.AddScoped(x => database.Context);
 
         EfGraphQLConventions.RegisterInContainer(
             services,
             userContext => (DependencyDbContext) userContext);
-        using var provider = services.BuildServiceProvider();
+        await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
         var executionOptions = new ExecutionOptions
         {
@@ -102,7 +103,7 @@ public class DependencyTests :
     [Fact]
     public async Task TransientDbContext()
     {
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var dbContext = database.Context;
         await AddData(dbContext);
         var services = BuildServiceCollection();
@@ -111,7 +112,7 @@ public class DependencyTests :
         EfGraphQLConventions.RegisterInContainer(
             services,
             userContext => (DependencyDbContext) userContext);
-        using var provider = services.BuildServiceProvider();
+        await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
         var executionOptions = new ExecutionOptions
         {
@@ -127,7 +128,7 @@ public class DependencyTests :
     [Fact]
     public async Task SingletonDbContext()
     {
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var dbContext = database.Context;
         await AddData(dbContext);
         var services = BuildServiceCollection();
@@ -136,7 +137,7 @@ public class DependencyTests :
         EfGraphQLConventions.RegisterInContainer(
             services,
             userContext => (DependencyDbContext) userContext);
-        using var provider = services.BuildServiceProvider();
+        await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
         var executionOptions = new ExecutionOptions
         {

@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
-using GraphQL.EntityFramework;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
+using Filters = GraphQL.EntityFramework.Filters;
 
 public class GlobalFiltersTests :
-    XunitApprovalBase
+    VerifyBase
 {
     [Fact]
     public async Task Simple()

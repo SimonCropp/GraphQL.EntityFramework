@@ -14,9 +14,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
-public class Subscription : ObjectGraphType<object>
+public class Subscription :
+    ObjectGraphType<object>
 {
-    public Subscription(ContextFactory contextFactory, ILogger<Subscription> logger)
+    public Subscription(Func<SampleDbContext> contextFactory, ILogger<Subscription> logger)
     {
         AddField(new EventStreamFieldType
         {
@@ -27,16 +28,16 @@ public class Subscription : ObjectGraphType<object>
         });
     }
 
-    static IObservable<Company> Subscribe(ResolveEventStreamContext context, ContextFactory contextFactory, ILogger logger)
+    static IObservable<Company> Subscribe(ResolveEventStreamContext context, Func<SampleDbContext> contextFactory, ILogger logger)
     {
         long lastId = 0;
         var inner = Observable.Using(
-            token => Task.FromResult(contextFactory.BuildContext()),
-            async (ctx, token) =>
+            token => Task.FromResult(contextFactory()),
+            async (dbContext, token) =>
             {
                 try
                 {
-                    var companies = await GetCompanies(context, ctx, lastId, token: token);
+                    var companies = await GetCompanies(context, dbContext, lastId, token: token);
 
                     if (companies.Any())
                     {
@@ -62,16 +63,16 @@ public class Subscription : ObjectGraphType<object>
 
     static Task<List<Company>> GetCompanies(
         ResolveEventStreamContext context,
-        GraphQlEfSampleDbContext ctx,
+        SampleDbContext dbContext,
         long lastId,
         int take = 1,
         CancellationToken token = default)
     {
-        var returnType = ctx.Companies;
+        var returnType = dbContext.Companies;
 
         var document = new GraphQLDocumentBuilder().Build(SupposePersistedQuery());
 
-        var fieldContext = ResolveFieldContext(ctx, token, document, context.Schema);
+        var fieldContext = ResolveFieldContext(dbContext, token, document, context.Schema);
 
         var withArguments = returnType.ApplyGraphQlArguments(fieldContext);
 
@@ -93,7 +94,7 @@ public class Subscription : ObjectGraphType<object>
     }
 
     static ResolveFieldContext ResolveFieldContext(
-        GraphQlEfSampleDbContext ctx,
+        SampleDbContext dbContext,
         CancellationToken token,
         Document document,
         ISchema schema)
@@ -104,7 +105,7 @@ public class Subscription : ObjectGraphType<object>
         {
             Document = document,
             Schema = schema,
-            UserContext = ctx,
+            UserContext = dbContext,
             Variables = variableValues,
             Fragments = document.Fragments,
             CancellationToken = token,
@@ -125,8 +126,11 @@ public class Subscription : ObjectGraphType<object>
 
     static ResolveFieldContext GetContext(ExecutionContext context, ExecutionNode node)
     {
-        var argumentValues = ExecutionHelper.GetArgumentValues(context.Schema,
-            node.FieldDefinition.Arguments, node.Field.Arguments, context.Variables);
+        var argumentValues = ExecutionHelper.GetArgumentValues(
+            context.Schema,
+            node.FieldDefinition.Arguments,
+            node.Field.Arguments,
+            context.Variables);
         var dictionary = ExecutionHelper.SubFieldsFor(context, node.FieldDefinition.ResolvedType, node.Field);
         return new ResolveFieldContext
         {

@@ -1,0 +1,35 @@
+{
+  TotalCount: 10,
+  PageInfo: {
+    HasNextPage: true,
+    HasPreviousPage: true,
+    StartCursor: '6',
+    EndCursor: '7'
+  },
+  Edges: [
+    {
+      Cursor: '6',
+      Node: {
+        Id: Guid_3,
+        Property: 'g'
+      }
+    },
+    {
+      Cursor: '7',
+      Node: {
+        Id: Guid_4,
+        Property: 'h'
+      }
+    }
+  ],
+  Items: [
+    {
+      Id: Guid_3,
+      Property: 'g'
+    },
+    {
+      Id: Guid_4,
+      Property: 'h'
+    }
+  ]
+}

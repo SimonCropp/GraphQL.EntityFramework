@@ -1,0 +1,19 @@
+{
+  childEntities: [
+    {
+      parentAlias: {
+        property: 'Value1'
+      }
+    },
+    {
+      parentAlias: {
+        property: 'Value1'
+      }
+    },
+    {
+      parentAlias: {
+        property: 'Value4'
+      }
+    }
+  ]
+}

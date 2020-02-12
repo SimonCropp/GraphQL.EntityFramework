@@ -74,7 +74,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/RootQuery.cs#L7-L24) / [anchor](#snippet-rootquery)</sup>
+<sup><a href='/src/Snippets/RootQuery.cs#L7-L24' title='File snippet `rootquery` was extracted from'>snippet source</a> | <a href='#snippet-rootquery' title='Navigate to start of snippet `rootquery`'>anchor</a></sup>
 <!-- endsnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -105,7 +105,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/TypedGraph.cs#L9-L29) / [anchor](#snippet-typedgraph)</sup>
+<sup><a href='/src/Snippets/TypedGraph.cs#L9-L29' title='File snippet `typedgraph` was extracted from'>snippet source</a> | <a href='#snippet-typedgraph' title='Navigate to start of snippet `typedgraph`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -132,7 +132,7 @@ public class Query :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionRootQuery.cs#L7-L21) / [anchor](#snippet-connectionrootquery)</sup>
+<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L7-L21' title='File snippet `connectionrootquery` was extracted from'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Navigate to start of snippet `connectionrootquery`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -227,7 +227,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup>[snippet source](/src/Snippets/ConnectionTypedGraph.cs#L8-L22) / [anchor](#snippet-connectiontypedgraph)</sup>
+<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L8-L22' title='File snippet `connectiontypedgraph` was extracted from'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Navigate to start of snippet `connectiontypedgraph`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -272,14 +272,17 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
     ),
     resolve: context =>
     {
-        IQueryable<Employee> query = dbContextFunc().Employees;
+        var dbContext = ResolveDbContext(context);
+        IQueryable<Employee> query = dbContext.Employees;
 
         if (context.HasArgument("where"))
         {
             var wheres = context.GetArgument<List<WhereExpression>>("where");
-
-            var predicate = FilterBuilder<Employee>.BuildPredicate(wheres);
-            query = query.Where(predicate);
+            foreach (var where in wheres)
+            {
+                var predicate = ExpressionBuilder<Employee>.BuildPredicate(where);
+                query = query.Where(predicate);
+            }
         }
 
         return from q in query
@@ -292,5 +295,43 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup>[snippet source](/src/SampleWeb/Query.cs#L55-L87) / [anchor](#snippet-manuallyapplywhere)</sup>
+<sup><a href='/src/SampleWeb/Query.cs#L54-L89' title='File snippet `manuallyapplywhere` was extracted from'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Navigate to start of snippet `manuallyapplywhere`'>anchor</a></sup>
 <!-- endsnippet -->
+
+
+## Resolving DbContext
+
+Sometimes it is necessary to access the current DbContext from withing the base `QueryGraphType.Field` method. in this case the custom `ResolveEfFieldContext` is not available. In this scenario `QueryGraphType.ResolveDbContext` can be used to resolve the current DbContext.
+
+<!-- snippet: QueryResolveDbContext -->
+<a id='snippet-queryresolvedbcontext'/></a>
+```cs
+public class Query :
+    QueryGraphType<MyDbContext>
+{
+    public Query(IEfGraphQLService<MyDbContext> graphQlService) :
+        base(graphQlService)
+    {
+        Field<ListGraphType<CompanyGraph>>(
+            name: "oldCompanies",
+            resolve: context =>
+            {
+                // uses the base QueryGraphType to resolve the db context
+                var dbContext = ResolveDbContext(context);
+                return dbContext.Companies.Where(x => x.Age > 10);
+            });
+    }
+}
+```
+<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L8-L27' title='File snippet `queryresolvedbcontext` was extracted from'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Navigate to start of snippet `queryresolvedbcontext`'>anchor</a></sup>
+<!-- endsnippet -->
+
+
+## ArgumentProcessor
+
+`ArgumentProcessor` (via the method `ApplyGraphQlArguments`) is responsible for extracting the various parts of the [GraphQL query argument](query-usage.md) and applying them to an `IQueryable<T>`. So, for example, each [where argument](query-usage.md#where) is mapped to a [IQueryable.Where](https://docs.microsoft.com/en-us/dotnet/api/system.linq.queryable.where) and each [skip argument](query-usage.md#skip) is mapped to a [IQueryable.Where](https://docs.microsoft.com/en-us/dotnet/api/system.linq.queryable.skip). 
+
+The arguments are parsed and mapped each time a query is executer.
+
+ArgumentProcessor is generally considered an internal API and not for public use. However there are some advanced scenarios, for example when building subscriptions, that ArgumentProcessor is useful.
+

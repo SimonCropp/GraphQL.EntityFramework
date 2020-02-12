@@ -1,0 +1,12 @@
+{
+  parentEntitiesFiltered: [
+    {
+      property: 'Value1',
+      children: [
+        {
+          property: 'Value3'
+        }
+      ]
+    }
+  ]
+}

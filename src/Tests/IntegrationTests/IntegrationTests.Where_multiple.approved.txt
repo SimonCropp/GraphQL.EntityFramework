@@ -1,7 +1,0 @@
-﻿{
-  parentEntities: [
-    {
-      property: 'Value3'
-    }
-  ]
-}

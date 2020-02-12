@@ -1,0 +1,7 @@
+{
+  parentEntitiesFiltered: [
+    {
+      property: 'Value1'
+    }
+  ]
+}

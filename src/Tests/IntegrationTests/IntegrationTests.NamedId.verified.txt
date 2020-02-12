@@ -1,0 +1,7 @@
+{
+  namedEntities: [
+    {
+      property: 'Value1'
+    }
+  ]
+}

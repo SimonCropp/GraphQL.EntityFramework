@@ -21,6 +21,7 @@ namespace GraphQL.EntityFramework
         {
             return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
         }
+
         public FieldType AddQueryField<TReturn>(
             ObjectGraphType graph,
             string name,
@@ -68,6 +69,7 @@ namespace GraphQL.EntityFramework
         {
             return AddQueryField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments);
         }
+
         public FieldType AddQueryField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
@@ -119,13 +121,13 @@ namespace GraphQL.EntityFramework
                         //get field names of the table's primary key(s)
                         var names = GetKeyNames<TReturn>();
                         //run the specified resolve function
-                        var returnTypes = await resolve(efFieldContext);
+                        var query = await resolve(efFieldContext);
                         //include sub tables in the query based on the metadata stored for the requested graph
-                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        query = includeAppender.AddIncludes(query, context);
                         //apply any query filters specified in the arguments
-                        var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
+                        query = query.ApplyGraphQlArguments(context, names);
                         //query the database
-                        var list = await withArguments.ToListAsync(context.CancellationToken);
+                        var list = await query.ToListAsync(context.CancellationToken);
                         //apply the global filter on each individually enumerated item
                         return await efFieldContext.Filters.ApplyFilter(list, context.UserContext);
                     })

@@ -1,13 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using EfLocalDb;
+using Microsoft.Extensions.Hosting;
 
 // LocalDb is used to make the sample simpler.
 // Replace with a real DbContext
-public static class DbContextBuilder
+public class DbContextBuilder :
+    IHostedService
 {
-    static SqlDatabase<GraphQlEfSampleDbContext> database = null!;
+    static SqlDatabase<SampleDbContext> database = null!;
 
-    static async Task CreateDb(GraphQlEfSampleDbContext context)
+    static async Task CreateDb(SampleDbContext context)
     {
         await context.Database.EnsureCreatedAsync();
 
@@ -62,17 +65,22 @@ public static class DbContextBuilder
         await context.SaveChangesAsync();
     }
 
-    public static GraphQlEfSampleDbContext BuildDbContext()
+    public SampleDbContext BuildDbContext()
     {
         return database.NewDbContext();
     }
 
-    public static async Task Start()
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var sqlInstance = new SqlInstance<GraphQlEfSampleDbContext>(
+        var sqlInstance = new SqlInstance<SampleDbContext>(
             buildTemplate: CreateDb,
-            constructInstance: builder => new GraphQlEfSampleDbContext(builder.Options));
+            constructInstance: builder => new SampleDbContext(builder.Options));
 
         database = await sqlInstance.Build("GraphQLEntityFrameworkSample");
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using GraphQL.EntityFramework;
 using Xunit;
+using Filters = GraphQL.EntityFramework.Filters;
 
 public partial class IntegrationTests
 {
@@ -35,9 +35,9 @@ public partial class IntegrationTests
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2, entity3);
-        ObjectApprover.Verify(result);
+        await Verify(result);
     }
 
     static Filters BuildFilters()
@@ -68,9 +68,9 @@ public partial class IntegrationTests
             Property = "Ignore"
         };
 
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2);
-        ObjectApprover.Verify(result);
+        await Verify(result);
     }
 
     [Fact]
@@ -101,9 +101,9 @@ public partial class IntegrationTests
             Property = "Ignore"
         };
 
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2);
-        ObjectApprover.Verify(result);
+        await Verify(result);
     }
 
     [Fact(Skip = "Work out why include is not used")]
@@ -148,8 +148,8 @@ public partial class IntegrationTests
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
 
-        using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, BuildFilters(), entity1, entity2, entity3);
-        ObjectApprover.Verify(result);
+        await Verify(result);
     }
 }

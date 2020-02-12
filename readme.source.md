@@ -1,6 +1,9 @@
 # <img src="/src/icon.png" height="30px"> GraphQL.EntityFramework
 
-[![Backers on Open Collective](https://opencollective.com/graphqlentityframework/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/graphqlentityframework/sponsors/badge.svg)](#sponsors) [![Build status](https://ci.appveyor.com/api/projects/status/x554cp7clu8yh2yy/branch/master?svg=true)](https://ci.appveyor.com/project/SimonCropp/EntityFramework) [![NuGet Status](https://img.shields.io/nuget/v/GraphQL.EntityFramework.svg?cacheSeconds=86400)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
+[![Backers on Open Collective](https://opencollective.com/graphqlentityframework/backers/badge.svg)](#backers)
+[![Sponsors on Open Collective](https://opencollective.com/graphqlentityframework/sponsors/badge.svg)](#sponsors)
+[![Build status](https://ci.appveyor.com/api/projects/status/x554cp7clu8yh2yy/branch/master?svg=true)](https://ci.appveyor.com/project/SimonCropp/graphql-entityframework)
+[![NuGet Status](https://img.shields.io/nuget/v/GraphQL.EntityFramework.svg)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
 
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
 
@@ -35,7 +38,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 [Go to licensing FAQ](/doco/licensing-patron-faq.md) for more information.
 
 
-## NuGet
+## NuGet package
 
 https://nuget.org/packages/GraphQL.EntityFramework/
 
@@ -57,9 +60,9 @@ This project exists thanks to all the people who contribute.
 <a href="https://github.com/SimonCropp/GraphQL.EntityFramework/graphs/contributors"><img src="https://opencollective.com/graphqlentityframework/contributors.svg?width=890&button=false" /></a>
 
 
-## Release Notes
+## Security contact information
 
-See [closed milestones](../../milestones?state=closed).
+To report a security vulnerability, use the [Tidelift security contact](https://tidelift.com/security). Tidelift will coordinate the fix and disclosure.
 
 
 ## Icon

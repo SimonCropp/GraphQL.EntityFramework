@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.EntityFramework;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
-public class FilterBuilderTests :
-    XunitApprovalBase
+public class ExpressionBuilderTests :
+    VerifyBase
 {
     public class Target
     {
@@ -29,7 +30,7 @@ public class FilterBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(FilterBuilder<Target>.BuildPredicate("Member.Length", Comparison.Equal, new[] {"2"}))
+            .Where(ExpressionBuilder<Target>.BuildPredicate("Member.Length", Comparison.Equal, new[] {"2"}))
             .Single();
         Assert.Equal("bb", result.Member);
     }
@@ -51,13 +52,13 @@ public class FilterBuilderTests :
         };
 
         var resultFromString = list.AsQueryable()
-            .Where(FilterBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] {guid.ToString()}))
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, new[] {guid.ToString()}))
             .Single();
 
         Assert.Equal(guid, resultFromString.Field);
 
         var nullResult = list.AsQueryable()
-            .Where(FilterBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, null))
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, null))
             .Single();
 
         Assert.Null(nullResult.Field);
@@ -81,19 +82,19 @@ public class FilterBuilderTests :
         };
 
         var resultFromNull = list.AsQueryable()
-            .Where(FilterBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {(string?) null}))
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {(string?) null}))
             .Single();
 
         Assert.Null(resultFromNull.Field);
 
         var resultWithGuid = list.AsQueryable()
-            .Where(FilterBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {guid.ToString()}))
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {guid.ToString()}))
             .Single();
 
         Assert.Equal(guid, resultWithGuid.Field);
 
         var resultGuidAndNull = list.AsQueryable()
-            .Where(FilterBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {guid.ToString(), null}))
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, new[] {guid.ToString(), null}))
             .Select(parse => parse.Field)
             .ToList();
 
@@ -121,11 +122,11 @@ public class FilterBuilderTests :
         };
 
         var resultFromString = list.AsQueryable()
-            .Where(FilterBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, new[] {"10"}))
+            .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, new[] {"10"}))
             .Single();
         Assert.Equal(10, resultFromString.Field);
         var nullResult = list.AsQueryable()
-            .Where(FilterBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, null))
+            .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, null))
             .Single();
         Assert.Null(nullResult.Field);
     }
@@ -156,7 +157,7 @@ public class FilterBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(FilterBuilder<TargetForIn>.BuildPredicate("Member", Comparison.In, new[] {"Value2"}))
+            .Where(ExpressionBuilder<TargetForIn>.BuildPredicate("Member", Comparison.In, new[] {"Value2"}))
             .Single();
         Assert.Equal("Value2", result.Member);
     }
@@ -177,7 +178,7 @@ public class FilterBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(FilterBuilder<TargetForIn>.BuildPredicate("Member", Comparison.In, new[] { "Value2" }, true))
+            .Where(ExpressionBuilder<TargetForIn>.BuildPredicate("Member", Comparison.NotIn, new[] { "Value2" }))
             .Single();
         Assert.Equal("Value1", result.Member);
     }
@@ -203,7 +204,7 @@ public class FilterBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(FilterBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.In, new[] {"2"}))
+            .Where(ExpressionBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.In, new[] {"2"}))
             .Single();
         Assert.Equal(2, result.Member);
     }
@@ -225,7 +226,7 @@ public class FilterBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(FilterBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.In, new[] { "2" }, true))
+            .Where(ExpressionBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.NotIn, new[] { "2" }))
             .Single();
         Assert.Equal(1, result.Member);
     }
@@ -251,7 +252,7 @@ public class FilterBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(FilterBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] {"00000000-0000-0000-0000-000000000002"}))
+            .Where(ExpressionBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] {"00000000-0000-0000-0000-000000000002"}))
             .Single();
         Assert.Same(list[1], result);
     }
@@ -272,7 +273,7 @@ public class FilterBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(FilterBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] { "00000000-0000-0000-0000-000000000002" }, true))
+            .Where(ExpressionBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.NotIn, new[] { "00000000-0000-0000-0000-000000000002" }))
             .Single();
         Assert.Same(list[0], result);
     }
@@ -298,7 +299,7 @@ public class FilterBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(FilterBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Equal, new[] {"Target2"}))
+            .Where(ExpressionBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Equal, new[] {"Target2"}))
             .Single();
         Assert.Equal("Target2", result.Field);
     }
@@ -320,7 +321,7 @@ public class FilterBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(FilterBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Contains, new[] {"Target2"}))
+            .Where(ExpressionBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Contains, new[] {"Target2"}))
             .Single();
         Assert.Equal("Target2", result.Field);
     }
@@ -331,21 +332,21 @@ public class FilterBuilderTests :
     }
 
     [Theory]
-    [InlineData("Name", Comparison.Equal, "Person 1", "Person 1")]
-    [InlineData("Name", Comparison.Equal, "Person 2", "Person 1", true)]
-    [InlineData("Name", Comparison.Contains, "son 2", "Person 2")]
-    [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2")]
-    [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2")]
-    [InlineData("Name", Comparison.EndsWith, "person 2", "Person 2", false, StringComparison.OrdinalIgnoreCase)]
-    [InlineData("Age", Comparison.Equal, "13", "Person 2")]
-    [InlineData("Age", Comparison.GreaterThan, "12", "Person 2")]
-    [InlineData("Age", Comparison.Equal, "12", "Person 2", true)]
-    [InlineData("Age", Comparison.GreaterThanOrEqual, "13", "Person 2")]
-    [InlineData("Age", Comparison.LessThan, "13", "Person 1")]
-    [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1")]
-    [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1")]
-    [InlineData("DateOfBirth.Day", Comparison.Equal, "11", "Person 2")]
-    public void Combos(string name, Comparison expression, string value, string expectedName, bool negate = false, StringComparison? stringComparison = null)
+    [InlineData("Name", Comparison.Equal, "Person 1", "Person 1", null)]
+    [InlineData("Name", Comparison.NotEqual, "Person 2", "Person 1", null)]
+    [InlineData("Name", Comparison.Contains, "son 2", "Person 2", null)]
+    [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2", null)]
+    [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2", null)]
+    [InlineData("Name", Comparison.EndsWith, "person 2", "Person 2", StringComparison.OrdinalIgnoreCase)]
+    [InlineData("Age", Comparison.Equal, "13", "Person 2", null)]
+    [InlineData("Age", Comparison.GreaterThan, "12", "Person 2", null)]
+    [InlineData("Age", Comparison.NotEqual, "12", "Person 2", null)]
+    [InlineData("Age", Comparison.GreaterThanOrEqual, "13", "Person 2", null)]
+    [InlineData("Age", Comparison.LessThan, "13", "Person 1", null)]
+    [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1", null)]
+    [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1", null)]
+    [InlineData("DateOfBirth.Day", Comparison.Equal, "11", "Person 2", null)]
+    public void Combos(string name, Comparison expression, string value, string expectedName, StringComparison? stringComparison)
     {
         var people = new List<Person>
         {
@@ -364,105 +365,58 @@ public class FilterBuilderTests :
         };
 
         var result = people.AsQueryable()
-            .Where(FilterBuilder<Person>.BuildPredicate(name, expression, new[] {value}, negate, stringComparison))
+            .Where(ExpressionBuilder<Person>.BuildPredicate(name, expression, new[] {value}, stringComparison))
             .Single();
         Assert.Equal(expectedName, result.Name);
     }
 
     [Theory]
-    [InlineData("Employees[Name]", Comparison.Equal, "Person 1", "Company 1")]
-    [InlineData("Employees[Name]", Comparison.Equal, "Person 3", "Company 1", true)]
-    [InlineData("Employees[Name]", Comparison.Contains, "son 2", "Company 1")]
-    [InlineData("Employees[Name]", Comparison.StartsWith, "Person 2", "Company 1")]
-    [InlineData("Employees[Name]", Comparison.EndsWith, "son 2", "Company 1")]
-    [InlineData("Employees[Name]", Comparison.EndsWith, "person 2", "Company 1", false, StringComparison.OrdinalIgnoreCase)]
-    [InlineData("Employees[Age]", Comparison.Equal, "12", "Company 1")]
-    [InlineData("Employees[Age]", Comparison.GreaterThan, "12", "Company 2")]
-    [InlineData("Employees[Age]", Comparison.Equal, "12", "Company 2", true)]
-    [InlineData("Employees[Age]", Comparison.GreaterThanOrEqual, "31", "Company 2")]
-    [InlineData("Employees[Age]", Comparison.LessThan, "13", "Company 1")]
-    [InlineData("Employees[Age]", Comparison.LessThanOrEqual, "12", "Company 1")]
-    [InlineData("Employees[DateOfBirth]", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Company 1")]
-    [InlineData("Employees[DateOfBirth.Day]", Comparison.Equal, "11", "Company 2")]
-    [InlineData("Employees[Company.Employees[Name]]", Comparison.Contains, "son 2", "Company 1")]
-    public void ListMemberQueryCombos(string name, Comparison expression, string value, string expectedName, bool negate = false, StringComparison? stringComparison = null)
+    [InlineData("Name", Comparison.Equal, "Person 1", "Person 1", null)]
+    [InlineData("Name", Comparison.NotEqual, "Person 2", "Person 1", null)]
+    [InlineData("Name", Comparison.Contains, "son 2", "Person 2", null)]
+    [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2", null)]
+    [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2", null)]
+    [InlineData("Name", Comparison.EndsWith, "person 2", "Person 2", StringComparison.OrdinalIgnoreCase)]
+    [InlineData("Age", Comparison.Equal, "13", "Person 2", null)]
+    [InlineData("Age", Comparison.GreaterThan, "12", "Person 2", null)]
+    [InlineData("Age", Comparison.NotEqual, "12", "Person 2", null)]
+    [InlineData("Age", Comparison.GreaterThanOrEqual, "13", "Person 2", null)]
+    [InlineData("Age", Comparison.LessThan, "13", "Person 1", null)]
+    [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1", null)]
+    [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1", null)]
+    [InlineData("DateOfBirth.Day", Comparison.Equal, "11", "Person 2", null)]
+    public void SingleCombos(string name, Comparison expression, string value, string expectedName, StringComparison? stringComparison)
     {
-        var companies = new List<Company>
+        var people = new List<Person>
         {
-            new Company
+            new Person
             {
-                Name = "Company 1",
-                Employees = new List<Person>
-                {
-                    new Person
-                    {
-                        Name = "Person 1",
-                        Age = 12,
-                        DateOfBirth = new DateTime(1999, 10, 10, 10, 10, 10, DateTimeKind.Utc)
-                    },
-                    new Person
-                    {
-                        Name = "Person 2",
-                        Age = 12,
-                        DateOfBirth = new DateTime(2001, 10, 10, 10, 10, 10, DateTimeKind.Utc)
-                    }
-                }
+                Name = "Person 1",
+                Age = 12,
+                DateOfBirth = new DateTime(2001, 10, 10, 10, 10, 10, DateTimeKind.Utc)
             },
-
-            new Company
+            new Person
             {
-                Name = "Company 2",
-                Employees = new List<Person>
-                {
-                    new Person
-                    {
-                        Name = "Person 3",
-                        Age = 34,
-                        DateOfBirth = new DateTime(1977, 10, 11, 10, 10, 10, DateTimeKind.Utc)
-                    },
-                    new Person
-                    {
-                        Name = "Person 3",
-                        Age = 31,
-                        DateOfBirth = new DateTime(1980, 10, 11, 10, 10, 10, DateTimeKind.Utc)
-                    },
-                }
-            }
+                Name = "Person 2",
+                Age = 13,
+                DateOfBirth = new DateTime(2000, 10, 11, 10, 10, 10, DateTimeKind.Utc)
+            },
         };
 
-        for (var i = 0; i < companies.Count(); i++)
-        {
-            var company = companies[i];
-
-            for (var j = 0; j < company.Employees.Count(); j++)
-            {
-                var employee = company.Employees[j];
-
-                employee.Company = company;
-            }
-        }
-
-        var result = companies.AsQueryable()
-            .Where(FilterBuilder<Company>.BuildPredicate(name, expression, new[] { value }, negate, stringComparison))
+        var result = people.AsQueryable()
+            .Where(ExpressionBuilder<Person>.BuildSinglePredicate(name, expression, value, stringComparison))
             .Single();
         Assert.Equal(expectedName, result.Name);
-    }
-
-    public class Company
-    {
-        public string? Name { get; set; }
-        public List<Person> Employees { get; set; } = null!;
     }
 
     public class Person
     {
         public string? Name { get; set; }
         public int Age { get; set; }
-        public Company? Company { get; set; }
         public DateTime DateOfBirth { get; set; }
     }
 
-    public FilterBuilderTests(ITestOutputHelper output) :
+    public ExpressionBuilderTests(ITestOutputHelper output) :
         base(output)
     {
     }

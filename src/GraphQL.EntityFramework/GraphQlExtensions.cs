@@ -8,11 +8,13 @@ namespace GraphQL.EntityFramework
     {
         #region ExecuteWithErrorCheck
 
-        public static async Task<ExecutionResult> ExecuteWithErrorCheck(this IDocumentExecuter documentExecuter, ExecutionOptions executionOptions)
+        public static async Task<ExecutionResult> ExecuteWithErrorCheck(
+            this IDocumentExecuter executer,
+            ExecutionOptions options)
         {
-            Guard.AgainstNull(nameof(documentExecuter), documentExecuter);
-            Guard.AgainstNull(nameof(executionOptions), executionOptions);
-            var executionResult = await documentExecuter.ExecuteAsync(executionOptions);
+            Guard.AgainstNull(nameof(executer), executer);
+            Guard.AgainstNull(nameof(options), options);
+            var executionResult = await executer.ExecuteAsync(options);
 
             var errors = executionResult.Errors;
             if (errors != null && errors.Count > 0)
