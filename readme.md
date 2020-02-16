@@ -14,6 +14,8 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
 
+Support is available via a [Tidelift Subscription](https://tidelift.com/subscription/pkg/nuget-graphql.entityframework?utm_source=nuget-graphql.entityframework&utm_medium=referral&utm_campaign=enterprise).
+
 
 ## Community backed
 
