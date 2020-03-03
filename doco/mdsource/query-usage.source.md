@@ -142,7 +142,9 @@ Multiple where statements with a logical grouping can be expressed:
 
 The above expression written as a logical statement would be:
 
+```csharp
 Property.startsWith("value") && (Property.endsWith("ue") || Property.endsWith("id"))
+```
 
 
 #### Query Negation
