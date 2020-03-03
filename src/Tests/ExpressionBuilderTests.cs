@@ -178,7 +178,7 @@ public class ExpressionBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetForIn>.BuildPredicate("Member", Comparison.In, new[] { "Value2" }, true))
+            .Where(ExpressionBuilder<TargetForIn>.BuildPredicate("Member", Comparison.NotIn, new[] { "Value2" }))
             .Single();
         Assert.Equal("Value1", result.Member);
     }
@@ -226,7 +226,7 @@ public class ExpressionBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.In, new[] { "2" }, true))
+            .Where(ExpressionBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.NotIn, new[] { "2" }))
             .Single();
         Assert.Equal(1, result.Member);
     }
@@ -273,7 +273,7 @@ public class ExpressionBuilderTests :
         };
 
         var result = list.AsQueryable()
-            .Where(ExpressionBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, new[] { "00000000-0000-0000-0000-000000000002" }, true))
+            .Where(ExpressionBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.NotIn, new[] { "00000000-0000-0000-0000-000000000002" }))
             .Single();
         Assert.Same(list[0], result);
     }

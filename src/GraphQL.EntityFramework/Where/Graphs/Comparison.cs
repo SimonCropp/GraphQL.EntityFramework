@@ -5,6 +5,7 @@
         // Both
         Equal,
         In,
+        NotIn,
 
         // Object/ List
         GreaterThan,

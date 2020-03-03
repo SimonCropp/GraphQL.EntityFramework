@@ -239,6 +239,10 @@ namespace GraphQL.EntityFramework
             {
                 switch (comparison)
                 {
+                    case Comparison.NotIn:
+                        WhereValidator.ValidateString(comparison, stringComparison);
+                        expressionBody = NegateExpression(MakeStringIn(values!, property, stringComparison));  // Ensure expression is negated
+                        break;
                     case Comparison.In:
                         WhereValidator.ValidateString(comparison, stringComparison);
                         expressionBody = MakeStringIn(values!, property, stringComparison);
@@ -255,6 +259,10 @@ namespace GraphQL.EntityFramework
             {
                 switch (comparison)
                 {
+                    case Comparison.NotIn:
+                        WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
+                        expressionBody = NegateExpression(MakeObjectIn(values!, property)); // Ensure expression is negated
+                        break;
                     case Comparison.In:
                         WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
                         expressionBody = MakeObjectIn(values!, property);

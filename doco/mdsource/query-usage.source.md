@@ -69,6 +69,7 @@ All where statements require a `path`. This is a full path to a, possible nested
  * `startsWith`: Only works with `string`
  * `endsWith`: Only works with `string`
  * `in`: Check if a member existing in a given collection of values
+ * `notIn`: Negation of in operator (**Deprecated**, use `negate` property with `in` operator instead)
  * `like`: Performs a SQL Like by using `EF.Functions.Like`
 
 Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
