@@ -7,7 +7,7 @@ using System.Reflection;
 
 static class PropertyCache<TInput>
 {
-    static ParameterExpression? sourceParam;
+    public static ParameterExpression SourceParameter = Expression.Parameter(typeof(TInput));
     static ConcurrentDictionary<string, Property<TInput>> properties = new ConcurrentDictionary<string, Property<TInput>>();
 
     public static Property<TInput> GetProperty(string path)
@@ -15,33 +15,22 @@ static class PropertyCache<TInput>
         return properties.GetOrAdd(path,
             x =>
             {
-                var parameter = GetSourceParameter();
-                var left = AggregatePath(path, parameter);
+                var left = AggregatePath(path, SourceParameter);
 
                 var converted = Expression.Convert(left, typeof(object));
-                var lambda = Expression.Lambda<Func<TInput, object>>(converted, parameter);
+                var lambda = Expression.Lambda<Func<TInput, object>>(converted, SourceParameter);
                 var compile = lambda.Compile();
                 var listContainsMethod = ReflectionCache.GetListContains(left.Type);
                 return new Property<TInput>
                 (
                     left: left,
                     lambda: lambda,
-                    sourceParameter: parameter,
+                    sourceParameter: SourceParameter,
                     func: compile,
                     propertyType: left.Type,
                     listContainsMethod: listContainsMethod
                 );
             });
-    }
-
-    public static ParameterExpression GetSourceParameter()
-    {
-        if (sourceParam == null)
-        {
-            sourceParam = Expression.Parameter(typeof(TInput));
-        }
-
-        return sourceParam;
     }
 
     static Expression AggregatePath(string path, Expression parameter)
@@ -63,7 +52,6 @@ static class PropertyCache<TInput>
     /// </summary>
     /// <param name="type">Type to retrieve property from</param>
     /// <param name="propertyOrFieldName">Name of property or field</param>
-    /// <returns></returns>
     static MemberInfo GetPropertyOrField(Type type, string propertyOrFieldName)
     {
         // Member search binding flags
@@ -75,19 +63,24 @@ static class PropertyCache<TInput>
 
         // If not found
         if (propertyOrField == null)
+        {
             // Attempt to get public field
             propertyOrField = type.GetField(propertyOrFieldName, bindingFlagsPublic);
+        }
 
         // If not found
         if (propertyOrField == null)
+        {
             // Attempt to get non-public property
             propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsNonPublic);
+        }
 
         // If not found
         if (propertyOrField == null)
+        {
             // Attempt to get non-public property
             propertyOrField = type.GetField(propertyOrFieldName, bindingFlagsNonPublic);
-
+        }
 
         // If property/ field was not resolved
         if (propertyOrField == null && type.IsInterface)

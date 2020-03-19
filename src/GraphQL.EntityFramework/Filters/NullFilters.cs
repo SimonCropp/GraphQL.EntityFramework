@@ -1,22 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using GraphQL.EntityFramework;
 
-namespace GraphQL.EntityFramework
+class NullFilters :
+    Filters
 {
-    class NullFilters :
-        Filters
-    {
-        public static NullFilters Instance = new NullFilters();
-        internal override Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
-        {
-            return Task.FromResult(result);
-        }
+    public static NullFilters Instance = new NullFilters();
 
-        // Nullability of reference types in type of parameter doesn't match overridden member.
-        #pragma warning disable CS8610
-        internal override Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item)
-        {
-            return Task.FromResult(true);
-        }
+    internal override Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
+    {
+        return Task.FromResult(result);
+    }
+
+    // Nullability of reference types in type of parameter doesn't match overridden member.
+#pragma warning disable CS8610
+    internal override Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item)
+    {
+        return Task.FromResult(true);
     }
 }

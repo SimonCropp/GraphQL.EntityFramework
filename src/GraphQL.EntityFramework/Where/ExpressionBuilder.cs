@@ -16,22 +16,17 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Build a predicate for a supplied list of where's (Grouped or not)
         /// </summary>
-        /// <param name="wheres"></param>
-        /// <returns></returns>
         public static Expression<Func<T, bool>> BuildPredicate(IEnumerable<WhereExpression> wheres)
         {
             var expressionBody = MakePredicateBody(wheres);
-            var param = PropertyCache<T>.GetSourceParameter();
+            var param = PropertyCache<T>.SourceParameter;
 
             return Expression.Lambda<Func<T, bool>>(expressionBody, param);
         }
 
-
         /// <summary>
         /// Makes the predicate body from the supplied parameter and list of where expressions
         /// </summary>
-        /// <param name="wheres"></param>
-        /// <returns></returns>
         private static Expression MakePredicateBody(IEnumerable<WhereExpression> wheres)
         {
             Expression? mainExpression = null;
@@ -43,7 +38,7 @@ namespace GraphQL.EntityFramework
                 Expression nextExpression;
 
                 // If there are grouped expressions
-                if (where.GroupedExpressions?.Count() > 0)
+                if (@where.GroupedExpressions?.Length > 0)
                 {
                     // Recurse with new set of expression
                     nextExpression = MakePredicateBody(where.GroupedExpressions);
@@ -83,16 +78,11 @@ namespace GraphQL.EntityFramework
 
         #endregion
 
-
         #region Conditional Single
 
         /// <summary>
         /// Create a single predicate for the single set of supplied conditional arguments
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="comparison"></param>
-        /// <param name="values"></param>
-        /// <returns></returns>
         public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values)
         {
             return BuildPredicate(path, comparison, values, null);
@@ -101,11 +91,6 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Create a single predicate for the single set of supplied conditional arguments
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="comparison"></param>
-        /// <param name="values"></param>
-        /// <param name="stringComparison"></param>
-        /// <returns></returns>
         public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison)
         {
             return BuildPredicate(path, comparison, values, false, stringComparison);
@@ -114,11 +99,6 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Create a single predicate for the single set of supplied conditional arguments
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="comparison"></param>
-        /// <param name="values"></param>
-        /// <param name="negate"></param>
-        /// <returns></returns>
         public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate)
         {
             return BuildPredicate(path, comparison, values, negate, null);
@@ -127,16 +107,10 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Create a single predicate for the single set of supplied conditional arguments
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="comparison"></param>
-        /// <param name="values"></param>
-        /// <param name="negate"></param>
-        /// <param name="stringComparison"></param>
-        /// <returns></returns>
         public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate, StringComparison? stringComparison)
         {
             var expressionBody = MakePredicateBody(path, comparison, values, negate, stringComparison);
-            var param = PropertyCache<T>.GetSourceParameter();
+            var param = PropertyCache<T>.SourceParameter;
 
             return Expression.Lambda<Func<T, bool>>(expressionBody, param);
         }
@@ -144,13 +118,7 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Makes the predicate body from the single set of supplied conditional arguments
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="comparison"></param>
-        /// <param name="values"></param>
-        /// <param name="negate"></param>
-        /// <param name="stringComparison"></param>
-        /// <returns></returns>
-        private static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate = false, StringComparison? stringComparison = null)
+        static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate = false, StringComparison? stringComparison = null)
         {
             Expression expressionBody;
 
@@ -179,18 +147,12 @@ namespace GraphQL.EntityFramework
 
         #endregion
 
-
         #region Body Builders (Lol)
 
         /// <summary>
         /// Process a list based item inside the property path
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="comparison"></param>
-        /// <param name="values"></param>
-        /// <param name="stringComparison"></param>
-        /// <returns></returns>
-        private static Expression ProcessList(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
+        static Expression ProcessList(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
         {
             // Get the path pertaining to individual list items
             var listPath = Regex.Match(path, LIST_PROPERTY_PATTERN).Groups[1].Value;
@@ -202,35 +164,28 @@ namespace GraphQL.EntityFramework
 
             // Get the list item type details
             var listItemType = property.PropertyType.GetGenericArguments().Single();
-            var listItemParam = Expression.Parameter(listItemType, "i");
 
             // Generate the predicate for the list item type
             var subPredicate = typeof(ExpressionBuilder<>)
                 .MakeGenericType(listItemType)
                 .GetMethods(BindingFlags.Public | BindingFlags.Static)
-                .Where(m => m.Name.Equals("BuildPredicate") && m.GetParameters().Length == 5).Single()
+                .Single(m => m.Name.Equals("BuildPredicate") && m.GetParameters().Length == 5)
                 .Invoke(new object(), new object[] { listPath, comparison, values!, false, stringComparison! }) as Expression;
 
             // Generate a method info for the Any Enumerable Static Method
             var anyInfo = typeof(Enumerable)
                         .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                        .First(m => m.Name == "Any" && m.GetParameters().Count() == 2)
+                        .First(m => m.Name == "Any" && m.GetParameters().Length == 2)
                         .MakeGenericMethod(listItemType);
 
             // Create Any Expression Call
             return Expression.Call(anyInfo, property.Left, subPredicate);
         }
 
-
         /// <summary>
         /// Build an expression from provided where parameters
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="comparison"></param>
-        /// <param name="values"></param>
-        /// <param name="stringComparison"></param>
-        /// <returns></returns>
-        private static Expression GetExpression(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
+        static Expression GetExpression(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
         {
             var property = PropertyCache<T>.GetProperty(path);
             Expression expressionBody;
@@ -282,15 +237,11 @@ namespace GraphQL.EntityFramework
 
         #endregion
 
-
         #region Operations
 
         /// <summary>
         /// Make Object List In Comparision
         /// </summary>
-        /// <param name="values"></param>
-        /// <param name="property"></param>
-        /// <returns></returns>
         static Expression MakeObjectIn(string[] values, Property<T> property)
         {
             // Attempt to convert the string values to the object type
@@ -304,10 +255,6 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Make String List In Comparison
         /// </summary>
-        /// <param name="values"></param>
-        /// <param name="property"></param>
-        /// <param name="comparison"></param>
-        /// <returns></returns>
         static Expression MakeStringIn(string[] values, Property<T> property, StringComparison? comparison)
         {
             MethodCallExpression equalsBody;
@@ -332,15 +279,9 @@ namespace GraphQL.EntityFramework
             return Expression.Call(null, ReflectionCache.StringAny, Expression.Constant(values), itemEvaluate);
         }
 
-
         /// <summary>
         /// Make String based single value comparisons
         /// </summary>
-        /// <param name="comparison"></param>
-        /// <param name="value"></param>
-        /// <param name="property"></param>
-        /// <param name="stringComparison"></param>
-        /// <returns></returns>
         static Expression MakeStringComparison(Comparison comparison, string? value, Property<T> property, StringComparison? stringComparison)
         {
             var left = property.Left;
@@ -395,10 +336,6 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Make Object based single value comparisons
         /// </summary>
-        /// <param name="comparison"></param>
-        /// <param name="value"></param>
-        /// <param name="property"></param>
-        /// <returns></returns>
         static Expression MakeObjectComparison(Comparison comparison, object? value, Property<T> property)
         {
             var left = property.Left;
@@ -423,14 +360,11 @@ namespace GraphQL.EntityFramework
 
         #endregion
 
-
         #region Helpers
 
         /// <summary>
         /// Checks the path for matching list property marker
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
         private static bool HasListInPath(string path)
         {
             return Regex.IsMatch(path, LIST_PROPERTY_PATTERN);
@@ -439,10 +373,6 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Combine expressions by a specified binary operator
         /// </summary>
-        /// <param name="connector"></param>
-        /// <param name="expr1"></param>
-        /// <param name="expr2"></param>
-        /// <returns></returns>
         static Expression CombineExpressions(Connector connector, Expression expr1, Expression expr2)
         {
             switch (connector)
@@ -459,8 +389,6 @@ namespace GraphQL.EntityFramework
         /// <summary>
         /// Negates a supplied expression
         /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
         static Expression NegateExpression(Expression expression)
         {
             return Expression.Not(expression);

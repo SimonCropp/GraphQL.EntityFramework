@@ -1,7 +1,6 @@
 ﻿using GraphQL.Language.AST;
 using GraphQL.Types;
 
-
 namespace GraphQL.EntityFramework
 {
     public abstract class ScalarGraph<T> :

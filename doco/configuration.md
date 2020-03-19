@@ -351,7 +351,7 @@ public class UserContext
     public readonly DbContext2 DbContext2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L101-L113' title='File snippet `multiusercontext` was extracted from'>snippet source</a> | <a href='#snippet-multiusercontext' title='Navigate to start of snippet `multiusercontext`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L107-L119' title='File snippet `multiusercontext` was extracted from'>snippet source</a> | <a href='#snippet-multiusercontext' title='Navigate to start of snippet `multiusercontext`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -369,7 +369,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L71-L78' title='File snippet `registermultipleincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Navigate to start of snippet `registermultipleincontainer`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L71-L80' title='File snippet `registermultipleincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Navigate to start of snippet `registermultipleincontainer`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -385,10 +385,10 @@ var executionOptions = new ExecutionOptions
 {
     Schema = schema,
     Query = query,
-    UserContext = new UserContext(dbContext1,dbContext2)
+    UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L83-L90' title='File snippet `multiexecutionoptions` was extracted from'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Navigate to start of snippet `multiexecutionoptions`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L86-L95' title='File snippet `multiexecutionoptions` was extracted from'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Navigate to start of snippet `multiexecutionoptions`'>anchor</a></sup>
 <!-- endsnippet -->
 
 

@@ -64,7 +64,6 @@ public class ExpressionBuilderTests :
         Assert.Null(nullResult.Field);
     }
 
-
     [Fact]
     public void Nullable_requiring_parse_In()
     {
@@ -208,7 +207,6 @@ public class ExpressionBuilderTests :
             .Single();
         Assert.Equal(2, result.Member);
     }
-
 
     [Fact]
     public void NotInIntList()
@@ -442,14 +440,10 @@ public class ExpressionBuilderTests :
             }
         };
 
-        for (var i = 0; i < companies.Count(); i++)
+        foreach (var company in companies)
         {
-            var company = companies[i];
-
-            for (var j = 0; j < company.Employees.Count(); j++)
+            foreach (var employee in company.Employees)
             {
-                var employee = company.Employees[j];
-
                 employee.Company = company;
             }
         }
