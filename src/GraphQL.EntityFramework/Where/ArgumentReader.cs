@@ -7,9 +7,18 @@ using GraphQL.EntityFramework;
 
 static class ArgumentReader
 {
-    public static IEnumerable<WhereExpression> ReadWhere(Func<Type, string, object> getArgument)
+    public static bool TryReadWhere(Func<Type, string, object> getArgument, out IEnumerable<WhereExpression> expression)
     {
-        return getArgument.ReadList<WhereExpression>("where");
+        expression = getArgument.ReadList<WhereExpression>("where");
+
+        if (expression.Any())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object> getArgument)

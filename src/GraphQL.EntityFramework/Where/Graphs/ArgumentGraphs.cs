@@ -13,10 +13,12 @@ static class ArgumentGraphs
     {
         GraphTypeTypeRegistry.Register(typeof(Comparison), typeof(ComparisonGraph));
         GraphTypeTypeRegistry.Register(typeof(StringComparison), typeof(StringComparisonGraph));
+        GraphTypeTypeRegistry.Register(typeof(Connector), typeof(ConnectorGraph));
         Add<StringComparisonGraph>();
         Add<WhereExpressionGraph>();
         Add<OrderByGraph>();
         Add<ComparisonGraph>();
+        Add<ConnectorGraph>();
     }
 
     public static void RegisterInContainer(IServiceCollection services)

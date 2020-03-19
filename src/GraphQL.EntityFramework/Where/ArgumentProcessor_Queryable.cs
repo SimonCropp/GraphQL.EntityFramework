@@ -10,8 +10,8 @@ namespace GraphQL.EntityFramework
         public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context, List<string>? keyNames = null)
             where TItem : class
         {
-            Guard.AgainstNull(nameof(queryable),queryable);
-            Guard.AgainstNull(nameof(context),context);
+            Guard.AgainstNull(nameof(queryable), queryable);
+            Guard.AgainstNull(nameof(context), context);
             return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x), keyNames);
         }
 
@@ -28,13 +28,13 @@ namespace GraphQL.EntityFramework
             if (ArgumentReader.TryReadId(getArguments, out var value))
             {
                 var keyName = GetKeyName(keyNames);
-                var predicate = ExpressionBuilder<TItem>.BuildSinglePredicate(keyName, Comparison.Equal, value);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.Equal, new[] { value });
                 queryable = queryable.Where(predicate);
             }
 
-            foreach (var where in ArgumentReader.ReadWhere(getArguments))
+            if (ArgumentReader.TryReadWhere(getArguments, out var wheres))
             {
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(where);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
                 queryable = queryable.Where(predicate);
             }
 
@@ -53,7 +53,7 @@ namespace GraphQL.EntityFramework
             return queryable;
         }
 
-         static string GetKeyName(List<string>? keyNames)
+        static string GetKeyName(List<string>? keyNames)
         {
             if (keyNames == null)
             {

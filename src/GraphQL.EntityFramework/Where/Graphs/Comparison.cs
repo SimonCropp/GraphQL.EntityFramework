@@ -2,17 +2,21 @@
 {
     public enum Comparison
     {
+        // Both
         Equal,
-        NotEqual,
+        In,
+        NotIn,
+
+        // Object/ List
         GreaterThan,
         GreaterThanOrEqual,
         LessThan,
         LessThanOrEqual,
-        Contains,
+
+        // String
         StartsWith,
         EndsWith,
-        In,
-        Like,
-        NotIn
+        Contains,
+        Like
     }
 }

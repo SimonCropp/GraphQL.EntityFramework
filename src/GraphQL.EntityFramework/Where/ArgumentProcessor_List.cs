@@ -18,14 +18,14 @@ namespace GraphQL.EntityFramework
         {
             if (ArgumentReader.TryReadIds(getArguments, out var values))
             {
-                var predicate = FuncBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
-                items = items.Where(predicate);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
+                items = items.Where(predicate.Compile());
             }
 
-            foreach (var where in ArgumentReader.ReadWhere(getArguments))
+            if (ArgumentReader.TryReadWhere(getArguments, out var wheres))
             {
-                var predicate = FuncBuilder<TItem>.BuildPredicate(where);
-                items = items.Where(predicate);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
+                items = items.Where(predicate.Compile());
             }
 
             items = Order(items, getArguments);

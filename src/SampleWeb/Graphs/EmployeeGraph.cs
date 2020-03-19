@@ -7,7 +7,7 @@ public class EmployeeGraph :
         base(graphQlService)
     {
         Field(x => x.Id);
-        Field(x => x.Content);
+        Field(x => x.Content, true);
         Field(x => x.Age);
         AddNavigationField(
             name: "company",

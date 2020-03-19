@@ -60,8 +60,7 @@ All where statements require a `path`. This is a full path to a, possible nested
 
 #### Supported Comparisons
 
- * `equal` (the default value if `comparison` is omitted)
- * `notEqual`
+ * `equal`: (the default value if `comparison` is omitted)
  * `greaterThan`
  * `greaterThanOrEqual`
  * `lessThan`
@@ -70,7 +69,7 @@ All where statements require a `path`. This is a full path to a, possible nested
  * `startsWith`: Only works with `string`
  * `endsWith`: Only works with `string`
  * `in`: Check if a member existing in a given collection of values
- * `notIn`: Check if a member doesn't exist in a given collection of values
+ * `notIn`: Negation of in operator (**Deprecated**, use `negate` property with `in` operator instead)
  * `like`: Performs a SQL Like by using `EF.Functions.Like`
 
 Case of comparison names are ignored. So, for example, `EndsWith`, `endsWith`, and `endswith` are  allowed.
@@ -94,26 +93,6 @@ Single where statements can be expressed:
 ```
 
 
-#### Multiple
-
-Multiple where statements can be expressed:
-
-```graphql
-{
-  entities
-  (where:
-    [
-      {path: "Property", comparison: "startsWith", value: "Valu"}
-      {path: "Property", comparison: "endsWith", value: "ue"}
-    ]
-  )
-  {
-    property
-  }
-}
-```
-
-
 #### Where In
 
 ```graphql
@@ -123,6 +102,119 @@ Multiple where statements can be expressed:
     path: "Property",
     comparison: "in",
     value: ["Value1", "Value2"]})
+  {
+    property
+  }
+}
+```
+
+
+#### Multiple Expressions and Expression Grouping
+
+Expressions in the same logical grouping can be expressed together with a connector, on the preceeding where expression:
+
+* `and`: (default if no comparison provided)
+* `or`
+
+When trying to logically group expressions, provide a Where expression with only the `groupedExpressions` property.
+
+Multiple where statements with a logical grouping can be expressed:
+
+```graphql
+{
+  entities
+  (where:
+    [
+      {path: "Property", comparison: "startsWith", value: "Valu"},
+      {
+        "groupedExpressions": [
+          {path: "Property", comparison: "endsWith", value: "ue", comparison: "or"},
+          {path: "Property", comparison: "endsWith", value: "id"}
+        ]
+      }
+    ]
+  )
+  {
+    property
+  }
+}
+```
+
+The above expression written as a logical statement would be:
+
+```csharp
+Property.startsWith("value") && (Property.endsWith("ue") || Property.endsWith("id"))
+```
+
+
+#### Query Negation
+
+If you need to negate any expression, including `groupedExpressions`, provide the `negate` property with true (Default is false).
+
+Example:
+
+```graphql
+{
+  entities
+  (where:
+    [
+      {path: "Property", comparison: "startsWith", value: "Valu", negate: true},
+      {
+        negate: true,
+        "groupedExpressions": [
+          {path: "Property", comparison: "endsWith", value: "ue", comparison: "or"},
+          {path: "Property", comparison: "endsWith", value: "id"}
+        ]
+      }
+    ]
+  )
+  {
+    property
+  }
+}
+```
+
+
+#### Querying List Members
+
+A common query function is constraining a master set by some property of the detail list. For example you want to filter all orders by line items for a specific product.
+
+**Note:** This only constrains the master list and doesn't affect the detail list, you must re-query the detail list with the same query to achieve this effect.
+
+To query a list member graph property, use parenthesis (`[]`) to wrap the property. Example:
+
+```graphql
+{
+  entities
+  (where:
+    [
+      {
+        path: "ListProperty[Property]",
+        comparison: "startsWith",
+        value: "Valu"
+      }
+    ]
+  )
+  {
+    property
+  }
+}
+```
+
+Or:
+
+```graphql
+{
+  entities
+  (where:
+    [
+      {
+        path: "ListProperty[Property.AnotherProperty]",
+        comparison: "startsWith",
+        value: "Valu"
+      }
+    ]
+  )
   {
     property
   }
