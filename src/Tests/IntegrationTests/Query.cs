@@ -30,6 +30,10 @@ public class Query :
             resolve: context => context.DbContext.WithManyChildrenEntities);
 
         AddQueryField(
+            name: "withoutInclude",
+            resolve: context => context.DbContext.WithoutInclude);
+
+        AddQueryField(
             name: "level1Entities",
             resolve: context => context.DbContext.Level1Entities);
 
