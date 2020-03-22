@@ -1258,7 +1258,8 @@ query ($id: String!)
     public async Task Fragment()
     {
         var query = @"
-query {
+query 
+{
   withoutInclude
   {
     ... ParentFrag
@@ -1296,7 +1297,8 @@ fragment ChildFrag on WithoutIncludeChildGraph
     public async Task Rename()
     {
         var query = @"
-query {
+query 
+{
   withoutInclude
   {
     test: child
