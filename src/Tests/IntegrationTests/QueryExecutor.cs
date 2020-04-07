@@ -9,7 +9,7 @@ static class QueryExecutor
     public static async Task<object> ExecuteQuery<TDbContext>(
         string query,
         ServiceCollection services,
-        TDbContext dbContext,
+        TDbContext data,
         Inputs? inputs,
         Filters? filters)
         where TDbContext : DbContext
@@ -17,8 +17,8 @@ static class QueryExecutor
         query = query.Replace("'", "\"");
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => dbContext,
-            dbContext.Model,
+            userContext => data,
+            data.Model,
             userContext => filters);
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         await using var provider = services.BuildServiceProvider();
@@ -30,7 +30,7 @@ static class QueryExecutor
         {
             Schema = schema,
             Query = query,
-            UserContext = dbContext,
+            UserContext = data,
             Inputs = inputs,
             ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
         };
