@@ -40,6 +40,13 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 [Go to licensing FAQ](/doco/licensing-patron-faq.md) for more information.
 
 
+## For enterprise
+
+Available as part of the Tidelift Subscription.
+
+The maintainers of `GraphQL.EntityFramework` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/nuget-graphql.entityframework?utm_source=nuget-graphql.entityframework&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+
+
 ## NuGet package
 
 https://nuget.org/packages/GraphQL.EntityFramework/
