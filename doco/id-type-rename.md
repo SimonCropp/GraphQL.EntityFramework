@@ -114,7 +114,7 @@ var executionOptions = new ExecutionOptions
 {
     Schema = schema,
     Query = query,
-    UserContext = dbContext,
+    UserContext = data,
     Inputs = inputs,
     ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
 };
