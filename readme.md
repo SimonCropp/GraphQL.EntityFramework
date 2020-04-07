@@ -14,12 +14,16 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
 
-Support is available via a [Tidelift Subscription](https://tidelift.com/subscription/pkg/nuget-graphql.entityframework?utm_source=nuget-graphql.entityframework&utm_medium=referral&utm_campaign=enterprise).
-
 
 ## Community backed
 
 This project relies on financial contributions from the community to ensure its long term viability. **It is expected that all developers [become a Patron on OpenCollective](https://opencollective.com/graphqlentityframework/order/8286).**
+
+## For enterprise
+
+Available as part of the Tidelift Subscription.
+
+The maintainers of `GraphQL.EntityFramework` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/nuget-graphql.entityframework?utm_source=nuget-graphql.entityframework&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
 
 
 ### Backers
