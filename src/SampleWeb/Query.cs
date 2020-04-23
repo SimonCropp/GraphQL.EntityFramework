@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Types;
 
@@ -26,7 +27,7 @@ public class Query :
             name: "companyOrNull",
             nullable: true);
 
-        AddQueryConnectionField(
+        AddQueryConnectionField<Company>(
             name: "companiesConnection",
             resolve: context => context.DbContext.Companies);
 
@@ -47,7 +48,7 @@ public class Query :
                     Name = "content"
                 }));
 
-        AddQueryConnectionField(
+        AddQueryConnectionField<Employee>(
             name: "employeesConnection",
             resolve: context => context.DbContext.Employees);
 

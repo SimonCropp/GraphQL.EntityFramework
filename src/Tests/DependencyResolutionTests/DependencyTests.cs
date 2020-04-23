@@ -68,7 +68,7 @@ public class DependencyTests :
         {
             Schema = schema,
             Query = query,
-            UserContext = dbContext,
+            //UserContext = dbContext,
             Inputs = null
         };
 
@@ -93,7 +93,7 @@ public class DependencyTests :
         {
             Schema = schema,
             Query = query,
-            UserContext = dbContext,
+            //UserContext = dbContext,
             Inputs = null
         };
 
@@ -118,7 +118,7 @@ public class DependencyTests :
         {
             Schema = schema,
             Query = query,
-            UserContext = dbContext,
+            //UserContext = dbContext,
             Inputs = null
         };
 
@@ -143,7 +143,7 @@ public class DependencyTests :
         {
             Schema = schema,
             Query = query,
-            UserContext = dbContext,
+            //UserContext = dbContext,
             Inputs = null
         };
 

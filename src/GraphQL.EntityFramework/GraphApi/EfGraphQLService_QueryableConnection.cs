@@ -64,7 +64,7 @@ namespace GraphQL.EntityFramework
             field.AddWhereArgument(arguments);
         }
 
-        ConnectionBuilder<FakeGraph, TSource> BuildQueryConnectionField<TSource, TReturn>(
+        ConnectionBuilder<TSource> BuildQueryConnectionField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             int pageSize,
@@ -80,7 +80,7 @@ namespace GraphQL.EntityFramework
             //create a ConnectionBuilder<graphType, TSource> type by invoking the static Create method on the generic type
             var fieldType = GetFieldType<TSource>(name, graphType);
             //create a ConnectionBuilder<FakeGraph, TSource> which will be returned from this method
-            var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
+            var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
             //set the page size
             builder.PageSize(pageSize);
             //using reflection, override the private field type property of the ConnectionBuilder<FakeGraph, TSource> to be the ConnectionBuilder<graphType, TSource> object

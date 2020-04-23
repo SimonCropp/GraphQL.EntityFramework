@@ -38,8 +38,9 @@ public class Startup
         services.AddSingleton<Func<SampleDbContext>>(provider => dbContextBuilder.BuildDbContext);
         services.AddScoped(provider => dbContextBuilder.BuildDbContext());
         services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
-        services.AddSingleton<IDependencyResolver>(
-            provider => new FuncDependencyResolver(provider.GetRequiredService));
+        //services.AddSingleton<IServiceProvider, provider>();
+        // services.AddSingleton<IDependencyResolver>(
+        //     provider => new FuncDependencyResolver(provider.GetRequiredService));
         services.AddSingleton<ISchema, Schema>();
         var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
         mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);

@@ -28,7 +28,7 @@ public class Subscription :
         });
     }
 
-    static IObservable<Company> Subscribe(ResolveEventStreamContext context, Func<SampleDbContext> contextFactory, ILogger logger)
+    static IObservable<Company> Subscribe(IResolveEventStreamContext context, Func<SampleDbContext> contextFactory, ILogger logger)
     {
         long lastId = 0;
         var inner = Observable.Using(
@@ -62,7 +62,7 @@ public class Subscription :
     }
 
     static Task<List<Company>> GetCompanies(
-        ResolveEventStreamContext context,
+        IResolveEventStreamContext context,
         SampleDbContext dbContext,
         long lastId,
         int take = 1,
@@ -93,7 +93,7 @@ public class Subscription :
         }";
     }
 
-    static ResolveFieldContext ResolveFieldContext(
+    static IResolveFieldContext<Company> ResolveFieldContext(
         SampleDbContext dbContext,
         CancellationToken token,
         Document document,
@@ -105,11 +105,11 @@ public class Subscription :
         {
             Document = document,
             Schema = schema,
-            UserContext = dbContext,
+            //UserContext = dbContext,
             Variables = variableValues,
             Fragments = document.Fragments,
             CancellationToken = token,
-            Listeners = new IDocumentExecutionListener[0],
+            Listeners = new List<IDocumentExecutionListener>(),
             Operation = operation,
             ThrowOnUnhandledException = true // DEBUG
         };
@@ -124,7 +124,7 @@ public class Subscription :
         return GetContext(executionContext, node.SubFields["companies"]);
     }
 
-    static ResolveFieldContext GetContext(ExecutionContext context, ExecutionNode node)
+    static IResolveFieldContext<Company> GetContext(ExecutionContext context, ExecutionNode node)
     {
         var argumentValues = ExecutionHelper.GetArgumentValues(
             context.Schema,
@@ -132,7 +132,7 @@ public class Subscription :
             node.Field.Arguments,
             context.Variables);
         var dictionary = ExecutionHelper.SubFieldsFor(context, node.FieldDefinition.ResolvedType, node.Field);
-        return new ResolveFieldContext
+        return new ResolveFieldContext<Company>
         {
             FieldName = node.Field.Name,
             FieldAst = node.Field,
@@ -140,7 +140,7 @@ public class Subscription :
             ReturnType = node.FieldDefinition.ResolvedType,
             ParentType = node.GetParentType(context.Schema),
             Arguments = argumentValues,
-            Source = node.Source,
+            Source = (Company)node.Source,
             Schema = context.Schema,
             Document = context.Document,
             Fragments = context.Fragments,

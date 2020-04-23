@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 using GraphQL.Validation;
@@ -14,7 +15,7 @@ namespace GraphQL.EntityFramework
 
         static FixIdTypeRule()
         {
-            validationRules = DocumentValidator.CoreRules();
+            validationRules = DocumentValidator.CoreRules.ToList();
             validationRules.Insert(0, new FixIdTypeRule());
         }
 
@@ -52,5 +53,9 @@ namespace GraphQL.EntityFramework
         }
 
         public static IEnumerable<IValidationRule> CoreRulesWithIdFix => validationRules;
+        public Task<INodeVisitor> ValidateAsync(ValidationContext context)
+        {
+            return Task.FromResult(Validate(context));
+        }
     }
 }

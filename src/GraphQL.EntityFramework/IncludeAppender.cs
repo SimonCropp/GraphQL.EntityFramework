@@ -15,7 +15,7 @@ class IncludeAppender
         this.navigations = navigations;
     }
 
-    public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+    public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, IResolveFieldContext<TSource> context)
         where TItem : class
     {
         var type = typeof(TItem);

@@ -72,16 +72,16 @@ namespace GraphQL.EntityFramework
             return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
         }
 
-        public TDbContext ResolveDbContext(ResolveFieldContext<TSource> context)
+        public TDbContext ResolveDbContext(IResolveFieldContext<TSource> context)
         {
             Guard.AgainstNull(nameof(context), context);
             return efGraphQlService.ResolveDbContext(context);
         }
 
-        public TDbContext ResolveDbContext(ResolveFieldContext context)
-        {
-            Guard.AgainstNull(nameof(context), context);
-            return efGraphQlService.ResolveDbContext(context);
-        }
+        // public TDbContext ResolveDbContext(ResolveFieldContext context)
+        // {
+        //     Guard.AgainstNull(nameof(context), context);
+        //     return efGraphQlService.ResolveDbContext(context);
+        // }
     }
 }

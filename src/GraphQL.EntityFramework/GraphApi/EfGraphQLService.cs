@@ -39,7 +39,7 @@ namespace GraphQL.EntityFramework
         }
 
         ResolveEfFieldContext<TDbContext, TSource> BuildContext<TSource>(
-            ResolveFieldContext<TSource> context)
+            IResolveFieldContext<TSource> context)
         {
             return new ResolveEfFieldContext<TDbContext, TSource>
             {
@@ -67,13 +67,13 @@ namespace GraphQL.EntityFramework
             };
         }
 
-        public TDbContext ResolveDbContext<TSource>(ResolveFieldContext<TSource> context)
+        public TDbContext ResolveDbContext<TSource>(IResolveFieldContext<TSource> context)
         {
             Guard.AgainstNull(nameof(context), context);
             return resolveDbContext(context.UserContext);
         }
 
-        Filters ResolveFilter<TSource>(ResolveFieldContext<TSource> context)
+        Filters ResolveFilter<TSource>(IResolveFieldContext<TSource> context)
         {
             var filter = resolveFilters?.Invoke(context.UserContext);
             return filter ?? NullFilters.Instance;

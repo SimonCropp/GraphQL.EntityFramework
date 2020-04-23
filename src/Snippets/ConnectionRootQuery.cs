@@ -12,7 +12,7 @@ class ConnectionRootQuery
         public Query(IEfGraphQLService<MyDbContext> graphQlService) :
             base(graphQlService)
         {
-            AddQueryConnectionField(
+            AddQueryConnectionField<Company>(
                 name: "companies",
                 resolve: context => context.DbContext.Companies);
         }

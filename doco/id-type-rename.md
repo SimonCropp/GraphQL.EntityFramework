@@ -47,6 +47,7 @@ To work around this it is necessary to use a [ValidationRule](https://graphql-do
 ```cs
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 using GraphQL.Validation;
@@ -61,7 +62,7 @@ namespace GraphQL.EntityFramework
 
         static FixIdTypeRule()
         {
-            validationRules = DocumentValidator.CoreRules();
+            validationRules = DocumentValidator.CoreRules.ToList();
             validationRules.Insert(0, new FixIdTypeRule());
         }
 
@@ -99,10 +100,14 @@ namespace GraphQL.EntityFramework
         }
 
         public static IEnumerable<IValidationRule> CoreRulesWithIdFix => validationRules;
+        public Task<INodeVisitor> ValidateAsync(ValidationContext context)
+        {
+            return Task.FromResult(Validate(context));
+        }
     }
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L56' title='File snippet `FixIdTypeRule.cs` was extracted from'>snippet source</a> | <a href='#snippet-FixIdTypeRule.cs' title='Navigate to start of snippet `FixIdTypeRule.cs`'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/IdPatch/FixIdTypeRule.cs#L1-L61' title='File snippet `FixIdTypeRule.cs` was extracted from'>snippet source</a> | <a href='#snippet-FixIdTypeRule.cs' title='Navigate to start of snippet `FixIdTypeRule.cs`'>anchor</a></sup>
 <!-- endsnippet -->
 
 To use this rule set `ExecutionOptions.ValidationRules` to `FixIdTypeRule.CoreRulesWithIdFix`:
@@ -114,7 +119,7 @@ var executionOptions = new ExecutionOptions
 {
     Schema = schema,
     Query = query,
-    UserContext = data,
+    //UserContext = data,
     Inputs = inputs,
     ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
 };

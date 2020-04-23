@@ -80,7 +80,7 @@ public class MultiContextTests :
         #endregion
 
         await using var provider = services.BuildServiceProvider();
-        using var schema = new MultiContextSchema(new FuncDependencyResolver(provider.GetRequiredService));
+        using var schema = new MultiContextSchema(provider);
         var documentExecuter = new EfDocumentExecuter();
 
         #region MultiExecutionOptions
@@ -89,7 +89,7 @@ public class MultiContextTests :
         {
             Schema = schema,
             Query = query,
-            UserContext = new UserContext(dbContext1, dbContext2)
+            //UserContext = new UserContext(dbContext1, dbContext2)
         };
 
         #endregion

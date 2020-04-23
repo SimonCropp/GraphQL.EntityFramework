@@ -30,7 +30,7 @@ namespace GraphQL.EntityFramework
             field.AddWhereArgument(arguments);
         }
 
-        ConnectionBuilder<FakeGraph, TSource> BuildListConnectionField<TSource, TReturn>(
+        ConnectionBuilder<TSource> BuildListConnectionField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string>? includeName,
@@ -47,7 +47,7 @@ namespace GraphQL.EntityFramework
             //create a ConnectionBuilder<graphType, TSource> type by invoking the static Create method on the generic type
             var fieldType = GetFieldType<TSource>(name, graphType);
             //create a ConnectionBuilder<FakeGraph, TSource> which will be returned from this method
-            var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
+            var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
             //set the page size
             builder.PageSize(pageSize);
             //using reflection, override the private field type property of the ConnectionBuilder<FakeGraph, TSource> to be the ConnectionBuilder<graphType, TSource> object
@@ -87,8 +87,10 @@ namespace GraphQL.EntityFramework
 
         static object GetFieldType<TSource>(string name, Type graphType)
         {
-            var makeGenericType = typeof(ConnectionBuilder<,>).MakeGenericType(graphType, typeof(TSource));
-            dynamic x = makeGenericType.GetMethod("Create").Invoke(null, new object[] { name });
+            var makeGenericType = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSource));
+            var genericMethodInfo = makeGenericType.GetMethods().Single(mi => mi.Name == "Create" && mi.IsGenericMethod && mi.GetGenericArguments().Length == 1);
+            var genericMethod = genericMethodInfo.MakeGenericMethod(graphType);
+            dynamic x = genericMethod.Invoke(null, new object[] {name});
             return x.FieldType;
         }
 

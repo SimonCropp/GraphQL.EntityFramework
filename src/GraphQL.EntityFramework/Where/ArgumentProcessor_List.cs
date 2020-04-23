@@ -7,7 +7,7 @@ namespace GraphQL.EntityFramework
 {
     public static partial class ArgumentProcessor
     {
-        public static IEnumerable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IEnumerable<TItem> items, ResolveFieldContext<TSource> context)
+        public static IEnumerable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IEnumerable<TItem> items, IResolveFieldContext<TSource> context)
         {
             Guard.AgainstNull(nameof(items), items);
             Guard.AgainstNull(nameof(context), context);

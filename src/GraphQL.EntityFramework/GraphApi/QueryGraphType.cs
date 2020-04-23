@@ -19,17 +19,17 @@ namespace GraphQL.EntityFramework
             this.efGraphQlService = efGraphQlService;
         }
 
-        public TDbContext ResolveDbContext<TSource>(ResolveFieldContext<TSource> context)
+        public TDbContext ResolveDbContext<TSource>(IResolveFieldContext<TSource> context)
         {
             Guard.AgainstNull(nameof(context), context);
             return efGraphQlService.ResolveDbContext(context);
         }
 
-        public TDbContext ResolveDbContext(ResolveFieldContext context)
-        {
-            Guard.AgainstNull(nameof(context), context);
-            return efGraphQlService.ResolveDbContext(context);
-        }
+        // public TDbContext ResolveDbContext(IResolveFieldContext context)
+        // {
+        //     Guard.AgainstNull(nameof(context), context);
+        //     return efGraphQlService.ResolveDbContext<object>(context);
+        // }
 
         protected void AddQueryConnectionField<TReturn>(
             string name,

@@ -323,7 +323,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L10-L89' title='File snippet `graphqlcontroller` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Navigate to start of snippet `graphqlcontroller`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L90' title='File snippet `graphqlcontroller` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Navigate to start of snippet `graphqlcontroller`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -385,7 +385,7 @@ var executionOptions = new ExecutionOptions
 {
     Schema = schema,
     Query = query,
-    UserContext = new UserContext(dbContext1, dbContext2)
+    //UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
 <sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L86-L95' title='File snippet `multiexecutionoptions` was extracted from'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Navigate to start of snippet `multiexecutionoptions`'>anchor</a></sup>

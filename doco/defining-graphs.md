@@ -126,7 +126,7 @@ public class Query :
     public Query(IEfGraphQLService<MyDbContext> graphQlService) :
         base(graphQlService)
     {
-        AddQueryConnectionField(
+        AddQueryConnectionField<Company>(
             name: "companies",
             resolve: context => context.DbContext.Companies);
     }
@@ -293,7 +293,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L54-L87' title='File snippet `manuallyapplywhere` was extracted from'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Navigate to start of snippet `manuallyapplywhere`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L55-L88' title='File snippet `manuallyapplywhere` was extracted from'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Navigate to start of snippet `manuallyapplywhere`'>anchor</a></sup>
 <!-- endsnippet -->
 
 

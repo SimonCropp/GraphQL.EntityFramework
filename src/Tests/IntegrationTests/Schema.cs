@@ -1,11 +1,12 @@
-﻿using GraphQL;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 public class Schema :
     GraphQL.Types.Schema
 {
-    public Schema(IDependencyResolver resolver) :
+    public Schema(IServiceProvider resolver) :
         base(resolver)
     {
-        Query = resolver.Resolve<Query>();
+        Query = resolver.GetService<Query>();
     }
 }
