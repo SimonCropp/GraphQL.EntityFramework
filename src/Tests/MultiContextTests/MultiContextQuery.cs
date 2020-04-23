@@ -13,7 +13,7 @@ public class MultiContextQuery :
             name: "entity1",
             resolve: context =>
             {
-                var userContext = (UserContext) context.UserContext;
+                var userContext = (UserContextMultiDb) context.UserContext;
                 return userContext.DbContext1.Entities;
             });
         efGraphQlService2.AddSingleField(
@@ -21,7 +21,7 @@ public class MultiContextQuery :
             name: "entity2",
             resolve: context =>
             {
-                var userContext = (UserContext) context.UserContext;
+                var userContext = (UserContextMultiDb) context.UserContext;
                 return userContext.DbContext2.Entities;
             });
     }

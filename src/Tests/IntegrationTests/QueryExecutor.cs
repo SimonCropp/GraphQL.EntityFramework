@@ -3,6 +3,7 @@ using GraphQL;
 using GraphQL.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Tests;
 
 static class QueryExecutor
 {
@@ -30,7 +31,7 @@ static class QueryExecutor
         {
             Schema = schema,
             Query = query,
-            //UserContext = data,
+            UserContext = new UserContextSingleDb<TDbContext>(data),
             Inputs = inputs,
             ValidationRules = FixIdTypeRule.CoreRulesWithIdFix
         };

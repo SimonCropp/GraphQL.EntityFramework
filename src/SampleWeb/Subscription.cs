@@ -12,6 +12,7 @@ using GraphQL.Subscription;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SampleWeb;
 using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
 public class Subscription :
@@ -105,7 +106,7 @@ public class Subscription :
         {
             Document = document,
             Schema = schema,
-            //UserContext = dbContext,
+            UserContext = new UserContext(dbContext),
             Variables = variableValues,
             Fragments = document.Fragments,
             CancellationToken = token,

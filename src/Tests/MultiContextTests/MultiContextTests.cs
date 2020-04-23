@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
@@ -72,10 +73,10 @@ public class MultiContextTests :
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => ((UserContext) userContext).DbContext1);
+            userContext => ((UserContextMultiDb) userContext).DbContext1);
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => ((UserContext) userContext).DbContext2);
+            userContext => ((UserContextMultiDb) userContext).DbContext2);
 
         #endregion
 
@@ -89,7 +90,7 @@ public class MultiContextTests :
         {
             Schema = schema,
             Query = query,
-            //UserContext = new UserContext(dbContext1, dbContext2)
+            UserContext = new UserContextMultiDb(dbContext1, dbContext2)
         };
 
         #endregion
@@ -105,9 +106,9 @@ public class MultiContextTests :
 }
 
 #region MultiUserContext
-public class UserContext
+public class UserContextMultiDb : Dictionary<string, object>
 {
-    public UserContext(DbContext1 context1, DbContext2 context2)
+    public UserContextMultiDb(DbContext1 context1, DbContext2 context2)
     {
         DbContext1 = context1;
         DbContext2 = context2;
