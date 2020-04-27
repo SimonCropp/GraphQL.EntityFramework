@@ -7,5 +7,6 @@ public class Schema :
         base(resolver)
     {
         Query = resolver.Resolve<Query>();
+        Mutation = resolver.Resolve<Mutation>();
     }
 }
