@@ -12,9 +12,8 @@ class NullFilters :
         return Task.FromResult(result);
     }
 
-    // Nullability of reference types in type of parameter doesn't match overridden member.
-#pragma warning disable CS8610
-    internal override Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item)
+    internal override Task<bool> ShouldInclude<TEntity>(object userContext, TEntity? item)
+        where TEntity : class
     {
         return Task.FromResult(true);
     }
