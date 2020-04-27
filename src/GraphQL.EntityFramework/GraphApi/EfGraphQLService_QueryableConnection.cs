@@ -87,7 +87,8 @@ namespace GraphQL.EntityFramework
                 context =>
                 {
                     var efFieldContext = BuildContext(context);
-                    var withIncludes = includeAppender.AddIncludes(resolve(efFieldContext), context);
+                    var query = resolve(efFieldContext);
+                    var withIncludes = includeAppender.AddIncludes(query, context);
                     var names = GetKeyNames<TReturn>();
                     var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
                     return withArguments
