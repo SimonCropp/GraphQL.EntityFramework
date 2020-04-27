@@ -126,8 +126,8 @@ namespace GraphQL.EntityFramework
 
                         var names = GetKeyNames<TReturn>();
 
-                        var returnTypes = await resolve(efFieldContext);
-                        var withIncludes = includeAppender.AddIncludes(returnTypes, context);
+                        var query = await resolve(efFieldContext);
+                        var withIncludes = includeAppender.AddIncludes(query, context);
                         var withArguments = withIncludes.ApplyGraphQlArguments(context, names);
                         var single = await withArguments.SingleOrDefaultAsync(context.CancellationToken);
                         if (single != null)
