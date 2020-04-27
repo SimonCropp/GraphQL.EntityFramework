@@ -102,18 +102,18 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
-            //lookup the graph type if not explicitly specified
+
             graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-            //create a list graph type based on the base field graph type
+
             var listGraphType = MakeListGraphType(graphType);
-            //build the field
+
             return new FieldType
             {
                 Name = name,
                 Type = listGraphType,
                 //append the default query arguments to the specified argument list
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
-                //custom resolve function
+
                 Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     async context =>
                     {
@@ -126,7 +126,7 @@ namespace GraphQL.EntityFramework
                         query = includeAppender.AddIncludes(query, context);
                         //apply any query filters specified in the arguments
                         query = query.ApplyGraphQlArguments(context, names);
-                        //query the database
+
                         var list = await query.ToListAsync(context.CancellationToken);
                         //apply the global filter on each individually enumerated item
                         return await efFieldContext.Filters.ApplyFilter(list, context.UserContext);

@@ -81,16 +81,14 @@ namespace GraphQL.EntityFramework
             var fieldType = GetFieldType<TSource>(name, graphType);
             //create a ConnectionBuilder<FakeGraph, TSource> which will be returned from this method
             var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
-            //set the page size
+
             builder.PageSize(pageSize);
             //using reflection, override the private field type property of the ConnectionBuilder<FakeGraph, TSource> to be the ConnectionBuilder<graphType, TSource> object
             SetField(builder, fieldType);
 
-            //set the resolve function (note: this is not async capable)
             builder.Resolve(
                 context =>
                 {
-                    //obtain the ef context
                     var efFieldContext = BuildContext(context);
                     //run the resolve function, then include the related tables on the returned query
                     var withIncludes = includeAppender.AddIncludes(resolve(efFieldContext), context);
@@ -111,7 +109,6 @@ namespace GraphQL.EntityFramework
                     //note: does not apply global filters
                 });
 
-            //return the field to be added to the graph
             return builder;
         }
     }
