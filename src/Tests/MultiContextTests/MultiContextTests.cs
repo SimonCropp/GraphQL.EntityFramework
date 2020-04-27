@@ -80,7 +80,7 @@ public class MultiContextTests :
         #endregion
 
         await using var provider = services.BuildServiceProvider();
-        using var schema = new MultiContextSchema(new FuncDependencyResolver(provider.GetRequiredService));
+        using var schema = new MultiContextSchema(new FuncDependencyResolver(provider.GetRequiredService!));
         var documentExecuter = new EfDocumentExecuter();
 
         #region MultiExecutionOptions

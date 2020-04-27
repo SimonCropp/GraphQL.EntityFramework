@@ -22,7 +22,7 @@ static class QueryExecutor
             userContext => filters);
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         await using var provider = services.BuildServiceProvider();
-        using var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService));
+        using var schema = new Schema(new FuncDependencyResolver(provider.GetRequiredService!));
         var documentExecuter = new EfDocumentExecuter();
 
         #region ExecutionOptionsWithFixIdTypeRule

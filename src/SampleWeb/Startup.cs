@@ -39,7 +39,7 @@ public class Startup
         services.AddScoped(provider => dbContextBuilder.BuildDbContext());
         services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
         services.AddSingleton<IDependencyResolver>(
-            provider => new FuncDependencyResolver(provider.GetRequiredService));
+            provider => new FuncDependencyResolver(provider.GetRequiredService!));
         services.AddSingleton<ISchema, Schema>();
         var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
         mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
