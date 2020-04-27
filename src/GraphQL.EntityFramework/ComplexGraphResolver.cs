@@ -49,6 +49,12 @@ static class ComplexGraphResolver
                 {
                     graphType = nonNullGraphType.ResolvedType;
                 }
+                
+                if (graphType is UnionGraphType unionGraphType)
+                {
+                    graphType = unionGraphType.PossibleTypes.First();
+                }
+
 
                 IComplexGraphType? complexGraphType = null;
                 if (graphType is IComplexGraphType complexType)
