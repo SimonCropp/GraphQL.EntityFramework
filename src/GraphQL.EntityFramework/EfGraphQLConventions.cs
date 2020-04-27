@@ -1,4 +1,5 @@
 ﻿using System;
+using GraphQL.Types;
 using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -75,10 +76,17 @@ namespace GraphQL.EntityFramework
             throw new Exception($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
         }
 
-        static void RegisterScalarsAndArgs(IServiceCollection services)
+        public static void RegisterScalarsAndArgs(IServiceCollection services)
         {
+            
             Scalars.RegisterInContainer(services);
             ArgumentGraphs.RegisterInContainer(services);
+        }
+        public static void RegisterScalarsAndArgs(Action<Type, GraphType> registerDelegate)
+        {
+            
+            Scalars.RegisterInContainer(registerDelegate);
+            ArgumentGraphs.RegisterInContainer(registerDelegate);
         }
 
         public static void RegisterConnectionTypesInContainer(IServiceCollection services)

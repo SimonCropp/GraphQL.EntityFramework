@@ -41,6 +41,15 @@ static class Scalars
             services.AddSingleton(entry.Key, entry.Value);
         }
     }
+    
+    public static void RegisterInContainer(Action<Type, GraphType> registerDelegate)
+    {
+        Initialize();
+        foreach (var entry in entries!)
+        {
+            registerDelegate(entry.Key, entry.Value);
+        }
+    }
 
     static void Add<T>(Type type)
         where T : ScalarGraphType, new()

@@ -28,6 +28,14 @@ static class ArgumentGraphs
             services.AddSingleton(entry.Key, entry.Value);
         }
     }
+    
+    public static void RegisterInContainer(Action<Type, GraphType> registerDelegate)
+    {
+        foreach (var entry in entries)
+        {
+            registerDelegate(entry.Key, entry.Value);
+        }
+    }
 
     static void Add<T>()
         where T : GraphType, new()
