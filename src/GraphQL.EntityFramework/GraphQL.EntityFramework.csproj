@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>default</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Description>Add EntityFramework Core IQueryable support to GraphQL</Description>
     <!--Disable warnings of approximate packages due to graphql-net releasing to myget etc -->
     <NoWarn>$(NoWarn);NU1603</NoWarn>
