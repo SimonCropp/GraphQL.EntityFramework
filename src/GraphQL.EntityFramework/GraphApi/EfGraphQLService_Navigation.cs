@@ -32,23 +32,19 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            //lookup the graph type if not explicitly specified
             graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-            //build field
+
             return new FieldType
             {
                 Name = name,
                 Type = graphType,
-                //add the metadata for the tables to be included in the query
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
-                //custom resolve function simply applies the global filters; typically it's a pass-through
                 Resolver = new AsyncFieldResolver<TSource, TReturn?>(
                     async context =>
                     {
                         var efFieldContext = BuildContext(context);
-                        //run resolve function
+
                         var result = resolve(efFieldContext);
-                        //apply global filters and return null if necessary
                         if (await efFieldContext.Filters.ShouldInclude(context.UserContext, result))
                         {
                             return result;

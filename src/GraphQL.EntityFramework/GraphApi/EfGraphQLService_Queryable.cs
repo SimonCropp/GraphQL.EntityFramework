@@ -111,24 +111,18 @@ namespace GraphQL.EntityFramework
             {
                 Name = name,
                 Type = listGraphType,
-                //append the default query arguments to the specified argument list
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
 
                 Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     async context =>
                     {
                         var efFieldContext = BuildContext(context);
-                        //get field names of the table's primary key(s)
                         var names = GetKeyNames<TReturn>();
-                        //run the specified resolve function
                         var query = await resolve(efFieldContext);
-                        //include sub tables in the query based on the metadata stored for the requested graph
                         query = includeAppender.AddIncludes(query, context);
-                        //apply any query filters specified in the arguments
                         query = query.ApplyGraphQlArguments(context, names);
 
                         var list = await query.ToListAsync(context.CancellationToken);
-                        //apply the global filter on each individually enumerated item
                         return await efFieldContext.Filters.ApplyFilter(list, context.UserContext);
                     })
             };
