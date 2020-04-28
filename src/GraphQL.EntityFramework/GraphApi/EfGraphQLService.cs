@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -77,6 +78,12 @@ namespace GraphQL.EntityFramework
         {
             var filter = resolveFilters?.Invoke(context.UserContext);
             return filter ?? NullFilters.Instance;
+        }
+
+        public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+            where TItem : class
+        {
+            return includeAppender.AddIncludes(query, context);
         }
     }
 }
