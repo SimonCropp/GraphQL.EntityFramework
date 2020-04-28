@@ -6,6 +6,6 @@ public class Child1Graph :
     public Child1Graph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
+        AutoMap();
     }
 }

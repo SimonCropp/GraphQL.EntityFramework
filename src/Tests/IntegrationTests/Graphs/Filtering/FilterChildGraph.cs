@@ -6,7 +6,6 @@ public class FilterChildGraph :
     public FilterChildGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
-        Field(x => x.Property);
+        AutoMap();
     }
 }

@@ -6,8 +6,6 @@ public class FilterParentGraph :
     public FilterParentGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
-        Field(x => x.Property);
         AddNavigationListField(
             name: "children",
             resolve: context => context.Source.Children);
@@ -15,5 +13,6 @@ public class FilterParentGraph :
             name: "childrenConnection",
             resolve: context => context.Source.Children,
             includeNames: new[] {"Children"});
+        AutoMap();
     }
 }

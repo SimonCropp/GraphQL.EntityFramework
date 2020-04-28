@@ -18,6 +18,11 @@ namespace GraphQL.EntityFramework
             GraphQlService = graphQlService;
         }
 
+        public void AutoMap(IEnumerable<string>? exclusions = null)
+        {
+            Mapper.AutoMap(this, exclusions);
+        }
+
         public void AddNavigationConnectionField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,

@@ -6,8 +6,6 @@ public class CompanyGraph :
     public CompanyGraph(IEfGraphQLService<SampleDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
-        Field(x => x.Content);
         AddNavigationListField(
             name: "employees",
             resolve: context => context.Source.Employees);
@@ -15,5 +13,6 @@ public class CompanyGraph :
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
             includeNames: new[] {"Employees"});
+        AutoMap();
     }
 }

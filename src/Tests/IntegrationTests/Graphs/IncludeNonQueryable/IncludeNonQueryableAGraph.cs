@@ -6,9 +6,9 @@ public class IncludeNonQueryableAGraph :
     public IncludeNonQueryableAGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
         AddNavigationField(
             name: "includeNonQueryableB",
             resolve: context => context.Source.IncludeNonQueryableB);
+        AutoMap();
     }
 }

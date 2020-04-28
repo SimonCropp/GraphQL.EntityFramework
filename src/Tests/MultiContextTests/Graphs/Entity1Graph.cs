@@ -6,7 +6,6 @@ public class Entity1Graph :
     public Entity1Graph(IEfGraphQLService<DbContext1> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
-        Field(x => x.Property);
+        AutoMap();
     }
 }
