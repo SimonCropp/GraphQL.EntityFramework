@@ -536,6 +536,7 @@ mutation {
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
         await Verify(result);
     }
+
     [Fact]
     public async Task SingleParent_Child()
     {

@@ -1,0 +1,13 @@
+{
+  parentEntityMutation: {
+    property: 'Foo',
+    children: [
+      {
+        property: 'Value2'
+      },
+      {
+        property: 'Value3'
+      }
+    ]
+  }
+}
