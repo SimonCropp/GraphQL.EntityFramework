@@ -18,6 +18,11 @@ class IncludeAppender
     public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
         where TItem : class
     {
+        if (context.SubFields == null)
+        {
+            return query;
+        }
+
         var type = typeof(TItem);
         var navigationProperty = navigations[type];
         return AddIncludes(query, context.FieldDefinition, context.SubFields.Values, navigationProperty);
