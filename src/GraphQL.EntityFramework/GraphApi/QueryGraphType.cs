@@ -11,24 +11,24 @@ namespace GraphQL.EntityFramework
         ObjectGraphType
         where TDbContext : DbContext
     {
-        IEfGraphQLService<TDbContext> efGraphQlService;
-
-        public QueryGraphType(IEfGraphQLService<TDbContext> efGraphQlService)
+        public QueryGraphType(IEfGraphQLService<TDbContext> graphQlService)
         {
-            Guard.AgainstNull(nameof(efGraphQlService), efGraphQlService);
-            this.efGraphQlService = efGraphQlService;
+            Guard.AgainstNull(nameof(graphQlService), graphQlService);
+            GraphQlService = graphQlService;
         }
+
+        public IEfGraphQLService<TDbContext> GraphQlService { get; }
 
         public TDbContext ResolveDbContext<TSource>(ResolveFieldContext<TSource> context)
         {
             Guard.AgainstNull(nameof(context), context);
-            return efGraphQlService.ResolveDbContext(context);
+            return GraphQlService.ResolveDbContext(context);
         }
 
         public TDbContext ResolveDbContext(ResolveFieldContext context)
         {
             Guard.AgainstNull(nameof(context), context);
-            return efGraphQlService.ResolveDbContext(context);
+            return GraphQlService.ResolveDbContext(context);
         }
 
         public void AddQueryConnectionField<TReturn>(
@@ -39,7 +39,7 @@ namespace GraphQL.EntityFramework
             int pageSize = 10)
             where TReturn : class
         {
-            efGraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize);
+            GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize);
         }
 
         public FieldType AddQueryField<TReturn>(
@@ -49,7 +49,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
+            return GraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
         }
 
         public FieldType AddQueryField<TReturn>(
@@ -59,7 +59,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
-            return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
+            return GraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
         }
 
         public FieldType AddSingleField<TReturn>(
@@ -71,7 +71,7 @@ namespace GraphQL.EntityFramework
             bool nullable = false)
             where TReturn : class
         {
-            return efGraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable);
+            return GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable);
         }
 
         public FieldType AddSingleField<TReturn>(
@@ -83,13 +83,13 @@ namespace GraphQL.EntityFramework
             bool nullable = false)
             where TReturn : class
         {
-            return efGraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable);
+            return GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable);
         }
 
         public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
             where TItem : class
         {
-            return efGraphQlService.AddIncludes(query, context);
+            return GraphQlService.AddIncludes(query, context);
         }
     }
 }
