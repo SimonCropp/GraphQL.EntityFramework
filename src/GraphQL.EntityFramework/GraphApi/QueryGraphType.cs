@@ -85,5 +85,11 @@ namespace GraphQL.EntityFramework
         {
             return efGraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable);
         }
+
+        public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+            where TItem : class
+        {
+            return efGraphQlService.AddIncludes(query, context);
+        }
     }
 }
