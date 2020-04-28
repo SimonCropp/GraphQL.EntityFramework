@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
             return efGraphQlService.ResolveDbContext(context);
         }
 
-        protected void AddQueryConnectionField<TReturn>(
+        public void AddQueryConnectionField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
@@ -42,7 +42,7 @@ namespace GraphQL.EntityFramework
             efGraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize);
         }
 
-        protected FieldType AddQueryField<TReturn>(
+        public FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
@@ -52,7 +52,7 @@ namespace GraphQL.EntityFramework
             return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
         }
 
-        protected FieldType AddQueryField<TReturn>(
+        public FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
@@ -62,7 +62,7 @@ namespace GraphQL.EntityFramework
             return efGraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
         }
 
-        protected FieldType AddSingleField<TReturn>(
+        public FieldType AddSingleField<TReturn>(
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
             Type? graphType = null,
@@ -74,7 +74,7 @@ namespace GraphQL.EntityFramework
             return efGraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable);
         }
 
-        protected FieldType AddSingleField<TReturn>(
+        public FieldType AddSingleField<TReturn>(
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
             Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
             Type? graphType = null,
