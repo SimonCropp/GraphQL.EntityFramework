@@ -73,11 +73,11 @@ namespace GraphQL.EntityFramework
             // TSource parameter
             var parameter = Expression.Parameter(typeof(TSource),"source");
             // get property from source instance
-            var memberExpression = Expression.Property(parameter, member.Name);
+            var property = Expression.Property(parameter, member.Name);
             // convert member instance to object
-            var convertedMember = Expression.Convert(memberExpression, typeof(object));
+            var convert = Expression.Convert(property, typeof(object));
 
-            return Expression.Lambda<Func<TSource, object>>(convertedMember, parameter);
+            return Expression.Lambda<Func<TSource, object>>(convert, parameter);
         }
 
         static Type GetGraphType(PropertyInfo member)
