@@ -63,15 +63,15 @@ namespace GraphQL.EntityFramework
 
         static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
         {
-            var lambda = BuildPropertyLambda<TSource>(member);
+            var lambda = PropertyToObject<TSource>(member);
             var graphTypeFromType = GetGraphType(member);
             return (lambda.Compile(), graphTypeFromType);
         }
 
-        internal static Expression<Func<TSource, object>> BuildPropertyLambda<TSource>(PropertyInfo member)
+        internal static Expression<Func<TSource, object>> PropertyToObject<TSource>(PropertyInfo member)
         {
             // TSource parameter
-            var parameter = Expression.Parameter(typeof(TSource));
+            var parameter = Expression.Parameter(typeof(TSource),"source");
             // get property from source instance
             var memberExpression = Expression.Property(parameter, member.Name);
             // convert member instance to object

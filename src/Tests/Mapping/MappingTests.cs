@@ -12,18 +12,27 @@ public class MappingTests :
     static SqlInstance<MappingContext> sqlInstance;
     static MappingTests()
     {
+        GraphTypeTypeRegistry.Register<MappingParent, MappingParentGraph>();
+        GraphTypeTypeRegistry.Register<MappingChild, MappingChildGraph>();
+
         sqlInstance = new SqlInstance<MappingContext>(
             constructInstance: builder => new MappingContext(builder.Options));
     }
 
     [Fact]
-    public async Task Run()
+    public async Task PropertyToObject()
     {
-        GraphTypeTypeRegistry.Register<MappingEntity1, MappingEntity1Graph>();
         await using var database = await sqlInstance.Build();
 
-        var property = typeof(MappingEntity1).GetProperty("Property")!;
-        await Verify(Mapper.BuildPropertyLambda<MappingEntity1>(property).ToString());
+        var property = typeof(MappingParent).GetProperty("Property")!;
+        var expression = Mapper.PropertyToObject<MappingParent>(property);
+        var result = expression.Compile()(new MappingParent {Property = "value"});
+        await Verify(
+            new
+            {
+                expression = expression.ToString(),
+                result
+            });
     }
 
     public MappingTests(ITestOutputHelper output) :
