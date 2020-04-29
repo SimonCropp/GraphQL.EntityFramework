@@ -447,12 +447,11 @@ public class Entity1Graph :
     public Entity1Graph(IEfGraphQLService<DbContext1> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
-        Field(x => x.Property);
+        AutoMap();
     }
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L12' title='File snippet `Entity1Graph.cs` was extracted from'>snippet source</a> | <a href='#snippet-Entity1Graph.cs' title='Navigate to start of snippet `Entity1Graph.cs`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L11' title='File snippet `Entity1Graph.cs` was extracted from'>snippet source</a> | <a href='#snippet-Entity1Graph.cs' title='Navigate to start of snippet `Entity1Graph.cs`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
