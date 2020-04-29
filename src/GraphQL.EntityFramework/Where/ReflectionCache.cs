@@ -242,9 +242,9 @@ static class ReflectionCache
 
     public static bool TryGetCollectionType(
         this Type type,
-        [NotNullWhen(true)] out Type? collectionType)
+        [NotNullWhen(true)] out Type? itemType)
     {
-        collectionType = type.GetInterfaces()
+        itemType = type.GetInterfaces()
             .FirstOrDefault(x =>
             {
                 if (!x.IsGenericType)
@@ -256,6 +256,6 @@ static class ReflectionCache
                 return genericType == typeof(ICollection<>) ||
                        genericType == typeof(IReadOnlyCollection<>);
             });
-        return collectionType != null;
+        return itemType != null;
     }
 }
