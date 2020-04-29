@@ -84,10 +84,9 @@ static class Mapper
 
         var sourceProperty = Expression.Property(parameter, "Source");
         var property = Expression.Property(sourceProperty, name);
-        var convert = Expression.Convert(property, typeof(TReturn));
 
         //context => context.Source.Parent
-        return Expression.Lambda<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>>(convert, parameter);
+        return Expression.Lambda<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>>(property, parameter);
     }
 
     static void AddMember<TSource>(ComplexGraphType<TSource> graph, PropertyInfo property)
