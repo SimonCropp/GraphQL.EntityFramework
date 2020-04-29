@@ -25,7 +25,8 @@ namespace GraphQL.EntityFramework
             int pageSize = 10)
             where TReturn : class;
 
-        void AddQueryConnectionField<TSource, TReturn>(ObjectGraphType<TSource> graph,
+        void AddQueryConnectionField<TSource, TReturn>(
+            ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
