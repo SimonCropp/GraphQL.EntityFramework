@@ -1,6 +1,6 @@
 [
   {
-    Id: Guid_1,
-    ParentId: Guid_2
+    Id: Guid_2,
+    ParentId: Guid_1
   }
 ]

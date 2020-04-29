@@ -62,12 +62,15 @@ static class Mapper
         Navigation navigation)
         where TDbContext : DbContext
     {
-        //TODO: detect nullable
-        var graphTypeFromType = navigation.PropertyType.GetGraphTypeFromType();
-        Func<ResolveEfFieldContext<TDbContext, TSource>, object?> compile = NavigationExpression<TDbContext,TSource>(navigation.PropertyName).Compile();
-        graphQlService.AddNavigationField(graph, navigation.PropertyName, compile, graphTypeFromType);
-    }
+        if (ShouldIgnore(graph, navigation.Name, navigation.Type))
+        {
+            return;
+        }
 
+        var graphTypeFromType = navigation.Type.GetGraphTypeFromType(navigation.IsNullable);
+        Func<ResolveEfFieldContext<TDbContext, TSource>, object?> compile = NavigationExpression<TDbContext,TSource>(navigation.Name).Compile();
+        graphQlService.AddNavigationField(graph, navigation.Name, compile, graphTypeFromType);
+   }
 
     internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, object?>> NavigationExpression<TDbContext, TSource>(string name)
         where TDbContext : DbContext
@@ -83,22 +86,32 @@ static class Mapper
         return Expression.Lambda<Func<ResolveEfFieldContext<TDbContext, TSource>, object?>>(convert, parameter);
     }
 
-    static void AddMember<TSource>(ComplexGraphType<TSource> graphType, PropertyInfo property)
+    static void AddMember<TSource>(ComplexGraphType<TSource> graph, PropertyInfo property)
     {
-        if (graphType.FieldExists(property.Name))
-        {
-            return;
-        }
-
-        if (ShouldIgnore(property.PropertyType))
+        if (ShouldIgnore(graph, property.Name, property.PropertyType))
         {
             return;
         }
 
         var (compile, propertyGraphType) = Compile<TSource>(property);
         var resolver = new SimpleFieldResolver<TSource>(compile);
-        var graphQlField = graphType.Field(type: propertyGraphType, name: property.Name);
+        var graphQlField = graph.Field(type: propertyGraphType, name: property.Name);
         graphQlField.Resolver = resolver;
+    }
+
+    private static bool ShouldIgnore(IComplexGraphType graphType, string propertyName, Type propertyType)
+    {
+        if (graphType.FieldExists(propertyName))
+        {
+            return true;
+        }
+
+        if (ShouldIgnore(propertyType))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
@@ -159,7 +172,7 @@ static class Mapper
         return false;
     }
 
-    static bool FieldExists<TSource>(this ComplexGraphType<TSource> graphType, string name)
+    static bool FieldExists(this IComplexGraphType graphType, string name)
     {
         return graphType.Fields.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
     }

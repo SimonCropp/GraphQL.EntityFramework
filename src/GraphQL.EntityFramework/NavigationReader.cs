@@ -18,7 +18,7 @@ static class NavigationReader
     {
         var navigations = entity.GetNavigations();
         return navigations
-            .Select(x => new Navigation(x.Name, GetNavigationType(x)))
+            .Select(x => new Navigation(x.Name, GetNavigationType(x), x.PropertyInfo.IsNullable()))
             .ToList();
     }
 
