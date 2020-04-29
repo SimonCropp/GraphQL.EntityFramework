@@ -50,14 +50,14 @@ public class MultiContextTests :
         services.AddSingleton<Entity1Graph>();
         services.AddSingleton<Entity2Graph>();
 
-        await using (var sqlDatabase1 = await sqlInstance1.Build())
-        await using (var sqlDatabase2 = await sqlInstance2.Build())
+        await using (var database1 = await sqlInstance1.Build())
+        await using (var database2 = await sqlInstance2.Build())
         {
-            await sqlDatabase1.AddDataUntracked(entity1);
-            await sqlDatabase2.AddDataUntracked(entity2);
+            await database1.AddDataUntracked(entity1);
+            await database2.AddDataUntracked(entity2);
 
-            var dbContext1 = sqlDatabase1.NewDbContext();
-            var dbContext2 = sqlDatabase2.NewDbContext();
+            var dbContext1 = database1.NewDbContext();
+            var dbContext2 = database2.NewDbContext();
             services.AddSingleton(dbContext1);
             services.AddSingleton(dbContext2);
 
