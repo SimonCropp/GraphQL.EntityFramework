@@ -45,14 +45,14 @@ scalar Guid
 type MappingChildGraph {
   parent: MappingParentGraph
   id: Guid!
-  property: String
   parentId: Guid!
+  property: String
 }
 
 type MappingParentGraph {
   children(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingChildGraph]
-  property: String
   id: Guid!
+  property: String
 }
 
 type MappingQuery {

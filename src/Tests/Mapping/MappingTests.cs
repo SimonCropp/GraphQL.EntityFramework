@@ -26,7 +26,7 @@ public class MappingTests :
         await using var database = await sqlInstance.Build();
         var context = database.Context;
 
-        var efGraphQlService = new EfGraphQLService<MappingContext>(context.Model, userContext => context);
+        var efGraphQlService = new EfGraphQLService<MappingContext>(context.Model, userContext => null!);
         var printer = new SchemaPrinter(new MappingSchema(efGraphQlService));
         var print = printer.Print();
         await Verify(print);
