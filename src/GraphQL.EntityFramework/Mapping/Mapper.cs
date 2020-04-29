@@ -31,8 +31,9 @@ namespace GraphQL.EntityFramework
                 exclusions = exclusions.ToList();
                 exclude = name => exclusions.Contains(name, StringComparer.OrdinalIgnoreCase);
             }
+
             var publicProperties = typeof(TSource).GetPublicProperties()
-                .OrderBy(x=>x.Name);
+                .OrderBy(x => x.Name);
             foreach (var property in publicProperties)
             {
                 if (exclude(property.Name))
