@@ -55,26 +55,29 @@ namespace GraphQL.EntityFramework
                 return;
             }
 
-            var (compile, propertyGraphType) = Compile(property);
-            var resolver = new SimpleFieldResolver(compile);
+            var (compile, propertyGraphType) = Compile<TSource>(property);
+            var resolver = new SimpleFieldResolver<TSource>(compile);
             var graphQlField = graphType.Field(type: propertyGraphType, name: property.Name);
             graphQlField.Resolver = resolver;
         }
 
-        static (Func<object, object> resolver, Type graphType) Compile(PropertyInfo member)
+        static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
         {
-            // parameter object
-            var parameter = Expression.Parameter(typeof(object));
-            // cast object to source instance
-            var convertedSource = Expression.Convert(parameter, member.DeclaringType);
-            // get member from source instance
-            var memberExpression = Expression.PropertyOrField(convertedSource, member.Name);
+            var lambda = BuildPropertyLambda<TSource>(member);
+            var graphTypeFromType = GetGraphType(member);
+            return (lambda.Compile(), graphTypeFromType);
+        }
+
+        internal static Expression<Func<TSource, object>> BuildPropertyLambda<TSource>(PropertyInfo member)
+        {
+            // TSource parameter
+            var parameter = Expression.Parameter(typeof(TSource));
+            // get property from source instance
+            var memberExpression = Expression.Property(parameter, member.Name);
             // convert member instance to object
             var convertedMember = Expression.Convert(memberExpression, typeof(object));
 
-            var lambda = Expression.Lambda<Func<object, object>>(convertedMember, parameter);
-            var graphTypeFromType = GetGraphType(member);
-            return (lambda.Compile(), graphTypeFromType);
+            return Expression.Lambda<Func<TSource, object>>(convertedMember, parameter);
         }
 
         static Type GetGraphType(PropertyInfo member)

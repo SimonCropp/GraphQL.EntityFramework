@@ -2,18 +2,18 @@
 using GraphQL.Resolvers;
 using GraphQL.Types;
 
-class SimpleFieldResolver :
+class SimpleFieldResolver<TSource> :
     IFieldResolver
 {
-    Func<object, object> func;
+    Func<TSource, object> func;
 
-    public SimpleFieldResolver(Func<object, object> func)
+    public SimpleFieldResolver(Func<TSource, object> func)
     {
         this.func = func;
     }
 
     public object Resolve(ResolveFieldContext context)
     {
-        return func(context.Source);
+        return func((TSource) context.Source);
     }
 }
