@@ -7,10 +7,6 @@ public class ChildGraph :
         base(graphQlService)
     {
         AddNavigationField(
-            name: "parent",
-            resolve: context => context.Source.Parent,
-            graphType: typeof(ParentGraph));
-        AddNavigationField(
             name: "parentAlias",
             resolve: context => context.Source.Parent,
             graphType: typeof(ParentGraph),

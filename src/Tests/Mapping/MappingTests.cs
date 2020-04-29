@@ -25,14 +25,14 @@ public class MappingTests :
             constructInstance: builder => new MappingContext(builder.Options));
     }
 
-    [Fact]
-    public async Task SchemaPrint()
-    {
-        var graphQlService = new EfGraphQLService<MappingContext>(sqlInstance.Model, userContext => null!);
-        var printer = new SchemaPrinter(new MappingSchema(graphQlService));
-        var print = printer.Print();
-        await Verify(print);
-    }
+    //[Fact]
+    //public async Task SchemaPrint()
+    //{
+    //    var graphQlService = new EfGraphQLService<MappingContext>(sqlInstance.Model, userContext => null!);
+    //    var printer = new SchemaPrinter(new MappingSchema(graphQlService));
+    //    var print = printer.Print();
+    //    await Verify(print);
+    //}
 
     [Fact]
     public async Task Resolve()
