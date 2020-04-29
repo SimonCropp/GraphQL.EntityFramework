@@ -12,11 +12,23 @@ public class MappingTests :
     static SqlInstance<MappingContext> sqlInstance;
     static MappingTests()
     {
+        ArgumentGraphs.Initialise();
         GraphTypeTypeRegistry.Register<MappingParent, MappingParentGraph>();
         GraphTypeTypeRegistry.Register<MappingChild, MappingChildGraph>();
 
         sqlInstance = new SqlInstance<MappingContext>(
             constructInstance: builder => new MappingContext(builder.Options));
+    }
+
+    [Fact]
+    public async Task SchemaPrint()
+    {
+        var database = await sqlInstance.Build();
+        var context = database.Context;
+        var efGraphQlService = new EfGraphQLService<MappingContext>(context.Model,userContext => context);
+        var printer = new SchemaPrinter(new MappingSchema(efGraphQlService));
+        var print = printer.Print();
+        await Verify(print);
     }
 
     [Fact]
