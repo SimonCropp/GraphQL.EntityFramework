@@ -44,58 +44,52 @@ public class MultiContextTests :
             Property = "the entity2"
         };
 
-        var sqlDatabase1 = await sqlInstance1.Build();
-        var sqlDatabase2 = await sqlInstance2.Build();
-        await using (var dbContext = sqlDatabase1.NewDbContext())
+        await using (var sqlDatabase1 = await sqlInstance1.Build())
+        await using (var sqlDatabase2 = await sqlInstance2.Build())
         {
-            dbContext.AddRange(entity1);
-            await dbContext.SaveChangesAsync();
+            await sqlDatabase1.AddDataUntracked(entity1);
+            await sqlDatabase2.AddDataUntracked(entity2);
+
+            var dbContext1 = sqlDatabase1.NewDbContext();
+            var dbContext2 = sqlDatabase2.NewDbContext();
+
+            var services = new ServiceCollection();
+
+            services.AddSingleton<MultiContextQuery>();
+            services.AddSingleton<Entity1Graph>();
+            services.AddSingleton<Entity2Graph>();
+            services.AddSingleton(dbContext1);
+            services.AddSingleton(dbContext2);
+
+            #region RegisterMultipleInContainer
+
+            EfGraphQLConventions.RegisterInContainer(
+                services,
+                userContext => ((UserContext) userContext).DbContext1);
+            EfGraphQLConventions.RegisterInContainer(
+                services,
+                userContext => ((UserContext) userContext).DbContext2);
+
+            #endregion
+
+            await using var provider = services.BuildServiceProvider();
+            using var schema = new MultiContextSchema(new FuncDependencyResolver(provider.GetRequiredService!));
+            var documentExecuter = new EfDocumentExecuter();
+
+            #region MultiExecutionOptions
+
+            var executionOptions = new ExecutionOptions
+            {
+                Schema = schema,
+                Query = query,
+                UserContext = new UserContext(dbContext1, dbContext2)
+            };
+
+            #endregion
+
+            var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
+            await Verify(executionResult.Data);
         }
-
-        await using (var dbContext = sqlDatabase2.NewDbContext())
-        {
-            dbContext.AddRange(entity2);
-            await dbContext.SaveChangesAsync();
-        }
-
-        await using var dbContext1 = sqlDatabase1.NewDbContext();
-        await using var dbContext2 = sqlDatabase2.NewDbContext();
-        var services = new ServiceCollection();
-
-        services.AddSingleton<MultiContextQuery>();
-        services.AddSingleton<Entity1Graph>();
-        services.AddSingleton<Entity2Graph>();
-        services.AddSingleton(dbContext1);
-        services.AddSingleton(dbContext2);
-
-        #region RegisterMultipleInContainer
-
-        EfGraphQLConventions.RegisterInContainer(
-            services,
-            userContext => ((UserContext) userContext).DbContext1);
-        EfGraphQLConventions.RegisterInContainer(
-            services,
-            userContext => ((UserContext) userContext).DbContext2);
-
-        #endregion
-
-        await using var provider = services.BuildServiceProvider();
-        using var schema = new MultiContextSchema(new FuncDependencyResolver(provider.GetRequiredService!));
-        var documentExecuter = new EfDocumentExecuter();
-
-        #region MultiExecutionOptions
-
-        var executionOptions = new ExecutionOptions
-        {
-            Schema = schema,
-            Query = query,
-            UserContext = new UserContext(dbContext1, dbContext2)
-        };
-
-        #endregion
-
-        var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        await Verify(executionResult.Data);
     }
 
     public MultiContextTests(ITestOutputHelper output) :
