@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
                 exclusions = exclusions.ToList();
                 exclude = name => exclusions.Contains(name, StringComparer.OrdinalIgnoreCase);
             }
-            var publicProperties = GetPublicProperties(typeof(TSource));
+            var publicProperties = typeof(TSource).GetPublicProperties();
             foreach (var property in publicProperties)
             {
                 if (exclude(property.Name))
@@ -134,45 +134,6 @@ namespace GraphQL.EntityFramework
         static bool FieldExists<TSource>(this ComplexGraphType<TSource> graphType, string name)
         {
             return graphType.Fields.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-        }
-
-        static PropertyInfo[] GetPublicProperties(this Type type)
-        {
-            var flags = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance;
-            if (!type.IsInterface)
-            {
-                return type.GetProperties(flags);
-            }
-
-            var propertyInfos = new List<PropertyInfo>();
-
-            var considered = new List<Type>();
-            var queue = new Queue<Type>();
-            considered.Add(type);
-            queue.Enqueue(type);
-            while (queue.Count > 0)
-            {
-                var subType = queue.Dequeue();
-                foreach (var subInterface in subType.GetInterfaces())
-                {
-                    if (considered.Contains(subInterface))
-                    {
-                        continue;
-                    }
-
-                    considered.Add(subInterface);
-                    queue.Enqueue(subInterface);
-                }
-
-                var typeProperties = subType.GetProperties(flags);
-
-                var newPropertyInfos = typeProperties
-                    .Where(x => !propertyInfos.Contains(x));
-
-                propertyInfos.InsertRange(0, newPropertyInfos);
-            }
-
-            return propertyInfos.ToArray();
         }
     }
 }
