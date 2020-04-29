@@ -40,7 +40,6 @@ static class Mapper
         var type = typeof(TSource);
         try
         {
-
             if (graphQlService.Navigations.TryGetValue(type, out var navigations))
             {
                 foreach (var navigation in navigations)
