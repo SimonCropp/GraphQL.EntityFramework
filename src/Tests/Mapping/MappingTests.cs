@@ -26,10 +26,7 @@ public class MappingTests :
     [Fact]
     public async Task SchemaPrint()
     {
-        await using var database = await sqlInstance.Build();
-        var context = database.Context;
-
-        var graphQlService = new EfGraphQLService<MappingContext>(context.Model, userContext => null!);
+        var graphQlService = new EfGraphQLService<MappingContext>(sqlInstance.Model, userContext => null!);
         var printer = new SchemaPrinter(new MappingSchema(graphQlService));
         var print = printer.Print();
         await Verify(print);
