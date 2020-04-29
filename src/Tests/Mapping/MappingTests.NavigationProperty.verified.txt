@@ -1,5 +1,5 @@
 {
-  expression: 'context => Convert(context.Source.Parent, Object)',
+  expression: 'context => Convert(context.Source.Parent, MappingParent)',
   result: {
     Id: Guid_2,
     Property: 'value',

@@ -20,6 +20,8 @@ static class Mapper
         ignoredTypes.Add(typeof(T));
     }
 
+    static MethodInfo addNavigationMethod = typeof(Mapper).GetMethod(nameof(AddNavigation), BindingFlags.NonPublic | BindingFlags.Static);
+
     public static void AutoMap<TDbContext,TSource>(ObjectGraphType<TSource> graph, IEfGraphQLService<TDbContext> graphQlService, IEnumerable<string>? exclusions = null)
         where TDbContext : DbContext
     {
@@ -35,11 +37,12 @@ static class Mapper
         }
 
         var type = typeof(TSource);
-        if(graphQlService.Navigations.TryGetValue(type, out var navigations))
+        if (graphQlService.Navigations.TryGetValue(type, out var navigations))
         {
             foreach (var navigation in navigations)
             {
-                AddNavigationField(graph, graphQlService, navigation);
+                var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
+                genericMethod.Invoke(null, new object[] {graph, graphQlService, navigation});
             }
         }
 
@@ -56,11 +59,12 @@ static class Mapper
         }
     }
 
-    private static void AddNavigationField<TDbContext, TSource>(
+    static void AddNavigation<TDbContext, TSource, TReturn>(
         ObjectGraphType<TSource> graph,
         IEfGraphQLService<TDbContext> graphQlService,
         Navigation navigation)
         where TDbContext : DbContext
+        where TReturn : class
     {
         if (ShouldIgnore(graph, navigation.Name, navigation.Type))
         {
@@ -68,11 +72,11 @@ static class Mapper
         }
 
         var graphTypeFromType = navigation.Type.GetGraphTypeFromType(navigation.IsNullable);
-        Func<ResolveEfFieldContext<TDbContext, TSource>, object?> compile = NavigationExpression<TDbContext,TSource>(navigation.Name).Compile();
+        var compile = NavigationExpression<TDbContext,TSource, TReturn>(navigation.Name).Compile();
         graphQlService.AddNavigationField(graph, navigation.Name, compile, graphTypeFromType);
    }
 
-    internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, object?>> NavigationExpression<TDbContext, TSource>(string name)
+    internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>> NavigationExpression<TDbContext, TSource, TReturn>(string name)
         where TDbContext : DbContext
     {
         // TSource parameter
@@ -80,10 +84,10 @@ static class Mapper
 
         var sourceProperty = Expression.Property(parameter, "Source");
         var property = Expression.Property(sourceProperty, name);
-        var convert = Expression.Convert(property, typeof(object));
+        var convert = Expression.Convert(property, typeof(TReturn));
 
         //context => context.Source.Parent
-        return Expression.Lambda<Func<ResolveEfFieldContext<TDbContext, TSource>, object?>>(convert, parameter);
+        return Expression.Lambda<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>>(convert, parameter);
     }
 
     static void AddMember<TSource>(ComplexGraphType<TSource> graph, PropertyInfo property)

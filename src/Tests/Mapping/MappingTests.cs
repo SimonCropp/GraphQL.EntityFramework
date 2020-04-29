@@ -78,8 +78,8 @@ public class MappingTests :
         var parent = new MappingParent {Property = "value"};
         child.Parent = parent;
         await database.AddData(child, parent);
-        var expression = Mapper.NavigationExpression<MappingContext, MappingChild>("Parent");
-        Func<ResolveEfFieldContext<MappingContext, MappingChild>, object?> compile = expression.Compile();
+        var expression = Mapper.NavigationExpression<MappingContext, MappingChild, MappingParent>("Parent");
+        Func<ResolveEfFieldContext<MappingContext, MappingChild>, MappingParent> compile = expression.Compile();
         var result = compile(
             new ResolveEfFieldContext<MappingContext, MappingChild>
             {
