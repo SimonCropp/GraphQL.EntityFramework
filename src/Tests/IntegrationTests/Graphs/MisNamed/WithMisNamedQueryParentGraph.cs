@@ -7,7 +7,6 @@ public class WithMisNamedQueryParentGraph :
     public WithMisNamedQueryParentGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
         AddQueryField(
             name: "misNamedChildren",
             resolve: context =>
@@ -16,5 +15,6 @@ public class WithMisNamedQueryParentGraph :
                 return context.DbContext.WithMisNamedQueryChildEntities
                     .Where(x => x.ParentId == parentId);
             });
+        AutoMap();
     }
 }

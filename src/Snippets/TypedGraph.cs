@@ -14,8 +14,6 @@ public class TypedGraph
         public CompanyGraph(IEfGraphQLService<MyDbContext> graphQlService) :
             base(graphQlService)
         {
-            Field(x => x.Id);
-            Field(x => x.Content);
             AddNavigationListField(
                 name: "employees",
                 resolve: context => context.Source.Employees);
@@ -23,6 +21,7 @@ public class TypedGraph
                 name: "employeesConnection",
                 resolve: context => context.Source.Employees,
                 includeNames: new[] {"Employees"});
+            AutoMap();
         }
     }
 

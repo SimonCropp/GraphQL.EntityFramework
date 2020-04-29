@@ -7,7 +7,6 @@ public class WithManyChildrenGraph :
     public WithManyChildrenGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
         AddNavigationField(
             name: "child1",
             resolve: context =>
@@ -17,5 +16,6 @@ public class WithManyChildrenGraph :
                 return context.Source.Child1;
             },
             includeNames: new []{ "Child2", "Child1" });
+        AutoMap();
     }
 }

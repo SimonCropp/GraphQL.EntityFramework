@@ -93,8 +93,6 @@ public class CompanyGraph :
     public CompanyGraph(IEfGraphQLService<MyDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
-        Field(x => x.Content);
         AddNavigationListField(
             name: "employees",
             resolve: context => context.Source.Employees);
@@ -102,10 +100,11 @@ public class CompanyGraph :
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
             includeNames: new[] {"Employees"});
+        AutoMap();
     }
 }
 ```
-<sup><a href='/src/Snippets/TypedGraph.cs#L9-L29' title='File snippet `typedgraph` was extracted from'>snippet source</a> | <a href='#snippet-typedgraph' title='Navigate to start of snippet `typedgraph`'>anchor</a></sup>
+<sup><a href='/src/Snippets/TypedGraph.cs#L9-L28' title='File snippet `typedgraph` was extracted from'>snippet source</a> | <a href='#snippet-typedgraph' title='Navigate to start of snippet `typedgraph`'>anchor</a></sup>
 <!-- endsnippet -->
 
 

@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Diagnostics;
 
-[DebuggerDisplay("PropertyName = {PropertyName}, PropertyType = {PropertyType}")]
-class Navigation
+namespace GraphQL.EntityFramework
 {
-    public Navigation(string propertyName, Type propertyType)
+    [DebuggerDisplay("Name = {Name}, Type = {Type}")]
+    public class Navigation
     {
-        Guard.AgainstNullWhiteSpace(nameof(propertyName), propertyName);
-        Guard.AgainstNull(nameof(propertyType), propertyType);
-        PropertyName = propertyName;
-        PropertyType = propertyType;
-    }
+        public Navigation(string name, Type type, bool isNullable, bool isCollection)
+        {
+            Guard.AgainstNullWhiteSpace(nameof(name), name);
+            Guard.AgainstNull(nameof(type), type);
+            Name = name;
+            Type = type;
+            IsNullable = isNullable;
+            IsCollection = isCollection;
+        }
 
-    public string PropertyName { get; }
-    public Type PropertyType { get; }
+        public string Name { get; }
+        public Type Type { get; }
+        public bool IsNullable { get; }
+        public bool IsCollection { get; }
+    }
 }

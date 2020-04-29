@@ -6,11 +6,6 @@ public class EmployeeGraph :
     public EmployeeGraph(IEfGraphQLService<SampleDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
-        Field(x => x.Content, true);
-        Field(x => x.Age);
-        AddNavigationField(
-            name: "company",
-            resolve: context => context.Source.Company);
+        AutoMap();
     }
 }

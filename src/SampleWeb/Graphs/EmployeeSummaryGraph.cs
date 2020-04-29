@@ -6,7 +6,6 @@ public class EmployeeSummaryGraph :
     public EmployeeSummaryGraph(IEfGraphQLService<SampleDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.CompanyId);
-        Field(x => x.AverageAge);
+        AutoMap();
     }
 }

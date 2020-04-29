@@ -1,0 +1,93 @@
+schema {
+  query: MappingQuery
+}
+
+enum ComparisonGraph {
+  contains
+  endsWith
+  equal
+  greaterThan
+  greaterThanOrEqual
+  notIn
+  in
+  lessThan
+  lessThanOrEqual
+  like
+  startsWith
+}
+
+enum Connector {
+  AND
+  OR
+  and
+  or
+}
+
+# The `Date` scalar type represents a year, month and day in accordance with the
+# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar Date
+
+# The `DateTime` scalar type represents a date and time. `DateTime` expects
+# timestamps to be formatted in accordance with the
+# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar DateTime
+
+# The `DateTimeOffset` scalar type represents a date, time and offset from UTC.
+# `DateTimeOffset` expects timestamps to be formatted in accordance with the
+# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar DateTimeOffset
+
+scalar Decimal
+
+# Guid
+scalar Guid
+
+type MappingChildGraph {
+  parent: MappingParentGraph
+  id: Guid!
+  parentId: Guid!
+  property: String
+}
+
+type MappingParentGraph {
+  children(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingChildGraph]
+  id: Guid!
+  property: String
+}
+
+type MappingQuery {
+  child(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): MappingChildGraph!
+  children(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingChildGraph]
+  parent(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): MappingParentGraph!
+  parents(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingParentGraph]
+}
+
+# The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds.
+scalar Milliseconds
+
+input OrderByGraph {
+  path: String!
+  descending: Boolean
+}
+
+# The `Seconds` scalar type represents a period of time represented as the total number of seconds.
+scalar Seconds
+
+enum StringComparison {
+  CURRENT_CULTURE
+  CURRENT_CULTURE_IGNORE_CASE
+  INVARIANT_CULTURE
+  INVARIANT_CULTURE_IGNORE_CASE
+  ORDINAL
+  ORDINAL_IGNORE_CASE
+}
+
+input WhereExpressionGraph {
+  path: String
+  comparison: ComparisonGraph
+  negate: Boolean
+  case: StringComparison
+  value: [String]
+  connector: Connector
+  groupedExpressions: [WhereExpressionGraph]
+}

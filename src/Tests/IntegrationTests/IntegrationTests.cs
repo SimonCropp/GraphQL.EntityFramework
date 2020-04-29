@@ -25,6 +25,7 @@ public partial class IntegrationTests :
         GraphTypeTypeRegistry.Register<WithManyChildrenEntity, WithManyChildrenGraph>();
         GraphTypeTypeRegistry.Register<CustomTypeEntity, CustomTypeGraph>();
         GraphTypeTypeRegistry.Register<Child1Entity, Child1Graph>();
+        GraphTypeTypeRegistry.Register<Child2Entity, Child2Graph>();
         GraphTypeTypeRegistry.Register<ChildEntity, ChildGraph>();
         GraphTypeTypeRegistry.Register<ParentEntity, ParentGraph>();
         GraphTypeTypeRegistry.Register<Level1Entity, Level1Graph>();

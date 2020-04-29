@@ -11,14 +11,19 @@ static class ArgumentGraphs
 
     static ArgumentGraphs()
     {
-        GraphTypeTypeRegistry.Register(typeof(Comparison), typeof(ComparisonGraph));
-        GraphTypeTypeRegistry.Register(typeof(StringComparison), typeof(StringComparisonGraph));
-        GraphTypeTypeRegistry.Register(typeof(Connector), typeof(ConnectorGraph));
+        Initialise();
         Add<StringComparisonGraph>();
         Add<WhereExpressionGraph>();
         Add<OrderByGraph>();
         Add<ComparisonGraph>();
         Add<ConnectorGraph>();
+    }
+
+    internal static void Initialise()
+    {
+        GraphTypeTypeRegistry.Register(typeof(Comparison), typeof(ComparisonGraph));
+        GraphTypeTypeRegistry.Register(typeof(StringComparison), typeof(StringComparisonGraph));
+        GraphTypeTypeRegistry.Register(typeof(Connector), typeof(ConnectorGraph));
     }
 
     public static void RegisterInContainer(IServiceCollection services)

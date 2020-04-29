@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,5 +13,7 @@ namespace GraphQL.EntityFramework
 
         IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
             where TItem : class;
+
+        public IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> Navigations { get; }
     }
 }
