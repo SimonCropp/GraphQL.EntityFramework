@@ -38,24 +38,32 @@ static class Mapper
         }
 
         var type = typeof(TSource);
-        if (graphQlService.Navigations.TryGetValue(type, out var navigations))
+        try
         {
-            foreach (var navigation in navigations)
+
+            if (graphQlService.Navigations.TryGetValue(type, out var navigations))
             {
-                ProcessNavigation(graph, graphQlService, navigation);
+                foreach (var navigation in navigations)
+                {
+                    ProcessNavigation(graph, graphQlService, navigation);
+                }
+            }
+
+            var publicProperties = type.GetPublicProperties()
+                .OrderBy(x => x.Name);
+            foreach (var property in publicProperties)
+            {
+                if (exclude(property.Name))
+                {
+                    continue;
+                }
+
+                AddMember(graph, property);
             }
         }
-
-        var publicProperties = type.GetPublicProperties()
-            .OrderBy(x => x.Name);
-        foreach (var property in publicProperties)
+        catch (GetGraphException exception)
         {
-            if (exclude(property.Name))
-            {
-                continue;
-            }
-
-            AddMember(graph, property);
+            throw new Exception($"Failed to map {type.Name}. {exception.Message}");
         }
     }
 
@@ -67,15 +75,22 @@ static class Mapper
             return;
         }
 
-        if (navigation.IsCollection)
+        try
         {
-            var genericMethod = addNavigationListMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
-            genericMethod.Invoke(null, new object[] {graph, graphQlService, navigation});
+            if (navigation.IsCollection)
+            {
+                var genericMethod = addNavigationListMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
+                genericMethod.Invoke(null, new object[] {graph, graphQlService, navigation});
+            }
+            else
+            {
+                var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
+                genericMethod.Invoke(null, new object[] {graph, graphQlService, navigation});
+            }
         }
-        else
+        catch (TargetInvocationException exception)
         {
-            var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
-            genericMethod.Invoke(null, new object[] {graph, graphQlService, navigation});
+            throw exception.InnerException;
         }
     }
 
@@ -86,7 +101,7 @@ static class Mapper
         where TDbContext : DbContext
         where TReturn : class
     {
-        var graphTypeFromType = navigation.Type.GetGraphTypeFromType(navigation.IsNullable);
+        var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type,  navigation.IsNullable);
         var compile = NavigationExpression<TDbContext, TSource, TReturn>(navigation.Name).Compile();
         graphQlService.AddNavigationField(graph, navigation.Name, compile, graphTypeFromType);
     }
@@ -98,11 +113,10 @@ static class Mapper
         where TDbContext : DbContext
         where TReturn : class
     {
-        var graphTypeFromType = navigation.Type.GetGraphTypeFromType(navigation.IsNullable);
+        var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type,  navigation.IsNullable);
         var compile = NavigationExpression<TDbContext, TSource, IEnumerable<TReturn>>(navigation.Name).Compile();
         graphQlService.AddNavigationListField(graph, navigation.Name, compile, graphTypeFromType);
     }
-
 
     internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>> NavigationExpression<TDbContext, TSource, TReturn>(string name)
         where TDbContext : DbContext
@@ -130,7 +144,7 @@ static class Mapper
         graphQlField.Resolver = resolver;
     }
 
-    private static bool ShouldIgnore(IComplexGraphType graphType, string propertyName, Type propertyType)
+    static bool ShouldIgnore(IComplexGraphType graphType, string propertyName, Type propertyType)
     {
         if (graphType.FieldExists(propertyName))
         {
@@ -148,7 +162,7 @@ static class Mapper
     static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
     {
         var lambda = PropertyToObject<TSource>(member);
-        var graphTypeFromType = GetGraphType(member);
+        var graphTypeFromType = GraphTypeFromType(member.Name, member.PropertyType,  member.IsNullable());
         return (lambda.Compile(), graphTypeFromType);
     }
 
@@ -164,16 +178,16 @@ static class Mapper
         return Expression.Lambda<Func<TSource, object>>(convert, parameter);
     }
 
-    static Type GetGraphType(PropertyInfo member)
+    static Type GraphTypeFromType(string name, Type propertyType, bool isNullable)
     {
-        var propertyType = member.PropertyType;
         try
         {
-            return propertyType.GetGraphTypeFromType(member.IsNullable());
+            return propertyType.GetGraphTypeFromType(isNullable);
         }
-        catch (Exception exception)
+        catch (ArgumentOutOfRangeException exception)
         {
-            throw new Exception($"Unable to map {member.Name} on {member.DeclaringType!.FullName}. Error {exception.Message}", exception);
+            var message = $"Unable to GetGraphTypeFromType for {name}. To exclude use the `exclusions` parameter when calling `AutoMap`. Error {exception.Message}";
+            throw new GetGraphException(message);
         }
     }
 
