@@ -45,14 +45,14 @@ class IncludeAppender
     {
         var list = new List<string>();
 
-        var complexGraph = fieldType.GetComplexGraph();
-        ProcessSubFields(list, null, fields, complexGraph, navigationProperty);
+        var graph = fieldType.GetComplexGraph();
+        ProcessSubFields(list, null, fields, graph, navigationProperty);
         return list;
     }
 
     void AddField(List<string> list, Field field, string? parentPath, FieldType fieldType, IReadOnlyList<Navigation> parentNavigationProperties)
     {
-        if (!fieldType.TryGetComplexGraph(out var complexGraph))
+        if (!fieldType.TryGetComplexGraph(out var graph))
         {
             return;
         }
@@ -62,7 +62,7 @@ class IncludeAppender
         {
             if (subFields.Count > 0)
             {
-                ProcessSubFields(list, parentPath, subFields, complexGraph!, parentNavigationProperties);
+                ProcessSubFields(list, parentPath, subFields, graph!, parentNavigationProperties);
             }
 
             return;
@@ -85,7 +85,7 @@ class IncludeAppender
             list.Add(path);
         }
 
-        ProcessSubFields(list, paths.First(), subFields, complexGraph!, navigations[entityType!]);
+        ProcessSubFields(list, paths.First(), subFields, graph!, navigations[entityType!]);
     }
 
     static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)
@@ -98,11 +98,12 @@ class IncludeAppender
         return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, IReadOnlyList<Navigation> navigationProperties)
+
+    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType graph, List<Navigation> navigationProperties)
     {
         foreach (var subField in subFields)
         {
-            var single = complexGraph.Fields.SingleOrDefault(x => x.Name == subField.Name);
+            var single = graph.Fields.SingleOrDefault(x => x.Name == subField.Name);
             if (single != null)
             {
                 AddField(list, subField, parentPath, single, navigationProperties);

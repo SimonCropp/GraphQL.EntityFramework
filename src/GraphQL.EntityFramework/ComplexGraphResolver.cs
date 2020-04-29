@@ -9,22 +9,22 @@ static class ComplexGraphResolver
 {
     class Resolved
     {
-        public Resolved(Type? entityType, IComplexGraphType? complexGraphType)
+        public Resolved(Type? entityType, IComplexGraphType? graph)
         {
             EntityType = entityType;
-            ComplexGraphType = complexGraphType;
+            Graph = graph;
         }
-        public readonly IComplexGraphType? ComplexGraphType;
+        public readonly IComplexGraphType? Graph;
         public readonly Type? EntityType;
     }
 
     static ConcurrentDictionary<IGraphType, Resolved> cache = new ConcurrentDictionary<IGraphType, Resolved>();
 
-    public static bool TryGetComplexGraph(this FieldType fieldType, [NotNullWhen(true)] out IComplexGraphType? complexGraph)
+    public static bool TryGetComplexGraph(this FieldType fieldType, [NotNullWhen(true)] out IComplexGraphType? graph)
     {
         var orAdd = GetOrAdd(fieldType);
-        complexGraph = orAdd.ComplexGraphType;
-        return complexGraph != null;
+        graph = orAdd.Graph;
+        return graph != null;
     }
 
     public static bool TryGetEntityTypeForField(this FieldType fieldType, [NotNullWhen(true)] out Type? entityType)
@@ -50,19 +50,19 @@ static class ComplexGraphResolver
                     graphType = nonNullGraphType.ResolvedType;
                 }
 
-                IComplexGraphType? complexGraphType = null;
+                IComplexGraphType? graph = null;
                 if (graphType is IComplexGraphType complexType)
                 {
-                    complexGraphType = complexType;
+                    graph = complexType;
                 }
 
-                return new Resolved(ResolvedEntityType(graphType), complexGraphType);
+                return new Resolved(ResolvedEntityType(graphType), graph);
             });
     }
 
-    static Type? ResolvedEntityType(IGraphType graphType)
+    static Type? ResolvedEntityType(IGraphType graph)
     {
-        var type = graphType.GetType();
+        var type = graph.GetType();
 
         while (type != null)
         {
