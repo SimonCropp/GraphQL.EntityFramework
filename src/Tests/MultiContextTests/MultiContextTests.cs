@@ -44,6 +44,12 @@ public class MultiContextTests :
             Property = "the entity2"
         };
 
+        var services = new ServiceCollection();
+
+        services.AddSingleton<MultiContextQuery>();
+        services.AddSingleton<Entity1Graph>();
+        services.AddSingleton<Entity2Graph>();
+
         await using (var sqlDatabase1 = await sqlInstance1.Build())
         await using (var sqlDatabase2 = await sqlInstance2.Build())
         {
@@ -52,12 +58,6 @@ public class MultiContextTests :
 
             var dbContext1 = sqlDatabase1.NewDbContext();
             var dbContext2 = sqlDatabase2.NewDbContext();
-
-            var services = new ServiceCollection();
-
-            services.AddSingleton<MultiContextQuery>();
-            services.AddSingleton<Entity1Graph>();
-            services.AddSingleton<Entity2Graph>();
             services.AddSingleton(dbContext1);
             services.AddSingleton(dbContext2);
 
@@ -87,8 +87,8 @@ public class MultiContextTests :
 
             #endregion
 
-            var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-            await Verify(executionResult.Data);
+            var result = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
+            await Verify(result.Data);
         }
     }
 
