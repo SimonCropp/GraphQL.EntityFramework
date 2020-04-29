@@ -15,9 +15,6 @@ public class WithMisNamedQueryParentGraph :
                 return context.DbContext.WithMisNamedQueryChildEntities
                     .Where(x => x.ParentId == parentId);
             });
-        AddNavigationListField(
-            name: "children",
-            resolve: context => context.Source.Children);
         AutoMap();
     }
 }

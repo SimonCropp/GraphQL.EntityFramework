@@ -21,8 +21,9 @@ static class Mapper
     }
 
     static MethodInfo addNavigationMethod = typeof(Mapper).GetMethod(nameof(AddNavigation), BindingFlags.NonPublic | BindingFlags.Static);
+    static MethodInfo addNavigationListMethod = typeof(Mapper).GetMethod(nameof(AddNavigationList), BindingFlags.NonPublic | BindingFlags.Static);
 
-    public static void AutoMap<TDbContext,TSource>(ObjectGraphType<TSource> graph, IEfGraphQLService<TDbContext> graphQlService, IEnumerable<string>? exclusions = null)
+    public static void AutoMap<TDbContext, TSource>(ObjectGraphType<TSource> graph, IEfGraphQLService<TDbContext> graphQlService, IEnumerable<string>? exclusions = null)
         where TDbContext : DbContext
     {
         Func<string, bool> exclude;
@@ -41,8 +42,7 @@ static class Mapper
         {
             foreach (var navigation in navigations)
             {
-                var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
-                genericMethod.Invoke(null, new object[] {graph, graphQlService, navigation});
+                ProcessNavigation(graph, graphQlService, navigation);
             }
         }
 
@@ -59,6 +59,26 @@ static class Mapper
         }
     }
 
+    static void ProcessNavigation<TDbContext, TSource>(ObjectGraphType<TSource> graph, IEfGraphQLService<TDbContext> graphQlService, Navigation navigation)
+        where TDbContext : DbContext
+    {
+        if (ShouldIgnore(graph, navigation.Name, navigation.Type))
+        {
+            return;
+        }
+
+        if (navigation.IsCollection)
+        {
+            var genericMethod = addNavigationListMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
+            genericMethod.Invoke(null, new object[] {graph, graphQlService, navigation});
+        }
+        else
+        {
+            var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
+            genericMethod.Invoke(null, new object[] {graph, graphQlService, navigation});
+        }
+    }
+
     static void AddNavigation<TDbContext, TSource, TReturn>(
         ObjectGraphType<TSource> graph,
         IEfGraphQLService<TDbContext> graphQlService,
@@ -66,15 +86,23 @@ static class Mapper
         where TDbContext : DbContext
         where TReturn : class
     {
-        if (ShouldIgnore(graph, navigation.Name, navigation.Type))
-        {
-            return;
-        }
-
         var graphTypeFromType = navigation.Type.GetGraphTypeFromType(navigation.IsNullable);
-        var compile = NavigationExpression<TDbContext,TSource, TReturn>(navigation.Name).Compile();
+        var compile = NavigationExpression<TDbContext, TSource, TReturn>(navigation.Name).Compile();
         graphQlService.AddNavigationField(graph, navigation.Name, compile, graphTypeFromType);
-   }
+    }
+
+    static void AddNavigationList<TDbContext, TSource, TReturn>(
+        ObjectGraphType<TSource> graph,
+        IEfGraphQLService<TDbContext> graphQlService,
+        Navigation navigation)
+        where TDbContext : DbContext
+        where TReturn : class
+    {
+        var graphTypeFromType = navigation.Type.GetGraphTypeFromType(navigation.IsNullable);
+        var compile = NavigationExpression<TDbContext, TSource, IEnumerable<TReturn>>(navigation.Name).Compile();
+        graphQlService.AddNavigationListField(graph, navigation.Name, compile, graphTypeFromType);
+    }
+
 
     internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>> NavigationExpression<TDbContext, TSource, TReturn>(string name)
         where TDbContext : DbContext

@@ -6,9 +6,6 @@ public class MappingParentGraph :
     public MappingParentGraph(IEfGraphQLService<MappingContext> graphQlService) :
         base(graphQlService)
     {
-        AddNavigationListField(
-            name: "children",
-            resolve: context => context.Source.Children);
         AutoMap();
     }
 }

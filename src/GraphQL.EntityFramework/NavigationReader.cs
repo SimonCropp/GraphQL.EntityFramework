@@ -18,11 +18,15 @@ static class NavigationReader
     {
         var navigations = entity.GetNavigations();
         return navigations
-            .Select(x => new Navigation(x.Name, GetNavigationType(x), x.PropertyInfo.IsNullable()))
+            .Select(x =>
+            {
+                var (itemType, isCollection) = GetNavigationType(x);
+                return new Navigation(x.Name, itemType, x.PropertyInfo.IsNullable(),isCollection);
+            })
             .ToList();
     }
 
-    static Type GetNavigationType(INavigation navigation)
+    static (Type itemType, bool isCollection) GetNavigationType(INavigation navigation)
     {
         var navigationType = navigation.ClrType;
         var collectionType = navigationType.GetInterfaces()
@@ -30,9 +34,9 @@ static class NavigationReader
                                   x.GetGenericTypeDefinition() == typeof(ICollection<>));
         if (collectionType == null)
         {
-            return navigationType;
+            return (navigationType, false);
         }
 
-        return collectionType.GetGenericArguments().Single();
+        return (collectionType.GetGenericArguments().Single(), true);
     }
 }
