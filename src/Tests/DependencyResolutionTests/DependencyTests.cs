@@ -5,8 +5,6 @@ using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Utilities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using VerifyXunit;
 using Xunit;
@@ -37,19 +35,6 @@ public class DependencyTests :
   }
 }";
 
-    static class ModelBuilder
-    {
-        static ModelBuilder()
-        {
-            var builder = new DbContextOptionsBuilder<DependencyDbContext>();
-            builder.UseSqlServer("Fake");
-            using var context = new DependencyDbContext(builder.Options);
-            Instance = context.Model;
-        }
-
-        public static readonly IModel Instance;
-    }
-
     [Fact]
     public async Task ExplicitModel()
     {
@@ -61,7 +46,7 @@ public class DependencyTests :
         EfGraphQLConventions.RegisterInContainer(
             services,
             userContext => (DependencyDbContext) userContext,
-            ModelBuilder.Instance);
+            sqlInstance.Model);
         await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
         var executionOptions = new ExecutionOptions
