@@ -22,15 +22,13 @@ public class MappingTests :
     [Fact]
     public async Task PropertyToObject()
     {
-        await using var database = await sqlInstance.Build();
-
         var property = typeof(MappingParent).GetProperty("Property")!;
         var expression = Mapper.PropertyToObject<MappingParent>(property);
         var result = expression.Compile()(new MappingParent {Property = "value"});
         await Verify(
             new
             {
-                expression = expression.ToString(),
+                expression,
                 result
             });
     }
