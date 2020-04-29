@@ -99,7 +99,7 @@ class IncludeAppender
     }
 
 
-    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType graph, List<Navigation> navigationProperties)
+    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType graph, IReadOnlyList<Navigation> navigationProperties)
     {
         foreach (var subField in subFields)
         {
