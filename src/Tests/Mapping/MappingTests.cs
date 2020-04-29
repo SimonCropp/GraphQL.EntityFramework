@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EfLocalDb;
@@ -13,6 +14,7 @@ public class MappingTests :
     VerifyBase
 {
     static SqlInstance<MappingContext> sqlInstance;
+
     static MappingTests()
     {
         ArgumentGraphs.Initialise();
@@ -38,9 +40,11 @@ public class MappingTests :
         await using var database = await sqlInstance.Build();
         var context = database.Context;
 
-        var child = new MappingChild();
         var parent = new MappingParent();
-        child.Parent = parent;
+        var child = new MappingChild
+        {
+            Parent = parent
+        };
         await database.AddDataUntracked(child, parent);
         var graphQlService = new EfGraphQLService<MappingContext>(context.Model, _ => context);
         var resolve = await (Task<IEnumerable<MappingChild>>) new MappingQuery(graphQlService).Fields
@@ -56,6 +60,32 @@ public class MappingTests :
         var property = typeof(MappingParent).GetProperty("Property")!;
         var expression = Mapper.PropertyToObject<MappingParent>(property);
         var result = expression.Compile()(new MappingParent {Property = "value"});
+        await Verify(
+            new
+            {
+                expression,
+                result
+            });
+    }
+
+    [Fact]
+    public async Task NavigationProperty()
+    {
+        await using var database = await sqlInstance.Build();
+        var context = database.Context;
+
+        var child = new MappingChild();
+        var parent = new MappingParent {Property = "value"};
+        child.Parent = parent;
+        await database.AddData(child, parent);
+        var expression = Mapper.NavigationExpression<MappingContext, MappingChild>("Parent");
+        Func<ResolveEfFieldContext<MappingContext, MappingChild>, object?> compile = expression.Compile();
+        var result = compile(
+            new ResolveEfFieldContext<MappingContext, MappingChild>
+            {
+                DbContext = context,
+                Source = child
+            });
         await Verify(
             new
             {

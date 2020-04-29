@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 static class NavigationReader
 {
-    public static Dictionary<Type, List<Navigation>> GetNavigationProperties(IModel model)
+    public static IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> GetNavigationProperties(IModel model)
     {
         return model
             .GetEntityTypes()
             .ToDictionary(x => x.ClrType, GetNavigations);
     }
 
-    static List<Navigation> GetNavigations(IEntityType entity)
+    static IReadOnlyList<Navigation> GetNavigations(IEntityType entity)
     {
         var navigations = entity.GetNavigations();
         return navigations

@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using GraphQL.EntityFramework;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
 class IncludeAppender
 {
-    Dictionary<Type, List<Navigation>> navigations;
+    IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations;
 
-    public IncludeAppender(Dictionary<Type, List<Navigation>> navigations)
+    public IncludeAppender(IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations)
     {
         this.navigations = navigations;
     }
@@ -28,7 +29,7 @@ class IncludeAppender
         return AddIncludes(query, context.FieldDefinition, context.SubFields.Values, navigationProperty);
     }
 
-    IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, List<Navigation> navigationProperties)
+    IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, IReadOnlyList<Navigation> navigationProperties)
         where T : class
     {
         var paths = GetPaths(fieldType, subFields, navigationProperties);
@@ -40,7 +41,7 @@ class IncludeAppender
         return query;
     }
 
-    List<string> GetPaths(FieldType fieldType, ICollection<Field> fields, List<Navigation> navigationProperty)
+    List<string> GetPaths(FieldType fieldType, ICollection<Field> fields, IReadOnlyList<Navigation> navigationProperty)
     {
         var list = new List<string>();
 
@@ -49,7 +50,7 @@ class IncludeAppender
         return list;
     }
 
-    void AddField(List<string> list, Field field, string? parentPath, FieldType fieldType, List<Navigation> parentNavigationProperties)
+    void AddField(List<string> list, Field field, string? parentPath, FieldType fieldType, IReadOnlyList<Navigation> parentNavigationProperties)
     {
         if (!fieldType.TryGetComplexGraph(out var complexGraph))
         {
@@ -97,7 +98,7 @@ class IncludeAppender
         return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, List<Navigation> navigationProperties)
+    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType complexGraph, IReadOnlyList<Navigation> navigationProperties)
     {
         foreach (var subField in subFields)
         {

@@ -20,7 +20,7 @@ namespace GraphQL.EntityFramework
 
         public void AutoMap(IEnumerable<string>? exclusions = null)
         {
-            Mapper.AutoMap(this, exclusions);
+            Mapper.AutoMap(this,GraphQlService, exclusions);
         }
 
         public void AddNavigationConnectionField<TReturn>(
