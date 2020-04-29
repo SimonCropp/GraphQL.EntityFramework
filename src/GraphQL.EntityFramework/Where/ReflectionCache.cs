@@ -238,4 +238,24 @@ static class ReflectionCache
 
         return propertyInfos.ToArray();
     }
+
+
+    public static bool TryGetCollectionType(
+        this Type type,
+        [NotNullWhen(true)] out Type? collectionType)
+    {
+        collectionType = type.GetInterfaces()
+            .FirstOrDefault(x =>
+            {
+                if (!x.IsGenericType)
+                {
+                    return false;
+                }
+
+                var genericType = x.GetGenericTypeDefinition();
+                return genericType == typeof(ICollection<>) ||
+                       genericType == typeof(IReadOnlyCollection<>);
+            });
+        return collectionType != null;
+    }
 }

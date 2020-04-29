@@ -105,19 +105,7 @@ namespace GraphQL.EntityFramework
                 return false;
             }
 
-            var collectionType = memberType.GetInterfaces()
-                .FirstOrDefault(x =>
-                {
-                    if (!x.IsGenericType)
-                    {
-                        return false;
-                    }
-
-                    var genericTypeDefinition = x.GetGenericTypeDefinition();
-                    return genericTypeDefinition == typeof(ICollection<>) ||
-                           genericTypeDefinition == typeof(IReadOnlyCollection<>);
-                });
-            if (collectionType != null)
+            if (memberType.TryGetCollectionType(out var collectionType))
             {
                 var itemType = collectionType.GenericTypeArguments.Single();
                 if (ignoredTypes.Contains(itemType))
