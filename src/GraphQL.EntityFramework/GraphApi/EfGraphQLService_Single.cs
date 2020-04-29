@@ -18,7 +18,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, nullable, description);
@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -46,7 +46,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, nullable, null);
@@ -59,7 +59,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -74,7 +74,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             return AddSingleField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, nullable);
@@ -87,7 +87,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -101,7 +101,7 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument>? arguments,
             Type? graphType,
             bool nullable,
-            string description)
+            string? description)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);

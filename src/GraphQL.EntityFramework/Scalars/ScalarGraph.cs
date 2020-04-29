@@ -20,9 +20,9 @@ namespace GraphQL.EntityFramework
         public override object ParseValue(object value)
         {
             Guard.AgainstNull(nameof(value), value);
-            var trim = value.ToString().Trim('"');
-            Guard.AgainstNullWhiteSpace(nameof(value), trim);
-            return InnerParse(trim)!;
+            var trim = value.ToString()?.Trim('"');
+            Guard.AgainstNullWhiteSpace(nameof(value), trim!);
+            return InnerParse(trim!)!;
         }
 
         protected abstract T InnerParse(string value);

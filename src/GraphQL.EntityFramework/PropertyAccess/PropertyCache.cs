@@ -59,7 +59,7 @@ static class PropertyCache<TInput>
         const BindingFlags bindingFlagsNonPublic = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
 
         // Attempt to get the public property
-        MemberInfo propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsPublic);
+        MemberInfo? propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsPublic);
 
         // If not found
         if (propertyOrField == null)

@@ -162,6 +162,9 @@ static class TypeConverter
             return ValueConverter.ConvertTo<DateTimeOffset>(value);
         }
 
+        if (value == null)
+            throw new ArgumentNullException(nameof(value));
+        
         if (type == typeof(Guid))
         {
             return Guid.Parse(value);

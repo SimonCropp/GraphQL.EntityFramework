@@ -17,7 +17,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -37,7 +37,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -56,7 +56,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
@@ -73,7 +73,7 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             int pageSize,
             Type? graphType,
-            string description = null)
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);

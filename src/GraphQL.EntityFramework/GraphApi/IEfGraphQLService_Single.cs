@@ -15,7 +15,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TReturn>(
@@ -25,7 +25,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -35,7 +35,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -45,7 +45,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -55,7 +55,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -65,7 +65,7 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string description = null)
+            string? description = null)
             where TReturn : class;
     }
 }

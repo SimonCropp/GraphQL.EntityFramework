@@ -68,7 +68,7 @@ static class ComplexGraphResolver
 
     static Type? ResolvedEntityType(IGraphType graphType)
     {
-        var type = graphType.GetType();
+        var type = (Type?)graphType.GetType();
 
         while (type != null)
         {

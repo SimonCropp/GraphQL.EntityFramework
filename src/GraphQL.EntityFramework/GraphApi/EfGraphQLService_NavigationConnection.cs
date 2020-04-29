@@ -82,7 +82,7 @@ namespace GraphQL.EntityFramework
         static void SetField(object builder, object fieldType)
         {
             var fieldTypeField = builder.GetType().GetProperty("FieldType", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            fieldTypeField.SetValue(builder, fieldType);
+            fieldTypeField?.SetValue(builder, fieldType);
         }
 
         static object GetFieldType<TSource>(string name, Type graphType)
@@ -90,8 +90,8 @@ namespace GraphQL.EntityFramework
             var makeGenericType = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSource));
             var genericMethodInfo = makeGenericType.GetMethods().Single(mi => mi.Name == "Create" && mi.IsGenericMethod && mi.GetGenericArguments().Length == 1);
             var genericMethod = genericMethodInfo.MakeGenericMethod(graphType);
-            dynamic x = genericMethod.Invoke(null, new object[] {name});
-            return x.FieldType;
+            dynamic? x = genericMethod.Invoke(null, new object[] {name}) ?? null;
+            return x?.FieldType!;
         }
 
         class FakeGraph : GraphType
