@@ -43,14 +43,14 @@ scalar Decimal
 scalar Guid
 
 type MappingChildGraph {
-  parent: MappingParentGraph
+  parent: MappingParentGraph!
   id: Guid!
   parentId: Guid!
   property: String
 }
 
 type MappingParentGraph {
-  children(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingChildGraph]
+  children(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingChildGraph!]
   id: Guid!
   property: String
 }
