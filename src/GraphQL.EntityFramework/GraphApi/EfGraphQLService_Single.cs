@@ -12,7 +12,7 @@ namespace GraphQL.EntityFramework
         where TDbContext : DbContext
     {
         public FieldType AddSingleField<TReturn>(
-            ObjectGraphType graph,
+            IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
@@ -25,7 +25,7 @@ namespace GraphQL.EntityFramework
         }
 
         public FieldType AddSingleField<TReturn>(
-            ObjectGraphType graph,
+            IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
@@ -68,7 +68,7 @@ namespace GraphQL.EntityFramework
         }
 
         public FieldType AddSingleField<TSource, TReturn>(
-            ObjectGraphType graph,
+            IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
@@ -81,7 +81,7 @@ namespace GraphQL.EntityFramework
         }
 
         public FieldType AddSingleField<TSource, TReturn>(
-            ObjectGraphType graph,
+            IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type? graphType = null,
