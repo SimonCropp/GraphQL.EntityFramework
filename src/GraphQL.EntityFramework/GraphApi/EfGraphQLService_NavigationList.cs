@@ -15,14 +15,15 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            IEnumerable<string>? includeNames = null)
+            IEnumerable<string>? includeNames = null,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
             //graphType should represent the graph type of the enumerated value, not the list graph type
 
             //build the navigation field
-            var field = BuildNavigationField(graphType, name, resolve, includeNames, arguments);
+            var field = BuildNavigationField(graphType, name, resolve, includeNames, arguments, description);
             //add it to the graph
             return graph.AddField(field);
         }
@@ -32,7 +33,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string>? includeNames,
-            IEnumerable<QueryArgument>? arguments)
+            IEnumerable<QueryArgument>? arguments,
+            string? description = null)
             where TReturn : class
         {
             //lookup the graph type if not explicitly specified
@@ -41,7 +43,7 @@ namespace GraphQL.EntityFramework
             //create a list graph type based on the graph type specified
             var listGraphType = MakeListGraphType(graphType);
             //build the navigation field
-            return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments);
+            return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments, description);
         }
 
         FieldType BuildNavigationField<TSource, TReturn>(
@@ -49,7 +51,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string>? includeNames,
             Type listGraphType,
-            IEnumerable<QueryArgument>? arguments)
+            IEnumerable<QueryArgument>? arguments,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -60,6 +63,7 @@ namespace GraphQL.EntityFramework
             {
                 Name = name,
                 Type = listGraphType,
+                Description = description,
                 //take the arguments manually specified, if any, and append the query arguments
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 //add the metadata for the tables to be included in the query
