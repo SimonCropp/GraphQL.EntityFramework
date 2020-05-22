@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />
-    <PackageReference Include="EfLocalDb" Version="7.0.1" />
+    <PackageReference Include="EfLocalDb" Version="8.0.0" />
     <PackageReference Include="graphiql" Version="2.0.0" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="3.4.0" />
