@@ -24,14 +24,14 @@ This project relies on financial contributions from the community to ensure its 
 
 ### Backers
 
-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/graphqlentityframework#backer)]
+Thank to all backers. 🙏 [[Become a backer](https://opencollective.com/graphqlentityframework#backer)]
 
 <a href="https://opencollective.com/graphqlentityframework#backers"><img src="https://opencollective.com/graphqlentityframework/backers.svg?width=890"></a>
 
 
 ### Sponsors
 
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/graphqlentityframework#sponsor)]
+Support this project by becoming a sponsor. Company logo will show up here with a website link. [[Become a sponsor](https://opencollective.com/graphqlentityframework#sponsor)]
 
 <a href="https://opencollective.com/graphqlentityframework/sponsor/0/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/graphqlentityframework/sponsor/1/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/1/avatar.svg"></a>
@@ -51,7 +51,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 Available as part of the Tidelift Subscription.
 
-The maintainers of `GraphQL.EntityFramework` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/nuget-graphql.entityframework?utm_source=nuget-graphql.entityframework&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+The maintainers of `GraphQL.EntityFramework` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies used to build applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies used. [Learn more.](https://tidelift.com/subscription/pkg/nuget-graphql.entityframework?utm_source=nuget-graphql.entityframework&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
 
 
 ## NuGet package

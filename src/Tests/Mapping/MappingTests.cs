@@ -75,7 +75,10 @@ public class MappingTests :
         var context = database.Context;
 
         var child = new MappingChild();
-        var parent = new MappingParent {Property = "value"};
+        var parent = new MappingParent
+        {
+            Property = "value"
+        };
         child.Parent = parent;
         await database.AddData(child, parent);
         var expression = Mapper.NavigationExpression<MappingContext, MappingChild, MappingParent>("Parent");

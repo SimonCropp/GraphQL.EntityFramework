@@ -149,7 +149,7 @@ Property.startsWith("value") && (Property.endsWith("ue") || Property.endsWith("i
 
 #### Query Negation
 
-If you need to negate any expression, including `groupedExpressions`, provide the `negate` property with true (Default is false).
+To negate any expression, including `groupedExpressions`, provide the `negate` property with true (Default is false).
 
 Example:
 
@@ -177,9 +177,9 @@ Example:
 
 #### Querying List Members
 
-A common query function is constraining a master set by some property of the detail list. For example you want to filter all orders by line items for a specific product.
+A common query function is constraining a master set by some property of the detail list. For example to filter all orders by line items for a specific product.
 
-**Note:** This only constrains the master list and doesn't affect the detail list, you must re-query the detail list with the same query to achieve this effect.
+**Note:** This only constrains the master list and doesn't affect the detail list, re-query the detail list with the same query to achieve this effect.
 
 To query a list member graph property, use parenthesis (`[]`) to wrap the property. Example:
 

@@ -174,7 +174,7 @@ public class ExampleGraph : ObjectGraphType<Example>
 
 ## Manually Apply `WhereExpression`
 
-In some cases, you may want to use `Field` instead of `AddQueryField`/`AddSingleField`/etc but still would like to use apply the `where` argument. This can be useful when the returned `Graph` type is not for an entity (for example, aggregate results). To support this, you must:
+In some cases, it may be necessary to use `Field` instead of `AddQueryField`/`AddSingleField`/etc but still would like to use apply the `where` argument. This can be useful when the returned `Graph` type is not for an entity (for example, aggregate results). To support this:
 
  * Add the `WhereExpressionGraph` argument
  * Apply the `where` argument expression using `ExpressionBuilder<T>.BuildPredicate(whereExpression)`
