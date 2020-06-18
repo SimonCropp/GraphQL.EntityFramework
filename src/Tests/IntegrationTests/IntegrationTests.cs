@@ -1142,7 +1142,7 @@ query ($id: String!)
     {
         var query = @"
 {
-  childEntities(where: {path: 'ParentId', comparison: 'equal', value: '00000000-0000-0000-0000-000000000001'})
+  childEntities(where: {path: 'ParentId', comparison: 'equal', value: '00000000-0000-0000-0000-000000000001'}, orderBy: {path: ""property""})
   {
     property
     parent
