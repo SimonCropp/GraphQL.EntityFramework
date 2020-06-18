@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -11,24 +12,23 @@ using GraphQL.Resolvers;
 using GraphQL.Subscription;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
 public class Subscription :
     ObjectGraphType<object>
 {
-    public Subscription(Func<SampleDbContext> contextFactory, ILogger<Subscription> logger)
+    public Subscription(Func<SampleDbContext> contextFactory)
     {
         AddField(new EventStreamFieldType
         {
             Name = "companyChanged",
             Type = typeof(CompanyGraph),
             Resolver = new FuncFieldResolver<Company>(context => (Company)context.Source),
-            Subscriber = new EventStreamResolver<Company>(context => Subscribe(context, contextFactory, logger))
+            Subscriber = new EventStreamResolver<Company>(context => Subscribe(context, contextFactory))
         });
     }
 
-    static IObservable<Company> Subscribe(ResolveEventStreamContext context, Func<SampleDbContext> contextFactory, ILogger logger)
+    static IObservable<Company> Subscribe(ResolveEventStreamContext context, Func<SampleDbContext> contextFactory)
     {
         long lastId = 0;
         var inner = Observable.Using(
@@ -48,12 +48,7 @@ public class Subscription :
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.LogInformation("Companies subscription has been cancelled.");
-                    return Observable.Empty<Company>();
-                }
-                catch (Exception e)
-                {
-                    logger.LogError(e, "Unable to get companies.");
+                    Trace.Write("Companies subscription has been cancelled.");
                     return Observable.Empty<Company>();
                 }
             });
