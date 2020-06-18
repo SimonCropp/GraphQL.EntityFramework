@@ -17,7 +17,7 @@ using ExecutionContext = GraphQL.Execution.ExecutionContext;
 public class Subscription :
     ObjectGraphType<object>
 {
-    public Subscription(Func<SampleDbContext> contextFactory, ILogger<Subscription> logger)
+    public Subscription(Func<SampleDbContext> contextFactory, ILogger logger)
     {
         AddField(new EventStreamFieldType
         {
