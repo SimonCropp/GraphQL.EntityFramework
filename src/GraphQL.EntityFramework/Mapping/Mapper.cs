@@ -22,8 +22,9 @@ namespace GraphQL.EntityFramework
             ignoredTypes.Add(type);
         }
 
-        static MethodInfo addNavigationMethod = typeof(Mapper).GetMethod(nameof(AddNavigation), BindingFlags.NonPublic | BindingFlags.Static);
-        static MethodInfo addNavigationListMethod = typeof(Mapper).GetMethod(nameof(AddNavigationList), BindingFlags.NonPublic | BindingFlags.Static);
+        const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Static;
+        static MethodInfo addNavigationMethod = typeof(Mapper).GetMethod(nameof(AddNavigation), bindingFlags);
+        static MethodInfo addNavigationListMethod = typeof(Mapper).GetMethod(nameof(AddNavigationList), bindingFlags);
 
         public static void AutoMap<TSource>(this
             ComplexGraphType<TSource> graph,
@@ -81,17 +82,19 @@ namespace GraphQL.EntityFramework
             IReadOnlyList<string>? exclusions = null)
             where TDbContext : DbContext
         {
-            if (graphService.Navigations.TryGetValue(type, out var navigations))
+            if (!graphService.Navigations.TryGetValue(type, out var navigations))
             {
-                foreach (var navigation in navigations)
-                {
-                    if (ShouldIgnore(graph, navigation.Name, navigation.Type, exclusions))
-                    {
-                        continue;
-                    }
+                return;
+            }
 
-                    ProcessNavigation(graph, graphService, navigation);
+            foreach (var navigation in navigations)
+            {
+                if (ShouldIgnore(graph, navigation.Name, navigation.Type, exclusions))
+                {
+                    continue;
                 }
+
+                ProcessNavigation(graph, graphService, navigation);
             }
         }
 
@@ -139,7 +142,7 @@ namespace GraphQL.EntityFramework
             where TDbContext : DbContext
             where TReturn : class
         {
-            var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type, navigation.IsNullable);
+            var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type, false);
             var compile = NavigationExpression<TDbContext, TSource, IEnumerable<TReturn>>(navigation.Name).Compile();
             graphQlService.AddNavigationListField(graph, navigation.Name, compile, graphTypeFromType);
         }
