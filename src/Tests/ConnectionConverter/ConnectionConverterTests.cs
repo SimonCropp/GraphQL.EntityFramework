@@ -63,7 +63,7 @@ public class ConnectionConverterTests
         var connection = await ConnectionConverter.ApplyConnectionContext(entities.OrderBy(x=>x.Property), first, after, last, before, fieldContext, new Filters());
         var settings = new VerifySettings();
         settings.UseParameters(first, after, last, before);
-        await Verifier.Verify(connection, settings);
+        await Verifier.Verify(connection.Items.OrderBy(x=>x.Property), settings);
     }
 
     [Theory]

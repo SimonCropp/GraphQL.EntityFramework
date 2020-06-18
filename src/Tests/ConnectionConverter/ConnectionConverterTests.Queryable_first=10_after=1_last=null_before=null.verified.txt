@@ -1,99 +1,34 @@
-{
-  TotalCount: 10,
-  PageInfo: {
-    StartCursor: '2',
-    EndCursor: '9'
+[
+  {
+    Id: Guid_1,
+    Property: 'c'
   },
-  Edges: [
-    {
-      Cursor: '2',
-      Node: {
-        Id: Guid_1,
-        Property: 'c'
-      }
-    },
-    {
-      Cursor: '3',
-      Node: {
-        Id: Guid_2,
-        Property: 'd'
-      }
-    },
-    {
-      Cursor: '4',
-      Node: {
-        Id: Guid_3,
-        Property: 'e'
-      }
-    },
-    {
-      Cursor: '5',
-      Node: {
-        Id: Guid_4,
-        Property: 'f'
-      }
-    },
-    {
-      Cursor: '6',
-      Node: {
-        Id: Guid_5,
-        Property: 'g'
-      }
-    },
-    {
-      Cursor: '7',
-      Node: {
-        Id: Guid_6,
-        Property: 'h'
-      }
-    },
-    {
-      Cursor: '8',
-      Node: {
-        Id: Guid_7,
-        Property: 'i'
-      }
-    },
-    {
-      Cursor: '9',
-      Node: {
-        Id: Guid_8,
-        Property: 'j'
-      }
-    }
-  ],
-  Items: [
-    {
-      Id: Guid_1,
-      Property: 'c'
-    },
-    {
-      Id: Guid_2,
-      Property: 'd'
-    },
-    {
-      Id: Guid_3,
-      Property: 'e'
-    },
-    {
-      Id: Guid_4,
-      Property: 'f'
-    },
-    {
-      Id: Guid_5,
-      Property: 'g'
-    },
-    {
-      Id: Guid_6,
-      Property: 'h'
-    },
-    {
-      Id: Guid_7,
-      Property: 'i'
-    },
-    {
-      Id: Guid_8,
-      Property: 'j'
-    }
-  ]
-}
+  {
+    Id: Guid_2,
+    Property: 'd'
+  },
+  {
+    Id: Guid_3,
+    Property: 'e'
+  },
+  {
+    Id: Guid_4,
+    Property: 'f'
+  },
+  {
+    Id: Guid_5,
+    Property: 'g'
+  },
+  {
+    Id: Guid_6,
+    Property: 'h'
+  },
+  {
+    Id: Guid_7,
+    Property: 'i'
+  },
+  {
+    Id: Guid_8,
+    Property: 'j'
+  }
+]

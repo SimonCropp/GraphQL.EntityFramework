@@ -1,13 +1,13 @@
 {
   childEntities: [
     {
-      property: 'Value2',
+      property: 'Value3',
       parent: {
         property: 'Value1'
       }
     },
     {
-      property: 'Value3',
+      property: 'Value2',
       parent: {
         property: 'Value1'
       }
