@@ -351,7 +351,7 @@ public class UserContext
     public readonly DbContext2 DbContext2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L100-L112' title='File snippet `multiusercontext` was extracted from'>snippet source</a> | <a href='#snippet-multiusercontext' title='Navigate to start of snippet `multiusercontext`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L95-L107' title='File snippet `multiusercontext` was extracted from'>snippet source</a> | <a href='#snippet-multiusercontext' title='Navigate to start of snippet `multiusercontext`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -462,6 +462,7 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 <!-- snippet: GraphQlControllerTests -->
 <a id='snippet-graphqlcontrollertests'/></a>
 ```cs
+[UsesVerify]
 public class GraphQlControllerTests
 {
     static HttpClient client = null!;
@@ -707,14 +708,9 @@ subscription
         hostBuilder.UseStartup<Startup>();
         return new TestServer(hostBuilder);
     }
-
-    public GraphQlControllerTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L268' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L12-L263' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
