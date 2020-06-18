@@ -13,27 +13,26 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
-            Type? graphType = null,
+            Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             IEnumerable<string>? includeNames = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
 
-            var field = BuildNavigationField(graphType, name, resolve, includeNames, arguments);
+            var field = BuildNavigationField(itemGraphType, name, resolve, includeNames, arguments);
             return graph.AddField(field);
         }
 
         FieldType BuildNavigationField<TSource, TReturn>(
-            Type? graphType,
+            Type? itemGraphType,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string>? includeNames,
             IEnumerable<QueryArgument>? arguments)
             where TReturn : class
         {
-            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-            var listGraphType = MakeListGraphType(graphType);
+            var listGraphType = MakeListGraphType<TReturn>(itemGraphType);
             return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments);
         }
 

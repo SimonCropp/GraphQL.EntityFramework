@@ -11,7 +11,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext,object>, IQueryable<TReturn>> resolve,
-            Type? graphType = null,
+            Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
             where TReturn : class;
@@ -20,7 +20,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
-            Type? graphType = null,
+            Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
             where TReturn : class;
@@ -29,7 +29,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
-            Type? graphType = null,
+            Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
             where TReturn : class;

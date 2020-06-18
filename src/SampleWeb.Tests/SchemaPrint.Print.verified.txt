@@ -1,0 +1,137 @@
+type CompanyGraph {
+  employees(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [EmployeeGraph!]!
+  employeesConnection(after: String, first: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): EmployeeGraphConnection
+  content: String
+  id: Int!
+}
+
+# A connection from an object to a list of objects of type `CompanyGraph`.
+type CompanyGraphConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [CompanyGraphEdge]
+  items: [CompanyGraph]
+}
+
+# An edge in a connection from an object to another object of type `CompanyGraph`.
+type CompanyGraphEdge {
+  cursor: String!
+  node: CompanyGraph
+}
+
+enum ComparisonGraph {
+  contains
+  endsWith
+  equal
+  greaterThan
+  greaterThanOrEqual
+  notIn
+  in
+  lessThan
+  lessThanOrEqual
+  like
+  startsWith
+}
+
+enum Connector {
+  AND
+  OR
+  and
+  or
+}
+
+# The `Date` scalar type represents a year, month and day in accordance with the
+# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar Date
+
+# The `DateTime` scalar type represents a date and time. `DateTime` expects
+# timestamps to be formatted in accordance with the
+# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar DateTime
+
+# The `DateTimeOffset` scalar type represents a date, time and offset from UTC.
+# `DateTimeOffset` expects timestamps to be formatted in accordance with the
+# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar DateTimeOffset
+
+scalar Decimal
+
+type EmployeeGraph {
+  company: CompanyGraph!
+  age: Int!
+  companyId: Int!
+  content: String
+  id: Int!
+}
+
+# A connection from an object to a list of objects of type `EmployeeGraph`.
+type EmployeeGraphConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [EmployeeGraphEdge]
+  items: [EmployeeGraph]
+}
+
+# An edge in a connection from an object to another object of type `EmployeeGraph`.
+type EmployeeGraphEdge {
+  cursor: String!
+  node: EmployeeGraph
+}
+
+type EmployeeSummaryGraph {
+  averageAge: Float!
+  companyId: Int!
+}
+
+# The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds.
+scalar Milliseconds
+
+input OrderByGraph {
+  path: String!
+  descending: Boolean
+}
+
+# Information about pagination in a connection.
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Query {
+  companies(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [CompanyGraph!]!
+  company(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): CompanyGraph!
+  companyOrNull(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): CompanyGraph
+  companiesConnection(after: String, first: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): CompanyGraphConnection
+  employees(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [EmployeeGraph!]!
+  employeesByArgument(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int, content: String): [EmployeeGraph!]!
+  employeesConnection(after: String, first: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): EmployeeGraphConnection
+  employeeSummary(where: [WhereExpressionGraph]): [EmployeeSummaryGraph]
+}
+
+# The `Seconds` scalar type represents a period of time represented as the total number of seconds.
+scalar Seconds
+
+enum StringComparison {
+  CURRENT_CULTURE
+  CURRENT_CULTURE_IGNORE_CASE
+  INVARIANT_CULTURE
+  INVARIANT_CULTURE_IGNORE_CASE
+  ORDINAL
+  ORDINAL_IGNORE_CASE
+}
+
+type Subscription {
+  companyChanged: CompanyGraph
+}
+
+input WhereExpressionGraph {
+  path: String
+  comparison: ComparisonGraph
+  negate: Boolean
+  case: StringComparison
+  value: [String]
+  connector: Connector
+  groupedExpressions: [WhereExpressionGraph]
+}

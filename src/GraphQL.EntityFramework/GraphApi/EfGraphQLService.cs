@@ -36,12 +36,6 @@ namespace GraphQL.EntityFramework
 
         IncludeAppender includeAppender;
 
-        static Type MakeListGraphType(Type graphType)
-        {
-            var listGraphType = typeof(ListGraphType<>);
-            return listGraphType.MakeGenericType(graphType);
-        }
-
         ResolveEfFieldContext<TDbContext, TSource> BuildContext<TSource>(
             ResolveFieldContext<TSource> context)
         {

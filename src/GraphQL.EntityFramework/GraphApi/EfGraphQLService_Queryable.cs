@@ -74,38 +74,36 @@ namespace GraphQL.EntityFramework
             ObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Type? graphType = null,
+            Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildQueryField(graphType, name, resolve, arguments);
+            var field = BuildQueryField(itemGraphType, name, resolve, arguments);
             return graph.AddField(field);
         }
 
         FieldType BuildQueryField<TSource, TReturn>(
-            Type? graphType,
+            Type? itemGraphType,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             IEnumerable<QueryArgument>? arguments)
             where TReturn : class
         {
-            return BuildQueryField(name, resolve, arguments, graphType);
+            return BuildQueryField(name, resolve, arguments, itemGraphType);
         }
 
         FieldType BuildQueryField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             IEnumerable<QueryArgument>? arguments,
-            Type? graphType)
+            Type? itemGraphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-
-            var listGraphType = MakeListGraphType(graphType);
+            var listGraphType = MakeListGraphType<TReturn>(itemGraphType);
 
             return new FieldType
             {
@@ -126,6 +124,19 @@ namespace GraphQL.EntityFramework
                         return await efFieldContext.Filters.ApplyFilter(list, context.UserContext);
                     })
             };
+        }
+
+        static Type listGraphType = typeof(ListGraphType<>);
+        static Type nonNullType = typeof(NonNullGraphType<>);
+
+        static Type MakeListGraphType<TReturn>(Type? itemGraphType)
+            where TReturn : class
+        {
+            if (itemGraphType == null)
+            {
+                return typeof(IEnumerable<TReturn>).GetGraphTypeFromType();
+            }
+            return nonNullType.MakeGenericType(listGraphType.MakeGenericType(itemGraphType));
         }
 
         static List<string> emptyList = new List<string>();

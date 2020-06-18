@@ -15,7 +15,7 @@ namespace GraphQL.EntityFramework
             ObjectGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
-            Type? graphType = null,
+            Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             IEnumerable<string>? includeNames = null,
             int pageSize = 10)
@@ -23,7 +23,7 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNull(nameof(graph), graph);
 
-            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, graphType);
+            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, itemGraphType);
 
             var field = graph.AddField(connection.FieldType);
 
@@ -35,15 +35,15 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             IEnumerable<string>? includeName,
             int pageSize,
-            Type? graphType)
+            Type? itemGraphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
-            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-            var fieldType = GetFieldType<TSource>(name, graphType);
+            itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+            var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
             var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
 
@@ -78,9 +78,9 @@ namespace GraphQL.EntityFramework
             fieldTypeField.SetValue(builder, fieldType);
         }
 
-        static object GetFieldType<TSource>(string name, Type graphType)
+        static object GetFieldType<TSource>(string name, Type itemGraphType)
         {
-            var makeGenericType = typeof(ConnectionBuilder<,>).MakeGenericType(graphType, typeof(TSource));
+            var makeGenericType = typeof(ConnectionBuilder<,>).MakeGenericType(itemGraphType, typeof(TSource));
             dynamic x = makeGenericType.GetMethod("Create").Invoke(null, new object[] { name });
             return x.FieldType;
         }

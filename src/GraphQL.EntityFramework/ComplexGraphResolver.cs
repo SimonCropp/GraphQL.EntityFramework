@@ -48,6 +48,14 @@ static class ComplexGraphResolver
                 if (graphType is NonNullGraphType nonNullGraphType)
                 {
                     graphType = nonNullGraphType.ResolvedType;
+                    if (graphType is ListGraphType innerListGraphType)
+                    {
+                        graphType = innerListGraphType.ResolvedType;
+                        if (graphType is NonNullGraphType innerNonNullGraphType)
+                        {
+                            graphType = innerNonNullGraphType.ResolvedType;
+                        }
+                    }
                 }
 
                 IComplexGraphType? graph = null;
