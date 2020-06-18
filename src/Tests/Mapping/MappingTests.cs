@@ -8,10 +8,9 @@ using GraphQL.Types;
 using GraphQL.Utilities;
 using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 
-public class MappingTests :
-    VerifyBase
+[UsesVerify]
+public class MappingTests
 {
     static SqlInstance<MappingContext> sqlInstance;
 
@@ -31,7 +30,7 @@ public class MappingTests :
         var graphQlService = new EfGraphQLService<MappingContext>(sqlInstance.Model, userContext => null!);
         var printer = new SchemaPrinter(new MappingSchema(graphQlService));
         var print = printer.Print();
-        await Verify(print);
+        await Verifier.Verify(print);
     }
 
     [Fact]
@@ -51,7 +50,7 @@ public class MappingTests :
             .Single(x => x.Name == "children")
             .Resolver
             .Resolve(new ResolveFieldContext());
-        await Verify(resolve);
+        await Verifier.Verify(resolve);
     }
 
     [Fact]
@@ -60,7 +59,7 @@ public class MappingTests :
         var property = typeof(MappingParent).GetProperty("Property")!;
         var expression = Mapper.PropertyToObject<MappingParent>(property);
         var result = expression.Compile()(new MappingParent {Property = "value"});
-        await Verify(
+        await Verifier.Verify(
             new
             {
                 expression,
@@ -89,16 +88,11 @@ public class MappingTests :
                 DbContext = context,
                 Source = child
             });
-        await Verify(
+        await Verifier.Verify(
             new
             {
                 expression,
                 result
             });
-    }
-
-    public MappingTests(ITestOutputHelper output) :
-        base(output)
-    {
     }
 }

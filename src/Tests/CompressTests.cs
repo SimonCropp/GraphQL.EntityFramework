@@ -2,10 +2,9 @@
 using GraphQL.EntityFramework;
 using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 
-public class CompressTests :
-    VerifyBase
+[UsesVerify]
+public class CompressTests
 {
     [Fact]
     public Task Simple()
@@ -18,11 +17,6 @@ query ($id: String!)
     id
   }
 }";
-        return Verify(Compress.Query(query));
-    }
-
-    public CompressTests(ITestOutputHelper output) :
-        base(output)
-    {
+        return Verifier.Verify(Compress.Query(query));
     }
 }

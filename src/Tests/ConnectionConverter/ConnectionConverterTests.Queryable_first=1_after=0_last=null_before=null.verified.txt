@@ -10,14 +10,14 @@
     {
       Cursor: '1',
       Node: {
-        Id: Guid_2,
+        Id: Guid_1,
         Property: 'b'
       }
     }
   ],
   Items: [
     {
-      Id: Guid_2,
+      Id: Guid_1,
       Property: 'b'
     }
   ]

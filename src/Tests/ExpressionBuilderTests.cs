@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.EntityFramework;
-using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 
-public class ExpressionBuilderTests :
-    VerifyBase
+public class ExpressionBuilderTests
 {
     public class Target
     {
@@ -466,10 +463,5 @@ public class ExpressionBuilderTests :
         public int Age { get; set; }
         public Company? Company { get; set; }
         public DateTime DateOfBirth { get; set; }
-    }
-
-    public ExpressionBuilderTests(ITestOutputHelper output) :
-        base(output)
-    {
     }
 }

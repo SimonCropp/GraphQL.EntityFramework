@@ -1,10 +1,7 @@
 ﻿using System;
-using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 
-public class TypeConverterTests :
-    VerifyBase
+public class TypeConverterTests
 {
     [Theory]
     [InlineData(typeof(int), "12", 12)]
@@ -97,10 +94,5 @@ public class TypeConverterTests :
             var contains = (bool)listContains.Invoke(results, new[] { Convert.ChangeType(results[0], convertType) })!;
             Assert.True(contains);
         }
-    }
-
-    public TypeConverterTests(ITestOutputHelper output) :
-        base(output)
-    {
     }
 }

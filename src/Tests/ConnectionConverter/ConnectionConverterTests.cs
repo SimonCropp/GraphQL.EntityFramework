@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
+using VerifyTests;
 using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 using Filters = GraphQL.EntityFramework.Filters;
 
-public class ConnectionConverterTests :
-    VerifyBase
+[UsesVerify]
+public class ConnectionConverterTests
 {
     static ConnectionConverterTests()
     {
@@ -58,10 +58,12 @@ public class ConnectionConverterTests :
     public async Task Queryable(int? first, int? after, int? last, int? before)
     {
         var fieldContext = new ResolveFieldContext<string>();
-        await using var database = await sqlInstance.BuildWithRollback();
+        await using var database = await sqlInstance.Build(databaseSuffix: $"{first}{after}{last}{before}");
         var entities = database.Context.Entities;
-        var connection = await ConnectionConverter.ApplyConnectionContext(entities, first, after, last, before, fieldContext, new Filters());
-        await Verify(connection);
+        var connection = await ConnectionConverter.ApplyConnectionContext(entities.OrderBy(x=>x.Property), first, after, last, before, fieldContext, new Filters());
+        var settings = new VerifySettings();
+        settings.UseParameters(first, after, last, before);
+        await Verifier.Verify(connection, settings);
     }
 
     [Theory]
@@ -90,18 +92,16 @@ public class ConnectionConverterTests :
 
     public Task List(int? first, int? after, int? last, int? before)
     {
-        var connection = ConnectionConverter.ApplyConnectionContext(list, first, after, last, before);
-        return Verify(connection);
-    }
 
-    public ConnectionConverterTests(ITestOutputHelper output) :
-        base(output)
-    {
+        var connection = ConnectionConverter.ApplyConnectionContext(list, first, after, last, before);
+        var settings = new VerifySettings();
+        settings.UseParameters(first, after, last, before);
+        return Verifier.Verify(connection,settings);
     }
 
     public class Entity
     {
-        public Guid Id { get; set; } = XunitContext.Context.NextGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string? Property { get; set; }
     }
 

@@ -1,9 +1,8 @@
 ﻿using System;
-using Xunit;
 
 public class IncludeNonQueryableA
 {
-    public Guid Id { get; set; } = XunitContext.Context.NextGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
     public Guid IncludeNonQueryableBId { get; set; }
     public IncludeNonQueryableB IncludeNonQueryableB { get; set; } = null!;
 }

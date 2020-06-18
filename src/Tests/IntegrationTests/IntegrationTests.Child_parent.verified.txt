@@ -7,15 +7,15 @@
       }
     },
     {
-      property: 'Value3',
-      parent: {
-        property: 'Value1'
-      }
-    },
-    {
       property: 'Value5',
       parent: {
         property: 'Value4'
+      }
+    },
+    {
+      property: 'Value3',
+      parent: {
+        property: 'Value1'
       }
     }
   ]

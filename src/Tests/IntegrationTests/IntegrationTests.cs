@@ -10,11 +10,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 using Filters = GraphQL.EntityFramework.Filters;
 
-public partial class IntegrationTests :
-    VerifyBase
+[UsesVerify]
+public partial class IntegrationTests
 {
     static SqlInstance<IntegrationDbContext> sqlInstance;
 
@@ -50,11 +49,6 @@ public partial class IntegrationTests :
             constructInstance: builder => new IntegrationDbContext(builder.Options));
     }
 
-    public IntegrationTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
-
     [Fact]
     public async Task Where_multiple()
     {
@@ -87,7 +81,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -103,7 +97,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -119,7 +113,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -138,7 +132,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -163,7 +157,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -188,7 +182,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -214,7 +208,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entities.ToArray());
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -243,7 +237,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entities.ToArray());
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     static IEnumerable<ParentEntity> BuildEntities(uint length)
@@ -280,7 +274,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -305,7 +299,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity2, entity1);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -330,7 +324,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -355,7 +349,7 @@ public partial class IntegrationTests :
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -387,7 +381,7 @@ query ($value: String!)
             });
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, inputs, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -412,7 +406,7 @@ query ($value: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -426,7 +420,7 @@ query ($value: String!)
 }";
         await using var database = await sqlInstance.Build();
         var error = await Assert.ThrowsAsync<ExecutionError>(() => RunQuery(database, query, null, null));
-        await Verify(error.Message);
+        await Verifier.Verify(error.Message);
     }
 
     [Fact]
@@ -450,7 +444,7 @@ query ($value: String!)
         };
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -464,7 +458,7 @@ query ($value: String!)
 }";
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -488,7 +482,7 @@ query ($value: String!)
         };
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -535,7 +529,7 @@ mutation {
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -582,7 +576,7 @@ mutation {
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -607,7 +601,7 @@ mutation {
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -632,7 +626,7 @@ mutation {
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact(Skip = "Work out how to eval server side")]
@@ -657,7 +651,7 @@ mutation {
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -689,7 +683,7 @@ query ($entityId: String!)
             });
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, inputs, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -721,7 +715,7 @@ query ($id: String!)
             });
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, inputs, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -747,7 +741,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -773,7 +767,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -806,7 +800,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -831,7 +825,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -857,7 +851,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact(Skip = "Work out why include is not used")]
@@ -913,7 +907,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -959,7 +953,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact(Skip = "TODO")]
@@ -984,7 +978,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, level1, level2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -1016,7 +1010,7 @@ query ($id: String!)
 
         var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, level1, level2, level3);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -1051,7 +1045,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, level1, level2, level3);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -1093,7 +1087,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, level1b, level2b, level1a, level2a, level3a);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -1140,7 +1134,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -1182,7 +1176,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity5);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -1219,7 +1213,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -1266,7 +1260,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -1297,7 +1291,7 @@ query ($id: String!)
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, parent, child1, child2);
-        await Verify(result);
+        await Verifier.Verify(result);
     }
 
     static async Task<object> RunQuery(

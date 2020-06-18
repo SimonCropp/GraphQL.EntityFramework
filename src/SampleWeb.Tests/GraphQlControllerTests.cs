@@ -8,12 +8,11 @@ using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Xunit;
-using Xunit.Abstractions;
 
 #region GraphQlControllerTests
 
-public class GraphQlControllerTests :
-    VerifyBase
+[UsesVerify]
+public class GraphQlControllerTests
 {
     static HttpClient client = null!;
     static WebSocketClient websocketClient = null!;
@@ -43,7 +42,7 @@ public class GraphQlControllerTests :
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -64,7 +63,7 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -106,7 +105,7 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -130,7 +129,7 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -145,7 +144,7 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -258,11 +257,6 @@ subscription
         var hostBuilder = new WebHostBuilder();
         hostBuilder.UseStartup<Startup>();
         return new TestServer(hostBuilder);
-    }
-
-    public GraphQlControllerTests(ITestOutputHelper output) :
-        base(output)
-    {
     }
 }
 

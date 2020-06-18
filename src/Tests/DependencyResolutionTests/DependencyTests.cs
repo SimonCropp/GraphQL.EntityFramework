@@ -6,12 +6,9 @@ using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
-using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 
-public class DependencyTests :
-    VerifyBase
+public class DependencyTests
 {
     static SqlInstance<DependencyDbContext> sqlInstance;
 
@@ -20,11 +17,6 @@ public class DependencyTests :
         GraphTypeTypeRegistry.Register<Entity, EntityGraph>();
 
         sqlInstance = new SqlInstance<DependencyDbContext>(builder => new DependencyDbContext(builder.Options));
-    }
-
-    public DependencyTests(ITestOutputHelper output) :
-        base(output)
-    {
     }
 
     static string query = @"

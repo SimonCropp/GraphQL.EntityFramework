@@ -351,7 +351,7 @@ public class UserContext
     public readonly DbContext2 DbContext2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L101-L113' title='File snippet `multiusercontext` was extracted from'>snippet source</a> | <a href='#snippet-multiusercontext' title='Navigate to start of snippet `multiusercontext`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L100-L112' title='File snippet `multiusercontext` was extracted from'>snippet source</a> | <a href='#snippet-multiusercontext' title='Navigate to start of snippet `multiusercontext`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -369,7 +369,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L73' title='File snippet `registermultipleincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Navigate to start of snippet `registermultipleincontainer`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L63-L72' title='File snippet `registermultipleincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Navigate to start of snippet `registermultipleincontainer`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -388,7 +388,7 @@ var executionOptions = new ExecutionOptions
     UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L79-L88' title='File snippet `multiexecutionoptions` was extracted from'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Navigate to start of snippet `multiexecutionoptions`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L78-L87' title='File snippet `multiexecutionoptions` was extracted from'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Navigate to start of snippet `multiexecutionoptions`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -462,8 +462,7 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 <!-- snippet: GraphQlControllerTests -->
 <a id='snippet-graphqlcontrollertests'/></a>
 ```cs
-public class GraphQlControllerTests :
-    VerifyBase
+public class GraphQlControllerTests
 {
     static HttpClient client = null!;
     static WebSocketClient websocketClient = null!;
@@ -493,7 +492,7 @@ public class GraphQlControllerTests :
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -514,7 +513,7 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -556,7 +555,7 @@ query ($id: ID!)
 
         using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -580,7 +579,7 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -595,7 +594,7 @@ query {
 }";
         using var response = await ClientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -715,7 +714,7 @@ subscription
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L269' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L13-L268' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
 <!-- endsnippet -->
 
 

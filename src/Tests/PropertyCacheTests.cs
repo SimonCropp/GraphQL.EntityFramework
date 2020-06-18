@@ -1,9 +1,6 @@
-using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 
-public class PropertyCacheTests :
-    VerifyBase
+public class PropertyCacheTests
 {
     [Fact]
     public void Property()
@@ -47,10 +44,5 @@ public class PropertyCacheTests :
     public class TargetChildForPropertyNested
     {
         public string? Member;
-    }
-
-    public PropertyCacheTests(ITestOutputHelper output) :
-        base(output)
-    {
     }
 }

@@ -1,11 +1,8 @@
 ﻿using System.Threading.Tasks;
-using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 using Filters = GraphQL.EntityFramework.Filters;
 
-public class GlobalFiltersTests :
-    VerifyBase
+public class GlobalFiltersTests
 {
     [Fact]
     public async Task Simple()
@@ -58,10 +55,5 @@ public class GlobalFiltersTests :
     public interface ITarget
     {
         string? Property { get; set; }
-    }
-
-    public GlobalFiltersTests(ITestOutputHelper output) :
-        base(output)
-    {
     }
 }
