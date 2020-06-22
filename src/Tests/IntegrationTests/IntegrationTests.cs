@@ -492,7 +492,7 @@ query ($value: String!)
 mutation {
   parentEntityMutation(id: ""00000000-0000-0000-0000-000000000001"") {
     property
-    children
+    children(orderBy: {path: ""property""})
     {
       property
     }
@@ -539,10 +539,60 @@ mutation {
 {
   parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
     property
-    children
+    children(orderBy: {path: ""property""})
     {
       property
     }
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Property = "Value5",
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task SingleParent_Child_WithFragment()
+    {
+        var query = @"
+{
+  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
+    ...parentEntityFields
+  }
+}
+fragment parentEntityFields on ParentGraph {
+  property
+  children(orderBy: {path: ""property""})
+  {
+    property
   }
 }";
 
@@ -1313,7 +1363,7 @@ query ($id: String!)
             services.AddSingleton(type);
         }
 
-        return await QueryExecutor.ExecuteQuery(query, services, dbContext, inputs, filters);
+        return await QueryExecutor.ExecuteQuery(query, services, database.NewDbContext(), inputs, filters);
     }
 
     static IEnumerable<Type> GetGraphQlTypes()

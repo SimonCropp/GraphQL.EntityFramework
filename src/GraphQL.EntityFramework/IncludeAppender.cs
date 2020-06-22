@@ -26,13 +26,13 @@ class IncludeAppender
 
         var type = typeof(TItem);
         var navigationProperty = navigations[type];
-        return AddIncludes(query, context.FieldDefinition, context.SubFields.Values, navigationProperty);
+        return AddIncludes(query, context, navigationProperty);
     }
 
-    IQueryable<T> AddIncludes<T>(IQueryable<T> query, FieldType fieldType, ICollection<Field> subFields, IReadOnlyList<Navigation> navigationProperties)
+    IQueryable<T> AddIncludes<T, TSource>(IQueryable<T> query, ResolveFieldContext<TSource> context, IReadOnlyList<Navigation> navigationProperties)
         where T : class
     {
-        var paths = GetPaths(fieldType, subFields, navigationProperties);
+        var paths = GetPaths(context, navigationProperties);
         foreach (var path in paths)
         {
             query = query.Include(path);
@@ -41,28 +41,48 @@ class IncludeAppender
         return query;
     }
 
-    List<string> GetPaths(FieldType fieldType, ICollection<Field> fields, IReadOnlyList<Navigation> navigationProperty)
+    List<string> GetPaths<TSource>(ResolveFieldContext<TSource> context, IReadOnlyList<Navigation> navigationProperty)
     {
         var list = new List<string>();
 
-        var graph = fieldType.GetComplexGraph();
-        ProcessSubFields(list, null, fields, graph, navigationProperty);
+        AddField(list, context.FieldAst, context.FieldAst.SelectionSet, null, context.FieldDefinition, navigationProperty, context);
+
         return list;
     }
 
-    void AddField(List<string> list, Field field, string? parentPath, FieldType fieldType, IReadOnlyList<Navigation> parentNavigationProperties)
+    void AddField<TSource>(List<string> list, Field field, SelectionSet selectionSet, string? parentPath, FieldType fieldType, IReadOnlyList<Navigation> parentNavigationProperties, ResolveFieldContext<TSource> context, IComplexGraphType? graph = null)
     {
-        if (!fieldType.TryGetComplexGraph(out var graph))
+        if (graph == null && !fieldType.TryGetComplexGraph(out graph))
         {
             return;
         }
 
-        var subFields = field.SelectionSet.Selections.OfType<Field>().ToList();
-        if (IsConnectionNode(field))
+        var subFields = selectionSet.Selections.OfType<Field>().ToList();
+
+        foreach (var inlineFragment in selectionSet.Selections.OfType<InlineFragment>())
+        {
+            if (inlineFragment.Type.GraphTypeFromType(context.Schema) is IComplexGraphType graphFragment)
+            {
+                AddField(list, field, inlineFragment.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graphFragment);
+            }
+        }
+
+        foreach (var fragmentSpread in selectionSet.Selections.OfType<FragmentSpread>())
+        {
+            var fragmentDefinition = context.Fragments.FindDefinition(fragmentSpread.Name);
+            if (fragmentDefinition == null)
+            {
+                continue;
+            }
+
+            AddField(list, field, fragmentDefinition.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graph);
+        }
+
+        if (IsConnectionNode(field) || field == context.FieldAst)
         {
             if (subFields.Count > 0)
             {
-                ProcessSubFields(list, parentPath, subFields, graph!, parentNavigationProperties);
+                ProcessSubFields(list, parentPath, subFields, graph!, parentNavigationProperties, context);
             }
 
             return;
@@ -85,7 +105,7 @@ class IncludeAppender
             list.Add(path);
         }
 
-        ProcessSubFields(list, paths.First(), subFields, graph!, navigations[entityType!]);
+        ProcessSubFields(list, paths.First(), subFields, graph!, navigations[entityType!], context);
     }
 
     static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)
@@ -98,15 +118,14 @@ class IncludeAppender
         return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-
-    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType graph, IReadOnlyList<Navigation> navigationProperties)
+    void ProcessSubFields<TSource>(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType graph, IReadOnlyList<Navigation> navigationProperties, ResolveFieldContext<TSource> context)
     {
         foreach (var subField in subFields)
         {
             var single = graph.Fields.SingleOrDefault(x => x.Name == subField.Name);
             if (single != null)
             {
-                AddField(list, subField, parentPath, single, navigationProperties);
+                AddField(list, subField, subField.SelectionSet, parentPath, single, navigationProperties, context);
             }
         }
     }
@@ -143,14 +162,14 @@ class IncludeAppender
 
     static string[] FieldNameToArray(string fieldName)
     {
-        return new[] {char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1)};
+        return new[] { char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1) };
     }
 
     static bool TryGetIncludeMetadata(FieldType fieldType, [NotNullWhen(true)] out string[]? value)
     {
         if (fieldType.Metadata.TryGetValue("_EF_IncludeName", out var fieldNameObject))
         {
-            value = (string[]) fieldNameObject;
+            value = (string[])fieldNameObject;
             return true;
         }
 
