@@ -167,6 +167,23 @@ Use a DbContext in a Graph:
 snippet: Entity1Graph.cs
 
 
+### InterfaceGraphType
+
+Map a [table-per-hierarchy (TPH) EF Core pattern](https://docs.microsoft.com/en-us/ef/core/modeling/inheritance) to a [GraphQL interface](https://graphql-dotnet.github.io/docs/getting-started/interfaces) to describe the shared properties in the base type, and then each type in the hierarchy to its own GraphQL type.
+
+Given the following entities:
+
+snippet: InheritedEntity.cs
+
+snippet: DerivedEntity.cs
+
+Create the following GraphQL types:
+
+snippet: InterfaceGraph.cs
+
+snippet: DerivedGraph.cs
+
+
 ## Testing the GraphQlController
 
 The `GraphQlController` can be tested using the [ASP.NET Integration tests](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests) via the [Microsoft.AspNetCore.Mvc.Testing NuGet package](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Testing).

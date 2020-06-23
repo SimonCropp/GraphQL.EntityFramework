@@ -22,6 +22,7 @@ To change this file edit the source file and then run MarkdownSnippets.
     * [ExecutionOptions](#executionoptions)
     * [Query](#query)
     * [GraphType](#graphtype)
+    * [InterfaceGraphType](#interfacegraphtype)
   * [Testing the GraphQlController](#testing-the-graphqlcontroller)
   * [GraphQlExtensions](#graphqlextensions)
     * [ExecuteWithErrorCheck](#executewitherrorcheck)<!-- endtoc -->
@@ -452,6 +453,91 @@ public class Entity1Graph :
 }
 ```
 <sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L11' title='File snippet `Entity1Graph.cs` was extracted from'>snippet source</a> | <a href='#snippet-Entity1Graph.cs' title='Navigate to start of snippet `Entity1Graph.cs`'>anchor</a></sup>
+<!-- endsnippet -->
+
+
+### InterfaceGraphType
+
+Map a [table-per-hierarchy (TPH) EF Core pattern](https://docs.microsoft.com/en-us/ef/core/modeling/inheritance) to a [GraphQL interface](https://graphql-dotnet.github.io/docs/getting-started/interfaces) to describe the shared properties in the base type, and then each type in the hierarchy to its own GraphQL type.
+
+Given the following entities:
+
+<!-- snippet: InheritedEntity.cs -->
+<a id='snippet-InheritedEntity.cs'/></a>
+```cs
+using System;
+using System.Collections.Generic;
+
+public abstract class InheritedEntity
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string? Property { get; set; }
+    public IList<DerivedChildEntity> ChildrenFromBase { get; set; } = new List<DerivedChildEntity>();
+}
+```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InheritedEntity.cs#L1-L9' title='File snippet `InheritedEntity.cs` was extracted from'>snippet source</a> | <a href='#snippet-InheritedEntity.cs' title='Navigate to start of snippet `InheritedEntity.cs`'>anchor</a></sup>
+<!-- endsnippet -->
+
+<!-- snippet: DerivedEntity.cs -->
+<a id='snippet-DerivedEntity.cs'/></a>
+```cs
+using System;
+using System.Collections.Generic;
+
+public class DerivedEntity : InheritedEntity
+{
+}
+```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedEntity.cs#L1-L6' title='File snippet `DerivedEntity.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedEntity.cs' title='Navigate to start of snippet `DerivedEntity.cs`'>anchor</a></sup>
+<!-- endsnippet -->
+
+Create the following GraphQL types:
+
+<!-- snippet: InterfaceGraph.cs -->
+<a id='snippet-InterfaceGraph.cs'/></a>
+```cs
+using GraphQL.EntityFramework;
+using GraphQL.Types.Relay;
+
+public class InterfaceGraph :
+    EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
+{
+    public InterfaceGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+        base(graphQlService)
+    {
+        Field(e => e.Id);
+        Field(e => e.Property, nullable: true);
+        AddNavigationConnectionField<DerivedChildEntity>(
+            name: "childrenFromInterface",
+            includeNames: new[] { "ChildrenFromBase" });
+    }
+}
+```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraph.cs#L1-L16' title='File snippet `InterfaceGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-InterfaceGraph.cs' title='Navigate to start of snippet `InterfaceGraph.cs`'>anchor</a></sup>
+<!-- endsnippet -->
+
+<!-- snippet: DerivedGraph.cs -->
+<a id='snippet-DerivedGraph.cs'/></a>
+```cs
+using GraphQL.EntityFramework;
+using GraphQL.Types.Relay;
+
+public class DerivedGraph :
+    EfObjectGraphType<IntegrationDbContext, DerivedEntity>
+{
+    public DerivedGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+        base(graphQlService)
+    {
+        AddNavigationConnectionField<DerivedChildEntity>(
+            name: "childrenFromInterface",
+            e => e.Source.ChildrenFromBase);
+        AutoMap();
+        Interface<InterfaceGraph>();
+        IsTypeOf = obj => obj is DerivedEntity;
+    }
+}
+```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraph.cs#L1-L17' title='File snippet `DerivedGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedGraph.cs' title='Navigate to start of snippet `DerivedGraph.cs`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
