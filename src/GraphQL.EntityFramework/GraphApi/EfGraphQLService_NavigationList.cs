@@ -19,15 +19,30 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            Guard.AgainstNull(nameof(resolve), resolve);
 
             var field = BuildNavigationField(itemGraphType, name, resolve, includeNames, arguments);
+            return graph.AddField(field);
+        }
+
+        public FieldType AddNavigationListField<TSource, TReturn>(
+            InterfaceGraphType<TSource> graph,
+            string name,
+            Type? itemGraphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            IEnumerable<string>? includeNames = null)
+            where TReturn : class
+        {
+            Guard.AgainstNull(nameof(graph), graph);
+
+            var field = BuildNavigationField<TSource, TReturn>(itemGraphType, name, null, includeNames, arguments);
             return graph.AddField(field);
         }
 
         FieldType BuildNavigationField<TSource, TReturn>(
             Type? itemGraphType,
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
             IEnumerable<string>? includeNames,
             IEnumerable<QueryArgument>? arguments)
             where TReturn : class
@@ -38,31 +53,35 @@ namespace GraphQL.EntityFramework
 
         FieldType BuildNavigationField<TSource, TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
             IEnumerable<string>? includeNames,
             Type listGraphType,
             IEnumerable<QueryArgument>? arguments)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-            Guard.AgainstNull(nameof(resolve), resolve);
 
-            return new FieldType
+            var fieldType = new FieldType
             {
                 Name = name,
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
-                Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
+                Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames)
+            };
 
-                Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
+            if (resolve != null)
+            {
+                fieldType.Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     context =>
                     {
                         var efFieldContext = BuildContext(context);
                         var result = resolve(efFieldContext);
                         result = result.ApplyGraphQlArguments(context);
                         return efFieldContext.Filters.ApplyFilter(result, context.UserContext);
-                    })
-            };
+                    });
+            }
+
+            return fieldType;
         }
     }
 }

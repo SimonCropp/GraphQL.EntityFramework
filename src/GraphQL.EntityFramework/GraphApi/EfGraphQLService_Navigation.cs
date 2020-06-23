@@ -18,28 +18,45 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            Guard.AgainstNull(nameof(resolve), resolve);
+
             var field = BuildNavigationField(name, resolve, includeNames, graphType);
+            return graph.AddField(field);
+        }
+
+        public FieldType AddNavigationField<TSource, TReturn>(
+            InterfaceGraphType<TSource> graph,
+            string name,
+            Type? graphType = null,
+            IEnumerable<string>? includeNames = null)
+            where TReturn : class
+        {
+            Guard.AgainstNull(nameof(graph), graph);
+            var field = BuildNavigationField<TSource, TReturn>(name, null, includeNames, graphType);
             return graph.AddField(field);
         }
 
         FieldType BuildNavigationField<TSource, TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve,
             IEnumerable<string>? includeNames,
             Type? graphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-            Guard.AgainstNull(nameof(resolve), resolve);
 
             graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
-            return new FieldType
+            var fieldType = new FieldType
             {
                 Name = name,
                 Type = graphType,
-                Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
-                Resolver = new AsyncFieldResolver<TSource, TReturn?>(
+                Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames)
+            };
+
+            if (resolve != null)
+            {
+                fieldType.Resolver = new AsyncFieldResolver<TSource, TReturn?>(
                     async context =>
                     {
                         var efFieldContext = BuildContext(context);
@@ -51,8 +68,10 @@ namespace GraphQL.EntityFramework
                         }
 
                         return null;
-                    })
-            };
+                    });
+            }
+
+            return fieldType;
         }
     }
 }

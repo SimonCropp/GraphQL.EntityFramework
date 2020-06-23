@@ -22,6 +22,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            Guard.AgainstNull(nameof(resolve), resolve);
 
             var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, itemGraphType);
 
@@ -30,16 +31,33 @@ namespace GraphQL.EntityFramework
             field.AddWhereArgument(arguments);
         }
 
+        public void AddNavigationConnectionField<TSource, TReturn>(
+            InterfaceGraphType<TSource> graph,
+            string name,
+            Type? itemGraphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            IEnumerable<string>? includeNames = null,
+            int pageSize = 10)
+            where TReturn : class
+        {
+            Guard.AgainstNull(nameof(graph), graph);
+
+            var connection = BuildListConnectionField<TSource, TReturn>(name, null, includeNames, pageSize, itemGraphType);
+
+            var field = graph.AddField(connection.FieldType);
+
+            field.AddWhereArgument(arguments);
+        }
+
         ConnectionBuilder<FakeGraph, TSource> BuildListConnectionField<TSource, TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
             IEnumerable<string>? includeName,
             int pageSize,
             Type? itemGraphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-            Guard.AgainstNull(nameof(resolve), resolve);
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
             itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
@@ -51,23 +69,26 @@ namespace GraphQL.EntityFramework
             SetField(builder, fieldType);
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeName);
 
-            builder.ResolveAsync(async context =>
+            if (resolve != null)
             {
-                var efFieldContext = BuildContext(context);
+                builder.ResolveAsync(async context =>
+                {
+                    var efFieldContext = BuildContext(context);
 
-                var enumerable = resolve(efFieldContext);
+                    var enumerable = resolve(efFieldContext);
 
-                enumerable = enumerable.ApplyGraphQlArguments(context);
-                enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext);
-                var page = enumerable.ToList();
+                    enumerable = enumerable.ApplyGraphQlArguments(context);
+                    enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext);
+                    var page = enumerable.ToList();
 
-                return ConnectionConverter.ApplyConnectionContext(
-                    page,
-                    context.First,
-                    context.After,
-                    context.Last,
-                    context.Before);
-            });
+                    return ConnectionConverter.ApplyConnectionContext(
+                        page,
+                        context.First,
+                        context.After,
+                        context.Last,
+                        context.Before);
+                });
+            }
 
             return builder;
         }

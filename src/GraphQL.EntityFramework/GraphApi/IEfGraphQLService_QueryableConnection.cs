@@ -10,7 +10,7 @@ namespace GraphQL.EntityFramework
         void AddQueryConnectionField<TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext,object>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
@@ -19,7 +19,7 @@ namespace GraphQL.EntityFramework
         void AddQueryConnectionField<TSource, TReturn>(
             ObjectGraphType graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
@@ -28,7 +28,15 @@ namespace GraphQL.EntityFramework
         void AddQueryConnectionField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext,TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+            Type? itemGraphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            int pageSize = 10)
+            where TReturn : class;
+
+        void AddQueryConnectionField<TSource, TReturn>(
+            InterfaceGraphType<TSource> graph,
+            string name,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10)
