@@ -20,6 +20,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            Guard.AgainstNull(nameof(resolve), resolve);
 
             var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType);
 
@@ -38,6 +39,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            Guard.AgainstNull(nameof(resolve), resolve);
 
             var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType);
 
@@ -56,6 +58,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
+            Guard.AgainstNull(nameof(resolve), resolve);
 
             var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType);
 
@@ -64,15 +67,31 @@ namespace GraphQL.EntityFramework
             field.AddWhereArgument(arguments);
         }
 
+        public void AddQueryConnectionField<TSource, TReturn>(
+            InterfaceGraphType<TSource> graph,
+            string name,
+            Type? itemGraphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            int pageSize = 10)
+            where TReturn : class
+        {
+            Guard.AgainstNull(nameof(graph), graph);
+
+            var connection = BuildQueryConnectionField<TSource, TReturn>(name, null, pageSize, itemGraphType);
+
+            var field = graph.AddField(connection.FieldType);
+
+            field.AddWhereArgument(arguments);
+        }
+
         ConnectionBuilder<FakeGraph, TSource> BuildQueryConnectionField<TSource, TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
             int pageSize,
             Type? itemGraphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-            Guard.AgainstNull(nameof(resolve), resolve);
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
             itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
@@ -83,24 +102,27 @@ namespace GraphQL.EntityFramework
             builder.PageSize(pageSize);
             SetField(builder, fieldType);
 
-            builder.Resolve(
-                context =>
-                {
-                    var efFieldContext = BuildContext(context);
-                    var query = resolve(efFieldContext);
-                    query = includeAppender.AddIncludes(query, context);
-                    var names = GetKeyNames<TReturn>();
-                    query = query.ApplyGraphQlArguments(context, names);
-                    return query
-                        .ApplyConnectionContext(
-                            context.First,
-                            context.After,
-                            context.Last,
-                            context.Before,
-                            context,
-                            context.CancellationToken,
-                            efFieldContext.Filters);
-                });
+            if (resolve != null)
+            {
+                builder.Resolve(
+                    context =>
+                    {
+                        var efFieldContext = BuildContext(context);
+                        var query = resolve(efFieldContext);
+                        query = includeAppender.AddIncludes(query, context);
+                        var names = GetKeyNames<TReturn>();
+                        query = query.ApplyGraphQlArguments(context, names);
+                        return query
+                            .ApplyConnectionContext(
+                                context.First,
+                                context.After,
+                                context.Last,
+                                context.Before,
+                                context,
+                                context.CancellationToken,
+                                efFieldContext.Filters);
+                    });
+            }
 
             return builder;
         }

@@ -83,6 +83,18 @@ namespace GraphQL.EntityFramework
             return graph.AddField(field);
         }
 
+        public FieldType AddQueryField<TSource, TReturn>(
+            InterfaceGraphType<TSource> graph,
+            string name,
+            Type? itemGraphType = null,
+            IEnumerable<QueryArgument>? arguments = null)
+            where TReturn : class
+        {
+            Guard.AgainstNull(nameof(graph), graph);
+            var field = BuildQueryField<TSource, TReturn>(name, null, arguments, itemGraphType);
+            return graph.AddField(field);
+        }
+
         FieldType BuildQueryField<TSource, TReturn>(
             Type? itemGraphType,
             string name,
@@ -90,28 +102,32 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument>? arguments)
             where TReturn : class
         {
+            Guard.AgainstNull(nameof(resolve), resolve);
+
             return BuildQueryField(name, resolve, arguments, itemGraphType);
         }
 
         FieldType BuildQueryField<TSource, TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>>? resolve,
             IEnumerable<QueryArgument>? arguments,
             Type? itemGraphType)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-            Guard.AgainstNull(nameof(resolve), resolve);
 
             var listGraphType = MakeListGraphType<TReturn>(itemGraphType);
 
-            return new FieldType
+            var fieldType = new FieldType
             {
                 Name = name,
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
+            };
 
-                Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
+            if (resolve != null)
+            {
+                fieldType.Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     async context =>
                     {
                         var efFieldContext = BuildContext(context);
@@ -122,8 +138,10 @@ namespace GraphQL.EntityFramework
 
                         var list = await query.ToListAsync(context.CancellationToken);
                         return await efFieldContext.Filters.ApplyFilter(list, context.UserContext);
-                    })
-            };
+                    });
+            }
+
+            return fieldType;
         }
 
         static Type listGraphType = typeof(ListGraphType<>);

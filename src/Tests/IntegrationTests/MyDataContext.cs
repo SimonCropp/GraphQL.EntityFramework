@@ -21,6 +21,7 @@ public class IntegrationDbContext :
     public DbSet<Child1Entity> Child1Entities { get; set; } = null!;
     public DbSet<Child2Entity> Child2Entities { get; set; } = null!;
     public DbSet<ParentEntityView> ParentEntityView { get; set; } = null!;
+    public DbSet<InheritedEntity> InheritedEntities { get; set; } = null!;
 
     public IntegrationDbContext(DbContextOptions options) :
         base(options)
@@ -53,5 +54,11 @@ public class IntegrationDbContext :
         modelBuilder.Entity<Child1Entity>();
         modelBuilder.Entity<NamedIdEntity>();
         modelBuilder.Entity<Child2Entity>();
+        modelBuilder.Entity<DerivedEntity>().HasBaseType<InheritedEntity>();
+        modelBuilder.Entity<DerivedWithNavigationEntity>()
+            .HasBaseType<InheritedEntity>()
+            .HasMany(e => e.Children)
+            .WithOne(e => e.TypedParent!)
+            .HasForeignKey(e => e.TypedParentId);
     }
 }

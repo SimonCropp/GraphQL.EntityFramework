@@ -80,5 +80,11 @@ public class Query :
             name: "parentEntityNullable",
             resolve: context => context.DbContext.ParentEntities,
             nullable: true);
+
+        efGraphQlService.AddQueryConnectionField(
+            this,
+            itemGraphType: typeof(InterfaceGraph),
+            name: "interfaceGraphConnection",
+            resolve: context => context.DbContext.InheritedEntities);
     }
 }

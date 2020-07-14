@@ -24,7 +24,11 @@ To change this file edit the source file and then run MarkdownSnippets.
     * [GraphType](#graphtype)
   * [Testing the GraphQlController](#testing-the-graphqlcontroller)
   * [GraphQlExtensions](#graphqlextensions)
-    * [ExecuteWithErrorCheck](#executewitherrorcheck)<!-- endtoc -->
+    * [ExecuteWithErrorCheck](#executewitherrorcheck)
+  * [EF Core TPH and GraphQL Interface](#ef-core-tph-and-graphql-interface)
+    * [EF Core Entities](#ef-core-entities)
+    * [GraphQL types](#graphql-types)
+    * [GraphQL query](#graphql-query)<!-- endtoc -->
 
 
 ## Container Registration
@@ -750,3 +754,98 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
 ```
 <sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L9-L33' title='File snippet `executewitherrorcheck` was extracted from'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Navigate to start of snippet `executewitherrorcheck`'>anchor</a></sup>
 <!-- endsnippet -->
+
+
+## EF Core TPH and GraphQL Interface
+
+Map a [table-per-hierarchy (TPH) EF Core pattern](https://docs.microsoft.com/en-us/ef/core/modeling/inheritance) to a [GraphQL interface](https://graphql-dotnet.github.io/docs/getting-started/interfaces) to describe the shared properties in the base type, and then each type in the hierarchy to its own GraphQL type. From now on, a GraphQL query returning the interface type could be defined, allowing clients to request either common properties or specific one using [inline fragments](https://graphql.org/learn/queries/#inline-fragments).
+
+### EF Core Entities
+
+<!-- snippet: InheritedEntity.cs -->
+<a id='snippet-InheritedEntity.cs'/></a>
+```cs
+using System;
+using System.Collections.Generic;
+
+public abstract class InheritedEntity
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string? Property { get; set; }
+    public IList<DerivedChildEntity> ChildrenFromBase { get; set; } = new List<DerivedChildEntity>();
+}
+```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InheritedEntity.cs#L1-L9' title='File snippet `InheritedEntity.cs` was extracted from'>snippet source</a> | <a href='#snippet-InheritedEntity.cs' title='Navigate to start of snippet `InheritedEntity.cs`'>anchor</a></sup>
+<!-- endsnippet -->
+
+<!-- snippet: DerivedEntity.cs -->
+<a id='snippet-DerivedEntity.cs'/></a>
+```cs
+using System;
+using System.Collections.Generic;
+
+public class DerivedEntity : InheritedEntity
+{
+}
+```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedEntity.cs#L1-L6' title='File snippet `DerivedEntity.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedEntity.cs' title='Navigate to start of snippet `DerivedEntity.cs`'>anchor</a></sup>
+<!-- endsnippet -->
+
+### GraphQL types
+
+<!-- snippet: InterfaceGraph.cs -->
+<a id='snippet-InterfaceGraph.cs'/></a>
+```cs
+using GraphQL.EntityFramework;
+using GraphQL.Types.Relay;
+
+public class InterfaceGraph :
+    EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
+{
+    public InterfaceGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+        base(graphQlService)
+    {
+        Field(e => e.Id);
+        Field(e => e.Property, nullable: true);
+        AddNavigationConnectionField<DerivedChildEntity>(
+            name: "childrenFromInterface",
+            includeNames: new[] { "ChildrenFromBase" });
+    }
+}
+```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraph.cs#L1-L16' title='File snippet `InterfaceGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-InterfaceGraph.cs' title='Navigate to start of snippet `InterfaceGraph.cs`'>anchor</a></sup>
+<!-- endsnippet -->
+
+<!-- snippet: DerivedGraph.cs -->
+<a id='snippet-DerivedGraph.cs'/></a>
+```cs
+using GraphQL.EntityFramework;
+using GraphQL.Types.Relay;
+
+public class DerivedGraph :
+    EfObjectGraphType<IntegrationDbContext, DerivedEntity>
+{
+    public DerivedGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+        base(graphQlService)
+    {
+        AddNavigationConnectionField<DerivedChildEntity>(
+            name: "childrenFromInterface",
+            e => e.Source.ChildrenFromBase);
+        AutoMap();
+        Interface<InterfaceGraph>();
+        IsTypeOf = obj => obj is DerivedEntity;
+    }
+}
+```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraph.cs#L1-L17' title='File snippet `DerivedGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedGraph.cs' title='Navigate to start of snippet `DerivedGraph.cs`'>anchor</a></sup>
+<!-- endsnippet -->
+
+### GraphQL query
+
+```csharp
+efGraphQlService.AddQueryConnectionField(
+    this,
+    itemGraphType: typeof(InterfaceGraph),
+    name: "interfaceGraphConnection",
+    resolve: context => context.DbContext.InheritedEntities);
+```

@@ -36,6 +36,9 @@ public partial class IntegrationTests
         GraphTypeTypeRegistry.Register<WithNullableEntity, WithNullableGraph>();
         GraphTypeTypeRegistry.Register<NamedIdEntity, NamedIdGraph>();
         GraphTypeTypeRegistry.Register<WithMisNamedQueryChildEntity, WithMisNamedQueryChildGraph>();
+        GraphTypeTypeRegistry.Register<DerivedEntity, DerivedGraph>();
+        GraphTypeTypeRegistry.Register<DerivedWithNavigationEntity, DerivedWithNavigationGraph>();
+        GraphTypeTypeRegistry.Register<DerivedChildEntity, DerivedChildGraph>();
 
         sqlInstance = new SqlInstance<IntegrationDbContext>(
             buildTemplate: async data =>
@@ -492,7 +495,7 @@ query ($value: String!)
 mutation {
   parentEntityMutation(id: ""00000000-0000-0000-0000-000000000001"") {
     property
-    children
+    children(orderBy: {path: ""property""})
     {
       property
     }
@@ -539,11 +542,64 @@ mutation {
 {
   parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
     property
-    children
+    children(orderBy: {path: ""property""})
     {
       property
     }
   }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Property = "Value5",
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task SingleParent_Child_WithFragment()
+    {
+        var query = @"
+{
+  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
+    ...parentEntityFields
+  }
+}
+fragment parentEntityFields on ParentGraph {
+  property
+  children(orderBy: {path: ""property""})
+  {
+    ...childEntityFields
+  }
+}
+fragment childEntityFields on ChildGraph {
+  property
 }";
 
         var entity1 = new ParentEntity
@@ -1294,6 +1350,79 @@ query ($id: String!)
         await Verifier.Verify(result);
     }
 
+    [Fact]
+    public async Task InheritedEntityInterface()
+    {
+        var query = @"
+{
+  interfaceGraphConnection {
+    items {
+      ...inheritedEntityFields
+    }
+  }
+}
+fragment inheritedEntityFields on InterfaceGraph {
+  property
+  childrenFromInterface(orderBy: {path: ""property""})
+  {
+    items {
+      ...childEntityFields
+    }
+  }
+  ... on DerivedWithNavigationGraph {
+    childrenFromDerived(orderBy: {path: ""property""})
+    {
+      items {
+        ...childEntityFields
+      }
+    }   
+  }
+}
+fragment childEntityFields on DerivedChildGraph {
+  property
+}";
+
+        var derivedEntity1 = new DerivedEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var childEntity1 = new DerivedChildEntity
+        {
+            Property = "Value2",
+            Parent = derivedEntity1
+        };
+        var childEntity2 = new DerivedChildEntity
+        {
+            Property = "Value3",
+            Parent = derivedEntity1
+        };
+        derivedEntity1.ChildrenFromBase.Add(childEntity1);
+        derivedEntity1.ChildrenFromBase.Add(childEntity2);
+
+        var derivedEntity2 = new DerivedWithNavigationEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value4"
+        };
+        var childEntity3 = new DerivedChildEntity
+        {
+            Property = "Value5",
+            Parent = derivedEntity2
+        };
+        var childEntity4 = new DerivedChildEntity
+        {
+            Property = "Value6",
+            TypedParent = derivedEntity2
+        };
+        derivedEntity2.ChildrenFromBase.Add(childEntity3);
+        derivedEntity2.Children.Add(childEntity4);
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, derivedEntity1, childEntity1, childEntity2, derivedEntity2, childEntity3, childEntity4);
+        await Verifier.Verify(result);
+    }
+
     static async Task<object> RunQuery(
         SqlDatabase<IntegrationDbContext> database,
         string query,
@@ -1313,7 +1442,7 @@ query ($id: String!)
             services.AddSingleton(type);
         }
 
-        return await QueryExecutor.ExecuteQuery(query, services, dbContext, inputs, filters);
+        return await QueryExecutor.ExecuteQuery(query, services, database.NewDbContext(), inputs, filters);
     }
 
     static IEnumerable<Type> GetGraphQlTypes()

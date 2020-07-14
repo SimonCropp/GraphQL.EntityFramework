@@ -8,5 +8,7 @@ public class Schema :
     {
         Query = resolver.Resolve<Query>();
         Mutation = resolver.Resolve<Mutation>();
+        RegisterType<DerivedGraph>();
+        RegisterType<DerivedWithNavigationGraph>();
     }
 }
