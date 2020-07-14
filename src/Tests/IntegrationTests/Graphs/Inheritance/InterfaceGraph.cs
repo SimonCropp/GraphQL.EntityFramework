@@ -1,5 +1,4 @@
 ﻿using GraphQL.EntityFramework;
-using GraphQL.Types.Relay;
 
 public class InterfaceGraph :
     EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>

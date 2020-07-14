@@ -781,14 +781,12 @@ public abstract class InheritedEntity
 <!-- snippet: DerivedEntity.cs -->
 <a id='snippet-DerivedEntity.cs'/></a>
 ```cs
-using System;
-using System.Collections.Generic;
 
 public class DerivedEntity : InheritedEntity
 {
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedEntity.cs#L1-L6' title='File snippet `DerivedEntity.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedEntity.cs' title='Navigate to start of snippet `DerivedEntity.cs`'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedEntity.cs#L1-L4' title='File snippet `DerivedEntity.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedEntity.cs' title='Navigate to start of snippet `DerivedEntity.cs`'>anchor</a></sup>
 <!-- endsnippet -->
 
 ### GraphQL types
@@ -820,7 +818,6 @@ public class InterfaceGraph :
 <a id='snippet-DerivedGraph.cs'/></a>
 ```cs
 using GraphQL.EntityFramework;
-using GraphQL.Types.Relay;
 
 public class DerivedGraph :
     EfObjectGraphType<IntegrationDbContext, DerivedEntity>
@@ -837,7 +834,7 @@ public class DerivedGraph :
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraph.cs#L1-L17' title='File snippet `DerivedGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedGraph.cs' title='Navigate to start of snippet `DerivedGraph.cs`'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraph.cs#L1-L16' title='File snippet `DerivedGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedGraph.cs' title='Navigate to start of snippet `DerivedGraph.cs`'>anchor</a></sup>
 <!-- endsnippet -->
 
 ### GraphQL query

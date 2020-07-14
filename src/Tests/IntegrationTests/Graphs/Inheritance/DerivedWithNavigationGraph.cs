@@ -1,5 +1,4 @@
 ﻿using GraphQL.EntityFramework;
-using GraphQL.Types.Relay;
 
 public class DerivedWithNavigationGraph :
     EfObjectGraphType<IntegrationDbContext, DerivedWithNavigationEntity>
@@ -7,10 +6,10 @@ public class DerivedWithNavigationGraph :
     public DerivedWithNavigationGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        AddNavigationConnectionField<DerivedChildEntity>(
+        AddNavigationConnectionField(
             name: "childrenFromInterface",
             e => e.Source.ChildrenFromBase);
-        AddNavigationConnectionField<DerivedChildEntity>(
+        AddNavigationConnectionField(
             name: "childrenFromDerived",
             e => e.Source.Children,
             includeNames: new[] { "Children" });

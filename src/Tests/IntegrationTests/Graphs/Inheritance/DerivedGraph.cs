@@ -1,5 +1,4 @@
 ﻿using GraphQL.EntityFramework;
-using GraphQL.Types.Relay;
 
 public class DerivedGraph :
     EfObjectGraphType<IntegrationDbContext, DerivedEntity>
@@ -7,7 +6,7 @@ public class DerivedGraph :
     public DerivedGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        AddNavigationConnectionField<DerivedChildEntity>(
+        AddNavigationConnectionField(
             name: "childrenFromInterface",
             e => e.Source.ChildrenFromBase);
         AutoMap();
