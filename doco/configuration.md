@@ -795,7 +795,6 @@ public class DerivedEntity : InheritedEntity
 <a id='snippet-InterfaceGraph.cs'/></a>
 ```cs
 using GraphQL.EntityFramework;
-using GraphQL.Types.Relay;
 
 public class InterfaceGraph :
     EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
@@ -811,7 +810,7 @@ public class InterfaceGraph :
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraph.cs#L1-L16' title='File snippet `InterfaceGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-InterfaceGraph.cs' title='Navigate to start of snippet `InterfaceGraph.cs`'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraph.cs#L1-L15' title='File snippet `InterfaceGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-InterfaceGraph.cs' title='Navigate to start of snippet `InterfaceGraph.cs`'>anchor</a></sup>
 <!-- endsnippet -->
 
 <!-- snippet: DerivedGraph.cs -->
@@ -825,7 +824,7 @@ public class DerivedGraph :
     public DerivedGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        AddNavigationConnectionField<DerivedChildEntity>(
+        AddNavigationConnectionField(
             name: "childrenFromInterface",
             e => e.Source.ChildrenFromBase);
         AutoMap();
