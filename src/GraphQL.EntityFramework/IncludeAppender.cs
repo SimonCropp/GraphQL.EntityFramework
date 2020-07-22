@@ -25,7 +25,11 @@ class IncludeAppender
         }
 
         var type = typeof(TItem);
-        var navigationProperty = navigations[type];
+        if (!navigations.TryGetValue(type, out var navigationProperty))
+        {
+            return query;
+        }
+
         return AddIncludes(query, context, navigationProperty);
     }
 
