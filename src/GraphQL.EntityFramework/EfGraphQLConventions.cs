@@ -41,13 +41,8 @@ namespace GraphQL.EntityFramework
             where TDbContext : DbContext
         {
             model ??= ResolveModel<TDbContext>(provider);
-
             filters ??= provider.GetService<ResolveFilters>();
-
-            if (dbContextResolver == null)
-            {
-                dbContextResolver = context => DbContextFromProvider<TDbContext>(provider);
-            }
+            dbContextResolver ??= context => DbContextFromProvider<TDbContext>(provider);
 
             return new EfGraphQLService<TDbContext>(
                 model,
