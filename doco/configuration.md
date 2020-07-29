@@ -665,46 +665,51 @@ query ($id: ID!)
         response.EnsureSuccessStatusCode();
     }
 
-    [Fact]
-    public async Task Should_subscribe_to_companies()
-    {
-        var resetEvent = new AutoResetEvent(false);
+    //TODO: https://github.com/graphql-dotnet/graphql-client
+  //  [Fact]
+//    public async Task Should_subscribe_to_companies()
+//    {
+//        var resetEvent = new AutoResetEvent(false);
 
-        var result = new GraphQLHttpSubscriptionResult(
-            new Uri("http://example.com/graphql"),
-            new GraphQLRequest
-            {
-                Query = @"
-subscription
-{
-  companyChanged
-  {
-    id
-  }
-}"
-            },
-            websocketClient,response => {
-                if (response == null)
-                {
-                    return;
-                }
-                Assert.Null(response.Errors);
+//        var result = new GraphQLHttpSubscriptionResult(
+//            new Uri("http://example.com/graphql"),
+//            new GraphQLRequest
+//            {
+//                Query = @"
+//subscription
+//{
+//  companyChanged
+//  {
+//    id
+//  }
+//}"
+//            },
+//            websocketClient,
+//            response =>
+//            {
+//                if (response == null)
+//                {
+//                    return;
+//                }
 
-                if (response.Data != null)
-                {
-                    resetEvent.Set();
-                }});
+//                Assert.Null(response.Errors);
 
-        var cancellationSource = new CancellationTokenSource();
+//                if (response.Data != null)
+//                {
+//                    resetEvent.Set();
+//                }
+//            });
 
-        var task = result.StartAsync(cancellationSource.Token);
+//        var cancellationSource = new CancellationTokenSource();
 
-        Assert.True(resetEvent.WaitOne(TimeSpan.FromSeconds(10)));
+//        var task = result.StartAsync(cancellationSource.Token);
 
-        cancellationSource.Cancel();
+//        Assert.True(resetEvent.WaitOne(TimeSpan.FromSeconds(10)));
 
-        await task;
-    }
+//        cancellationSource.Cancel();
+
+//        await task;
+//    }
 
     static TestServer GetTestServer()
     {
@@ -714,7 +719,7 @@ subscription
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L12-L263' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L9-L265' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
