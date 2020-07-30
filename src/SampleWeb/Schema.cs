@@ -7,6 +7,6 @@ public class Schema :
         base(provider)
     {
         Query = (Query)provider.GetService(typeof(Query));
-        Subscription = (Subscription)provider.GetService(typeof(Subscription));
+     //   Subscription = (Subscription)provider.GetService(typeof(Subscription));
     }
 }

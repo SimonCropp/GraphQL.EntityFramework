@@ -4,7 +4,6 @@ using System.Linq;
 using GraphiQl;
 using GraphQL.EntityFramework;
 using GraphQL;
-using GraphQL.Server;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.AspNetCore.Builder;
@@ -28,10 +27,10 @@ public class Startup
         {
             services.AddSingleton(type);
         }
-
-        var graphQl = services.AddGraphQL(
-            options => options.ExposeExceptions = true);
-        graphQl.AddWebSockets();
+        //TODO: re add for subscriptions
+        //var graphQl = services.AddGraphQL(
+        //    options => options.ExposeExceptions = true);
+        //graphQl.AddWebSockets();
 
         var dbContextBuilder = new DbContextBuilder();
         services.AddSingleton<IHostedService>(dbContextBuilder);
@@ -56,7 +55,7 @@ public class Startup
     public void Configure(IApplicationBuilder builder)
     {
         builder.UseWebSockets();
-        builder.UseGraphQLWebSockets<ISchema>();
+        //builder.UseGraphQLWebSockets<ISchema>();
         builder.UseGraphiQl("/graphiql", "/graphql");
         builder.UseMvc();
     }
