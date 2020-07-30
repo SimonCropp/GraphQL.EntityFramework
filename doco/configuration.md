@@ -288,7 +288,7 @@ public class GraphQlController :
         return Execute(query, operationName, jObject, cancellation);
     }
 
-    Task<ExecutionResult> Execute(string query,
+    async Task<ExecutionResult> Execute(string query,
         string? operationName,
         JObject? variables,
         CancellationToken cancellation)
@@ -305,8 +305,13 @@ public class GraphQlController :
             EnableMetrics = true,
 #endif
         };
+        var executeAsync = await executer.ExecuteAsync(options);
 
-        return executer.ExecuteAsync(options);
+        return new ExecutionResult
+        {
+            Data = executeAsync.Data,
+            Errors = executeAsync.Errors
+        };
     }
 
     static JObject? ParseVariables(string? variables)
@@ -327,7 +332,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L90' title='File snippet `graphqlcontroller` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Navigate to start of snippet `graphqlcontroller`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L95' title='File snippet `graphqlcontroller` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Navigate to start of snippet `graphqlcontroller`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
