@@ -15,13 +15,14 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            IEnumerable<string>? includeNames = null)
+            IEnumerable<string>? includeNames = null,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            var field = BuildNavigationField(itemGraphType, name, resolve, includeNames, arguments);
+            var field = BuildNavigationField(itemGraphType, name, resolve, includeNames, arguments, description);
             return graph.AddField(field);
         }
 
@@ -30,12 +31,13 @@ namespace GraphQL.EntityFramework
             string name,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            IEnumerable<string>? includeNames = null)
+            IEnumerable<string>? includeNames = null,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
 
-            var field = BuildNavigationField<TSource, TReturn>(itemGraphType, name, null, includeNames, arguments);
+            var field = BuildNavigationField<TSource, TReturn>(itemGraphType, name, null, includeNames, arguments, description);
             return graph.AddField(field);
         }
 
@@ -44,11 +46,12 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
             IEnumerable<string>? includeNames,
-            IEnumerable<QueryArgument>? arguments)
+            IEnumerable<QueryArgument>? arguments,
+            string? description)
             where TReturn : class
         {
             var listGraphType = MakeListGraphType<TReturn>(itemGraphType);
-            return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments);
+            return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments, description);
         }
 
         FieldType BuildNavigationField<TSource, TReturn>(
@@ -56,7 +59,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
             IEnumerable<string>? includeNames,
             Type listGraphType,
-            IEnumerable<QueryArgument>? arguments)
+            IEnumerable<QueryArgument>? arguments,
+            string? description)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -64,6 +68,7 @@ namespace GraphQL.EntityFramework
             var fieldType = new FieldType
             {
                 Name = name,
+                Description = description,
                 Type = listGraphType,
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames)

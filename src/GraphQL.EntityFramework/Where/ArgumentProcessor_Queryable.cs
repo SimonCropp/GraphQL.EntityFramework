@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
 {
     public static partial class ArgumentProcessor
     {
-        public static IQueryable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IQueryable<TItem> queryable, ResolveFieldContext<TSource> context, List<string>? keyNames = null)
+        public static IQueryable<TItem> ApplyGraphQlArguments<TItem>(this IQueryable<TItem> queryable, IResolveFieldContext context, List<string>? keyNames = null)
             where TItem : class
         {
             Guard.AgainstNull(nameof(queryable), queryable);

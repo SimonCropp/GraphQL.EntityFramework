@@ -8,21 +8,23 @@ namespace GraphQL.EntityFramework
     public partial interface IEfGraphQLService<TDbContext>
     {
         void AddQueryConnectionField<TReturn>(
-            ObjectGraphType graph,
+            IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class;
 
         void AddQueryConnectionField<TSource, TReturn>(
-            ObjectGraphType graph,
+            IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class;
 
         void AddQueryConnectionField<TSource, TReturn>(
@@ -31,7 +33,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class;
 
         void AddQueryConnectionField<TSource, TReturn>(
@@ -39,7 +42,8 @@ namespace GraphQL.EntityFramework
             string name,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class;
     }
 }

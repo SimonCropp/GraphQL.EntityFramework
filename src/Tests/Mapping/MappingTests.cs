@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EfLocalDb;
+using GraphQL;
 using GraphQL.EntityFramework;
-using GraphQL.Types;
 using GraphQL.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 using VerifyXunit;
 using Xunit;
 
@@ -28,7 +29,14 @@ public class MappingTests
     public async Task SchemaPrint()
     {
         var graphQlService = new EfGraphQLService<MappingContext>(sqlInstance.Model, userContext => null!);
-        var printer = new SchemaPrinter(new MappingSchema(graphQlService));
+        var services = new ServiceCollection();
+        EfGraphQLConventions.RegisterInContainer<MappingContext>(services);
+        services.AddSingleton(new MappingChildGraph(graphQlService));
+        services.AddSingleton(new MappingParentGraph(graphQlService));
+        await using var provider = services.BuildServiceProvider();
+        MappingSchema mappingSchema = new MappingSchema(graphQlService, provider);
+
+        var printer = new SchemaPrinter(mappingSchema);
         var print = printer.Print();
         await Verifier.Verify(print);
     }

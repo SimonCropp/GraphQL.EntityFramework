@@ -1,3 +1,7 @@
+scalar BigInt
+
+scalar Byte
+
 type CompanyGraph {
   employees(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [EmployeeGraph!]!
   employeesConnection(after: String, first: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): EmployeeGraphConnection
@@ -5,7 +9,6 @@ type CompanyGraph {
   id: Int!
 }
 
-# A connection from an object to a list of objects of type `CompanyGraph`.
 type CompanyGraphConnection {
   totalCount: Int
   pageInfo: PageInfo!
@@ -13,7 +16,6 @@ type CompanyGraphConnection {
   items: [CompanyGraph]
 }
 
-# An edge in a connection from an object to another object of type `CompanyGraph`.
 type CompanyGraphEdge {
   cursor: String!
   node: CompanyGraph
@@ -40,18 +42,10 @@ enum Connector {
   or
 }
 
-# The `Date` scalar type represents a year, month and day in accordance with the
-# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
 scalar Date
 
-# The `DateTime` scalar type represents a date and time. `DateTime` expects
-# timestamps to be formatted in accordance with the
-# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
 scalar DateTime
 
-# The `DateTimeOffset` scalar type represents a date, time and offset from UTC.
-# `DateTimeOffset` expects timestamps to be formatted in accordance with the
-# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
 scalar DateTimeOffset
 
 scalar Decimal
@@ -64,7 +58,6 @@ type EmployeeGraph {
   id: Int!
 }
 
-# A connection from an object to a list of objects of type `EmployeeGraph`.
 type EmployeeGraphConnection {
   totalCount: Int
   pageInfo: PageInfo!
@@ -72,7 +65,6 @@ type EmployeeGraphConnection {
   items: [EmployeeGraph]
 }
 
-# An edge in a connection from an object to another object of type `EmployeeGraph`.
 type EmployeeGraphEdge {
   cursor: String!
   node: EmployeeGraph
@@ -83,7 +75,10 @@ type EmployeeSummaryGraph {
   companyId: Int!
 }
 
-# The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds.
+scalar Guid
+
+scalar Long
+
 scalar Milliseconds
 
 input OrderByGraph {
@@ -91,7 +86,6 @@ input OrderByGraph {
   descending: Boolean
 }
 
-# Information about pagination in a connection.
 type PageInfo {
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
@@ -110,8 +104,11 @@ type Query {
   employeeSummary(where: [WhereExpressionGraph]): [EmployeeSummaryGraph]
 }
 
-# The `Seconds` scalar type represents a period of time represented as the total number of seconds.
+scalar SByte
+
 scalar Seconds
+
+scalar Short
 
 enum StringComparison {
   CURRENT_CULTURE
@@ -122,9 +119,13 @@ enum StringComparison {
   ORDINAL_IGNORE_CASE
 }
 
-type Subscription {
-  companyChanged: CompanyGraph
-}
+scalar UInt
+
+scalar ULong
+
+scalar UShort
+
+scalar Uri
 
 input WhereExpressionGraph {
   path: String
