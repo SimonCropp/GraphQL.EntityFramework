@@ -15,7 +15,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false)
+            bool nullable = false,
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TReturn>(
@@ -25,7 +26,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false)
+            bool nullable = false,
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -35,7 +37,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false)
+            bool nullable = false,
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -45,7 +48,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false)
+            bool nullable = false,
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -55,7 +59,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false)
+            bool nullable = false,
+            string? description = null)
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
@@ -65,7 +70,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false)
+            bool nullable = false,
+            string? description = null)
             where TReturn : class;
     }
 }

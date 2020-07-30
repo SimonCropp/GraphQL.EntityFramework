@@ -18,13 +18,14 @@ namespace GraphQL.EntityFramework
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             IEnumerable<string>? includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, itemGraphType);
+            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
 
@@ -37,12 +38,13 @@ namespace GraphQL.EntityFramework
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             IEnumerable<string>? includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
 
-            var connection = BuildListConnectionField<TSource, TReturn>(name, null, includeNames, pageSize, itemGraphType);
+            var connection = BuildListConnectionField<TSource, TReturn>(name, null, includeNames, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
 
@@ -54,7 +56,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
             IEnumerable<string>? includeName,
             int pageSize,
-            Type? itemGraphType)
+            Type? itemGraphType,
+            string? description)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -64,7 +67,10 @@ namespace GraphQL.EntityFramework
             var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
             var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
-
+            if (description != null)
+            {
+                builder.Description(description);
+            }
             builder.PageSize(pageSize);
             SetField(builder, fieldType);
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeName);

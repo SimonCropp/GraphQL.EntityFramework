@@ -16,13 +16,14 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType);
+            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
 
@@ -35,13 +36,14 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType);
+            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
 
@@ -54,13 +56,14 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType);
+            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
 
@@ -72,12 +75,13 @@ namespace GraphQL.EntityFramework
             string name,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
 
-            var connection = BuildQueryConnectionField<TSource, TReturn>(name, null, pageSize, itemGraphType);
+            var connection = BuildQueryConnectionField<TSource, TReturn>(name, null, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
 
@@ -88,7 +92,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
             int pageSize,
-            Type? itemGraphType)
+            Type? itemGraphType,
+            string? description)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -98,7 +103,10 @@ namespace GraphQL.EntityFramework
             var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
             var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
-
+            if (description != null)
+            {
+                builder.Description(description);
+            }
             builder.PageSize(pageSize);
             SetField(builder, fieldType);
 
