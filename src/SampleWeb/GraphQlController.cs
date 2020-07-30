@@ -49,7 +49,7 @@ public class GraphQlController :
         return Execute(query, operationName, jObject, cancellation);
     }
 
-    Task<ExecutionResult> Execute(string query,
+    async Task<ExecutionResult> Execute(string query,
         string? operationName,
         JObject? variables,
         CancellationToken cancellation)
@@ -66,8 +66,13 @@ public class GraphQlController :
             EnableMetrics = true,
 #endif
         };
+        var executeAsync = await executer.ExecuteAsync(options);
 
-        return executer.ExecuteAsync(options);
+        return new ExecutionResult
+        {
+            Data = executeAsync.Data,
+            Errors = executeAsync.Errors
+        };
     }
 
     static JObject? ParseVariables(string? variables)
