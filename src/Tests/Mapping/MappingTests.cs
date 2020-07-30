@@ -30,10 +30,11 @@ public class MappingTests
     {
         var graphQlService = new EfGraphQLService<MappingContext>(sqlInstance.Model, userContext => null!);
         var services = new ServiceCollection();
+        EfGraphQLConventions.RegisterInContainer<MappingContext>(services);
         services.AddSingleton(new MappingChildGraph(graphQlService));
-        MappingSchema mappingSchema;
+        services.AddSingleton(new MappingParentGraph(graphQlService));
         await using var provider = services.BuildServiceProvider();
-        mappingSchema = new MappingSchema(graphQlService, provider);
+        MappingSchema mappingSchema = new MappingSchema(graphQlService, provider);
 
         var printer = new SchemaPrinter(mappingSchema);
         var print = printer.Print();

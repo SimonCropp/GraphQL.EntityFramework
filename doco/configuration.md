@@ -327,7 +327,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L10-L89' title='File snippet `graphqlcontroller` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Navigate to start of snippet `graphqlcontroller`'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L90' title='File snippet `graphqlcontroller` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Navigate to start of snippet `graphqlcontroller`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
