@@ -11,7 +11,7 @@ namespace GraphQL.EntityFramework
         where TDbContext : DbContext
     {
         public void AddQueryConnectionField<TReturn>(
-            ObjectGraphType graph,
+            IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
         }
 
         public void AddQueryConnectionField<TSource, TReturn>(
-            ObjectGraphType graph,
+            IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Type? itemGraphType = null,
