@@ -1311,7 +1311,7 @@ fragment inheritedEntityFields on InterfaceGraph {
       items {
         ...childEntityFields
       }
-    }   
+    }
   }
 }
 fragment childEntityFields on DerivedChildGraph {
