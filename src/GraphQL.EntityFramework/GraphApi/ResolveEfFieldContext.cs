@@ -1,5 +1,4 @@
-﻿using GraphQL.Types;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {

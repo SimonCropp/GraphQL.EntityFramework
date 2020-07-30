@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.EntityFramework;
-using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using Microsoft.EntityFrameworkCore;
 
@@ -84,7 +84,7 @@ static class ConnectionConverter
         string afterString,
         int? last,
         string beforeString,
-        ResolveFieldContext<TSource> context,
+        IResolveFieldContext<TSource> context,
         CancellationToken cancellation,
         Filters filters)
         where TItem : class
@@ -99,7 +99,7 @@ static class ConnectionConverter
         int? after,
         int? last,
         int? before,
-        ResolveFieldContext<TSource> context,
+        IResolveFieldContext<TSource> context,
         Filters filters,
         CancellationToken cancellation = default)
         where TItem : class
@@ -120,7 +120,7 @@ static class ConnectionConverter
         int? after,
         int? before,
         int count,
-        ResolveFieldContext<TSource> context,
+        IResolveFieldContext<TSource> context,
         Filters filters,
         CancellationToken cancellation)
         where TItem : class
@@ -144,7 +144,7 @@ static class ConnectionConverter
         int? after,
         int? before,
         int count,
-        ResolveFieldContext<TSource> context,
+        IResolveFieldContext<TSource> context,
         Filters filters,
         CancellationToken cancellation)
         where TItem : class
@@ -169,7 +169,7 @@ static class ConnectionConverter
         int skip,
         int take,
         int count,
-        ResolveFieldContext<TSource> context,
+        IResolveFieldContext<TSource> context,
         Filters filters,
         CancellationToken cancellation)
         where TItem : class

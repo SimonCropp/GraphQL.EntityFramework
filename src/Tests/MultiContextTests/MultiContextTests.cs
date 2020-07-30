@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
@@ -72,7 +73,7 @@ public class MultiContextTests
             #endregion
 
             await using var provider = services.BuildServiceProvider();
-            using var schema = new MultiContextSchema(new FuncDependencyResolver(provider.GetRequiredService!));
+            using var schema = new MultiContextSchema(provider);
             var documentExecuter = new EfDocumentExecuter();
 
             #region MultiExecutionOptions
@@ -93,7 +94,7 @@ public class MultiContextTests
 }
 
 #region MultiUserContext
-public class UserContext
+public class UserContext: Dictionary<string, object>
 {
     public UserContext(DbContext1 context1, DbContext2 context2)
     {

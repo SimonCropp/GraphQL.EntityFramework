@@ -343,7 +343,7 @@ A user context that exposes both types.
 <!-- snippet: MultiUserContext -->
 <a id='snippet-multiusercontext'/></a>
 ```cs
-public class UserContext
+public class UserContext: Dictionary<string, object>
 {
     public UserContext(DbContext1 context1, DbContext2 context2)
     {
@@ -355,7 +355,7 @@ public class UserContext
     public readonly DbContext2 DbContext2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L95-L107' title='File snippet `multiusercontext` was extracted from'>snippet source</a> | <a href='#snippet-multiusercontext' title='Navigate to start of snippet `multiusercontext`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L96-L108' title='File snippet `multiusercontext` was extracted from'>snippet source</a> | <a href='#snippet-multiusercontext' title='Navigate to start of snippet `multiusercontext`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -373,7 +373,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L63-L72' title='File snippet `registermultipleincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Navigate to start of snippet `registermultipleincontainer`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L73' title='File snippet `registermultipleincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Navigate to start of snippet `registermultipleincontainer`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
@@ -392,7 +392,7 @@ var executionOptions = new ExecutionOptions
     UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L78-L87' title='File snippet `multiexecutionoptions` was extracted from'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Navigate to start of snippet `multiexecutionoptions`'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L79-L88' title='File snippet `multiexecutionoptions` was extracted from'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Navigate to start of snippet `multiexecutionoptions`'>anchor</a></sup>
 <!-- endsnippet -->
 
 

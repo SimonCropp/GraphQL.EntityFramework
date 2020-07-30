@@ -10,6 +10,7 @@ using GraphQL.Execution;
 using GraphQL.Language.AST;
 using GraphQL.Resolvers;
 using GraphQL.Subscription;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using ExecutionContext = GraphQL.Execution.ExecutionContext;
@@ -28,7 +29,7 @@ public class Subscription :
         });
     }
 
-    static IObservable<Company> Subscribe(ResolveEventStreamContext context, Func<SampleDbContext> contextFactory)
+    static IObservable<Company> Subscribe(IResolveEventStreamContext context, Func<SampleDbContext> contextFactory)
     {
         long lastId = 0;
         var inner = Observable.Using(
@@ -57,7 +58,7 @@ public class Subscription :
     }
 
     static Task<List<Company>> GetCompanies(
-        ResolveEventStreamContext context,
+        IResolveEventStreamContext context,
         SampleDbContext dbContext,
         long lastId,
         int take = 1,
@@ -88,7 +89,7 @@ public class Subscription :
         }";
     }
 
-    static ResolveFieldContext ResolveFieldContext(
+    static IResolveFieldContext ResolveFieldContext(
         SampleDbContext dbContext,
         CancellationToken token,
         Document document,
@@ -100,13 +101,13 @@ public class Subscription :
         {
             Document = document,
             Schema = schema,
-            UserContext = dbContext,
+            UserContext = new UserContext(dbContext),
             Variables = variableValues,
             Fragments = document.Fragments,
             CancellationToken = token,
-            Listeners = new IDocumentExecutionListener[0],
+            Listeners = new List<IDocumentExecutionListener>(),
             Operation = operation,
-            ThrowOnUnhandledException = true // DEBUG
+            ThrowOnUnhandledException = true
         };
 
         var operationRootType = ExecutionHelper.GetOperationRootType(

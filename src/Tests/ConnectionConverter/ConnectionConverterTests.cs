@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EfLocalDb;
-using GraphQL.Types;
+using GraphQL;
 using Microsoft.EntityFrameworkCore;
 using VerifyTests;
 using VerifyXunit;

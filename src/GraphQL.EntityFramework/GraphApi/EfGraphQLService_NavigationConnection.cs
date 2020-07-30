@@ -49,7 +49,7 @@ namespace GraphQL.EntityFramework
             field.AddWhereArgument(arguments);
         }
 
-        ConnectionBuilder<FakeGraph, TSource> BuildListConnectionField<TSource, TReturn>(
+        ConnectionBuilder<TSource> BuildListConnectionField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
             IEnumerable<string>? includeName,
@@ -63,7 +63,7 @@ namespace GraphQL.EntityFramework
             itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
-            var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
+            var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
 
             builder.PageSize(pageSize);
             SetField(builder, fieldType);
@@ -99,11 +99,14 @@ namespace GraphQL.EntityFramework
             fieldTypeField.SetValue(builder, fieldType);
         }
 
-        static object GetFieldType<TSource>(string name, Type itemGraphType)
+        //TODO: can return null
+        static object GetFieldType<TSource>(string name, Type graphType)
         {
-            var makeGenericType = typeof(ConnectionBuilder<,>).MakeGenericType(itemGraphType, typeof(TSource));
-            dynamic x = makeGenericType.GetMethod("Create").Invoke(null, new object[] { name });
-            return x.FieldType;
+            var makeGenericType = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSource));
+            var genericMethodInfo = makeGenericType.GetMethods().Single(mi => mi.Name == "Create" && mi.IsGenericMethod && mi.GetGenericArguments().Length == 1);
+            var genericMethod = genericMethodInfo.MakeGenericMethod(graphType);
+            dynamic? x = genericMethod.Invoke(null, new object[] {name}) ?? null;
+            return x?.FieldType!;
         }
 
         class FakeGraph : GraphType

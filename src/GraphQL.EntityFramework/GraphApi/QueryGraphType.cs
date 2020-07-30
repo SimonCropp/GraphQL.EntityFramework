@@ -19,13 +19,13 @@ namespace GraphQL.EntityFramework
 
         public IEfGraphQLService<TDbContext> GraphQlService { get; }
 
-        public TDbContext ResolveDbContext<TSource>(ResolveFieldContext<TSource> context)
+        public TDbContext ResolveDbContext<TSource>(IResolveFieldContext<TSource> context)
         {
             Guard.AgainstNull(nameof(context), context);
             return GraphQlService.ResolveDbContext(context);
         }
 
-        public TDbContext ResolveDbContext(ResolveFieldContext context)
+        public TDbContext ResolveDbContext(IResolveFieldContext context)
         {
             Guard.AgainstNull(nameof(context), context);
             return GraphQlService.ResolveDbContext(context);
@@ -86,7 +86,7 @@ namespace GraphQL.EntityFramework
             return GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable);
         }
 
-        public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+        public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
             where TItem : class
         {
             return GraphQlService.AddIncludes(query, context);

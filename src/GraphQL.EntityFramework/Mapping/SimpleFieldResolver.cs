@@ -1,6 +1,6 @@
 ﻿using System;
+using GraphQL;
 using GraphQL.Resolvers;
-using GraphQL.Types;
 
 class SimpleFieldResolver<TSource> :
     IFieldResolver
@@ -12,7 +12,7 @@ class SimpleFieldResolver<TSource> :
         this.func = func;
     }
 
-    public object Resolve(ResolveFieldContext context)
+    public object Resolve(IResolveFieldContext context)
     {
         return func((TSource) context.Source);
     }

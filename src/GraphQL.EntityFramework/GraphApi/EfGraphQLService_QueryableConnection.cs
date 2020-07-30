@@ -84,7 +84,7 @@ namespace GraphQL.EntityFramework
             field.AddWhereArgument(arguments);
         }
 
-        ConnectionBuilder<FakeGraph, TSource> BuildQueryConnectionField<TSource, TReturn>(
+        ConnectionBuilder<TSource> BuildQueryConnectionField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
             int pageSize,
@@ -97,7 +97,7 @@ namespace GraphQL.EntityFramework
             itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
-            var builder = ConnectionBuilder<FakeGraph, TSource>.Create(name);
+            var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
 
             builder.PageSize(pageSize);
             SetField(builder, fieldType);

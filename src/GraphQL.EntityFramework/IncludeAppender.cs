@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Language.AST;
 using GraphQL.Types;
@@ -16,7 +17,7 @@ class IncludeAppender
         this.navigations = navigations;
     }
 
-    public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+    public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class
     {
         if (context.SubFields == null)
@@ -33,7 +34,7 @@ class IncludeAppender
         return AddIncludes(query, context, navigationProperty);
     }
 
-    IQueryable<T> AddIncludes<T, TSource>(IQueryable<T> query, ResolveFieldContext<TSource> context, IReadOnlyList<Navigation> navigationProperties)
+    IQueryable<T> AddIncludes<T>(IQueryable<T> query, IResolveFieldContext context, IReadOnlyList<Navigation> navigationProperties)
         where T : class
     {
         var paths = GetPaths(context, navigationProperties);
@@ -45,7 +46,7 @@ class IncludeAppender
         return query;
     }
 
-    List<string> GetPaths<TSource>(ResolveFieldContext<TSource> context, IReadOnlyList<Navigation> navigationProperty)
+    List<string> GetPaths(IResolveFieldContext context, IReadOnlyList<Navigation> navigationProperty)
     {
         var list = new List<string>();
 
@@ -54,7 +55,7 @@ class IncludeAppender
         return list;
     }
 
-    void AddField<TSource>(List<string> list, Field field, SelectionSet selectionSet, string? parentPath, FieldType fieldType, IReadOnlyList<Navigation> parentNavigationProperties, ResolveFieldContext<TSource> context, IComplexGraphType? graph = null)
+    void AddField(List<string> list, Field field, SelectionSet selectionSet, string? parentPath, FieldType fieldType, IReadOnlyList<Navigation> parentNavigationProperties, IResolveFieldContext context, IComplexGraphType? graph = null)
     {
         if (graph == null && !fieldType.TryGetComplexGraph(out graph))
         {
@@ -122,7 +123,7 @@ class IncludeAppender
         return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-    void ProcessSubFields<TSource>(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType graph, IReadOnlyList<Navigation> navigationProperties, ResolveFieldContext<TSource> context)
+    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType graph, IReadOnlyList<Navigation> navigationProperties, IResolveFieldContext context)
     {
         foreach (var subField in subFields)
         {
