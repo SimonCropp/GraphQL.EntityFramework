@@ -13,7 +13,8 @@ namespace GraphQL.EntityFramework
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             IEnumerable<string>? includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class;
 
         void AddNavigationConnectionField<TSource, TReturn>(
@@ -22,7 +23,8 @@ namespace GraphQL.EntityFramework
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             IEnumerable<string>? includeNames = null,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? description = null)
             where TReturn : class;
     }
 }

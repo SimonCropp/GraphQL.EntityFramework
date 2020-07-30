@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -37,7 +36,7 @@ namespace GraphQL.EntityFramework
         IncludeAppender includeAppender;
 
         ResolveEfFieldContext<TDbContext, TSource> BuildContext<TSource>(
-            ResolveFieldContext<TSource> context)
+            IResolveFieldContext<TSource> context)
         {
             return new ResolveEfFieldContext<TDbContext, TSource>
             {
@@ -65,19 +64,19 @@ namespace GraphQL.EntityFramework
             };
         }
 
-        public TDbContext ResolveDbContext<TSource>(ResolveFieldContext<TSource> context)
+        public TDbContext ResolveDbContext(IResolveFieldContext context)
         {
             Guard.AgainstNull(nameof(context), context);
             return resolveDbContext(context.UserContext);
         }
 
-        Filters ResolveFilter<TSource>(ResolveFieldContext<TSource> context)
+        Filters ResolveFilter<TSource>(IResolveFieldContext<TSource> context)
         {
             var filter = resolveFilters?.Invoke(context.UserContext);
             return filter ?? NullFilters.Instance;
         }
 
-        public IQueryable<TItem> AddIncludes<TItem, TSource>(IQueryable<TItem> query, ResolveFieldContext<TSource> context)
+        public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
             where TItem : class
         {
             return includeAppender.AddIncludes(query, context);

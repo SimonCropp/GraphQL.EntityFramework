@@ -45,6 +45,11 @@ static class ComplexGraphResolver
                     graphType = listGraphType.ResolvedType;
                 }
 
+                if (graphType is UnionGraphType unionGraphType)
+                {
+                    graphType = unionGraphType.PossibleTypes.First();
+                }
+
                 if (graphType is NonNullGraphType nonNullGraphType)
                 {
                     graphType = nonNullGraphType.ResolvedType;
@@ -54,6 +59,11 @@ static class ComplexGraphResolver
                         if (graphType is NonNullGraphType innerNonNullGraphType)
                         {
                             graphType = innerNonNullGraphType.ResolvedType;
+                        }
+
+                        if (graphType is UnionGraphType innerUnionGraphType)
+                        {
+                            graphType = innerUnionGraphType.PossibleTypes.First();
                         }
                     }
                 }
@@ -77,13 +87,20 @@ static class ComplexGraphResolver
             if (type.IsGenericType)
             {
                 var genericTypeDefinition = type.GetGenericTypeDefinition();
+                var genericArguments = type.GetGenericArguments();
                 if (genericTypeDefinition == typeof(ComplexGraphType<>))
                 {
-                    return type.GetGenericArguments().Single();
+                    return genericArguments.Single();
                 }
                 if (genericTypeDefinition == typeof(ConnectionType<>))
                 {
-                    var resolvedEntityType = type.GetGenericArguments().Single();
+                    var resolvedEntityType = genericArguments.Single();
+                    type = resolvedEntityType.BaseType;
+                    continue;
+                }
+                if (genericTypeDefinition == typeof(ConnectionType<,>))
+                {
+                    var resolvedEntityType = genericArguments.First();
                     type = resolvedEntityType.BaseType;
                     continue;
                 }

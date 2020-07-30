@@ -14,13 +14,14 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?> resolve,
             Type? graphType = null,
-            IEnumerable<string>? includeNames = null)
+            IEnumerable<string>? includeNames = null,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            var field = BuildNavigationField(name, resolve, includeNames, graphType);
+            var field = BuildNavigationField(name, resolve, includeNames, graphType, description);
             return graph.AddField(field);
         }
 
@@ -28,11 +29,12 @@ namespace GraphQL.EntityFramework
             InterfaceGraphType<TSource> graph,
             string name,
             Type? graphType = null,
-            IEnumerable<string>? includeNames = null)
+            IEnumerable<string>? includeNames = null,
+            string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField<TSource, TReturn>(name, null, includeNames, graphType);
+            var field = BuildNavigationField<TSource, TReturn>(name, null, includeNames, graphType, description);
             return graph.AddField(field);
         }
 
@@ -40,7 +42,8 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve,
             IEnumerable<string>? includeNames,
-            Type? graphType)
+            Type? graphType,
+            string? description)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -51,7 +54,8 @@ namespace GraphQL.EntityFramework
             {
                 Name = name,
                 Type = graphType,
-                Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames)
+                Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
+                Description = description
             };
 
             if (resolve != null)

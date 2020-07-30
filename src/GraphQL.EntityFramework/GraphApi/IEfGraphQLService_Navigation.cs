@@ -11,14 +11,16 @@ namespace GraphQL.EntityFramework
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?> resolve,
             Type? graphType = null,
-            IEnumerable<string>? includeNames = null)
+            IEnumerable<string>? includeNames = null,
+            string? description = null)
             where TReturn : class;
 
         FieldType AddNavigationField<TSource, TReturn>(
             InterfaceGraphType<TSource> graph,
             string name,
             Type? graphType = null,
-            IEnumerable<string>? includeNames = null)
+            IEnumerable<string>? includeNames = null,
+            string? description = null)
             where TReturn : class;
 
         FieldType AddNavigationListField<TSource, TReturn>(
@@ -27,7 +29,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            IEnumerable<string>? includeNames = null)
+            IEnumerable<string>? includeNames = null,
+            string? description = null)
             where TReturn : class;
 
         FieldType AddNavigationListField<TSource, TReturn>(
@@ -35,7 +38,8 @@ namespace GraphQL.EntityFramework
             string name,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            IEnumerable<string>? includeNames = null)
+            IEnumerable<string>? includeNames = null,
+            string? description = null)
             where TReturn : class;
     }
 }

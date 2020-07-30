@@ -2,6 +2,10 @@ schema {
   query: MappingQuery
 }
 
+scalar BigInt
+
+scalar Byte
+
 enum ComparisonGraph {
   contains
   endsWith
@@ -23,35 +27,28 @@ enum Connector {
   or
 }
 
-# The `Date` scalar type represents a year, month and day in accordance with the
-# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
 scalar Date
 
-# The `DateTime` scalar type represents a date and time. `DateTime` expects
-# timestamps to be formatted in accordance with the
-# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
 scalar DateTime
 
-# The `DateTimeOffset` scalar type represents a date, time and offset from UTC.
-# `DateTimeOffset` expects timestamps to be formatted in accordance with the
-# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
 scalar DateTimeOffset
 
 scalar Decimal
 
-# Guid
 scalar Guid
+
+scalar Long
 
 type MappingChildGraph {
   parent: MappingParentGraph!
-  id: Guid!
-  parentId: Guid!
+  id: ID!
+  parentId: ID!
   property: String
 }
 
 type MappingParentGraph {
   children(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingChildGraph!]!
-  id: Guid!
+  id: ID!
   property: String
 }
 
@@ -62,7 +59,6 @@ type MappingQuery {
   parents(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingParentGraph!]!
 }
 
-# The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds.
 scalar Milliseconds
 
 input OrderByGraph {
@@ -70,8 +66,11 @@ input OrderByGraph {
   descending: Boolean
 }
 
-# The `Seconds` scalar type represents a period of time represented as the total number of seconds.
+scalar SByte
+
 scalar Seconds
+
+scalar Short
 
 enum StringComparison {
   CURRENT_CULTURE
@@ -81,6 +80,14 @@ enum StringComparison {
   ORDINAL
   ORDINAL_IGNORE_CASE
 }
+
+scalar UInt
+
+scalar ULong
+
+scalar UShort
+
+scalar Uri
 
 input WhereExpressionGraph {
   path: String

@@ -151,9 +151,10 @@ namespace GraphQL.EntityFramework
             where TDbContext : DbContext
         {
             // TSource parameter
-            var parameter = Expression.Parameter(typeof(ResolveEfFieldContext<TDbContext, TSource>), "context");
-
-            var sourceProperty = Expression.Property(parameter, "Source");
+            var type = typeof(ResolveEfFieldContext<TDbContext, TSource>);
+            var parameter = Expression.Parameter(type, "context");
+            var sourcePropertyInfo = type.GetProperty("Source", typeof(TSource))!;
+            var sourceProperty = Expression.Property(parameter, sourcePropertyInfo);
             var property = Expression.Property(sourceProperty, name);
 
             //context => context.Source.Parent
