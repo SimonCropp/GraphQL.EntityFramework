@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <NoWarn>CS1591;NU5104</NoWarn>
-    <Version>11.0.0-beta.1</Version>
+    <Version>11.0.0-beta.2</Version>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <PackageTags>EntityFrameworkCore, EntityFramework, GraphQL</PackageTags>
     <SignAssembly>false</SignAssembly>

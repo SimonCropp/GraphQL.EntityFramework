@@ -72,7 +72,6 @@ namespace GraphQL.EntityFramework
 
         static void RegisterScalarsAndArgs(IServiceCollection services)
         {
-            Scalars.RegisterInContainer(services);
             ArgumentGraphs.RegisterInContainer(services);
         }
 
