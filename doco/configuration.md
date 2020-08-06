@@ -38,7 +38,7 @@ Enabling is done via registering in a container.
 The container registration can be done via adding to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
 <!-- snippet: RegisterInContainer -->
-<a id='snippet-registerincontainer'/></a>
+<a id='snippet-registerincontainer'></a>
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
@@ -47,7 +47,7 @@ public static void RegisterInContainer<TDbContext>(
         ResolveFilters? resolveFilters = null)
 ```
 <sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24' title='File snippet `registerincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registerincontainer' title='Navigate to start of snippet `registerincontainer`'>anchor</a></sup>
-<a id='snippet-registerincontainer-1'/></a>
+<a id='snippet-registerincontainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
@@ -67,7 +67,7 @@ Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IM
 To build an instance of an `IModel` at configuration time it can be helpful to have a class specifically for that purpose:
 
 <!-- snippet: ModelBuilder -->
-<a id='snippet-modelbuilder'/></a>
+<a id='snippet-modelbuilder'></a>
 ```cs
 static class ModelBuilder
 {
@@ -89,7 +89,7 @@ static class ModelBuilder
 A delegate that resolves the DbContext.
 
 <!-- snippet: ResolveDbContext.cs -->
-<a id='snippet-ResolveDbContext.cs'/></a>
+<a id='snippet-ResolveDbContext.cs'></a>
 ```cs
 using Microsoft.EntityFrameworkCore;
 
@@ -112,7 +112,7 @@ If null then the DbContext will be resolved from the container.
 A delegate that resolves the [Filters](filters.md).
 
 <!-- snippet: ResolveFilters.cs -->
-<a id='snippet-ResolveFilters.cs'/></a>
+<a id='snippet-ResolveFilters.cs'></a>
 ```cs
 namespace GraphQL.EntityFramework
 {
@@ -130,7 +130,7 @@ If null then the Filters will be resolved from the container.
 ### Usage
 
 <!-- snippet: RegisterInContainer -->
-<a id='snippet-registerincontainer'/></a>
+<a id='snippet-registerincontainer'></a>
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
@@ -139,7 +139,7 @@ public static void RegisterInContainer<TDbContext>(
         ResolveFilters? resolveFilters = null)
 ```
 <sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L18-L24' title='File snippet `registerincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registerincontainer' title='Navigate to start of snippet `registerincontainer`'>anchor</a></sup>
-<a id='snippet-registerincontainer-1'/></a>
+<a id='snippet-registerincontainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
@@ -160,7 +160,7 @@ The default GraphQL `DocumentExecuter` uses [Task.WhenAll](https://docs.microsof
 To avoid this a custom implementation of `DocumentExecuter` but be used that uses `SerialExecutionStrategy` when the operation type is `OperationType.Query`. There is one included in this library named `EfDocumentExecuter`:
 
 <!-- snippet: EfDocumentExecuter.cs -->
-<a id='snippet-EfDocumentExecuter.cs'/></a>
+<a id='snippet-EfDocumentExecuter.cs'></a>
 ```cs
 using GraphQL.Execution;
 using GraphQL.Language.AST;
@@ -246,7 +246,7 @@ See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com
 With the DbContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
 
 <!-- snippet: GraphQlController -->
-<a id='snippet-graphqlcontroller'/></a>
+<a id='snippet-graphqlcontroller'></a>
 ```cs
 [Route("[controller]")]
 [ApiController]
@@ -346,7 +346,7 @@ Multiple different DbContext types can be registered and used.
 A user context that exposes both types.
 
 <!-- snippet: MultiUserContext -->
-<a id='snippet-multiusercontext'/></a>
+<a id='snippet-multiusercontext'></a>
 ```cs
 public class UserContext: Dictionary<string, object>
 {
@@ -369,7 +369,7 @@ public class UserContext: Dictionary<string, object>
 Register both DbContext types in the container and include how those instance can be extracted from the GraphQL context:
 
 <!-- snippet: RegisterMultipleInContainer -->
-<a id='snippet-registermultipleincontainer'/></a>
+<a id='snippet-registermultipleincontainer'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer(
     services,
@@ -388,7 +388,7 @@ Use the user type to pass in both DbContext instances.
 
 
 <!-- snippet: MultiExecutionOptions -->
-<a id='snippet-multiexecutionoptions'/></a>
+<a id='snippet-multiexecutionoptions'></a>
 ```cs
 var executionOptions = new ExecutionOptions
 {
@@ -406,7 +406,7 @@ var executionOptions = new ExecutionOptions
 Use both DbContexts in a Query:
 
 <!-- snippet: MultiContextQuery.cs -->
-<a id='snippet-MultiContextQuery.cs'/></a>
+<a id='snippet-MultiContextQuery.cs'></a>
 ```cs
 using GraphQL.EntityFramework;
 using GraphQL.Types;
@@ -446,7 +446,7 @@ public class MultiContextQuery :
 Use a DbContext in a Graph:
 
 <!-- snippet: Entity1Graph.cs -->
-<a id='snippet-Entity1Graph.cs'/></a>
+<a id='snippet-Entity1Graph.cs'></a>
 ```cs
 using GraphQL.EntityFramework;
 
@@ -469,7 +469,7 @@ public class Entity1Graph :
 The `GraphQlController` can be tested using the [ASP.NET Integration tests](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests) via the [Microsoft.AspNetCore.Mvc.Testing NuGet package](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Testing).
 
 <!-- snippet: GraphQlControllerTests -->
-<a id='snippet-graphqlcontrollertests'/></a>
+<a id='snippet-graphqlcontrollertests'></a>
 ```cs
 [UsesVerify]
 public class GraphQlControllerTests
@@ -738,7 +738,7 @@ The `GraphQlExtensions` class exposes some helper methods:
 Wraps the `DocumentExecuter.ExecuteAsync` to throw if there are any errors.
 
 <!-- snippet: ExecuteWithErrorCheck -->
-<a id='snippet-executewitherrorcheck'/></a>
+<a id='snippet-executewitherrorcheck'></a>
 ```cs
 public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     this IDocumentExecuter executer,
@@ -773,7 +773,7 @@ Map a [table-per-hierarchy (TPH) EF Core pattern](https://docs.microsoft.com/en-
 ### EF Core Entities
 
 <!-- snippet: InheritedEntity.cs -->
-<a id='snippet-InheritedEntity.cs'/></a>
+<a id='snippet-InheritedEntity.cs'></a>
 ```cs
 using System;
 using System.Collections.Generic;
@@ -789,7 +789,7 @@ public abstract class InheritedEntity
 <!-- endsnippet -->
 
 <!-- snippet: DerivedEntity.cs -->
-<a id='snippet-DerivedEntity.cs'/></a>
+<a id='snippet-DerivedEntity.cs'></a>
 ```cs
 
 public class DerivedEntity : InheritedEntity
@@ -802,7 +802,7 @@ public class DerivedEntity : InheritedEntity
 ### GraphQL types
 
 <!-- snippet: InterfaceGraph.cs -->
-<a id='snippet-InterfaceGraph.cs'/></a>
+<a id='snippet-InterfaceGraph.cs'></a>
 ```cs
 using GraphQL.EntityFramework;
 
@@ -824,7 +824,7 @@ public class InterfaceGraph :
 <!-- endsnippet -->
 
 <!-- snippet: DerivedGraph.cs -->
-<a id='snippet-DerivedGraph.cs'/></a>
+<a id='snippet-DerivedGraph.cs'></a>
 ```cs
 using GraphQL.EntityFramework;
 

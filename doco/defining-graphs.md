@@ -57,7 +57,7 @@ Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet
 ### Root Query
 
 <!-- snippet: rootQuery -->
-<a id='snippet-rootquery'/></a>
+<a id='snippet-rootquery'></a>
 ```cs
 public class Query :
     QueryGraphType<MyDbContext>
@@ -85,7 +85,7 @@ public class Query :
 ### Typed Graph
 
 <!-- snippet: typedGraph -->
-<a id='snippet-typedgraph'/></a>
+<a id='snippet-typedgraph'></a>
 ```cs
 public class CompanyGraph :
     EfObjectGraphType<MyDbContext,Company>
@@ -117,7 +117,7 @@ public class CompanyGraph :
 #### Graph Type
 
 <!-- snippet: ConnectionRootQuery -->
-<a id='snippet-connectionrootquery'/></a>
+<a id='snippet-connectionrootquery'></a>
 ```cs
 public class Query :
     QueryGraphType<MyDbContext>
@@ -212,7 +212,7 @@ public class Query :
 ### Typed Graph
 
 <!-- snippet: ConnectionTypedGraph -->
-<a id='snippet-connectiontypedgraph'/></a>
+<a id='snippet-connectiontypedgraph'></a>
 ```cs
 public class CompanyGraph :
     EfObjectGraphType<MyDbContext, Company>
@@ -259,7 +259,7 @@ In some cases, it may be necessary to use `Field` instead of `AddQueryField`/`Ad
  * Apply the `where` argument expression using `ExpressionBuilder<T>.BuildPredicate(whereExpression)`
 
 <!-- snippet: ManuallyApplyWhere -->
-<a id='snippet-manuallyapplywhere'/></a>
+<a id='snippet-manuallyapplywhere'></a>
 ```cs
 Field<ListGraphType<EmployeeSummaryGraph>>(
     name: "employeeSummary",
@@ -301,7 +301,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
 Sometimes it is necessary to access the current DbContext from withing the base `QueryGraphType.Field` method. in this case the custom `ResolveEfFieldContext` is not available. In this scenario `QueryGraphType.ResolveDbContext` can be used to resolve the current DbContext.
 
 <!-- snippet: QueryResolveDbContext -->
-<a id='snippet-queryresolvedbcontext'/></a>
+<a id='snippet-queryresolvedbcontext'></a>
 ```cs
 public class Query :
     QueryGraphType<MyDbContext>

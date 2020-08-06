@@ -24,7 +24,7 @@ Notes:
 ### Signature:
 
 <!-- snippet: FiltersSignature -->
-<a id='snippet-filterssignature'/></a>
+<a id='snippet-filterssignature'></a>
 ```cs
 public class Filters
 {
@@ -41,7 +41,7 @@ public class Filters
 ### Usage:
 
 <!-- snippet: add-filter -->
-<a id='snippet-add-filter'/></a>
+<a id='snippet-add-filter'></a>
 ```cs
 public class MyEntity
 {
@@ -49,7 +49,7 @@ public class MyEntity
 }
 ```
 <sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L7-L14' title='File snippet `add-filter` was extracted from'>snippet source</a> | <a href='#snippet-add-filter' title='Navigate to start of snippet `add-filter`'>anchor</a></sup>
-<a id='snippet-add-filter-1'/></a>
+<a id='snippet-add-filter-1'></a>
 ```cs
 var filters = new Filters();
 filters.Add<MyEntity>(
