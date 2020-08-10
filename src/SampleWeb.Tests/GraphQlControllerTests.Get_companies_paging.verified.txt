@@ -1,1 +1,1 @@
-{"data":{"companiesConnection":{"edges":[{"cursor":"2","node":{"id":6}},{"cursor":"3","node":{"id":7}}],"pageInfo":{"endCursor":"1","hasNextPage":false}}},"errors":null,"query":null,"document":null,"operation":null,"perf":null,"exposeExceptions":false,"extensions":null}
+{"data":{"companiesConnection":{"edges":[{"cursor":"2","node":{"id":6}},{"cursor":"3","node":{"id":7}}],"pageInfo":{"endCursor":"3","hasNextPage":false}}},"errors":null,"query":null,"document":null,"operation":null,"perf":null,"exposeExceptions":false,"extensions":null}
