@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 static class ConnectionConverter
 {
-    public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, string afterString, int? last, string beforeString)
+    public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, string? afterString, int? last, string? beforeString)
         where T : class
     {
         Parse(afterString, beforeString, out var after, out var before);
@@ -207,7 +207,7 @@ static class ConnectionConverter
         };
     }
 
-    static void Parse(string afterString, string beforeString, out int? after, out int? before)
+    static void Parse(string? afterString, string? beforeString, out int? after, out int? before)
     {
         after = null;
         if (afterString != null)
