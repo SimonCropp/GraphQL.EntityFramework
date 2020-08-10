@@ -108,7 +108,7 @@ static class ConnectionConverter
         cancellation.ThrowIfCancellationRequested();
         if (last == null)
         {
-            return await First(list, first.GetValueOrDefault(0), after, before, context, filters, cancellation);
+            return await First(list, first.GetValueOrDefault(0), after, before, count, context, filters, cancellation);
         }
 
         return await Last(list, last.Value, after, before, count, context, filters, cancellation);
@@ -119,6 +119,7 @@ static class ConnectionConverter
         int first,
         int? after,
         int? before,
+        int count,
         IResolveFieldContext<TSource> context,
         Filters filters,
         CancellationToken cancellation)
@@ -134,7 +135,7 @@ static class ConnectionConverter
             skip = Math.Max(before.Value - first, 0);
         }
 
-        return Range(list, skip, first, context, filters, cancellation);
+        return Range(list, skip, first, count, context, filters, cancellation);
     }
 
     static Task<Connection<TItem>> Last<TSource, TItem>(
@@ -152,7 +153,6 @@ static class ConnectionConverter
         if (after == null)
         {
             // last before
-            //TODO: inline range and use the after filter count
             skip = before.GetValueOrDefault(count) - last;
         }
         else
@@ -161,13 +161,14 @@ static class ConnectionConverter
             skip = after.Value + 1;
         }
 
-        return Range(list, skip, take: last, context, filters, cancellation);
+        return Range(list, skip, take: last, count, context, filters, cancellation);
     }
 
     static async Task<Connection<TItem>> Range<TSource, TItem>(
         IQueryable<TItem> list,
         int skip,
         int take,
+        int count,
         IResolveFieldContext<TSource> context,
         Filters filters,
         CancellationToken cancellation)
