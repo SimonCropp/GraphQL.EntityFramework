@@ -84,11 +84,6 @@ namespace GraphQL.EntityFramework
         static async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item, List<Func<object, TEntity, Task<bool>>> filters)
             where TEntity : class
         {
-            if (item == null)
-            {
-                return false;
-            }
-
             foreach (var func in filters)
             {
                 if (!await func(userContext, item))
