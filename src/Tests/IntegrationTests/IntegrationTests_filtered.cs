@@ -44,8 +44,14 @@ public partial class IntegrationTests
     static Filters BuildFilters()
     {
         var filters = new Filters();
-        filters.Add<FilterParentEntity>((context, item) => item.Property != "Ignore");
-        filters.Add<FilterChildEntity>((context, item) => item.Property != "Ignore");
+        filters.Add<FilterParentEntity>((context, item) =>
+        {
+            return item.Property != "Ignore";
+        });
+        filters.Add<FilterChildEntity>((context, item) =>
+        {
+            return item.Property != "Ignore";
+        });
         return filters;
     }
 

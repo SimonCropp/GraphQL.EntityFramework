@@ -175,11 +175,11 @@ static class ConnectionConverter
         where TItem : class
     {
         var page = list.Skip(skip).Take(take);
-        IEnumerable<TItem> result = await page.ToListAsync(cancellation);
-        result = await filters.ApplyFilter(result, context.UserContext);
+        List<TItem> result = await page.ToListAsync(cancellation);
+        result = (await filters.ApplyFilter(result, context.UserContext)).ToList();
 
         cancellation.ThrowIfCancellationRequested();
-        return Build(skip, take, count, result);
+        return Build(skip, take, result.Count, result);
     }
 
     static Connection<T> Build<T>(int skip, int take, int count, IEnumerable<T> result)

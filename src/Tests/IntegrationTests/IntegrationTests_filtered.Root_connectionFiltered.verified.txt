@@ -1,6 +1,6 @@
 {
   parentEntitiesConnectionFiltered: {
-    totalCount: 2,
+    totalCount: 1,
     edges: [
       {
         cursor: '0',
