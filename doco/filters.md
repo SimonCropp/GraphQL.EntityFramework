@@ -35,7 +35,7 @@ public class Filters
         where TEntity : class;
 ```
 <sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L8-L18' title='File snippet `filterssignature` was extracted from'>snippet source</a> | <a href='#snippet-filterssignature' title='Navigate to start of snippet `filterssignature`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ### Usage:
@@ -59,4 +59,4 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     resolveFilters: x => filters);
 ```
 <sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L18-L27' title='File snippet `add-filter` was extracted from'>snippet source</a> | <a href='#snippet-add-filter-1' title='Navigate to start of snippet `add-filter`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->

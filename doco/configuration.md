@@ -28,7 +28,7 @@ To change this file edit the source file and then run MarkdownSnippets.
   * [EF Core TPH and GraphQL Interface](#ef-core-tph-and-graphql-interface)
     * [EF Core Entities](#ef-core-entities)
     * [GraphQL types](#graphql-types)
-    * [GraphQL query](#graphql-query)<!-- endtoc -->
+    * [GraphQL query](#graphql-query)<!-- endToc -->
 
 
 ## Container Registration
@@ -54,7 +54,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     model: ModelBuilder.GetInstance());
 ```
 <sup><a href='/src/Snippets/Configuration.cs#L23-L27' title='File snippet `registerincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registerincontainer-1' title='Navigate to start of snippet `registerincontainer`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ### Inputs
@@ -81,7 +81,7 @@ static class ModelBuilder
 }
 ```
 <sup><a href='/src/Snippets/Configuration.cs#L8-L19' title='File snippet `modelbuilder` was extracted from'>snippet source</a> | <a href='#snippet-modelbuilder' title='Navigate to start of snippet `modelbuilder`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 #### Resolve DbContext
@@ -100,7 +100,7 @@ namespace GraphQL.EntityFramework
 }
 ```
 <sup><a href='/src/GraphQL.EntityFramework/GraphApi/ResolveDbContext.cs#L1-L7' title='File snippet `ResolveDbContext.cs` was extracted from'>snippet source</a> | <a href='#snippet-ResolveDbContext.cs' title='Navigate to start of snippet `ResolveDbContext.cs`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 It has access to the current GraphQL user context.
 
@@ -120,7 +120,7 @@ namespace GraphQL.EntityFramework
 }
 ```
 <sup><a href='/src/GraphQL.EntityFramework/Filters/ResolveFilters.cs#L1-L4' title='File snippet `ResolveFilters.cs` was extracted from'>snippet source</a> | <a href='#snippet-ResolveFilters.cs' title='Navigate to start of snippet `ResolveFilters.cs`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 It has access to the current GraphQL user context.
 
@@ -146,7 +146,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     model: ModelBuilder.GetInstance());
 ```
 <sup><a href='/src/Snippets/Configuration.cs#L23-L27' title='File snippet `registerincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registerincontainer-1' title='Navigate to start of snippet `registerincontainer`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 Then the `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
 
@@ -183,7 +183,7 @@ namespace GraphQL.EntityFramework
 }
 ```
 <sup><a href='/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L19' title='File snippet `EfDocumentExecuter.cs` was extracted from'>snippet source</a> | <a href='#snippet-EfDocumentExecuter.cs' title='Navigate to start of snippet `EfDocumentExecuter.cs`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ## Connection Types
@@ -333,7 +333,7 @@ public class GraphQlController :
 }
 ```
 <sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L95' title='File snippet `graphqlcontroller` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Navigate to start of snippet `graphqlcontroller`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ## Multiple DbContexts
@@ -361,7 +361,7 @@ public class UserContext: Dictionary<string, object>
 }
 ```
 <sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L96-L108' title='File snippet `multiusercontext` was extracted from'>snippet source</a> | <a href='#snippet-multiusercontext' title='Navigate to start of snippet `multiusercontext`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ### Register in container
@@ -379,7 +379,7 @@ EfGraphQLConventions.RegisterInContainer(
     userContext => ((UserContext) userContext).DbContext2);
 ```
 <sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L73' title='File snippet `registermultipleincontainer` was extracted from'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Navigate to start of snippet `registermultipleincontainer`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ### ExecutionOptions
@@ -398,7 +398,7 @@ var executionOptions = new ExecutionOptions
 };
 ```
 <sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L79-L88' title='File snippet `multiexecutionoptions` was extracted from'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Navigate to start of snippet `multiexecutionoptions`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ### Query
@@ -438,7 +438,7 @@ public class MultiContextQuery :
 }
 ```
 <sup><a href='/src/Tests/MultiContextTests/MultiContextQuery.cs#L1-L28' title='File snippet `MultiContextQuery.cs` was extracted from'>snippet source</a> | <a href='#snippet-MultiContextQuery.cs' title='Navigate to start of snippet `MultiContextQuery.cs`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ### GraphType
@@ -461,7 +461,7 @@ public class Entity1Graph :
 }
 ```
 <sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L11' title='File snippet `Entity1Graph.cs` was extracted from'>snippet source</a> | <a href='#snippet-Entity1Graph.cs' title='Navigate to start of snippet `Entity1Graph.cs`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ## Testing the GraphQlController
@@ -725,7 +725,7 @@ query ($id: ID!)
 }
 ```
 <sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L9-L265' title='File snippet `graphqlcontrollertests` was extracted from'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Navigate to start of snippet `graphqlcontrollertests`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ## GraphQlExtensions
@@ -763,7 +763,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
 }
 ```
 <sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L9-L33' title='File snippet `executewitherrorcheck` was extracted from'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Navigate to start of snippet `executewitherrorcheck`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ## EF Core TPH and GraphQL Interface
@@ -786,7 +786,7 @@ public abstract class InheritedEntity
 }
 ```
 <sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InheritedEntity.cs#L1-L9' title='File snippet `InheritedEntity.cs` was extracted from'>snippet source</a> | <a href='#snippet-InheritedEntity.cs' title='Navigate to start of snippet `InheritedEntity.cs`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 <!-- snippet: DerivedEntity.cs -->
 <a id='snippet-DerivedEntity.cs'></a>
@@ -797,7 +797,7 @@ public class DerivedEntity : InheritedEntity
 }
 ```
 <sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedEntity.cs#L1-L4' title='File snippet `DerivedEntity.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedEntity.cs' title='Navigate to start of snippet `DerivedEntity.cs`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 ### GraphQL types
 
@@ -821,7 +821,7 @@ public class InterfaceGraph :
 }
 ```
 <sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraph.cs#L1-L15' title='File snippet `InterfaceGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-InterfaceGraph.cs' title='Navigate to start of snippet `InterfaceGraph.cs`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 <!-- snippet: DerivedGraph.cs -->
 <a id='snippet-DerivedGraph.cs'></a>
@@ -844,7 +844,7 @@ public class DerivedGraph :
 }
 ```
 <sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraph.cs#L1-L16' title='File snippet `DerivedGraph.cs` was extracted from'>snippet source</a> | <a href='#snippet-DerivedGraph.cs' title='Navigate to start of snippet `DerivedGraph.cs`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 ### GraphQL query
 
