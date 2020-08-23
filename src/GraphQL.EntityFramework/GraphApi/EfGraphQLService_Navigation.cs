@@ -12,14 +12,13 @@ namespace GraphQL.EntityFramework
         public FieldType AddNavigationField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve,
             Type? graphType = null,
             IEnumerable<string>? includeNames = null,
             string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            Guard.AgainstNull(nameof(resolve), resolve);
 
             var field = BuildNavigationField(name, resolve, includeNames, graphType, description);
             return graph.AddField(field);
