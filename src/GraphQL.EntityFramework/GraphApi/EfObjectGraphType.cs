@@ -26,7 +26,7 @@ namespace GraphQL.EntityFramework
 
         public void AddNavigationConnectionField<TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             IEnumerable<string>? includeNames = null,
@@ -39,7 +39,7 @@ namespace GraphQL.EntityFramework
 
         public FieldType AddNavigationField<TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
             Type? graphType = null,
             IEnumerable<string>? includeNames = null,
             string? description = null)
@@ -50,7 +50,7 @@ namespace GraphQL.EntityFramework
 
         public FieldType AddNavigationListField<TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             IEnumerable<string>? includeNames = null,

@@ -9,7 +9,7 @@ namespace GraphQL.EntityFramework
         void AddNavigationConnectionField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             IEnumerable<string>? includeNames = null,
