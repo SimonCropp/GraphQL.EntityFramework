@@ -68,7 +68,7 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            return GraphQlService.AddQueryField<TSource, TReturn>(this, name, null, graphType, arguments, description);
+            return GraphQlService.AddQueryField<TReturn>(this, name, null, graphType, arguments, description);
         }
 
         public TDbContext ResolveDbContext(IResolveFieldContext<TSource> context)

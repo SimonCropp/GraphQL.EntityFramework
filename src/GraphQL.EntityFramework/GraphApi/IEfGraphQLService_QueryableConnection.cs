@@ -7,10 +7,10 @@ namespace GraphQL.EntityFramework
 {
     public partial interface IEfGraphQLService<TDbContext>
     {
-        void AddQueryConnectionField<TSource, TReturn>(
-            IObjectGraphType graph,
+        void AddQueryConnectionField<TReturn>(
+            IComplexGraphType graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
+            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10,
@@ -18,7 +18,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class;
 
         void AddQueryConnectionField<TSource, TReturn>(
-            ComplexGraphType<TSource> graph,
+            IComplexGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
             Type? itemGraphType = null,

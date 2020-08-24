@@ -7,17 +7,17 @@ namespace GraphQL.EntityFramework
 {
     public partial interface IEfGraphQLService<TDbContext>
     {
-        FieldType AddQueryField<TSource, TReturn>(
-            ComplexGraphType<TSource> graph,
+        FieldType AddQueryField<TReturn>(
+            IComplexGraphType graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
+            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             string? description = null)
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
-            IObjectGraphType graph,
+            IComplexGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
             Type? itemGraphType = null,

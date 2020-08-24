@@ -7,7 +7,7 @@ namespace GraphQL.EntityFramework
     public partial interface IEfGraphQLService<TDbContext>
     {
         void AddNavigationConnectionField<TSource, TReturn>(
-            ComplexGraphType<TSource> graph,
+            IComplexGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
