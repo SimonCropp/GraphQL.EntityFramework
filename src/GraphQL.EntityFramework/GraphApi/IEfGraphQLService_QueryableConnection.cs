@@ -18,18 +18,9 @@ namespace GraphQL.EntityFramework
             where TReturn : class;
 
         void AddQueryConnectionField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
+            ComplexGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
-            Type? itemGraphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10,
-            string? description = null)
-            where TReturn : class;
-
-        void AddQueryConnectionField<TSource, TReturn>(
-            InterfaceGraphType<TSource> graph,
-            string name,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             int pageSize = 10,

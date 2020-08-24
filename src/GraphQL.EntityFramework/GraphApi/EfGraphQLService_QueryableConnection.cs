@@ -30,7 +30,7 @@ namespace GraphQL.EntityFramework
         }
 
         public void AddQueryConnectionField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
+            ComplexGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
@@ -42,24 +42,6 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(graph), graph);
 
             var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
-
-            var field = graph.AddField(connection.FieldType);
-
-            field.AddWhereArgument(arguments);
-        }
-
-        public void AddQueryConnectionField<TSource, TReturn>(
-            InterfaceGraphType<TSource> graph,
-            string name,
-            Type? itemGraphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10,
-            string? description = null)
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-
-            var connection = BuildQueryConnectionField<TSource, TReturn>(name, null, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
 

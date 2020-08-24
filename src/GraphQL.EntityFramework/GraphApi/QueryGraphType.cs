@@ -40,7 +40,7 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize, description);
+            GraphQlService.AddQueryConnectionField((ComplexGraphType<object>) this, name, resolve, graphType, arguments, pageSize, description);
         }
 
         public FieldType AddQueryField<TReturn>(
