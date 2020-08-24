@@ -26,7 +26,7 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, graphType, arguments, includeNames, pageSize, description);
+            GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, null, graphType, arguments, includeNames, pageSize, description);
         }
 
         public FieldType AddNavigationField<TReturn>(

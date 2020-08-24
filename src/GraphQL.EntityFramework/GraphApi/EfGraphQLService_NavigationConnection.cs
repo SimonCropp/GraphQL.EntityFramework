@@ -12,7 +12,7 @@ namespace GraphQL.EntityFramework
         where TDbContext : DbContext
     {
         public void AddNavigationConnectionField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
+            ComplexGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
@@ -25,25 +25,6 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(graph), graph);
 
             var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, itemGraphType, description);
-
-            var field = graph.AddField(connection.FieldType);
-
-            field.AddWhereArgument(arguments);
-        }
-
-        public void AddNavigationConnectionField<TSource, TReturn>(
-            InterfaceGraphType<TSource> graph,
-            string name,
-            Type? itemGraphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            IEnumerable<string>? includeNames = null,
-            int pageSize = 10,
-            string? description = null)
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-
-            var connection = BuildListConnectionField<TSource, TReturn>(name, null, includeNames, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
 
