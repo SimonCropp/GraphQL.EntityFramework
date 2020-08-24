@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -20,18 +19,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, description);
-        }
-
-        public FieldType AddQueryField<TReturn>(
-            IObjectGraphType graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
-            where TReturn : class
-        {
             Guard.AgainstNull(nameof(graph), graph);
             var field = BuildQueryField(graphType, name, resolve, arguments, description);
             return graph.AddField(field);
@@ -46,18 +33,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            return AddQueryField(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, description);
-        }
-
-        public FieldType AddQueryField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
-            where TReturn : class
-        {
             Guard.AgainstNull(nameof(graph), graph);
             var field = BuildQueryField(graphType, name, resolve, arguments, description);
             return graph.AddField(field);
@@ -67,18 +42,6 @@ namespace GraphQL.EntityFramework
             IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
-            where TReturn : class
-        {
-            return AddQueryField<TSource, TReturn>(graph, name, x => Task.FromResult(resolve(x)), graphType, arguments, description);
-        }
-
-        public FieldType AddQueryField<TSource, TReturn>(
-            IObjectGraphType graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             string? description = null)
@@ -105,7 +68,7 @@ namespace GraphQL.EntityFramework
         FieldType BuildQueryField<TSource, TReturn>(
             Type? itemGraphType,
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             IEnumerable<QueryArgument>? arguments,
             string? description)
             where TReturn : class
@@ -117,7 +80,7 @@ namespace GraphQL.EntityFramework
 
         FieldType BuildQueryField<TSource, TReturn>(
             string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>>? resolve,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
             IEnumerable<QueryArgument>? arguments,
             Type? itemGraphType,
             string? description)
@@ -142,7 +105,7 @@ namespace GraphQL.EntityFramework
                     {
                         var efFieldContext = BuildContext(context);
                         var names = GetKeyNames<TReturn>();
-                        var query = await resolve(efFieldContext);
+                        var query = resolve(efFieldContext);
                         query = includeAppender.AddIncludes(query, context);
                         query = query.ApplyGraphQlArguments(context, names);
 

@@ -19,17 +19,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class;
 
-        FieldType AddSingleField<TReturn>(
-            IObjectGraphType graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
-            Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false,
-            string? description = null)
-            where TReturn : class;
-
         FieldType AddSingleField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
@@ -42,31 +31,9 @@ namespace GraphQL.EntityFramework
             where TReturn : class;
 
         FieldType AddSingleField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false,
-            string? description = null)
-            where TReturn : class;
-
-        FieldType AddSingleField<TSource, TReturn>(
             IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false,
-            string? description = null)
-            where TReturn : class;
-
-        FieldType AddSingleField<TSource, TReturn>(
-            IObjectGraphType graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,

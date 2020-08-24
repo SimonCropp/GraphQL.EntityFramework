@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
@@ -17,15 +16,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class;
 
-        FieldType AddQueryField<TReturn>(
-            IObjectGraphType graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
-            Type? itemGraphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
-            where TReturn : class;
-
         FieldType AddQueryField<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             string name,
@@ -36,27 +26,9 @@ namespace GraphQL.EntityFramework
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
-            Type? itemGraphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
-            where TReturn : class;
-
-        FieldType AddQueryField<TSource, TReturn>(
             IObjectGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Type? itemGraphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
-            where TReturn : class;
-
-        FieldType AddQueryField<TSource, TReturn>(
-            IObjectGraphType graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             string? description = null)
