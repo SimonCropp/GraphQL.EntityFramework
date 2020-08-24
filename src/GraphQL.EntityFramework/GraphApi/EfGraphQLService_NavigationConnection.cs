@@ -12,7 +12,7 @@ namespace GraphQL.EntityFramework
         where TDbContext : DbContext
     {
         public void AddNavigationConnectionField<TSource, TReturn>(
-            IComplexGraphType graph,
+            ComplexGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
@@ -24,22 +24,6 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNull(nameof(graph), graph);
 
-            var connection = BuildListConnectionField(name, resolve, includeNames, pageSize, itemGraphType, description);
-
-            var field = graph.AddField(connection.FieldType);
-
-            field.AddWhereArgument(arguments);
-        }
-
-        ConnectionBuilder<TSource> BuildListConnectionField<TSource, TReturn>(
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
-            IEnumerable<string>? includeName,
-            int pageSize,
-            Type? itemGraphType,
-            string? description)
-            where TReturn : class
-        {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
@@ -53,7 +37,7 @@ namespace GraphQL.EntityFramework
             }
             builder.PageSize(pageSize);
             SetField(builder, fieldType);
-            IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeName);
+            IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
             if (resolve != null)
             {
@@ -76,7 +60,11 @@ namespace GraphQL.EntityFramework
                 });
             }
 
-            return builder;
+            var connection = builder;
+
+            var field = graph.AddField(connection.FieldType);
+
+            field.AddWhereArgument(arguments);
         }
 
         static void SetField(object builder, object fieldType)
