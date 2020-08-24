@@ -20,57 +20,30 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-
-            var field = BuildNavigationField(itemGraphType, name, resolve, includeNames, arguments, description);
-            return graph.AddField(field);
-        }
-
-        FieldType BuildNavigationField<TSource, TReturn>(
-            Type? itemGraphType,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
-            IEnumerable<string>? includeNames,
-            IEnumerable<QueryArgument>? arguments,
-            string? description)
-            where TReturn : class
-        {
-            var listGraphType = MakeListGraphType<TReturn>(itemGraphType);
-            return BuildNavigationField(name, resolve, includeNames, listGraphType, arguments, description);
-        }
-
-        FieldType BuildNavigationField<TSource, TReturn>(
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
-            IEnumerable<string>? includeNames,
-            Type listGraphType,
-            IEnumerable<QueryArgument>? arguments,
-            string? description)
-            where TReturn : class
-        {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
 
-            var fieldType = new FieldType
+            var field = new FieldType
             {
                 Name = name,
                 Description = description,
-                Type = listGraphType,
+                Type = MakeListGraphType<TReturn>(itemGraphType),
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames)
             };
 
             if (resolve != null)
             {
-                fieldType.Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
+                field.Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     context =>
                     {
-                        var efFieldContext = BuildContext(context);
-                        var result = resolve(efFieldContext);
+                        var fieldContext = BuildContext(context);
+                        var result = resolve(fieldContext);
                         result = result.ApplyGraphQlArguments(context);
-                        return efFieldContext.Filters.ApplyFilter(result, context.UserContext);
+                        return fieldContext.Filters.ApplyFilter(result, context.UserContext);
                     });
             }
 
-            return fieldType;
+            return graph.AddField(field);
         }
     }
 }

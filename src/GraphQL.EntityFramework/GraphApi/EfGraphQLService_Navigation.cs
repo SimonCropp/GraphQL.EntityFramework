@@ -19,24 +19,11 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-
-            var field = BuildNavigationField(name, resolve, includeNames, graphType, description);
-            return graph.AddField(field);
-        }
-
-        FieldType BuildNavigationField<TSource, TReturn>(
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve,
-            IEnumerable<string>? includeNames,
-            Type? graphType,
-            string? description)
-            where TReturn : class
-        {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
 
             graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
-            var fieldType = new FieldType
+            var field = new FieldType
             {
                 Name = name,
                 Type = graphType,
@@ -46,13 +33,13 @@ namespace GraphQL.EntityFramework
 
             if (resolve != null)
             {
-                fieldType.Resolver = new AsyncFieldResolver<TSource, TReturn?>(
+                field.Resolver = new AsyncFieldResolver<TSource, TReturn?>(
                     async context =>
                     {
-                        var efFieldContext = BuildContext(context);
+                        var fieldContext = BuildContext(context);
 
-                        var result = resolve(efFieldContext);
-                        if (await efFieldContext.Filters.ShouldInclude(context.UserContext, result))
+                        var result = resolve(fieldContext);
+                        if (await fieldContext.Filters.ShouldInclude(context.UserContext, result))
                         {
                             return result;
                         }
@@ -61,7 +48,7 @@ namespace GraphQL.EntityFramework
                     });
             }
 
-            return fieldType;
+            return graph.AddField(field);
         }
     }
 }
