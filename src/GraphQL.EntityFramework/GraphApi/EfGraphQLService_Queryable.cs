@@ -46,26 +46,13 @@ namespace GraphQL.EntityFramework
             string? description)
             where TReturn : class
         {
-            return BuildQueryField(name, resolve, arguments, itemGraphType, description);
-        }
-
-        FieldType BuildQueryField<TSource, TReturn>(
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
-            IEnumerable<QueryArgument>? arguments,
-            Type? itemGraphType,
-            string? description)
-            where TReturn : class
-        {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-
-            var listGraphType = MakeListGraphType<TReturn>(itemGraphType);
 
             var fieldType = new FieldType
             {
                 Name = name,
                 Description = description,
-                Type = listGraphType,
+                Type = MakeListGraphType<TReturn>(itemGraphType),
                 Arguments = ArgumentAppender.GetQueryArguments(arguments),
             };
 
@@ -74,14 +61,14 @@ namespace GraphQL.EntityFramework
                 fieldType.Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     async context =>
                     {
-                        var efFieldContext = BuildContext(context);
+                        var fieldContext = BuildContext(context);
                         var names = GetKeyNames<TReturn>();
-                        var query = resolve(efFieldContext);
+                        var query = resolve(fieldContext);
                         query = includeAppender.AddIncludes(query, context);
                         query = query.ApplyGraphQlArguments(context, names);
 
                         var list = await query.ToListAsync(context.CancellationToken);
-                        return await efFieldContext.Filters.ApplyFilter(list, context.UserContext);
+                        return await fieldContext.Filters.ApplyFilter(list, context.UserContext);
                     });
             }
 
