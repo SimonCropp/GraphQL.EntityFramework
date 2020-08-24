@@ -80,7 +80,7 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            return GraphQlService.AddQueryField(this, name, resolve, graphType, arguments, description);
+            return GraphQlService.AddQueryField((ComplexGraphType<TSource>) this, name, resolve, graphType, arguments, description);
         }
 
         public TDbContext ResolveDbContext(IResolveFieldContext<TSource> context)

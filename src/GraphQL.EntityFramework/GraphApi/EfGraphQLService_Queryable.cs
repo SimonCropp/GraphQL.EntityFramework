@@ -11,7 +11,7 @@ namespace GraphQL.EntityFramework
         where TDbContext : DbContext
     {
         public FieldType AddQueryField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
+            ComplexGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
             Type? graphType = null,
@@ -35,19 +35,6 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNull(nameof(graph), graph);
             var field = BuildQueryField(itemGraphType, name, resolve, arguments, description);
-            return graph.AddField(field);
-        }
-
-        public FieldType AddQueryField<TSource, TReturn>(
-            InterfaceGraphType<TSource> graph,
-            string name,
-            Type? itemGraphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildQueryField<TSource, TReturn>(name, null, arguments, itemGraphType, description);
             return graph.AddField(field);
         }
 

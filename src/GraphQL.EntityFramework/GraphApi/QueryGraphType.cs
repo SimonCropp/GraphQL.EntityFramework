@@ -51,7 +51,7 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            return GraphQlService.AddQueryField<object, TReturn>(this, name, resolve, graphType, arguments, description);
+            return GraphQlService.AddQueryField((ComplexGraphType<object>) this, name, resolve, graphType, arguments, description);
         }
 
         public FieldType AddSingleField<TReturn>(
