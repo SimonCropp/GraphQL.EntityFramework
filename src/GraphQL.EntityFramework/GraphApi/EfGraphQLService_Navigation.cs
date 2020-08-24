@@ -10,7 +10,7 @@ namespace GraphQL.EntityFramework
         where TDbContext : DbContext
     {
         public FieldType AddNavigationField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
+            ComplexGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
             Type? graphType = null,
@@ -21,19 +21,6 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(graph), graph);
 
             var field = BuildNavigationField(name, resolve, includeNames, graphType, description);
-            return graph.AddField(field);
-        }
-
-        public FieldType AddNavigationField<TSource, TReturn>(
-            InterfaceGraphType<TSource> graph,
-            string name,
-            Type? graphType = null,
-            IEnumerable<string>? includeNames = null,
-            string? description = null)
-            where TReturn : class
-        {
-            Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildNavigationField<TSource, TReturn>(name, null, includeNames, graphType, description);
             return graph.AddField(field);
         }
 

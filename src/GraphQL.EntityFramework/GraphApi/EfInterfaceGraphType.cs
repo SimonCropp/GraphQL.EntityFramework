@@ -36,7 +36,7 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            return GraphQlService.AddNavigationField<TSource, TReturn>(this, name, graphType, includeNames, description);
+            return GraphQlService.AddNavigationField<TSource, TReturn>(this, name, null, graphType, includeNames, description);
         }
 
         public FieldType AddNavigationListField<TReturn>(
@@ -47,7 +47,7 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            return GraphQlService.AddNavigationListField<TSource, TReturn>(this, name, graphType, arguments, includeNames, description);
+            return GraphQlService.AddNavigationListField<TSource, TReturn>(this, name, null, graphType, arguments, includeNames, description);
         }
 
         public void AddQueryConnectionField<TReturn>(
