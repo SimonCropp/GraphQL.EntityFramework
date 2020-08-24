@@ -28,7 +28,7 @@ namespace GraphQL.EntityFramework
         }
 
         public FieldType AddSingleField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
+            ComplexGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,

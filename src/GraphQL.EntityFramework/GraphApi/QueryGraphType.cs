@@ -64,7 +64,7 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            return GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable, description);
+            return GraphQlService.AddSingleField((ComplexGraphType<object>) this, name, resolve, mutate, graphType, arguments, nullable, description);
         }
 
         public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)

@@ -9,7 +9,7 @@ namespace GraphQL.EntityFramework
     public partial interface IEfGraphQLService<TDbContext>
     {
         FieldType AddSingleField<TSource, TReturn>(
-            ObjectGraphType<TSource> graph,
+            ComplexGraphType<TSource> graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
             Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
