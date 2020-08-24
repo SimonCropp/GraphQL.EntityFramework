@@ -14,20 +14,6 @@ namespace GraphQL.EntityFramework
         public FieldType AddSingleField<TReturn>(
             IObjectGraphType graph,
             string name,
-            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false,
-            string? description = null)
-            where TReturn : class
-        {
-            return AddSingleField(graph, name, x => Task.FromResult(resolve(x)), mutate, graphType, arguments, nullable, description);
-        }
-
-        public FieldType AddSingleField<TReturn>(
-            IObjectGraphType graph,
-            string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
             Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
             Type? graphType = null,
