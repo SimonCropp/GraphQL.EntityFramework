@@ -62,7 +62,7 @@ public class GraphQlController :
             Inputs = variables?.ToInputs(),
             CancellationToken = cancellation,
 #if (DEBUG)
-            ExposeExceptions = true,
+            ThrowOnUnhandledException = true,
             EnableMetrics = true,
 #endif
         };

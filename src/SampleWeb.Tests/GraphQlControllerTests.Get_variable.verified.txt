@@ -1,1 +1,1 @@
-{"data":{"companies":[{"id":1}]},"errors":null,"query":null,"document":null,"operation":null,"perf":null,"exposeExceptions":false,"extensions":null}
+{"data":{"companies":[{"id":1}]},"errors":null,"query":null,"document":null,"operation":null,"perf":null,"extensions":null}

@@ -1,1 +1,1 @@
-{"data":{"employeeSummary":[{"companyId":1,"averageAge":28.0},{"companyId":4,"averageAge":17.0}]},"errors":null,"query":null,"document":null,"operation":null,"perf":null,"exposeExceptions":false,"extensions":null}
+{"data":{"employeeSummary":[{"companyId":1,"averageAge":28.0},{"companyId":4,"averageAge":17.0}]},"errors":null,"query":null,"document":null,"operation":null,"perf":null,"extensions":null}
