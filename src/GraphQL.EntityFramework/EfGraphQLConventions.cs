@@ -53,7 +53,7 @@ namespace GraphQL.EntityFramework
         static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider)
             where TDbContext : DbContext
         {
-            var httpContextCapture = provider.GetService<HttpContextCapture>();
+            var httpContextCapture = provider.GetService<HttpContextCapture>()!;
             var httpContextAccessor = httpContextCapture.HttpContextAccessor;
             var dbContextFromHttpContext = httpContextAccessor?.HttpContext.RequestServices.GetService<TDbContext>();
             if (dbContextFromHttpContext != null)
