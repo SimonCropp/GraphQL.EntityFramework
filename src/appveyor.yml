@@ -1,11 +1,30 @@
-image: Visual Studio 2019
 skip_commits:
   message: /docs|Merge pull request.*/
-build_script:
-- ps: >-
-    dotnet build src --configuration Release
+image:
+- macos
+- Visual Studio 2019 Preview
+for:
+  -
+    matrix:
+      only:
+        - image: Visual Studio 2019 Preview
+    install:
+      - ps: >-
+          Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
 
-    dotnet test src --configuration Release --no-build --no-restore
+          ./dotnet-install.ps1 --Version 5.0.100-preview.8.20417.9 -InstallDir 'C:\Program Files\dotnet'
+  -
+    matrix:
+      only:
+        - image: macos
+    install:
+      - appveyor DownloadFile https://dot.net/v1/dotnet-install.sh
+      - bash dotnet-install.sh --version 5.0.100-preview.8.20417.9
+      - sudo mkdir /Users/appveyor/.local/share/NuGet
+      - sudo chmod a+rwx /Users/appveyor/.local/share/NuGet
+build_script:
+  - dotnet build src --configuration Release
+  - dotnet test src --configuration Release --no-build --no-restore
 test: off
 on_failure:
   - ps: Get-ChildItem *.received.* -recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
