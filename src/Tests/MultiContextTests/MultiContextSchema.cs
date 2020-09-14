@@ -6,6 +6,6 @@ public class MultiContextSchema :
     public MultiContextSchema(IServiceProvider provider) :
         base(provider)
     {
-        Query = (MultiContextQuery)provider.GetService(typeof(MultiContextQuery));
+        Query = (MultiContextQuery)provider.GetService(typeof(MultiContextQuery))!;
     }
 }

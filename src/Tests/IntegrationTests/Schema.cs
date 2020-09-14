@@ -6,8 +6,8 @@ public class Schema :
     public Schema(IServiceProvider resolver) :
         base(resolver)
     {
-        Query = (Query)resolver.GetService(typeof(Query));
-        Mutation = (Mutation)resolver.GetService(typeof(Mutation));
+        Query = (Query)resolver.GetService(typeof(Query))!;
+        Mutation = (Mutation)resolver.GetService(typeof(Mutation))!;
         RegisterType<DerivedGraph>();
         RegisterType<DerivedWithNavigationGraph>();
     }
