@@ -53,18 +53,20 @@ namespace GraphQL.EntityFramework
         static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider)
             where TDbContext : DbContext
         {
-            var httpContextCapture = provider.GetService<HttpContextCapture>()!;
-            var httpContextAccessor = httpContextCapture.HttpContextAccessor;
-            var dbContextFromHttpContext = httpContextAccessor?.HttpContext.RequestServices.GetService<TDbContext>();
-            if (dbContextFromHttpContext != null)
+            var dataFromHttpContext = provider.GetService<HttpContextCapture>()?
+                .HttpContextAccessor?
+                .HttpContext
+                .RequestServices
+                .GetService<TDbContext>();
+            if (dataFromHttpContext != null)
             {
-                return dbContextFromHttpContext;
+                return dataFromHttpContext;
             }
 
-            var dbContextFromRootProvider = provider.GetService<TDbContext>();
-            if (dbContextFromRootProvider != null)
+            var dataFromRootProvider = provider.GetService<TDbContext>();
+            if (dataFromRootProvider != null)
             {
-                return dbContextFromRootProvider;
+                return dataFromRootProvider;
             }
 
             throw new Exception($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
