@@ -37,7 +37,7 @@ Support this project by becoming a sponsor. Company logo will show up here with 
 <a href="https://opencollective.com/graphqlentityframework/sponsor/8/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/graphqlentityframework/sponsor/9/website"><img src="https://opencollective.com/graphqlentityframework/sponsor/9/avatar.svg"></a>
 
-[Go to licensing FAQ](/doco/licensing-patron-faq.md) for more information.
+[Go to licensing FAQ](/docs/licensing-patron-faq.md) for more information.
 
 
 ## For enterprise
@@ -54,10 +54,10 @@ https://nuget.org/packages/GraphQL.EntityFramework/
 
 ## Documentation
 
- * [Configuration](/doco/configuration.md)
- * [Defining Graphs](/doco/defining-graphs.md)
- * [Query Usage](/doco/query-usage.md)
- * [Filters](/doco/filters.md)
+ * [Configuration](/docs/configuration.md)
+ * [Defining Graphs](/docs/defining-graphs.md)
+ * [Query Usage](/docs/query-usage.md)
+ * [Filters](/docs/filters.md)
 
 
 All patrons: https://opencollective.com/graphqlentityframework/members/all.json
