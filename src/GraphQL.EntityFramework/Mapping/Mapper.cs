@@ -119,7 +119,7 @@ namespace GraphQL.EntityFramework
             }
             catch (TargetInvocationException exception)
             {
-                throw exception.InnerException;
+                throw exception.InnerException!;
             }
         }
 

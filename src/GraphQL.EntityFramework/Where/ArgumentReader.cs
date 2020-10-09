@@ -37,7 +37,7 @@ static class ArgumentReader
 
         if (argument is IEnumerable<object> objCollection)
         {
-            expression = objCollection.Select(o => o.ToString()).ToArray();
+            expression = objCollection.Select(o => o.ToString()).ToArray()!;
             return true;
         }
 
