@@ -23,8 +23,8 @@ namespace GraphQL.EntityFramework
         }
 
         const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Static;
-        static MethodInfo addNavigationMethod = typeof(Mapper).GetMethod(nameof(AddNavigation), bindingFlags);
-        static MethodInfo addNavigationListMethod = typeof(Mapper).GetMethod(nameof(AddNavigationList), bindingFlags);
+        static MethodInfo addNavigationMethod = typeof(Mapper).GetMethod(nameof(AddNavigation), bindingFlags)!;
+        static MethodInfo addNavigationListMethod = typeof(Mapper).GetMethod(nameof(AddNavigationList), bindingFlags)!;
 
         public static void AutoMap<TSource>(this
             ComplexGraphType<TSource> graph,
