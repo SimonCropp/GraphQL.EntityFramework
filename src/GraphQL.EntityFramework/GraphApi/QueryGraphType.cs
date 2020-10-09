@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    public class QueryGraphType<TDbContext> :
+    public abstract class QueryGraphType<TDbContext> :
         ObjectGraphType
         where TDbContext : DbContext
     {
-        public QueryGraphType(IEfGraphQLService<TDbContext> graphQlService)
+        protected QueryGraphType(IEfGraphQLService<TDbContext> graphQlService)
         {
             Guard.AgainstNull(nameof(graphQlService), graphQlService);
             GraphQlService = graphQlService;
@@ -19,7 +19,7 @@ namespace GraphQL.EntityFramework
 
         public IEfGraphQLService<TDbContext> GraphQlService { get; }
 
-        public TDbContext ResolveDbContext<TSource>(IResolveFieldContext<TSource> context)
+        protected TDbContext ResolveDbContext<TSource>(IResolveFieldContext<TSource> context)
         {
             Guard.AgainstNull(nameof(context), context);
             return GraphQlService.ResolveDbContext(context);
@@ -31,7 +31,7 @@ namespace GraphQL.EntityFramework
             return GraphQlService.ResolveDbContext(context);
         }
 
-        public void AddQueryConnectionField<TReturn>(
+        protected void AddQueryConnectionField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
@@ -43,7 +43,7 @@ namespace GraphQL.EntityFramework
             GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize, description);
         }
 
-        public FieldType AddQueryField<TReturn>(
+        protected FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
@@ -54,7 +54,7 @@ namespace GraphQL.EntityFramework
             return GraphQlService.AddQueryField(this, name, resolve, graphType, arguments, description);
         }
 
-        public FieldType AddSingleField<TReturn>(
+        protected FieldType AddSingleField<TReturn>(
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
             Type? graphType = null,
@@ -67,7 +67,7 @@ namespace GraphQL.EntityFramework
             return GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable, description);
         }
 
-        public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
+        protected IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
             where TItem : class
         {
             return GraphQlService.AddIncludes(query, context);
