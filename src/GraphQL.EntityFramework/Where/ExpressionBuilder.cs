@@ -249,7 +249,7 @@ namespace GraphQL.EntityFramework
             // Make the object values a constant expression
             var constant = Expression.Constant(objects);
             // Build and return the expression body
-            return Expression.Call(constant, property.ListContainsMethod, property.Left);
+            return Expression.Call(constant, property.ListContainsMethod!, property.Left);
         }
 
         /// <summary>
