@@ -172,7 +172,7 @@ static class ReflectionCache
 
     static MethodInfo GetContains<T>()
     {
-        return typeof(List<T>).GetMethod("Contains");
+        return typeof(List<T>).GetMethod("Contains")!;
     }
 
     public static bool TryGetEnumType(this Type type, [NotNullWhen(true)] out Type? enumType)

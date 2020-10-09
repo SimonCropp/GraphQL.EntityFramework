@@ -166,11 +166,11 @@ namespace GraphQL.EntityFramework
             var listItemType = property.PropertyType.GetGenericArguments().Single();
 
             // Generate the predicate for the list item type
-            var subPredicate = typeof(ExpressionBuilder<>)
+            var subPredicate = (Expression) typeof(ExpressionBuilder<>)
                 .MakeGenericType(listItemType)
                 .GetMethods(BindingFlags.Public | BindingFlags.Static)
                 .Single(m => m.Name.Equals("BuildPredicate") && m.GetParameters().Length == 5)
-                .Invoke(new object(), new object[] { listPath, comparison, values!, false, stringComparison! }) as Expression;
+                .Invoke(new object(), new object[] { listPath, comparison, values!, false, stringComparison! })!;
 
             // Generate a method info for the Any Enumerable Static Method
             var anyInfo = typeof(Enumerable)
