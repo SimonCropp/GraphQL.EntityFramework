@@ -163,11 +163,6 @@ namespace GraphQL.EntityFramework
 
         static void AddMember<TSource>(ComplexGraphType<TSource> graph, PropertyInfo property)
         {
-            if (ShouldIgnore(graph, property.Name, property.PropertyType))
-            {
-                return;
-            }
-
             var (compile, propertyGraphType) = Compile<TSource>(property);
             var resolver = new SimpleFieldResolver<TSource>(compile);
             var graphQlField = graph.Field(type: propertyGraphType, name: property.Name);
