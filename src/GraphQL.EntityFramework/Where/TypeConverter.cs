@@ -164,12 +164,12 @@ static class TypeConverter
 
         if (type == typeof(Guid))
         {
-            return Guid.Parse(value);
+            return Guid.Parse(value!);
         }
 
         if (type.IsEnum)
         {
-            return Enum.Parse(type, value, true);
+            return Enum.Parse(type, value!, true);
         }
 
         return Convert.ChangeType(value, type);

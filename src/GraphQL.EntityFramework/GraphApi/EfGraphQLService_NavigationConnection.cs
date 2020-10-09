@@ -69,7 +69,8 @@ namespace GraphQL.EntityFramework
 
         static void SetField(object builder, object fieldType)
         {
-            var fieldTypeField = builder.GetType().GetProperty("FieldType", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            var fieldTypeField = builder.GetType()
+                .GetProperty("FieldType", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)!;
             fieldTypeField.SetValue(builder, fieldType);
         }
 
