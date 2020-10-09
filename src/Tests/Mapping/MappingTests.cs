@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EfLocalDb;
@@ -34,7 +33,7 @@ public class MappingTests
         services.AddSingleton(new MappingChildGraph(graphQlService));
         services.AddSingleton(new MappingParentGraph(graphQlService));
         await using var provider = services.BuildServiceProvider();
-        MappingSchema mappingSchema = new MappingSchema(graphQlService, provider);
+        var mappingSchema = new MappingSchema(graphQlService, provider);
 
         var printer = new SchemaPrinter(mappingSchema);
         var print = printer.Print();
@@ -89,7 +88,7 @@ public class MappingTests
         child.Parent = parent;
         await database.AddData(child, parent);
         var expression = Mapper.NavigationExpression<MappingContext, MappingChild, MappingParent>("Parent");
-        Func<ResolveEfFieldContext<MappingContext, MappingChild>, MappingParent> compile = expression.Compile();
+        var compile = expression.Compile();
         var result = compile(
             new ResolveEfFieldContext<MappingContext, MappingChild>
             {
