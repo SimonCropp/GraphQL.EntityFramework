@@ -4,7 +4,7 @@ scalar Byte
 
 type CompanyGraph {
   employees(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [EmployeeGraph!]!
-  employeesConnection(after: String, first: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): EmployeeGraphConnection
+  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): EmployeeGraphConnection
   content: String
   id: Int!
 }
@@ -97,10 +97,10 @@ type Query {
   companies(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [CompanyGraph!]!
   company(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): CompanyGraph!
   companyOrNull(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): CompanyGraph
-  companiesConnection(after: String, first: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): CompanyGraphConnection
+  companiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): CompanyGraphConnection
   employees(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [EmployeeGraph!]!
   employeesByArgument(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int, content: String): [EmployeeGraph!]!
-  employeesConnection(after: String, first: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): EmployeeGraphConnection
+  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): EmployeeGraphConnection
   employeeSummary(where: [WhereExpressionGraph]): [EmployeeSummaryGraph]
 }
 

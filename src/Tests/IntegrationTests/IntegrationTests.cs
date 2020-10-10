@@ -215,6 +215,33 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Connection_page_back()
+    {
+        var query = @"
+{
+  parentEntitiesConnection(last:2, before: '2') {
+    totalCount
+    edges {
+      cursor
+      node {
+        property
+      }
+    }
+    items {
+      property
+    }
+  }
+}
+";
+
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, entities.ToArray());
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
     public async Task Connection_nested()
     {
         var query = @"
