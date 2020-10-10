@@ -57,7 +57,7 @@ Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet
 ### Root Query
 
 <!-- snippet: rootQuery -->
-<a id='rootquery'></a>
+<a id='snippet-rootquery'></a>
 ```cs
 public class Query :
     QueryGraphType<MyDbContext>
@@ -74,7 +74,7 @@ public class Query :
     }
 }
 ```
-<sup><a href='/src/Snippets/RootQuery.cs#L7-L24' title='Snippet source file'>snippet source</a> | <a href='#rootquery' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/RootQuery.cs#L7-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-rootquery' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -85,7 +85,7 @@ public class Query :
 ### Typed Graph
 
 <!-- snippet: typedGraph -->
-<a id='typedgraph'></a>
+<a id='snippet-typedgraph'></a>
 ```cs
 public class CompanyGraph :
     EfObjectGraphType<MyDbContext,Company>
@@ -104,7 +104,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup><a href='/src/Snippets/TypedGraph.cs#L9-L28' title='Snippet source file'>snippet source</a> | <a href='#typedgraph' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/TypedGraph.cs#L9-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-typedgraph' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -117,7 +117,7 @@ public class CompanyGraph :
 #### Graph Type
 
 <!-- snippet: ConnectionRootQuery -->
-<a id='connectionrootquery'></a>
+<a id='snippet-connectionrootquery'></a>
 ```cs
 public class Query :
     QueryGraphType<MyDbContext>
@@ -131,7 +131,7 @@ public class Query :
     }
 }
 ```
-<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L7-L21' title='Snippet source file'>snippet source</a> | <a href='#connectionrootquery' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L7-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -212,7 +212,7 @@ public class Query :
 ### Typed Graph
 
 <!-- snippet: ConnectionTypedGraph -->
-<a id='connectiontypedgraph'></a>
+<a id='snippet-connectiontypedgraph'></a>
 ```cs
 public class CompanyGraph :
     EfObjectGraphType<MyDbContext, Company>
@@ -226,7 +226,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L8-L22' title='Snippet source file'>snippet source</a> | <a href='#connectiontypedgraph' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L8-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -259,7 +259,7 @@ In some cases, it may be necessary to use `Field` instead of `AddQueryField`/`Ad
  * Apply the `where` argument expression using `ExpressionBuilder<T>.BuildPredicate(whereExpression)`
 
 <!-- snippet: ManuallyApplyWhere -->
-<a id='manuallyapplywhere'></a>
+<a id='snippet-manuallyapplywhere'></a>
 ```cs
 Field<ListGraphType<EmployeeSummaryGraph>>(
     name: "employeeSummary",
@@ -292,7 +292,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L55-L88' title='Snippet source file'>snippet source</a> | <a href='#manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L55-L88' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -301,7 +301,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
 Sometimes it is necessary to access the current DbContext from withing the base `QueryGraphType.Field` method. in this case the custom `ResolveEfFieldContext` is not available. In this scenario `QueryGraphType.ResolveDbContext` can be used to resolve the current DbContext.
 
 <!-- snippet: QueryResolveDbContext -->
-<a id='queryresolvedbcontext'></a>
+<a id='snippet-queryresolvedbcontext'></a>
 ```cs
 public class Query :
     QueryGraphType<MyDbContext>
@@ -320,7 +320,7 @@ public class Query :
     }
 }
 ```
-<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L8-L27' title='Snippet source file'>snippet source</a> | <a href='#queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L8-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
