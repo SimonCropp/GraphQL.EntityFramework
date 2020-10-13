@@ -67,7 +67,7 @@ namespace GraphQL.EntityFramework
             {
                 builder.Description(description);
             }
-            builder.PageSize(pageSize);
+            builder.PageSize(pageSize).Bidirectional();
             SetField(builder, fieldType);
 
             if (resolve != null)

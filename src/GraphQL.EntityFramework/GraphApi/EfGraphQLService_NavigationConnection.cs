@@ -35,7 +35,7 @@ namespace GraphQL.EntityFramework
             {
                 builder.Description(description);
             }
-            builder.PageSize(pageSize);
+            builder.PageSize(pageSize).Bidirectional();
             SetField(builder, fieldType);
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
@@ -80,7 +80,8 @@ namespace GraphQL.EntityFramework
             var makeGenericType = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSource));
             var genericMethodInfo = makeGenericType.GetMethods().Single(mi => mi.Name == "Create" && mi.IsGenericMethod && mi.GetGenericArguments().Length == 1);
             var genericMethod = genericMethodInfo.MakeGenericMethod(graphType);
-            dynamic? x = genericMethod.Invoke(null, new object[] {name}) ?? null;
+            dynamic? x = genericMethod.Invoke(null, new object[] { name }) ?? null;
+            x?.Bidirectional();
             return x?.FieldType!;
         }
 
