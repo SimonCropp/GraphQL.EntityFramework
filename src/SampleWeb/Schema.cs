@@ -3,10 +3,10 @@
 public class Schema :
     GraphQL.Types.Schema
 {
-    public Schema(IServiceProvider provider) :
+    public Schema(IServiceProvider provider, Query query) :
         base(provider)
     {
-        Query = (Query)provider.GetService(typeof(Query))!;
-     //   Subscription = (Subscription)provider.GetService(typeof(Subscription));
+        Query = query;
+        //   Subscription = (Subscription)provider.GetService(typeof(Subscription));
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ public class SchemaPrint
         new Startup().ConfigureServices(services);
 
         await using var provider = services.BuildServiceProvider();
-        var schema = new Schema(provider);
+        var schema = ServiceProviderServiceExtensions.GetRequiredService<ISchema>(provider);
         var printer = new SchemaPrinter(schema);
         var print = printer.Print();
         var settings = new VerifySettings();
