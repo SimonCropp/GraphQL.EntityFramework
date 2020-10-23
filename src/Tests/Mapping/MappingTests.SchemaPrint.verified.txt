@@ -2,10 +2,6 @@ schema {
   query: MappingQuery
 }
 
-scalar BigInt
-
-scalar Byte
-
 enum ComparisonGraph {
   contains
   endsWith
@@ -27,18 +23,6 @@ enum Connector {
   or
 }
 
-scalar Date
-
-scalar DateTime
-
-scalar DateTimeOffset
-
-scalar Decimal
-
-scalar Guid
-
-scalar Long
-
 type MappingChildGraph {
   parent: MappingParentGraph!
   id: ID!
@@ -59,18 +43,10 @@ type MappingQuery {
   parents(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingParentGraph!]!
 }
 
-scalar Milliseconds
-
 input OrderByGraph {
   path: String!
   descending: Boolean
 }
-
-scalar SByte
-
-scalar Seconds
-
-scalar Short
 
 enum StringComparison {
   CURRENT_CULTURE
@@ -80,14 +56,6 @@ enum StringComparison {
   ORDINAL
   ORDINAL_IGNORE_CASE
 }
-
-scalar UInt
-
-scalar ULong
-
-scalar UShort
-
-scalar Uri
 
 input WhereExpressionGraph {
   path: String

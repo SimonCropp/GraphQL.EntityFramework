@@ -1,7 +1,3 @@
-scalar BigInt
-
-scalar Byte
-
 type CompanyGraph {
   employees(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [EmployeeGraph!]!
   employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpressionGraph], orderBy: [OrderByGraph], ids: [ID]): EmployeeGraphConnection
@@ -42,14 +38,6 @@ enum Connector {
   or
 }
 
-scalar Date
-
-scalar DateTime
-
-scalar DateTimeOffset
-
-scalar Decimal
-
 type EmployeeGraph {
   company: CompanyGraph!
   age: Int!
@@ -75,12 +63,6 @@ type EmployeeSummaryGraph {
   companyId: Int!
 }
 
-scalar Guid
-
-scalar Long
-
-scalar Milliseconds
-
 input OrderByGraph {
   path: String!
   descending: Boolean
@@ -104,12 +86,6 @@ type Query {
   employeeSummary(where: [WhereExpressionGraph]): [EmployeeSummaryGraph]
 }
 
-scalar SByte
-
-scalar Seconds
-
-scalar Short
-
 enum StringComparison {
   CURRENT_CULTURE
   CURRENT_CULTURE_IGNORE_CASE
@@ -118,14 +94,6 @@ enum StringComparison {
   ORDINAL
   ORDINAL_IGNORE_CASE
 }
-
-scalar UInt
-
-scalar ULong
-
-scalar UShort
-
-scalar Uri
 
 input WhereExpressionGraph {
   path: String
