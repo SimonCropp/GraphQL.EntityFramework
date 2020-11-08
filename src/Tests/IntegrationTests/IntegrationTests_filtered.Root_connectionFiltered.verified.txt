@@ -3,15 +3,15 @@
     totalCount: 2,
     edges: [
       {
-        cursor: '0',
+        cursor: 0,
         node: {
-          property: 'Value1'
+          property: Value1
         }
       }
     ],
     items: [
       {
-        property: 'Value1'
+        property: Value1
       }
     ]
   }

@@ -5,7 +5,7 @@
       childrenConnection: {
         edges: [],
         pageInfo: {
-          endCursor: '-1',
+          endCursor: -1,
           hasNextPage: false
         }
       }
@@ -15,7 +15,7 @@
       childrenConnection: {
         edges: [],
         pageInfo: {
-          endCursor: '-1',
+          endCursor: -1,
           hasNextPage: false
         }
       }
@@ -25,7 +25,7 @@
       childrenConnection: {
         edges: [],
         pageInfo: {
-          endCursor: '-1',
+          endCursor: -1,
           hasNextPage: false
         }
       }
@@ -35,7 +35,7 @@
       childrenConnection: {
         edges: [],
         pageInfo: {
-          endCursor: '-1',
+          endCursor: -1,
           hasNextPage: false
         }
       }
@@ -45,7 +45,7 @@
       childrenConnection: {
         edges: [],
         pageInfo: {
-          endCursor: '-1',
+          endCursor: -1,
           hasNextPage: false
         }
       }
@@ -55,7 +55,7 @@
       childrenConnection: {
         edges: [],
         pageInfo: {
-          endCursor: '-1',
+          endCursor: -1,
           hasNextPage: false
         }
       }
@@ -65,7 +65,7 @@
       childrenConnection: {
         edges: [],
         pageInfo: {
-          endCursor: '-1',
+          endCursor: -1,
           hasNextPage: false
         }
       }
@@ -75,7 +75,7 @@
       childrenConnection: {
         edges: [],
         pageInfo: {
-          endCursor: '-1',
+          endCursor: -1,
           hasNextPage: false
         }
       }

@@ -1,8 +1,8 @@
 {
   entity1: {
-    property: 'the entity1'
+    property: the entity1
   },
   entity2: {
-    property: 'the entity2'
+    property: the entity2
   }
 }

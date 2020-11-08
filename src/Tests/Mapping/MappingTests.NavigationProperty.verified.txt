@@ -1,8 +1,8 @@
 {
-  expression: 'context => context.Source.Parent',
+  expression: context => context.Source.Parent,
   result: {
     Id: Guid_1,
-    Property: 'value',
+    Property: value,
     Children: [
       {
         Id: Guid_2,

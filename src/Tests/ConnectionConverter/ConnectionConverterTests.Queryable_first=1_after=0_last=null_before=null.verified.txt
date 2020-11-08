@@ -1,6 +1,6 @@
 [
   {
     Id: Guid_1,
-    Property: 'b'
+    Property: b
   }
 ]

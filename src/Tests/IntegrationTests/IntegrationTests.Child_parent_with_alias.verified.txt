@@ -2,17 +2,17 @@
   childEntities: [
     {
       parentAlias: {
-        property: 'Value1'
+        property: Value1
       }
     },
     {
       parentAlias: {
-        property: 'Value1'
+        property: Value1
       }
     },
     {
       parentAlias: {
-        property: 'Value4'
+        property: Value4
       }
     }
   ]

@@ -1,34 +1,34 @@
 [
   {
     Id: Guid_1,
-    Property: 'c'
+    Property: c
   },
   {
     Id: Guid_2,
-    Property: 'd'
+    Property: d
   },
   {
     Id: Guid_3,
-    Property: 'e'
+    Property: e
   },
   {
     Id: Guid_4,
-    Property: 'f'
+    Property: f
   },
   {
     Id: Guid_5,
-    Property: 'g'
+    Property: g
   },
   {
     Id: Guid_6,
-    Property: 'h'
+    Property: h
   },
   {
     Id: Guid_7,
-    Property: 'i'
+    Property: i
   },
   {
     Id: Guid_8,
-    Property: 'j'
+    Property: j
   }
 ]

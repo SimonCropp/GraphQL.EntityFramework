@@ -1,4 +1,4 @@
 {
-  expression: 'source => Convert(source.Property, Object)',
-  result: 'value'
+  expression: source => Convert(source.Property, Object),
+  result: value
 }

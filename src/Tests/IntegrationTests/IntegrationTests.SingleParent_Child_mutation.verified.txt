@@ -1,12 +1,12 @@
 {
   parentEntityMutation: {
-    property: 'Foo',
+    property: Foo,
     children: [
       {
-        property: 'Value2'
+        property: Value2
       },
       {
-        property: 'Value3'
+        property: Value3
       }
     ]
   }

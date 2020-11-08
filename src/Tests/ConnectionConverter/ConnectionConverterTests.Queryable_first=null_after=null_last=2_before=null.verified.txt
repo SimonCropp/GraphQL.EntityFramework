@@ -1,10 +1,10 @@
 [
   {
     Id: Guid_1,
-    Property: 'i'
+    Property: i
   },
   {
     Id: Guid_2,
-    Property: 'j'
+    Property: j
   }
 ]

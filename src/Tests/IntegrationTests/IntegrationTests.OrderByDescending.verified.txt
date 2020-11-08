@@ -1,10 +1,10 @@
 {
   parentEntities: [
     {
-      property: 'Value2'
+      property: Value2
     },
     {
-      property: 'Value1'
+      property: Value1
     }
   ]
 }

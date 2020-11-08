@@ -3,24 +3,24 @@
     totalCount: 8,
     edges: [
       {
-        cursor: '0',
+        cursor: 0,
         node: {
-          property: 'Value1'
+          property: Value1
         }
       },
       {
-        cursor: '1',
+        cursor: 1,
         node: {
-          property: 'Value2'
+          property: Value2
         }
       }
     ],
     items: [
       {
-        property: 'Value1'
+        property: Value1
       },
       {
-        property: 'Value2'
+        property: Value2
       }
     ]
   }

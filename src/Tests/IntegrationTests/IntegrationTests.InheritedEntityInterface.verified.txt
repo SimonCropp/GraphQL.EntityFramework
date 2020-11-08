@@ -2,31 +2,31 @@
   interfaceGraphConnection: {
     items: [
       {
-        property: 'Value1',
+        property: Value1,
         childrenFromInterface: {
           items: [
             {
-              property: 'Value2'
+              property: Value2
             },
             {
-              property: 'Value3'
+              property: Value3
             }
           ]
         }
       },
       {
-        property: 'Value4',
+        property: Value4,
         childrenFromInterface: {
           items: [
             {
-              property: 'Value5'
+              property: Value5
             }
           ]
         },
         childrenFromDerived: {
           items: [
             {
-              property: 'Value6'
+              property: Value6
             }
           ]
         }

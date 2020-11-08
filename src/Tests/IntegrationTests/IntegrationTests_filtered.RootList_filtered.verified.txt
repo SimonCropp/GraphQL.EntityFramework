@@ -1,7 +1,7 @@
 {
   parentEntitiesFiltered: [
     {
-      property: 'Value1'
+      property: Value1
     }
   ]
 }

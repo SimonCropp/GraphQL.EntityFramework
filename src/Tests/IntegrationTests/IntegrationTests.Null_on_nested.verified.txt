@@ -3,7 +3,7 @@
     {
       level2Entity: {
         level3Entity: {
-          property: 'Valuea'
+          property: Valuea
         }
       }
     }
