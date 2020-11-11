@@ -120,7 +120,7 @@ Single where statements can be expressed:
 
 Expressions in the same logical grouping can be expressed together with a connector, on the preceeding where expression:
 
-* `and`: (default if no comparison provided)
+* `and`: (default if no connector provided)
 * `or`
 
 When trying to logically group expressions, provide a Where expression with only the `groupedExpressions` property.
@@ -134,8 +134,8 @@ Multiple where statements with a logical grouping can be expressed:
     [
       {path: "Property", comparison: "startsWith", value: "Valu"},
       {
-        "groupedExpressions": [
-          {path: "Property", comparison: "endsWith", value: "ue", comparison: "or"},
+        groupedExpressions: [
+          {path: "Property", comparison: "endsWith", value: "ue", connector: "or"},
           {path: "Property", comparison: "endsWith", value: "id"}
         ]
       }
@@ -168,8 +168,8 @@ Example:
       {path: "Property", comparison: "startsWith", value: "Valu", negate: true},
       {
         negate: true,
-        "groupedExpressions": [
-          {path: "Property", comparison: "endsWith", value: "ue", comparison: "or"},
+        groupedExpressions: [
+          {path: "Property", comparison: "endsWith", value: "ue", connector: "or"},
           {path: "Property", comparison: "endsWith", value: "id"}
         ]
       }
