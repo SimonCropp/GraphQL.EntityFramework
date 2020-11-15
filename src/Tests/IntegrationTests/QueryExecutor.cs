@@ -17,9 +17,9 @@ static class QueryExecutor
         query = query.Replace("'", "\"");
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => data,
+            _ => data,
             data.Model,
-            userContext => filters);
+            _ => filters);
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         await using var provider = services.BuildServiceProvider();
         using var schema = new Schema(provider);

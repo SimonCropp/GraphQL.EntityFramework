@@ -15,7 +15,7 @@ public class SchemaPrint
     public async Task Print()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<ILoggerFactory>(x => NullLoggerFactory.Instance);
+        services.AddSingleton<ILoggerFactory>(_ => NullLoggerFactory.Instance);
         new Startup().ConfigureServices(services);
 
         await using var provider = services.BuildServiceProvider();

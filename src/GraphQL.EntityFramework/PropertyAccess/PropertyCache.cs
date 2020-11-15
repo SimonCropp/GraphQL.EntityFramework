@@ -8,14 +8,15 @@ using System.Reflection;
 static class PropertyCache<TInput>
 {
     public static ParameterExpression SourceParameter = Expression.Parameter(typeof(TInput));
-    static ConcurrentDictionary<string, Property<TInput>> properties = new ConcurrentDictionary<string, Property<TInput>>();
+    static ConcurrentDictionary<string, Property<TInput>> properties = new();
 
     public static Property<TInput> GetProperty(string path)
     {
-        return properties.GetOrAdd(path,
+        return properties.GetOrAdd(
+            path,
             x =>
             {
-                var left = AggregatePath(path, SourceParameter);
+                var left = AggregatePath(x, SourceParameter);
 
                 var converted = Expression.Convert(left, typeof(object));
                 var lambda = Expression.Lambda<Func<TInput, object>>(converted, SourceParameter);

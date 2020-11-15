@@ -34,8 +34,8 @@ public class Startup
 
         var dbContextBuilder = new DbContextBuilder();
         services.AddSingleton<IHostedService>(dbContextBuilder);
-        services.AddSingleton<Func<SampleDbContext>>(provider => dbContextBuilder.BuildDbContext);
-        services.AddScoped(provider => dbContextBuilder.BuildDbContext());
+        services.AddSingleton<Func<SampleDbContext>>(_ => dbContextBuilder.BuildDbContext);
+        services.AddScoped(_ => dbContextBuilder.BuildDbContext());
         services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
         services.AddSingleton<ISchema, Schema>();
         var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
