@@ -1,6 +1,7 @@
 ﻿using GraphQL.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+// ReSharper disable UnusedParameter.Local
 
 public class GlobalFilterSnippets
 {

@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 static class ArgumentGraphs
 {
-    static Dictionary<Type, GraphType> entries = new Dictionary<Type, GraphType>();
+    static Dictionary<Type, GraphType> entries = new();
 
     static ArgumentGraphs()
     {

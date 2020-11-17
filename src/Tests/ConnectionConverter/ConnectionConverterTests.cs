@@ -25,7 +25,7 @@ public class ConnectionConverterTests
             constructInstance: builder => new MyContext(builder.Options));
     }
 
-    static List<string> list = new List<string>
+    static List<string> list = new()
     {
         "a", "b", "c", "d", "e", "f", "g", "h", "i", "j"
     };

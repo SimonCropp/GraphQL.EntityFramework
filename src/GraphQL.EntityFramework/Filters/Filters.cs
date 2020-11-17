@@ -53,7 +53,7 @@ namespace GraphQL.EntityFramework
                 };
         }
 
-        Dictionary<Type, Func<object, object, Task<bool>>> funcs = new Dictionary<Type, Func<object, object, Task<bool>>>();
+        Dictionary<Type, Func<object, object, Task<bool>>> funcs = new();
 
         internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
             where TEntity : class

@@ -5,7 +5,7 @@ using GraphQL.EntityFramework;
 class NullFilters :
     Filters
 {
-    public static NullFilters Instance = new NullFilters();
+    public static NullFilters Instance = new();
 
     internal override Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
     {

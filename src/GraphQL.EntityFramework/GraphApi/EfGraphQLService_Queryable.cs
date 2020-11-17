@@ -88,7 +88,7 @@ namespace GraphQL.EntityFramework
             return nonNullType.MakeGenericType(listGraphType.MakeGenericType(itemGraphType));
         }
 
-        static List<string> emptyList = new List<string>();
+        static List<string> emptyList = new();
 
         List<string> GetKeyNames<TSource>()
         {

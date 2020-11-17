@@ -10,7 +10,7 @@ namespace GraphQL.EntityFramework
 {
     public static class Mapper
     {
-        static HashSet<Type> ignoredTypes = new HashSet<Type>();
+        static HashSet<Type> ignoredTypes = new();
 
         public static void AddIgnoredType<T>()
         {

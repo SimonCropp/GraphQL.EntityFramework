@@ -18,7 +18,7 @@ static class ComplexGraphResolver
         public readonly Type? EntityType;
     }
 
-    static ConcurrentDictionary<IGraphType, Resolved> cache = new ConcurrentDictionary<IGraphType, Resolved>();
+    static ConcurrentDictionary<IGraphType, Resolved> cache = new();
 
     public static bool TryGetComplexGraph(this FieldType fieldType, [NotNullWhen(true)] out IComplexGraphType? graph)
     {

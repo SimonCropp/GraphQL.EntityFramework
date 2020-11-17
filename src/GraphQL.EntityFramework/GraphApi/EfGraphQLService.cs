@@ -38,7 +38,7 @@ namespace GraphQL.EntityFramework
         ResolveEfFieldContext<TDbContext, TSource> BuildContext<TSource>(
             IResolveFieldContext<TSource> context)
         {
-            return new ResolveEfFieldContext<TDbContext, TSource>
+            return new()
             {
                 UserContext = context.UserContext,
                 Arguments = context.Arguments,

@@ -6,7 +6,7 @@ static class ArgumentAppender
 {
     static QueryArgument<ListGraphType<WhereExpressionGraph>> whereArgument()
     {
-        return new QueryArgument<ListGraphType<WhereExpressionGraph>>
+        return new()
         {
             Name = "where"
         };
@@ -14,7 +14,7 @@ static class ArgumentAppender
 
     static QueryArgument<ListGraphType<OrderByGraph>> orderByArgument()
     {
-        return new QueryArgument<ListGraphType<OrderByGraph>>
+        return new()
         {
             Name = "orderBy"
         };
@@ -22,7 +22,7 @@ static class ArgumentAppender
 
     static QueryArgument<ListGraphType<IdGraphType>> idsArgument()
     {
-        return new QueryArgument<ListGraphType<IdGraphType>>
+        return new()
         {
             Name = "ids"
         };
@@ -30,7 +30,7 @@ static class ArgumentAppender
 
     static QueryArgument<IdGraphType> idArgument()
     {
-        return new QueryArgument<IdGraphType>
+        return new()
         {
             Name = "id"
         };
@@ -38,7 +38,7 @@ static class ArgumentAppender
 
     static QueryArgument<IntGraphType> skipArgument()
     {
-        return new QueryArgument<IntGraphType>
+        return new()
         {
             Name = "skip"
         };
@@ -46,7 +46,7 @@ static class ArgumentAppender
 
     static QueryArgument<IntGraphType> takeArgument()
     {
-        return new QueryArgument<IntGraphType>
+        return new()
         {
             Name = "take"
         };
