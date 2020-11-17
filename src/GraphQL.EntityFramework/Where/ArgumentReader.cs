@@ -7,7 +7,7 @@ using GraphQL.EntityFramework;
 
 static class ArgumentReader
 {
-    public static bool TryReadWhere(Func<Type, string, object> getArgument, out IEnumerable<WhereExpression> expression)
+    public static bool TryReadWhere(Func<Type, string, object?> getArgument, out IEnumerable<WhereExpression> expression)
     {
         expression = getArgument.ReadList<WhereExpression>("where");
 
@@ -21,12 +21,12 @@ static class ArgumentReader
         }
     }
 
-    public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object> getArgument)
+    public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object?> getArgument)
     {
         return getArgument.ReadList<OrderBy>("orderBy");
     }
 
-    public static bool TryReadIds(Func<Type, string, object> getArgument, [NotNullWhen(returnValue: true)] out string[]? expression)
+    public static bool TryReadIds(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string[]? expression)
     {
         var argument = getArgument(typeof(object), "ids");
         if (argument == null)
@@ -44,7 +44,7 @@ static class ArgumentReader
         throw new Exception($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is not supported.");
     }
 
-    public static bool TryReadId(Func<Type, string, object> getArgument, [NotNullWhen(returnValue: true)] out string? expression)
+    public static bool TryReadId(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string? expression)
     {
         var argument = getArgument(typeof(object), "id");
         if (argument == null)
@@ -71,7 +71,7 @@ static class ArgumentReader
         return true;
     }
 
-    public static bool TryReadSkip(Func<Type, string, object> getArgument, out int skip)
+    public static bool TryReadSkip(Func<Type, string, object?> getArgument, out int skip)
     {
         var result = getArgument.TryReadInt("skip", out skip);
         if (result)
@@ -84,7 +84,7 @@ static class ArgumentReader
         return result;
     }
 
-    public static bool TryReadTake(Func<Type, string, object> getArgument, out int take)
+    public static bool TryReadTake(Func<Type, string, object?> getArgument, out int take)
     {
         var result = getArgument.TryReadInt("take", out take);
         if (result)
@@ -97,7 +97,7 @@ static class ArgumentReader
         return result;
     }
 
-    static IEnumerable<T> ReadList<T>(this Func<Type, string, object> getArgument, string name)
+    static IEnumerable<T> ReadList<T>(this Func<Type, string, object?> getArgument, string name)
     {
         var argument = getArgument(typeof(T[]), name);
         if (argument == null)
@@ -108,7 +108,7 @@ static class ArgumentReader
         return (T[]) argument;
     }
 
-    static bool TryReadInt(this Func<Type, string, object> getArgument, string name, out int value)
+    static bool TryReadInt(this Func<Type, string, object?> getArgument, string name, out int value)
     {
         var argument = getArgument(typeof(int), name);
         if (argument == null)

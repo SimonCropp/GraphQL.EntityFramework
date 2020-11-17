@@ -14,7 +14,7 @@ namespace GraphQL.EntityFramework
             return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x), keyNames);
         }
 
-        static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object> getArguments, List<string>? keyNames)
+        static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object?> getArguments, List<string>? keyNames)
             where TItem : class
         {
             if (ArgumentReader.TryReadIds(getArguments, out var values))
@@ -66,7 +66,7 @@ namespace GraphQL.EntityFramework
             return keyNames[0];
         }
 
-        static IQueryable<TItem> Order<TItem>(IQueryable<TItem> queryable, Func<Type, string, object> getArguments)
+        static IQueryable<TItem> Order<TItem>(IQueryable<TItem> queryable, Func<Type, string, object?> getArguments)
         {
             var orderBys = ArgumentReader.ReadOrderBy(getArguments).ToList();
             IOrderedQueryable<TItem> ordered;
