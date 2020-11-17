@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Types;
 
 namespace GraphQL.EntityFramework
@@ -24,5 +25,25 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument>? arguments = null,
             string? description = null)
             where TReturn : class;
+        
+        FieldType AddQueryField<TReturn>(
+            IComplexGraphType graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>>? resolveAsync = null,
+            Type? itemGraphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            string? description = null)
+            where TReturn : class;
+
+        FieldType AddQueryField<TSource, TReturn>(
+            IComplexGraphType graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>>? resolveAsync = null,
+            Type? itemGraphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            string? description = null)
+            where TReturn : class;
+
+        
     }
 }

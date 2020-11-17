@@ -98,6 +98,18 @@ namespace GraphQL.EntityFramework
             return GraphQlService.AddQueryField(this, name, resolve, graphType, arguments, description);
         }
 
+        
+        public FieldType AddQueryField<TReturn>(
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolveAsync,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            string? description = null)
+            where TReturn : class
+        {
+            return GraphQlService.AddQueryField(this, name, resolveAsync, graphType, arguments, description);
+        }
+
         public TDbContext ResolveDbContext(IResolveFieldContext<TSource> context)
         {
             Guard.AgainstNull(nameof(context), context);
