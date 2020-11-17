@@ -11,6 +11,7 @@ static class NavigationReader
     {
         return model
             .GetEntityTypes()
+            .GroupBy(l => l.Name, e => e, (key, sources) => sources.First())
             .ToDictionary(x => x.ClrType, GetNavigations);
     }
 

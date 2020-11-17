@@ -18,7 +18,10 @@ static class KeyNameExtractor
             }
 
             var names = primaryKey.Properties.Select(x => x.Name).ToList();
-            keyNames1.Add(entityType.ClrType, names);
+            if (!keyNames1.ContainsKey(entityType.ClrType))
+            {
+                keyNames1.Add(entityType.ClrType, names);
+            }
         }
 
         return keyNames1;
