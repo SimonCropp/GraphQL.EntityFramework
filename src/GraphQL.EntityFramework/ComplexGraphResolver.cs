@@ -104,6 +104,12 @@ static class ComplexGraphResolver
                     type = resolvedEntityType.BaseType;
                     continue;
                 }
+                if (genericTypeDefinition == typeof(PaginationType<>))
+                {
+                    var resolvedEntityType = genericArguments.Single();
+                    type = resolvedEntityType.BaseType;
+                    continue;
+                }
             }
             type = type.BaseType;
         }

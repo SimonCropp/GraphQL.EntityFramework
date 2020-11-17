@@ -31,6 +31,10 @@ public class Query :
             name: "companiesConnection",
             resolve: context => context.DbContext.Companies);
 
+        AddQueryPaginationField(
+            name: "companiesPagination",
+            resolve: context => context.DbContext.Companies);
+
         AddQueryField(
             name: "employees",
             resolve: context => context.DbContext.Employees);

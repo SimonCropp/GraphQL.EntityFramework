@@ -10,64 +10,68 @@ namespace GraphQL.EntityFramework
     partial class EfGraphQLService<TDbContext>
         where TDbContext : DbContext
     {
-        public void AddQueryConnectionField<TReturn>(
+        public void AddQueryPaginationField<TReturn>(
             IComplexGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10,
+               int page = 1,
+            int row = 50,
             string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
 
-            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
+            var pagination = BuildQueryPaginationField(name, resolve, page, row, itemGraphType, description);
 
-            var field = graph.AddField(connection.FieldType);
+            var field = graph.AddField(pagination.FieldType);
 
             field.AddWhereArgument(arguments);
         }
 
-        public void AddQueryConnectionField<TSource, TReturn>(
+        public void AddQueryPaginationField<TSource, TReturn>(
             IComplexGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            int pageSize = 10,
+            int page = 1,
+            int row = 50,
             string? description = null)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
 
-            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
+            var pagination = BuildQueryPaginationField(name, resolve, page, row, itemGraphType, description);
 
-            var field = graph.AddField(connection.FieldType);
+            var field = graph.AddField(pagination.FieldType);
 
             field.AddWhereArgument(arguments);
         }
 
-        ConnectionBuilder<TSource> BuildQueryConnectionField<TSource, TReturn>(
+        PaginationBuilder<TSource> BuildQueryPaginationField<TSource, TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
-            int pageSize,
+            int page,
+            int row,
             Type? itemGraphType,
             string? description)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-            Guard.AgainstNegative(nameof(pageSize), pageSize);
+            Guard.AgainstNegative(nameof(page), page);
+            Guard.AgainstNegative(nameof(row), row);
 
             itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-            var fieldType = GetConnectionFieldType<TSource>(name, itemGraphType);
+            var fieldType = GetPaginationFieldType<TSource>(name, itemGraphType);
 
-            var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
+            var builder = PaginationBuilder<TSource>.Create<FakeGraph>(name);
             if (description != null)
             {
                 builder.Description(description);
             }
-            builder.PageSize(pageSize).Bidirectional();
+            builder.Page(page).Row(row);
             SetField(builder, fieldType);
 
             if (resolve != null)
@@ -81,11 +85,9 @@ namespace GraphQL.EntityFramework
                         var names = GetKeyNames<TReturn>();
                         query = query.ApplyGraphQlArguments(context, names);
                         return query
-                            .ApplyConnectionContext(
-                                context.First,
-                                context.After,
-                                context.Last,
-                                context.Before,
+                            .ApplyPaginationContext(
+                                context.Page,
+                                context.Row,
                                 context,
                                 context.CancellationToken,
                                 efFieldContext.Filters);
@@ -93,6 +95,17 @@ namespace GraphQL.EntityFramework
             }
 
             return builder;
+        }
+        
+        
+        //TODO: can return null
+        static object GetPaginationFieldType<TSource>(string name, Type graphType)
+        {
+            var makeGenericType = typeof(PaginationBuilder<>).MakeGenericType(typeof(TSource));
+            var genericMethodInfo = makeGenericType.GetMethods().Single(mi => mi.Name == "Create" && mi.IsGenericMethod && mi.GetGenericArguments().Length == 1);
+            var genericMethod = genericMethodInfo.MakeGenericMethod(graphType);
+            dynamic? x = genericMethod.Invoke(null, new object[] { name }) ?? null;
+            return x?.FieldType!;
         }
     }
 }

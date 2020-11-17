@@ -83,7 +83,7 @@ class IncludeAppender
             AddField(list, field, fragmentDefinition.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graph);
         }
 
-        if (IsConnectionNode(field) || field == context.FieldAst)
+        if (IsConnectionNode(field) || IsPaginationNode(field) || field == context.FieldAst)
         {
             if (subFields.Count > 0)
             {
@@ -140,6 +140,13 @@ class IncludeAppender
         var name = field.Name.ToLowerInvariant();
         return name == "edges" || name == "items" || name == "node";
     }
+    
+    static bool IsPaginationNode(Field field)
+    {
+        var name = field.Name.ToLowerInvariant();
+        return name == "metaData" || name == "items";
+    }
+
 
     public static Dictionary<string, object> GetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames)
     {

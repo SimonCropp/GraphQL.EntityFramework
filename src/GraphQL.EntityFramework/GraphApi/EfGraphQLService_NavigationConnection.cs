@@ -28,7 +28,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
             itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-            var fieldType = GetFieldType<TSource>(name, itemGraphType);
+            var fieldType = GetConnectionFieldType<TSource>(name, itemGraphType);
 
             var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
             if (description != null)
@@ -75,7 +75,7 @@ namespace GraphQL.EntityFramework
         }
 
         //TODO: can return null
-        static object GetFieldType<TSource>(string name, Type graphType)
+        static object GetConnectionFieldType<TSource>(string name, Type graphType)
         {
             var makeGenericType = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSource));
             var genericMethodInfo = makeGenericType.GetMethods().Single(mi => mi.Name == "Create" && mi.IsGenericMethod && mi.GetGenericArguments().Length == 1);

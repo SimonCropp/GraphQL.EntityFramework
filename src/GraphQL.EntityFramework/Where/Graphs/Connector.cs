@@ -3,6 +3,6 @@
     public enum Connector
     {
         And,
-        Or
+        Or,
     }
 }

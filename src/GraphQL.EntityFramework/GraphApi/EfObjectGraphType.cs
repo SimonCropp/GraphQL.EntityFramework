@@ -72,6 +72,21 @@ namespace GraphQL.EntityFramework
             GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize, description);
         }
 
+        
+        public void AddQueryPaginationField<TReturn>(
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+            Type? graphType = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            int page = 1,
+            int row = 50,
+            string? description = null)
+            where TReturn : class
+        {
+            GraphQlService.AddQueryPaginationField(this, name, resolve, graphType, arguments, page, row, description);
+        }
+
+        
         public FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,

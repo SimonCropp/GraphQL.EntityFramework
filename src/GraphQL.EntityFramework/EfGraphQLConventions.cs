@@ -1,5 +1,7 @@
 ﻿using System;
 using GraphQL.Types.Relay;
+using GraphQL.Types.Relay.DataObjects;
+using GraphQL.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +27,9 @@ namespace GraphQL.EntityFramework
             where TDbContext : DbContext
         {
             Guard.AgainstNull(nameof(services), services);
+            
+            GraphTypeTypeRegistry.Register<PaginationMetaData, PaginationMetaDataType>();
+            GraphTypeTypeRegistry.Register(typeof(Pagination<>), typeof(PaginationType<>));
 
             RegisterScalarsAndArgs(services);
             services.AddHttpContextAccessor();
@@ -80,9 +85,11 @@ namespace GraphQL.EntityFramework
         public static void RegisterConnectionTypesInContainer(IServiceCollection services)
         {
             Guard.AgainstNull(nameof(services), services);
+            services.AddTransient(typeof(PaginationType<>));
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();
+            services.AddSingleton<PaginationMetaDataType>();
         }
 
         static IModel ResolveModel<TDbContext>(IServiceProvider provider)

@@ -292,7 +292,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L55-L88' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L59-L92' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
