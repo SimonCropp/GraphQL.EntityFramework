@@ -30,9 +30,12 @@ namespace GraphQL.EntityFramework
                 foreach (var attribute in member.GetGetMethod()!.GetCustomAttributes())
                 {
                     var type = attribute.GetType();
-                    if (type.Name == "NullableAttribute")
+                    switch (type.Name)
                     {
-                        return GetNullableFlag(type, attribute);
+                        case "NullableAttribute":
+                            return GetNullableFlag(type, attribute);
+                        case "NullableContextAttribute":
+                            return IsNullableContextAttributeFlagNull(type, attribute);
                     }
                 }
 
@@ -41,14 +44,21 @@ namespace GraphQL.EntityFramework
                     var type = attribute.GetType();
                     if (type.Name == "NullableContextAttribute")
                     {
-                        var field = type.GetField("Flag")!;
-                        var defaultFlag = (byte) field.GetValue(attribute)!;
-                        return defaultFlag == 2;
+                        return IsNullableContextAttributeFlagNull(type, attribute);
                     }
                 }
+
+                return false;
             }
 
             return propertyType.IsNullable();
+        }
+
+        static bool IsNullableContextAttributeFlagNull(Type type, Attribute attribute)
+        {
+            var field = type.GetField("Flag")!;
+            var defaultFlag = (byte) field.GetValue(attribute)!;
+            return defaultFlag == 2;
         }
     }
 }
