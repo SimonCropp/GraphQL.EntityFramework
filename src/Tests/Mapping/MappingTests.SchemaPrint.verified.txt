@@ -33,6 +33,7 @@ type MappingChildGraph {
 type MappingParentGraph {
   children(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingChildGraph!]!
   id: ID!
+  jsonProperty: [String]!
   property: String
 }
 

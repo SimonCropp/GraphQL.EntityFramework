@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 public class MappingContext :
     DbContext
@@ -13,7 +15,12 @@ public class MappingContext :
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<MappingParent>();
+        var parentBuilder = modelBuilder.Entity<MappingParent>();
+        parentBuilder.Property(e => e.JsonProperty)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<IList<string>>(v));
+
         modelBuilder.Entity<MappingChild>();
     }
 }

@@ -50,9 +50,23 @@ namespace GraphQL.EntityFramework
             var type = typeof(TSource);
             try
             {
-                MapNavigationProperties(graph, graphService, type, exclusions);
+                if (graphService.Navigations.TryGetValue(type, out var navigations))
+                {
+                    MapNavigationProperties(graph, graphService, exclusions, navigations);
+                }
 
-                MapProperties(graph, type, exclusions);
+                var list = new List<string>();
+                if (exclusions != null)
+                {
+                    list.AddRange(exclusions);
+                }
+
+                if (navigations != null)
+                {
+                    list.AddRange(navigations.Select(x => x.Name));
+                }
+
+                MapProperties(graph, type, list);
             }
             catch (GetGraphException exception)
             {
@@ -78,15 +92,10 @@ namespace GraphQL.EntityFramework
         static void MapNavigationProperties<TDbContext, TSource>(
             ComplexGraphType<TSource> graph,
             IEfGraphQLService<TDbContext> graphService,
-            Type type,
-            IReadOnlyList<string>? exclusions = null)
+            IReadOnlyList<string>? exclusions,
+            IReadOnlyList<Navigation> navigations)
             where TDbContext : DbContext
         {
-            if (!graphService.Navigations.TryGetValue(type, out var navigations))
-            {
-                return;
-            }
-
             foreach (var navigation in navigations)
             {
                 if (ShouldIgnore(graph, navigation.Name, navigation.Type, exclusions))
@@ -192,17 +201,6 @@ namespace GraphQL.EntityFramework
             if (ignoredTypes.Contains(propertyType))
             {
                 return true;
-            }
-
-            if (propertyType.TryGetCollectionType(out var collectionType))
-            {
-                var itemType = collectionType.GenericTypeArguments.Single();
-                if (ignoredTypes.Contains(itemType))
-                {
-                    return true;
-                }
-
-                return itemType.IsClass;
             }
 
             return false;
