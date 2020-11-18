@@ -8,8 +8,9 @@ class ConnectorGraph :
 {
     public ConnectorGraph()
     {
-        AddValue("and", null, Connector.And);
-        AddValue("or", null, Connector.Or);
+        // remove the extra and / or to prevent duplicate enum generated;
+        // AddValue("and", null, Connector.And);
+        // AddValue("or", null, Connector.Or);
     }
 
     public override object? ParseLiteral(IValue value)
