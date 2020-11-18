@@ -60,7 +60,7 @@ namespace GraphQL.EntityFramework
             }
         }
 
-        static void MapProperties<TSource>(ComplexGraphType<TSource> graph, Type type, IReadOnlyList<string>? exclusions = null)
+        static void MapProperties<TSource>(ComplexGraphType<TSource> graph, Type type, IReadOnlyList<string>? exclusions)
         {
             var publicProperties = type.GetPublicProperties()
                 .OrderBy(x => x.Name);
