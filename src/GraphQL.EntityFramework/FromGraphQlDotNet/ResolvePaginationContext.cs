@@ -27,6 +27,6 @@ namespace GraphQL.Builders
 
         /// <inheritdoc/>
         public int? Row => this.GetArgument<int?>("row") ?? _defaultRow;
-        public int? Page =>  this.GetArgument<int?>("row") ??  _defaultPage;
+        public int? Page =>  this.GetArgument<int?>("page") ??  _defaultPage;
     }
 }
