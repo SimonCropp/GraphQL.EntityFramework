@@ -58,6 +58,7 @@ namespace GraphQL.EntityFramework
                 Schema = context.Schema,
                 Source = context.Source,
                 SubFields = context.SubFields,
+                RequestServices = context.RequestServices,
                 Variables = context.Variables,
                 DbContext = ResolveDbContext(context),
                 Filters = ResolveFilter(context)
