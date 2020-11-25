@@ -48,7 +48,8 @@ namespace GraphQL.EntityFramework
                     }
                 }
 
-                return false;
+                //Do not return false here due to this causes interpretation of nullable string in #nullable disable case as non nullable one.
+                //return false;
             }
 
             return propertyType.IsNullable();
