@@ -55,7 +55,7 @@ namespace GraphQL.EntityFramework
         {
             var dataFromHttpContext = provider.GetService<HttpContextCapture>()?
                 .HttpContextAccessor?
-                .HttpContext
+                .HttpContext?
                 .RequestServices
                 .GetService<TDbContext>();
             if (dataFromHttpContext != null)
