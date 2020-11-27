@@ -16,7 +16,8 @@ static class NavigationReader
 
     static IReadOnlyList<Navigation> GetNavigations(IEntityType entity)
     {
-        var navigations = entity.GetNavigations();
+        var navigations = entity.GetNavigations()
+            .Cast<INavigationBase>().Concat(entity.GetSkipNavigations());
         return navigations
             .Select(x =>
             {
@@ -26,12 +27,22 @@ static class NavigationReader
             .ToList();
     }
 
-    static (Type itemType, bool isCollection) GetNavigationType(INavigation navigation)
+    static (Type itemType, bool isCollection) GetNavigationType(INavigationBase navigation)
     {
         var navigationType = navigation.ClrType;
-        var collectionType = navigationType.GetInterfaces()
-            .SingleOrDefault(x => x.IsGenericType &&
-                                  x.GetGenericTypeDefinition() == typeof(ICollection<>));
+        Type? collectionType = null;
+
+        if (navigationType.IsGenericType && navigationType.GetGenericTypeDefinition() == typeof(ICollection<>))
+        {
+            collectionType = navigationType;
+        }
+        else
+        {
+            collectionType = navigationType.GetInterfaces()
+                .SingleOrDefault(x => x.IsGenericType &&
+                                      x.GetGenericTypeDefinition() == typeof(ICollection<>));
+        }
+
         if (collectionType == null)
         {
             return (navigationType, false);

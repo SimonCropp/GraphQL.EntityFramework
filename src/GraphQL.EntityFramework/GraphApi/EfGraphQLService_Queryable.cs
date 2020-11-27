@@ -63,7 +63,7 @@ namespace GraphQL.EntityFramework
                     {
                         var fieldContext = BuildContext(context);
                         var names = GetKeyNames<TReturn>();
-                        var query = resolve(fieldContext);
+                        var query = resolve(fieldContext).AsNoTracking();
                         query = includeAppender.AddIncludes(query, context);
                         query = query.ApplyGraphQlArguments(context, names);
 
