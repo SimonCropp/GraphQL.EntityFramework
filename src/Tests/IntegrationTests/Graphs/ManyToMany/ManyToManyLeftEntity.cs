@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 public class ManyToManyLeftEntity
@@ -10,7 +9,7 @@ public class ManyToManyLeftEntity
     }
 
     [Key]
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Id { get; set; } = null!;
 
     public string? LeftName { get; set; }
 

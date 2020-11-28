@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 public class ManyToManyRightEntity
@@ -10,7 +9,7 @@ public class ManyToManyRightEntity
     }
 
     [Key]
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Id { get; set; } = null!;
 
     public string? RightName { get; set; }
 

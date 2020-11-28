@@ -1407,28 +1407,38 @@ fragment childEntityFields on DerivedChildGraph {
         {
             ManyToManyLeftEntity = new ManyToManyLeftEntity
             {
+                Id = "Left1Id",
                 LeftName = "Left1"
             },
             ManyToManyRightEntity = new ManyToManyRightEntity
             {
+                Id = "Right1Id",
                 RightName = "Right1"
             }
         };
 
-        var middle22 = new ManyToManyMiddleEntity
+        var middle12 = new ManyToManyMiddleEntity
         {
-            ManyToManyLeftEntity = new ManyToManyLeftEntity
-            {
-                LeftName = "Left2"
-            },
+            ManyToManyLeftEntity = middle11.ManyToManyLeftEntity,
             ManyToManyRightEntity = new ManyToManyRightEntity
             {
+                Id = "Right2Id",
                 RightName = "Right2"
             }
         };
 
+        var middle21 = new ManyToManyMiddleEntity
+        {
+            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            {
+                Id = "Left2Id",
+                LeftName = "Left2"
+            },
+            ManyToManyRightEntity = middle11.ManyToManyRightEntity
+        };
+
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, middle11, middle22);
+        var result = await RunQuery(database, query, null, null, middle11, middle12, middle21);
         await Verifier.Verify(result);
     }
 
@@ -1451,28 +1461,38 @@ fragment childEntityFields on DerivedChildGraph {
         {
             ManyToManyLeftEntity = new ManyToManyLeftEntity
             {
+                Id = "Left1Id",
                 LeftName = "Left1"
             },
             ManyToManyRightEntity = new ManyToManyRightEntity
             {
+                Id = "Right1Id",
                 RightName = "Right1"
             }
         };
 
-        var middle22 = new ManyToManyMiddleEntity
+        var middle12 = new ManyToManyMiddleEntity
         {
-            ManyToManyLeftEntity = new ManyToManyLeftEntity
-            {
-                LeftName = "Left2"
-            },
+            ManyToManyLeftEntity = middle11.ManyToManyLeftEntity,
             ManyToManyRightEntity = new ManyToManyRightEntity
             {
+                Id = "Right2Id",
                 RightName = "Right2"
             }
         };
 
+        var middle21 = new ManyToManyMiddleEntity
+        {
+            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            {
+                Id = "Left2Id",
+                LeftName = "Left2"
+            },
+            ManyToManyRightEntity = middle11.ManyToManyRightEntity
+        };
+
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, middle11, middle22);
+        var result = await RunQuery(database, query, null, null, middle11, middle12, middle21);
         await Verifier.Verify(result);
     }
 
