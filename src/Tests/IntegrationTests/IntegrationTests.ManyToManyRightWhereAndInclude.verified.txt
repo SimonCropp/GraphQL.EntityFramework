@@ -1,0 +1,12 @@
+{
+  manyToManyLeftEntities: [
+    {
+      leftName: Left2,
+      rights: [
+        {
+          rightName: Right2
+        }
+      ]
+    }
+  ]
+}
