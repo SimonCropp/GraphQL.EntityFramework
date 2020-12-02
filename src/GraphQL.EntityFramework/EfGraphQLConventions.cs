@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -15,12 +16,14 @@ namespace GraphQL.EntityFramework
         /// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="model">The <see cref="IModel"/> to use. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
+        /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
         #region RegisterInContainer
         public static void RegisterInContainer<TDbContext>(
                 IServiceCollection services,
                 ResolveDbContext<TDbContext>? resolveDbContext = null,
                 IModel? model = null,
-                ResolveFilters? resolveFilters = null)
+                ResolveFilters? resolveFilters = null,
+                bool disableTracking = false)
             #endregion
             where TDbContext : DbContext
         {
@@ -30,14 +33,15 @@ namespace GraphQL.EntityFramework
             services.AddHttpContextAccessor();
             services.AddTransient<HttpContextCapture>();
             services.AddSingleton(
-                provider => Build(resolveDbContext, model, resolveFilters, provider));
+                provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking));
         }
 
         static IEfGraphQLService<TDbContext> Build<TDbContext>(
             ResolveDbContext<TDbContext>? dbContextResolver,
             IModel? model,
             ResolveFilters? filters,
-            IServiceProvider provider)
+            IServiceProvider provider,
+            bool disableTracking)
             where TDbContext : DbContext
         {
             model ??= ResolveModel<TDbContext>(provider);
@@ -47,7 +51,8 @@ namespace GraphQL.EntityFramework
             return new EfGraphQLService<TDbContext>(
                 model,
                 dbContextResolver,
-                filters);
+                filters,
+                disableTracking);
         }
 
         static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider)

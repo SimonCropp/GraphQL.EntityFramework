@@ -99,6 +99,10 @@ namespace GraphQL.EntityFramework
                         var names = GetKeyNames<TReturn>();
 
                         var query = resolve(efFieldContext);
+                        if (disableTracking)
+                        {
+                            query = query.AsNoTracking();
+                        }
                         query = includeAppender.AddIncludes(query, context);
                         query = query.ApplyGraphQlArguments(context, names);
                         var single = await WrappedSingle(name, graphType, query, context);

@@ -11,7 +11,8 @@ static class QueryExecutor
         ServiceCollection services,
         TDbContext data,
         Inputs? inputs,
-        Filters? filters)
+        Filters? filters,
+        bool diableTracking)
         where TDbContext : DbContext
     {
         query = query.Replace("'", "\"");
@@ -19,7 +20,8 @@ static class QueryExecutor
             services,
             _ => data,
             data.Model,
-            _ => filters);
+            _ => filters,
+            diableTracking);
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         await using var provider = services.BuildServiceProvider();
         using var schema = new Schema(provider);
