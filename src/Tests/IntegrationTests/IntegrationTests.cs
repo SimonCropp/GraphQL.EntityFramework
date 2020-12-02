@@ -1136,6 +1136,61 @@ fragment childEntityFields on ChildGraph {
     }
 
     [Fact]
+    public async Task Query_Cyclic()
+    {
+        var query = @"
+{
+  childEntities (orderBy: {path: ""property""})
+  {
+    property
+    parent
+    {
+      property
+      children
+      {
+        property
+        parent
+        {
+          property
+        }
+      }
+    }
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Property = "Value5",
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
     public async Task Query_NoTracking()
     {
         var query = @"
