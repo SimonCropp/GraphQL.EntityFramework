@@ -128,6 +128,16 @@ It has access to the current GraphQL user context.
 If null then the Filters will be resolved from the container.
 
 
+#### DisableTracking
+
+Setting `disableTracking` to true results in the use of `EntityFrameworkQueryableExtensions.AsNoTracking<TEntity>` for all `IQueryable<T>` operations. This can result in better performance since EF does not need to track entities when querying. Not that `AsNoTracking` does no support results in a cycle, which will result in the following error:
+
+```
+The Include path 'DataItems->Section' results in a cycle.
+Cycles are not allowed in no-tracking queries; either use a tracking query or remove the cycle.
+```
+
+
 ### Usage
 
 <!-- snippet: RegisterInContainer -->
