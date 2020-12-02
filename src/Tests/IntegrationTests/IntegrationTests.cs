@@ -39,6 +39,8 @@ public partial class IntegrationTests
         GraphTypeTypeRegistry.Register<DerivedEntity, DerivedGraph>();
         GraphTypeTypeRegistry.Register<DerivedWithNavigationEntity, DerivedWithNavigationGraph>();
         GraphTypeTypeRegistry.Register<DerivedChildEntity, DerivedChildGraph>();
+        GraphTypeTypeRegistry.Register<ManyToManyLeftEntity, ManyToManyLeftGraph>();
+        GraphTypeTypeRegistry.Register<ManyToManyRightEntity, ManyToManyRightGraph>();
 
         sqlInstance = new SqlInstance<IntegrationDbContext>(
             buildTemplate: async data =>
@@ -1383,6 +1385,114 @@ fragment childEntityFields on DerivedChildGraph {
 
         await using var database = await sqlInstance.Build();
         var result = await RunQuery(database, query, null, null, derivedEntity1, childEntity1, childEntity2, derivedEntity2, childEntity3, childEntity4);
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task ManyToManyRightWhereAndInclude()
+    {
+        var query = @"
+{
+  manyToManyLeftEntities (where: {path: 'rights[rightName]', comparison: 'equal', value: ""Right2""})
+  {
+    leftName
+    rights
+    {
+      rightName
+    }
+  }
+}";
+
+        var middle11 = new ManyToManyMiddleEntity
+        {
+            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            {
+                Id = "Left1Id",
+                LeftName = "Left1"
+            },
+            ManyToManyRightEntity = new ManyToManyRightEntity
+            {
+                Id = "Right1Id",
+                RightName = "Right1"
+            }
+        };
+
+        var middle12 = new ManyToManyMiddleEntity
+        {
+            ManyToManyLeftEntity = middle11.ManyToManyLeftEntity,
+            ManyToManyRightEntity = new ManyToManyRightEntity
+            {
+                Id = "Right2Id",
+                RightName = "Right2"
+            }
+        };
+
+        var middle21 = new ManyToManyMiddleEntity
+        {
+            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            {
+                Id = "Left2Id",
+                LeftName = "Left2"
+            },
+            ManyToManyRightEntity = middle11.ManyToManyRightEntity
+        };
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, middle11, middle12, middle21);
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task ManyToManyLeftWhereAndInclude()
+    {
+        var query = @"
+{
+  manyToManyRightEntities (where: {path: 'lefts[leftName]', comparison: 'equal', value: ""Left2""})
+  {
+    rightName
+    lefts
+    {
+      leftName
+    }
+  }
+}";
+
+        var middle11 = new ManyToManyMiddleEntity
+        {
+            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            {
+                Id = "Left1Id",
+                LeftName = "Left1"
+            },
+            ManyToManyRightEntity = new ManyToManyRightEntity
+            {
+                Id = "Right1Id",
+                RightName = "Right1"
+            }
+        };
+
+        var middle12 = new ManyToManyMiddleEntity
+        {
+            ManyToManyLeftEntity = middle11.ManyToManyLeftEntity,
+            ManyToManyRightEntity = new ManyToManyRightEntity
+            {
+                Id = "Right2Id",
+                RightName = "Right2"
+            }
+        };
+
+        var middle21 = new ManyToManyMiddleEntity
+        {
+            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            {
+                Id = "Left2Id",
+                LeftName = "Left2"
+            },
+            ManyToManyRightEntity = middle11.ManyToManyRightEntity
+        };
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, middle11, middle12, middle21);
         await Verifier.Verify(result);
     }
 

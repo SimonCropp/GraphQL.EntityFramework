@@ -86,5 +86,13 @@ public class Query :
             itemGraphType: typeof(InterfaceGraph),
             name: "interfaceGraphConnection",
             resolve: context => context.DbContext.InheritedEntities);
+
+        AddQueryField(
+            name: "manyToManyLeftEntities",
+            resolve: context => context.DbContext.ManyToManyLeftEntities);
+
+        AddQueryField(
+            name: "manyToManyRightEntities",
+            resolve: context => context.DbContext.ManyToManyRightEntities);
     }
 }
