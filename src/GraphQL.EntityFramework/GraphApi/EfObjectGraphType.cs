@@ -20,7 +20,7 @@ namespace GraphQL.EntityFramework
         }
 
         /// <summary>
-        /// Map all un-mapped properties. See <see cref="Mapper.AutoMap{TSource}"/>,
+        /// Map all un-mapped properties. See <see cref="Mapper.AutoMap{TSource}"/>.
         /// </summary>
         public void AutoMap(IReadOnlyList<string>? exclusions = null)
         {
