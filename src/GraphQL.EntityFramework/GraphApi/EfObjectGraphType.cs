@@ -20,8 +20,13 @@ namespace GraphQL.EntityFramework
         }
 
         /// <summary>
-        /// Map all un-mapped properties. See <see cref="Mapper.AutoMap{TSource}"/>.
+        /// Map all un-mapped properties. Underlying behaviour is:
+        ///
+        ///  * Calls <see cref="IEfGraphQLService{TDbContext}.AddNavigationField{TSource,TReturn}"/> for all non-list EF navigation properties.
+        ///  * Calls <see cref="IEfGraphQLService{TDbContext}.AddNavigationListField{TSource,TReturn}"/> for all EF navigation properties.
+        ///  * Calls <see cref="ComplexGraphType{TSourceType}.AddField"/> for all other properties
         /// </summary>
+        /// <param name="exclusions">A list of property names to exclude from mapping.</param>
         public void AutoMap(IReadOnlyList<string>? exclusions = null)
         {
             Mapper.AutoMap(this, GraphQlService, exclusions);

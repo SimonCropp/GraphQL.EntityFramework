@@ -12,11 +12,17 @@ namespace GraphQL.EntityFramework
     {
         static HashSet<Type> ignoredTypes = new();
 
+        /// <summary>
+        /// Add a property type to exclude from mapping.
+        /// </summary>
         public static void AddIgnoredType<T>()
         {
             ignoredTypes.Add(typeof(T));
         }
 
+        /// <summary>
+        /// Add a property type to exclude from mapping.
+        /// </summary>
         public static void AddIgnoredType(Type type)
         {
             ignoredTypes.Add(type);
@@ -27,11 +33,7 @@ namespace GraphQL.EntityFramework
         static MethodInfo addNavigationListMethod = typeof(Mapper).GetMethod(nameof(AddNavigationList), bindingFlags)!;
 
         /// <summary>
-        /// Map all un-mapped properties. Underlying behaviour is:
-        ///
-        ///  * Calls <see cref="IEfGraphQLService{TDbContext}.AddNavigationField{TSource,TReturn}"/> for all non-list EF navigation properties.
-        ///  * Calls <see cref="IEfGraphQLService{TDbContext}.AddNavigationListField{TSource,TReturn}"/> for all EF navigation properties.
-        ///  * Calls <see cref="ComplexGraphType{TSourceType}.AddField"/> for all other properties
+        /// Map all un-mapped properties. Calls <see cref="ComplexGraphType{TSourceType}.AddField"/> for all other properties.
         /// </summary>
         /// <param name="exclusions">A list of property names to exclude from mapping.</param>
         public static void AutoMap<TSource>(this

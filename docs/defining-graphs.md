@@ -299,6 +299,8 @@ The underlying behavior of AutoMap is:
 
 An optional list of `exclusions` can be passed to exclude a subset of properties from mapping.
 
+`Mapper.AddIgnoredType` can be used to exclude properties (of a certain type) from mapping.
+
 
 ## Manually Apply `WhereExpression`
 
