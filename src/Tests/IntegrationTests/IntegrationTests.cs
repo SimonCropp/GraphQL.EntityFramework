@@ -85,7 +85,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3);
         await Verifier.Verify(result);
     }
 
@@ -101,7 +101,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -117,7 +117,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -136,7 +136,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -161,7 +161,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -186,7 +186,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -212,7 +212,7 @@ public partial class IntegrationTests
         var entities = BuildEntities(8);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entities.ToArray());
+        var result = await RunQuery(database, query, null, null, false, entities.ToArray());
         await Verifier.Verify(result);
     }
 
@@ -239,7 +239,7 @@ public partial class IntegrationTests
         var entities = BuildEntities(8);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entities.ToArray());
+        var result = await RunQuery(database, query, null, null, false, entities.ToArray());
         await Verifier.Verify(result);
     }
 
@@ -268,7 +268,7 @@ public partial class IntegrationTests
         var entities = BuildEntities(8);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entities.ToArray());
+        var result = await RunQuery(database, query, null, null, false, entities.ToArray());
         await Verifier.Verify(result);
     }
 
@@ -305,7 +305,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -330,7 +330,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity2, entity1);
+        var result = await RunQuery(database, query, null, null, false, entity2, entity1);
         await Verifier.Verify(result);
     }
 
@@ -355,7 +355,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -380,7 +380,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -412,7 +412,7 @@ query ($value: String!)
                 {"value", "value2"}
             });
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, inputs, null, entity1, entity2);
+        var result = await RunQuery(database, query, inputs, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -437,7 +437,7 @@ query ($value: String!)
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -451,8 +451,32 @@ query ($value: String!)
   }
 }";
         await using var database = await sqlInstance.Build();
-        var error = await Assert.ThrowsAsync<ExecutionError>(() => RunQuery(database, query, null, null));
+        var error = await Assert.ThrowsAsync<ExecutionError>(() => RunQuery(database, query, null, null, false));
         await Verifier.Verify(error.Message);
+    }
+
+    [Fact]
+    public async Task Single_Found_NoTracking()
+    {
+        var query = @"
+{
+  parentEntity(id: ""00000000-0000-0000-0000-000000000001"", orderBy: {path: ""property""}) {
+    property
+  }
+}";
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, true, entity1, entity2);
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -475,7 +499,7 @@ query ($value: String!)
             Property = "Value2"
         };
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -489,7 +513,7 @@ query ($value: String!)
   }
 }";
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null);
+        var result = await RunQuery(database, query, null, null, false);
         await Verifier.Verify(result);
     }
 
@@ -513,7 +537,7 @@ query ($value: String!)
             Property = "Value2"
         };
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -560,7 +584,7 @@ mutation {
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
         await Verifier.Verify(result);
     }
 
@@ -607,7 +631,7 @@ mutation {
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
         await Verifier.Verify(result);
     }
 
@@ -660,7 +684,7 @@ fragment childEntityFields on ChildGraph {
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
         await Verifier.Verify(result);
     }
 
@@ -685,7 +709,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -710,7 +734,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -735,7 +759,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -761,7 +785,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -787,7 +811,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -820,7 +844,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3);
         await Verifier.Verify(result);
     }
 
@@ -845,7 +869,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -871,7 +895,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2);
         await Verifier.Verify(result);
     }
 
@@ -927,7 +951,7 @@ fragment childEntityFields on ChildGraph {
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
         await Verifier.Verify(result);
     }
 
@@ -973,7 +997,7 @@ fragment childEntityFields on ChildGraph {
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
         await Verifier.Verify(result);
     }
 
@@ -998,7 +1022,7 @@ fragment childEntityFields on ChildGraph {
         level1.IncludeNonQueryableA = level2;
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, level1, level2);
+        var result = await RunQuery(database, query, null, null, false, level1, level2);
         await Verifier.Verify(result);
     }
 
@@ -1030,7 +1054,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, level1, level2, level3);
+        var result = await RunQuery(database, query, null, null, false, level1, level2, level3);
         await Verifier.Verify(result);
     }
 
@@ -1065,7 +1089,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, level1, level2, level3);
+        var result = await RunQuery(database, query, null, null, false, level1, level2, level3);
         await Verifier.Verify(result);
     }
 
@@ -1107,7 +1131,109 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, level1b, level2b, level1a, level2a, level3a);
+        var result = await RunQuery(database, query, null, null, false, level1b, level2b, level1a, level2a, level3a);
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task Query_Cyclic()
+    {
+        var query = @"
+{
+  childEntities (orderBy: {path: ""property""})
+  {
+    property
+    parent
+    {
+      property
+      children
+      {
+        property
+        parent
+        {
+          property
+        }
+      }
+    }
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Property = "Value5",
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task Query_NoTracking()
+    {
+        var query = @"
+{
+  childEntities (orderBy: {path: ""property""})
+  {
+    property
+    parent
+    {
+      property
+    }
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Property = "Value5",
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        await using var database = await sqlInstance.Build();
+        var result = await RunQuery(database, query, null, null, true, entity1, entity2, entity3, entity4, entity5);
         await Verifier.Verify(result);
     }
 
@@ -1154,7 +1280,7 @@ fragment childEntityFields on ChildGraph {
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
         await Verifier.Verify(result);
     }
 
@@ -1196,7 +1322,7 @@ fragment childEntityFields on ChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity5);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity5);
         await Verifier.Verify(result);
     }
 
@@ -1233,7 +1359,7 @@ fragment childEntityFields on ChildGraph {
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
         await Verifier.Verify(result);
     }
 
@@ -1280,7 +1406,7 @@ fragment childEntityFields on ChildGraph {
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, entity1, entity2, entity3, entity4, entity5);
+        var result = await RunQuery(database, query, null, null, false, entity1, entity2, entity3, entity4, entity5);
         await Verifier.Verify(result);
     }
 
@@ -1311,7 +1437,7 @@ fragment childEntityFields on ChildGraph {
         parent.Child2 = child2;
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, parent, child1, child2);
+        var result = await RunQuery(database, query, null, null, false, parent, child1, child2);
         await Verifier.Verify(result);
     }
 
@@ -1384,7 +1510,7 @@ fragment childEntityFields on DerivedChildGraph {
         derivedEntity2.Children.Add(childEntity4);
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, derivedEntity1, childEntity1, childEntity2, derivedEntity2, childEntity3, childEntity4);
+        var result = await RunQuery(database, query, null, null, false, derivedEntity1, childEntity1, childEntity2, derivedEntity2, childEntity3, childEntity4);
         await Verifier.Verify(result);
     }
 
@@ -1438,7 +1564,7 @@ fragment childEntityFields on DerivedChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, middle11, middle12, middle21);
+        var result = await RunQuery(database, query, null, null, false, middle11, middle12, middle21);
         await Verifier.Verify(result);
     }
 
@@ -1492,7 +1618,7 @@ fragment childEntityFields on DerivedChildGraph {
         };
 
         await using var database = await sqlInstance.Build();
-        var result = await RunQuery(database, query, null, null, middle11, middle12, middle21);
+        var result = await RunQuery(database, query, null, null, false, middle11, middle12, middle21);
         await Verifier.Verify(result);
     }
 
@@ -1501,6 +1627,7 @@ fragment childEntityFields on DerivedChildGraph {
         string query,
         Inputs? inputs,
         Filters? filters,
+        bool diableTracking,
         params object[] entities)
     {
         var dbContext = database.Context;
@@ -1515,7 +1642,7 @@ fragment childEntityFields on DerivedChildGraph {
             services.AddSingleton(type);
         }
 
-        return await QueryExecutor.ExecuteQuery(query, services, database.NewDbContext(), inputs, filters);
+        return await QueryExecutor.ExecuteQuery(query, services, database.NewDbContext(), inputs, filters, diableTracking);
     }
 
     static IEnumerable<Type> GetGraphQlTypes()

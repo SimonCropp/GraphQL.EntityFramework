@@ -64,11 +64,14 @@ namespace GraphQL.EntityFramework
                         var fieldContext = BuildContext(context);
                         var names = GetKeyNames<TReturn>();
                         var query = resolve(fieldContext);
+                        if (disableTracking)
+                        {
+                            query = query.AsNoTracking();
+                        }
                         query = includeAppender.AddIncludes(query, context);
                         query = query.ApplyGraphQlArguments(context, names);
 
                         var list = await query
-                            .AsNoTracking()
                             .ToListAsync(context.CancellationToken);
                         return await fieldContext.Filters.ApplyFilter(list, context.UserContext);
                     });

@@ -247,4 +247,3 @@ snippet: QueryResolveDbContext
 The arguments are parsed and mapped each time a query is executer.
 
 ArgumentProcessor is generally considered an internal API and not for public use. However there are some advanced scenarios, for example when building subscriptions, that ArgumentProcessor is useful.
-

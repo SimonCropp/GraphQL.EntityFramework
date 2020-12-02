@@ -1,0 +1,58 @@
+{
+  childEntities: [
+    {
+      property: Value2,
+      parent: {
+        property: Value1,
+        children: [
+          {
+            property: Value2,
+            parent: {
+              property: Value1
+            }
+          },
+          {
+            property: Value3,
+            parent: {
+              property: Value1
+            }
+          }
+        ]
+      }
+    },
+    {
+      property: Value3,
+      parent: {
+        property: Value1,
+        children: [
+          {
+            property: Value2,
+            parent: {
+              property: Value1
+            }
+          },
+          {
+            property: Value3,
+            parent: {
+              property: Value1
+            }
+          }
+        ]
+      }
+    },
+    {
+      property: Value5,
+      parent: {
+        property: Value4,
+        children: [
+          {
+            property: Value5,
+            parent: {
+              property: Value4
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
