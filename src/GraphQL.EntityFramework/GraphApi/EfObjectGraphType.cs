@@ -19,6 +19,9 @@ namespace GraphQL.EntityFramework
             GraphQlService = graphQlService;
         }
 
+        /// <summary>
+        /// Map all un-mapped properties. See <see cref="Mapper.AutoMap{TSource}"/>,
+        /// </summary>
         public void AutoMap(IReadOnlyList<string>? exclusions = null)
         {
             Mapper.AutoMap(this, GraphQlService, exclusions);

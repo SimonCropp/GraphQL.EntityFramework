@@ -7,7 +7,7 @@ Entity Framework has the concept of [Navigation Properties](https://docs.microso
 
 > A property defined on the principal and/or dependent entity that contains a reference(s) to the related entity(s).
 
-In the context of GraphQL, Root Graph is the entry point to performing the initial EF query. Nested graphs then usually access navigation properties to return data, or perform a new EF query. New EF queries can be performed with `AddQueryField` and `AddQueryConnectionField`. Navigation properties queries are performed using `AddNavigationField` and `AddNavigationConnectionField`.
+In the context of GraphQL, Root Graph is the entry point to performing the initial EF query. Nested graphs then usually access navigation properties to return data, or perform a new EF query. New EF queries can be performed with `AddQueryField` and `AddQueryConnectionField`. Navigation properties queries are performed using `AddNavigationField` and `AddNavigationConnectionField`. For the above `*ConnectionField` refer to the GraphQL concept of pagination using [Connections](https://graphql.org/learn/pagination/).
 
 When performing a query there are several approaches to [Loading Related Data](https://docs.microsoft.com/en-us/ef/core/querying/related-data)
 
@@ -44,7 +44,7 @@ The string for the include is taken from the field name when using `AddNavigatio
 
 ## Fields
 
-Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet.github.io/docs/getting-started/introduction#queries). Fields can be mapped to Entity Framework by using `IEfGraphQLService`. `IEfGraphQLService` can be used in either a root query or a nested query via dependency injection. Alternatively the base type `EfObjectGraphType` or `EfObjectGraphType<TSource>` can be used for root or nested graphs respectively. The below samples all use the base type approach as it results in slightly less code.
+Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet.github.io/docs/getting-started/introduction#queries). Fields can be mapped to Entity Framework by using `IEfGraphQLService`. `IEfGraphQLService` can be used in either a root query or a nested query via dependency injection. Alternatively convenience methods are exposed on the types `EfObjectGraphType` or `EfObjectGraphType<TSource>` for root or nested graphs respectively. The below samples all use the base type approach as it results in slightly less code.
 
 
 ### Root Query
@@ -62,6 +62,8 @@ snippet: typedGraph
 
 
 ## Connections
+
+Creating a page-able field is supported through [GraphQL Connections](https://graphql.org/learn/pagination/) by calling `IEfGraphQLService.AddNavigationConnectionField` (for an EF navigation property), or `IEfGraphQLService.AddQueryConnectionField` (for an IQueryable). Alternatively convenience methods are exposed on the types `EfObjectGraphType` or `EfObjectGraphType<TSource>` for root or nested graphs respectively.
 
 
 ### Root Query
@@ -170,6 +172,53 @@ public class ExampleGraph : ObjectGraphType<Example>
 ```
 
  * [GraphQL .NET - Schema Types / Enumerations](https://graphql-dotnet.github.io/docs/getting-started/schema-types/#enumerations)
+
+
+## AutoMap
+
+`Mapper.AutoMap` can be used to remove repetitive code by mapping all properties of a type.
+
+For example for this graph:
+
+```cs
+public class EmployeeGraph :
+    EfObjectGraphType<SampleDbContext, Employee>
+{
+    public EmployeeGraph(IEfGraphQLService<SampleDbContext> graphQlService) :
+        base(graphQlService)
+    {
+        AddNavigationField(
+            name: "company",
+            resolve: context => context.Source.Company);
+        Field(employee => employee.Age);
+        Field(employee => employee.Content);
+        Field(employee => employee.CompanyId);
+        Field(employee => employee.Id);
+    }
+}
+```
+
+The equivalent graph using AutoMap is:
+
+```cs
+public class EmployeeGraph :
+    EfObjectGraphType<SampleDbContext, Employee>
+{
+    public EmployeeGraph(IEfGraphQLService<SampleDbContext> graphQlService) :
+        base(graphQlService)
+    {
+        AutoMap();
+    }
+}
+```
+
+The underlying behavior of AutoMap is:
+
+ * Calls `IEfGraphQLService{TDbContext}.AddNavigationField{TSource,TReturn}` for all non-list EF navigation properties.
+ * Calls `IEfGraphQLService{TDbContext}.AddNavigationListField{TSource,TReturn}` for all EF navigation properties.
+ * Calls `ComplexGraphType{TSourceType}.AddField` for all other properties
+
+An optional list of `exclusions` can be passed to exclude a subset of properties from mapping.
 
 
 ## Manually Apply `WhereExpression`

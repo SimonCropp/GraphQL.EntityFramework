@@ -26,6 +26,14 @@ namespace GraphQL.EntityFramework
         static MethodInfo addNavigationMethod = typeof(Mapper).GetMethod(nameof(AddNavigation), bindingFlags)!;
         static MethodInfo addNavigationListMethod = typeof(Mapper).GetMethod(nameof(AddNavigationList), bindingFlags)!;
 
+        /// <summary>
+        /// Map all un-mapped properties. Underlying behaviour is:
+        ///
+        ///  * Calls <see cref="IEfGraphQLService{TDbContext}.AddNavigationField{TSource,TReturn}"/> for all non-list EF navigation properties.
+        ///  * Calls <see cref="IEfGraphQLService{TDbContext}.AddNavigationListField{TSource,TReturn}"/> for all EF navigation properties.
+        ///  * Calls <see cref="ComplexGraphType{TSourceType}.AddField"/> for all other properties
+        /// </summary>
+        /// <param name="exclusions">A list of property names to exclude from mapping.</param>
         public static void AutoMap<TSource>(this
             ComplexGraphType<TSource> graph,
             IReadOnlyList<string>? exclusions = null)
