@@ -46,6 +46,10 @@ namespace GraphQL.EntityFramework
                     {
                         return IsNullableContextAttributeFlagNull(type, attribute);
                     }
+                    if (type.Name == "NullableAttribute")
+                    {
+                        return GetNullableFlag(type, attribute);
+                    }
                 }
 
                 //Do not return false here due to this causes interpretation of nullable string in #nullable disable case as non nullable one.

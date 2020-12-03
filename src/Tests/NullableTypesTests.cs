@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using GraphQL.EntityFramework;
 using Xunit;
@@ -22,6 +23,12 @@ public class NullableTypesTests
 
         var property = typeof(TargetRecord).GetProperty("Property")!;
         Assert.False(property.IsNullable());
+
+        var structProperty = typeof(TargetRecord).GetProperty("StructProperty")!;
+        Assert.False(structProperty.IsNullable());
+
+        var nullStructProperty = typeof(TargetRecord).GetProperty("NullStructProperty")!;
+        Assert.True(nullStructProperty.IsNullable());
     }
 
     public class TargetClass
@@ -30,10 +37,8 @@ public class NullableTypesTests
         public string? NullProperty { get; }
     }
 
-    public record TargetRecord(string Property, string? NullProperty);
+    public record TargetRecord(string Property, string? NullProperty, Guid StructProperty, Guid? NullStructProperty);
 
-    //Ensure NullableTypes.IsNullable does not interpret nullable string in #nullable disable as non nullable one
-#nullable disable
 
     [Fact]
     public void ClassNullableDisable()
@@ -49,6 +54,8 @@ public class NullableTypesTests
         Assert.True(nullProperty.IsNullable());
     }
 
+    //Ensure NullableTypes.IsNullable does not interpret nullable string in #nullable disable as non nullable one
+#nullable disable
     public class TargetClassNullableDisable
     {
         [Required]
@@ -56,4 +63,5 @@ public class NullableTypesTests
     }
 
     public record TargetRecordNullableDisable(string NullProperty);
+#nullable enable
 }
