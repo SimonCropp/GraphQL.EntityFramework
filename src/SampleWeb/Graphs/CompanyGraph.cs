@@ -1,4 +1,5 @@
 ﻿using GraphQL.EntityFramework;
+using GraphQL.Types;
 
 public class CompanyGraph :
     EfObjectGraphType<SampleDbContext, Company>
@@ -8,11 +9,22 @@ public class CompanyGraph :
     {
         AddNavigationListField(
             name: "employees",
-            resolve: context => context.Source.Employees);
+            resolve: context => context.Source.Employees,
+            includeNames: new [] {"Employees"});
         AddNavigationConnectionField(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
             includeNames: new[] {"Employees"});
         AutoMap();
+    }
+}
+
+
+public class CompanyOrEmployeeGraph :UnionGraphType
+{
+    public CompanyOrEmployeeGraph()
+    {
+        Type<CompanyGraph>();
+        Type<EmployeeGraph>();
     }
 }

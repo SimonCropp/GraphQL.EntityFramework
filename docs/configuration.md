@@ -255,11 +255,12 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
-
-    public GraphQlController(ISchema schema, IDocumentExecuter executer)
+    private readonly IServiceProvider _serviceProvider;
+    public GraphQlController(ISchema schema, IDocumentExecuter executer, IServiceProvider serviceProvider)
     {
         this.schema = schema;
         this.executer = executer;
+        _serviceProvider = serviceProvider;
     }
 
     [HttpPost]
@@ -300,6 +301,7 @@ public class GraphQlController :
             OperationName = operationName,
             Inputs = variables?.ToInputs(),
             CancellationToken = cancellation,
+            RequestServices = _serviceProvider,
 #if (DEBUG)
             ThrowOnUnhandledException = true,
             EnableMetrics = true,
@@ -332,7 +334,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L95' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L97' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

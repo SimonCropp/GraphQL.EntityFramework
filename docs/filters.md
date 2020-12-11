@@ -53,10 +53,10 @@ public class MyEntity
 ```cs
 var filters = new Filters();
 filters.Add<MyEntity>(
-    (userContext, item) => item.Property != "Ignore");
+    (_, item) => item.Property != "Ignore");
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
-    resolveFilters: x => filters);
+    resolveFilters: _ => filters);
 ```
 <sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L18-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->

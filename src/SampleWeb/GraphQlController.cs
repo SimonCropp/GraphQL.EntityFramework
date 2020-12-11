@@ -16,11 +16,12 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
-
-    public GraphQlController(ISchema schema, IDocumentExecuter executer)
+    private readonly IServiceProvider _serviceProvider;
+    public GraphQlController(ISchema schema, IDocumentExecuter executer, IServiceProvider serviceProvider)
     {
         this.schema = schema;
         this.executer = executer;
+        _serviceProvider = serviceProvider;
     }
 
     [HttpPost]
@@ -61,6 +62,7 @@ public class GraphQlController :
             OperationName = operationName,
             Inputs = variables?.ToInputs(),
             CancellationToken = cancellation,
+            RequestServices = _serviceProvider,
 #if (DEBUG)
             ThrowOnUnhandledException = true,
             EnableMetrics = true,

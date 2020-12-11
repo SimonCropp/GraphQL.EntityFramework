@@ -68,6 +68,16 @@ namespace GraphQL.EntityFramework
             return GraphQlService.AddQueryField(this, name, resolve, graphType, arguments, description);
         }
 
+        public FieldType AddUnionQueryField<TUnion>(
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, object>, IDictionary<Type, IQueryable<object>>> resolve,
+            IEnumerable<QueryArgument>? arguments = null,
+            string? description = null)
+            where TUnion : UnionGraphType
+        {
+            return GraphQlService.AddUnionQueryField<TUnion>(this, name, resolve, arguments, description);
+        }
+
         public FieldType AddQueryField<TReturn>(
             string name,
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolveAsync,

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
 using GraphQL.EntityFramework;
@@ -14,9 +15,24 @@ public class Query :
     {
         AddQueryField(
             name: "companies",
-            resolve: context => context.DbContext.Companies);
+            resolve: context =>
+            {
+                return context.DbContext.Companies;
+            });
 
         #endregion
+
+
+        AddUnionQueryField<CompanyOrEmployeeGraph>(name: "companyOrEmployees",
+             resolve: context =>
+            {
+                return new Dictionary<Type, IQueryable<object>>
+                {
+                    {typeof(Company), context.DbContext.Companies},
+                    {typeof(Employee), context.DbContext.Employees},
+
+                };
+            });
 
         AddSingleField(
             resolve: context => context.DbContext.Companies,

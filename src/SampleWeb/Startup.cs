@@ -49,6 +49,7 @@ public class Startup
             .GetTypes()
             .Where(x => !x.IsAbstract &&
                         (typeof(IObjectGraphType).IsAssignableFrom(x) ||
+                         typeof(UnionGraphType).IsAssignableFrom(x) ||
                          typeof(IInputObjectGraphType).IsAssignableFrom(x)));
     }
 
