@@ -9,12 +9,14 @@ public class CompanyGraph :
     {
         AddNavigationListField(
             name: "employees",
-            resolve: context => context.Source.Employees,
-            includeNames: new [] {"Employees"});
+            resolve: context => context.Source.Employees//,
+            // includeNames: new [] {"Employees"}
+            );
         AddNavigationConnectionField(
             name: "employeesConnection",
-            resolve: context => context.Source.Employees,
-            includeNames: new[] {"Employees"});
+            resolve: context => context.Source.Employees//,
+            // includeNames: new[] {"Employees"}
+                );
         AutoMap();
     }
 }
@@ -24,7 +26,7 @@ public class CompanyOrEmployeeGraph :UnionGraphType
 {
     public CompanyOrEmployeeGraph()
     {
-        Type<CompanyGraph>();
         Type<EmployeeGraph>();
+        Type<CompanyGraph>();
     }
 }

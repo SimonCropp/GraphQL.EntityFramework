@@ -17,6 +17,55 @@ class IncludeAppender
         this.navigations = navigations;
     }
 
+    
+    
+    public IQueryable<object> AddUnionIncludes(IQueryable<object> query, IResolveFieldContext context, Type type)
+    {
+        if (context.SubFields == null)
+        {
+            return query;
+        }
+        if (!navigations.TryGetValue(type, out var navigationProperty))
+        {
+            return query;
+        }
+
+        return AddUnionIncludes(query, context, navigationProperty, type.GetGraphTypeFromType(true));
+    }
+
+    IQueryable<T> AddUnionIncludes<T>(IQueryable<T> query, IResolveFieldContext context, IReadOnlyList<Navigation> navigationProperties, Type graphType)
+        where T : class
+    {
+        var paths = GetUnionPaths(context, navigationProperties, graphType);
+        foreach (var path in paths)
+        {
+            query = query.Include(path);
+        }
+
+        return query;
+    }
+
+    List<string> GetUnionPaths(IResolveFieldContext context, IReadOnlyList<Navigation> navigationProperty, Type graphType)
+    {
+        var list = new List<string>();
+        foreach (var inlineFragment in context.FieldAst.SelectionSet.Selections.OfType<InlineFragment>())
+        {
+            var graph = inlineFragment.Type.GraphTypeFromType(context.Schema);
+            if (graph.GetType() == graphType && graph is IComplexGraphType graphFragment)
+            {
+                AddField(list, context.FieldAst, inlineFragment.SelectionSet, null, context.FieldDefinition, navigationProperty, context, graphFragment);
+            }
+        }
+
+        
+        return list;
+    }
+
+    
+    
+    
+    
+    
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class
     {
@@ -135,6 +184,7 @@ class IncludeAppender
         }
     }
 
+    
     static bool IsConnectionNode(Field field)
     {
         var name = field.Name.ToLowerInvariant();
