@@ -56,8 +56,23 @@ class IncludeAppender
                 AddField(list, context.FieldAst, inlineFragment.SelectionSet, null, context.FieldDefinition, navigationProperty, context, graphFragment);
             }
         }
-
-        
+      
+        foreach (var fragmentSpread in context.FieldAst.SelectionSet.Selections.OfType<FragmentSpread>())
+        {
+            var fragmentDefinition = context.Fragments.FindDefinition(fragmentSpread.Name);
+            if (fragmentDefinition == null)
+            {
+                continue;
+            }
+            foreach (var inlineFragment in fragmentDefinition.SelectionSet.Selections.OfType<InlineFragment>())
+            {
+                var graph = inlineFragment.Type.GraphTypeFromType(context.Schema);
+                if (graph.GetType() == graphType && graph is IComplexGraphType graphFragment)
+                {
+                    AddField(list, context.FieldAst, inlineFragment.SelectionSet, null, context.FieldDefinition, navigationProperty, context, graphFragment);
+                }
+            }
+        }
         return list;
     }
 
