@@ -14,7 +14,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
@@ -23,7 +24,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class;
         
         FieldType AddQueryField<TReturn>(
@@ -32,7 +34,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>>? resolveAsync = null,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class;
 
         FieldType AddQueryField<TSource, TReturn>(
@@ -41,7 +44,8 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>>? resolveAsync = null,
             Type? itemGraphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class;
 
         FieldType AddUnionQueryField<TUnion>(

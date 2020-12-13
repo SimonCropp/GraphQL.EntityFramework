@@ -62,10 +62,11 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class
         {
-            return GraphQlService.AddQueryField(this, name, resolve, graphType, arguments, description);
+            return GraphQlService.AddQueryField(this, name, resolve, graphType, arguments, description, disableDefaultArguments);
         }
 
         public FieldType AddUnionQueryField<TUnion>(
@@ -83,10 +84,11 @@ namespace GraphQL.EntityFramework
             Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolveAsync,
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class
         {
-            return GraphQlService.AddQueryField(this, name, resolveAsync, graphType, arguments, description);
+            return GraphQlService.AddQueryField(this, name, resolveAsync, graphType, arguments, description,disableDefaultArguments);
         }
 
         public FieldType AddSingleField<TReturn>(
