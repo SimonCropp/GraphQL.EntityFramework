@@ -105,7 +105,7 @@ namespace GraphQL.EntityFramework
                         }
                         query = includeAppender.AddIncludes(query, context);
                         query = query.ApplyGraphQlArguments(context, names);
-                        var single = await WrappedSingle(name, graphType, query, context);
+                        var single = await query.SingleOrDefaultAsync(context.CancellationToken);
 
                         if (single != null)
                         {
@@ -127,20 +127,6 @@ namespace GraphQL.EntityFramework
                         throw new ExecutionError("Not found");
                     })
             };
-        }
-
-        static async Task<TReturn?> WrappedSingle<TSource, TReturn>(string name, Type graphType, IQueryable<TReturn> query, IResolveFieldContext<TSource> context)
-            where TReturn : class
-        {
-            //TODO: remove catch in EF 5 https://github.com/dotnet/efcore/issues/18742
-            try
-            {
-                return await query.SingleOrDefaultAsync(context.CancellationToken);
-            }
-            catch (InvalidOperationException exception)
-            {
-                throw new Exception($"SingleOrDefaultAsync threw InvalidOperationException. This is likely due it returning more than one result. Name: {name}. GraphType: {graphType}", exception);
-            }
         }
     }
 }
