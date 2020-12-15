@@ -14,7 +14,7 @@ public class SchemaPrint
     [Fact]
     public async Task Print()
     {
-        var services = new ServiceCollection();
+        ServiceCollection services = new();
         services.AddSingleton<ILoggerFactory>(_ => NullLoggerFactory.Instance);
         new Startup().ConfigureServices(services);
 
@@ -22,7 +22,6 @@ public class SchemaPrint
         var schema = ServiceProviderServiceExtensions.GetRequiredService<ISchema>(provider);
         var printer = new SchemaPrinter(schema);
         var print = printer.Print();
-        var settings = new VerifySettings();
-        await Verifier.Verify(print, settings);
+        await Verifier.Verify(print);
     }
 }

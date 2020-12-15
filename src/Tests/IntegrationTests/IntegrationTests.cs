@@ -1633,7 +1633,7 @@ fragment childEntityFields on DerivedChildGraph {
         var dbContext = database.Context;
         dbContext.AddRange(entities);
         await dbContext.SaveChangesAsync();
-        var services = new ServiceCollection();
+        ServiceCollection services = new();
         services.AddSingleton<Query>();
         services.AddSingleton<Mutation>();
         services.AddSingleton(database.Context);

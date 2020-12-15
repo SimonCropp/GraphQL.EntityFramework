@@ -44,7 +44,7 @@ public class MultiContextTests
             Property = "the entity2"
         };
 
-        var services = new ServiceCollection();
+        ServiceCollection services = new();
 
         services.AddSingleton<MultiContextQuery>();
         services.AddSingleton<Entity1Graph>();

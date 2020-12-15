@@ -129,7 +129,7 @@ public class DependencyTests
 
     static ServiceCollection BuildServiceCollection()
     {
-        var services = new ServiceCollection();
+        ServiceCollection services = new();
         services.AddSingleton<DependencyQuery>();
         services.AddSingleton(typeof(EntityGraph));
         return services;
