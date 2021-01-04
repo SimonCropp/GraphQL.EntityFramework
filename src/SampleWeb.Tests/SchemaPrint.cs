@@ -4,7 +4,6 @@ using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
