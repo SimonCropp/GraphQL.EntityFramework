@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
 using Microsoft.EntityFrameworkCore;
-using VerifyTests;
 using VerifyXunit;
 using Xunit;
 using Filters = GraphQL.EntityFramework.Filters;

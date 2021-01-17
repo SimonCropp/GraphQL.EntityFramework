@@ -19,7 +19,7 @@ public class SchemaPrint
 
         await using var provider = services.BuildServiceProvider();
         var schema = ServiceProviderServiceExtensions.GetRequiredService<ISchema>(provider);
-        var printer = new SchemaPrinter(schema);
+        SchemaPrinter printer = new(schema);
         var print = printer.Print();
         await Verifier.Verify(print);
     }
