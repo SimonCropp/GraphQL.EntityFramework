@@ -6,6 +6,8 @@ public class SampleDbContext :
 {
     public DbSet<Employee> Employees { get; set; } = null!;
     public DbSet<Company> Companies { get; set; } = null!;
+    public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
+
     public static IModel StaticModel { get; } = BuildStaticModel();
 
     public SampleDbContext(DbContextOptions options) :
@@ -28,5 +30,9 @@ public class SampleDbContext :
             .WithOne(e => e.Company)
             .IsRequired();
         modelBuilder.Entity<Employee>();
+
+        modelBuilder.Entity<OrderDetail>().OwnsOne(p => p.BillingAddress);
+        modelBuilder.Entity<OrderDetail>().OwnsOne(p => p.ShippingAddress);
+
     }
 }
