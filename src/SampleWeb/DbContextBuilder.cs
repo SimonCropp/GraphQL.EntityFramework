@@ -62,6 +62,28 @@ public class DbContextBuilder :
             CompanyId = company2.Id
         };
         context.AddRange(company1, employee1, employee2, company2, company3, company4, employee4, employee5);
+
+
+        var orderDetail1 = new OrderDetail
+        {
+            Id = 1,
+            BillingAddress = new StreetAddress
+            {
+                AddressLine1 = "1 Street",
+                AreaCode = "1234",
+                State = "New South Wales",
+                Country = "Australia"
+            },
+            ShippingAddress = new StreetAddress
+            {
+                AddressLine1 = "1 Street",
+                AreaCode = "1234",
+                State = "New South Wales",
+                Country = "Australia"
+            }
+        };
+        context.OrderDetails.Add(orderDetail1);
+
         await context.SaveChangesAsync();
     }
 
