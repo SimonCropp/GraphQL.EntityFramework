@@ -21,25 +21,25 @@ enum Connector {
   or
 }
 
-type MappingChildGraph {
-  parent: MappingParentGraph!
+type MappingChild {
+  parent: MappingParent!
   id: ID!
   parentId: ID!
   property: String
 }
 
-type MappingParentGraph {
-  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [MappingChildGraph!]!
+type MappingParent {
+  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [MappingChild!]!
   id: ID!
   jsonProperty: [String]!
   property: String
 }
 
 type MappingQuery {
-  child(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): MappingChildGraph!
-  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [MappingChildGraph!]!
-  parent(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): MappingParentGraph!
-  parents(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [MappingParentGraph!]!
+  child(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): MappingChild!
+  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [MappingChild!]!
+  parent(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): MappingParent!
+  parents(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [MappingParent!]!
 }
 
 input OrderBy {

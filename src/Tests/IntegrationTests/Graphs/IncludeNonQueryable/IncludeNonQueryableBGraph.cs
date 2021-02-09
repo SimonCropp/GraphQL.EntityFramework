@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata(nameof(IncludeNonQueryableB))]
 public class IncludeNonQueryableBGraph :
     EfObjectGraphType<IntegrationDbContext, IncludeNonQueryableB>
 {

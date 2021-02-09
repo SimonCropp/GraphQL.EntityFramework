@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("FilterParent")]
 public class FilterParentGraph :
     EfObjectGraphType<IntegrationDbContext, FilterParentEntity>
 {

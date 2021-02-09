@@ -1,20 +1,20 @@
-type CompanyGraph {
-  employees(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [EmployeeGraph!]!
-  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): EmployeeGraphConnection
+type Company {
+  employees(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [Employee!]!
+  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): EmployeeConnection
   content: String
   id: Int!
 }
 
-type CompanyGraphConnection {
+type CompanyConnection {
   totalCount: Int
   pageInfo: PageInfo!
-  edges: [CompanyGraphEdge]
-  items: [CompanyGraph]
+  edges: [CompanyEdge]
+  items: [Company]
 }
 
-type CompanyGraphEdge {
+type CompanyEdge {
   cursor: String!
-  node: CompanyGraph
+  node: Company
 }
 
 enum Comparison {
@@ -36,27 +36,27 @@ enum Connector {
   or
 }
 
-type EmployeeGraph {
-  company: CompanyGraph!
+type Employee {
+  company: Company!
   age: Int!
   companyId: Int!
   content: String
   id: Int!
 }
 
-type EmployeeGraphConnection {
+type EmployeeConnection {
   totalCount: Int
   pageInfo: PageInfo!
-  edges: [EmployeeGraphEdge]
-  items: [EmployeeGraph]
+  edges: [EmployeeEdge]
+  items: [Employee]
 }
 
-type EmployeeGraphEdge {
+type EmployeeEdge {
   cursor: String!
-  node: EmployeeGraph
+  node: Employee
 }
 
-type EmployeeSummaryGraph {
+type EmployeeSummary {
   averageAge: Float!
   companyId: Int!
 }
@@ -74,14 +74,14 @@ type PageInfo {
 }
 
 type Query {
-  companies(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [CompanyGraph!]!
-  company(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): CompanyGraph!
-  companyOrNull(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): CompanyGraph
-  companiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): CompanyGraphConnection
-  employees(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [EmployeeGraph!]!
-  employeesByArgument(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int, content: String): [EmployeeGraph!]!
-  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): EmployeeGraphConnection
-  employeeSummary(where: [WhereExpression]): [EmployeeSummaryGraph]
+  companies(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [Company!]!
+  company(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): Company!
+  companyOrNull(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): Company
+  companiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): CompanyConnection
+  employees(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [Employee!]!
+  employeesByArgument(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int, content: String): [Employee!]!
+  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): EmployeeConnection
+  employeeSummary(where: [WhereExpression]): [EmployeeSummary]
 }
 
 enum StringComparison {

@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata(nameof(Entity))]
 public class EntityGraph :
     EfObjectGraphType<DependencyDbContext, Entity>
 {

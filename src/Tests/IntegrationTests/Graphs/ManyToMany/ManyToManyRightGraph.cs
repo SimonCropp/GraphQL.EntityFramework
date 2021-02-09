@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("ManyToManyRight")]
 public class ManyToManyRightGraph :
     EfObjectGraphType<IntegrationDbContext, ManyToManyRightEntity>
 {

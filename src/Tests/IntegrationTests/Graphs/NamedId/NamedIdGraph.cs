@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("NamedId")]
 public class NamedIdGraph :
     EfObjectGraphType<IntegrationDbContext, NamedIdEntity>
 {

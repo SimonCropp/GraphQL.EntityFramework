@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("Interface")]
 public class InterfaceGraph :
     EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
 {

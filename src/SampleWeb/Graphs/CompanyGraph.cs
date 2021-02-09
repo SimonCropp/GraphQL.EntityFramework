@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata(nameof(Company))]
 public class CompanyGraph :
     EfObjectGraphType<SampleDbContext, Company>
 {

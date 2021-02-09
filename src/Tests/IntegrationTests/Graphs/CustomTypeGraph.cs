@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("CustomType")]
 public class CustomTypeGraph :
     EfObjectGraphType<IntegrationDbContext, CustomTypeEntity>
 {

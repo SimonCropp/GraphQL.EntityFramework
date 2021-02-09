@@ -1,6 +1,8 @@
 ﻿using GraphQL.EntityFramework;
 using System.Collections.Generic;
+using GraphQL;
 
+[GraphQLMetadata("DerivedChild")]
 public class DerivedChildGraph :
     EfObjectGraphType<IntegrationDbContext, DerivedChildEntity>
 {

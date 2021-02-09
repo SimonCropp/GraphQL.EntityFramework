@@ -1,5 +1,7 @@
+using GraphQL;
 using GraphQL.EntityFramework;
 
+[GraphQLMetadata(nameof(EmployeeSummary))]
 public class EmployeeSummaryGraph :
     EfObjectGraphType<SampleDbContext, EmployeeSummary>
 {

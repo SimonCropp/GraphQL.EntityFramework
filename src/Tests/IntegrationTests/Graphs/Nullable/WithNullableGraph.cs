@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("WithNullable")]
 public class WithNullableGraph :
     EfObjectGraphType<IntegrationDbContext, WithNullableEntity>
 {

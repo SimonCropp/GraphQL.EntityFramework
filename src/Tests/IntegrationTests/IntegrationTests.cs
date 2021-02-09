@@ -644,14 +644,14 @@ mutation {
     ...parentEntityFields
   }
 }
-fragment parentEntityFields on ParentGraph {
+fragment parentEntityFields on Parent {
   property
   children(orderBy: {path: ""property""})
   {
     ...childEntityFields
   }
 }
-fragment childEntityFields on ChildGraph {
+fragment childEntityFields on Child {
   property
 }";
 
@@ -1452,7 +1452,7 @@ fragment childEntityFields on ChildGraph {
     }
   }
 }
-fragment inheritedEntityFields on InterfaceGraph {
+fragment inheritedEntityFields on Interface {
   property
   childrenFromInterface(orderBy: {path: ""property""})
   {
@@ -1460,7 +1460,7 @@ fragment inheritedEntityFields on InterfaceGraph {
       ...childEntityFields
     }
   }
-  ... on DerivedWithNavigationGraph {
+  ... on DerivedWithNavigation {
     childrenFromDerived(orderBy: {path: ""property""})
     {
       items {
@@ -1469,7 +1469,7 @@ fragment inheritedEntityFields on InterfaceGraph {
     }
   }
 }
-fragment childEntityFields on DerivedChildGraph {
+fragment childEntityFields on DerivedChild {
   property
 }";
 

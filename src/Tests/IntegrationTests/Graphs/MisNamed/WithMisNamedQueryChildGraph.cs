@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("WithMisNamedQueryChild")]
 public class WithMisNamedQueryChildGraph :
     EfObjectGraphType<IntegrationDbContext, WithMisNamedQueryChildEntity>
 {

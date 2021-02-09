@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("Parent")]
 public class ParentGraph :
     EfObjectGraphType<IntegrationDbContext, ParentEntity>
 {

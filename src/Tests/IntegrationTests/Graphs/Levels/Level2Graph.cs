@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("Level2")]
 public class Level2Graph :
     EfObjectGraphType<IntegrationDbContext, Level2Entity>
 {

@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata(nameof(OrderDetail))]
 public class OrderDetailGraph :
     EfObjectGraphType<SampleDbContext, OrderDetail>
 {

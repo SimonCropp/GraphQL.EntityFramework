@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using GraphQL;
 using GraphQL.EntityFramework;
 
+[GraphQLMetadata("WithMisNamedQueryParent")]
 public class WithMisNamedQueryParentGraph :
     EfObjectGraphType<IntegrationDbContext, WithMisNamedQueryParentEntity>
 {

@@ -1,5 +1,7 @@
-﻿using GraphQL.EntityFramework;
+﻿using GraphQL;
+using GraphQL.EntityFramework;
 
+[GraphQLMetadata("DerivedWithNavigation")]
 public class DerivedWithNavigationGraph :
     EfObjectGraphType<IntegrationDbContext, DerivedWithNavigationEntity>
 {
