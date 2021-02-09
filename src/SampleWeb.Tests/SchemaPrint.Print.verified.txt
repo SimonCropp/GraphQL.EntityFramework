@@ -31,9 +31,7 @@ enum ComparisonGraph {
   startsWith
 }
 
-enum Connector {
-  AND
-  OR
+enum ConnectorGraph {
   and
   or
 }
@@ -101,6 +99,6 @@ input WhereExpressionGraph {
   negate: Boolean
   case: StringComparison
   value: [String]
-  connector: Connector
+  connector: ConnectorGraph
   groupedExpressions: [WhereExpressionGraph]
 }

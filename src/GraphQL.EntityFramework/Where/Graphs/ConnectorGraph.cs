@@ -4,7 +4,7 @@ using GraphQL.Types;
 using GraphQL.EntityFramework;
 
 class ConnectorGraph :
-    EnumerationGraphType<Connector>
+    EnumerationGraphType
 {
     public ConnectorGraph()
     {
