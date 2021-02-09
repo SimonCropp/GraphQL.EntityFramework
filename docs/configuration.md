@@ -460,8 +460,10 @@ Use a DbContext in a Graph:
 <!-- snippet: Entity1Graph.cs -->
 <a id='snippet-Entity1Graph.cs'></a>
 ```cs
+using GraphQL;
 using GraphQL.EntityFramework;
 
+[GraphQLMetadata(nameof(Entity1))]
 public class Entity1Graph :
     EfObjectGraphType<DbContext1, Entity1>
 {
@@ -472,7 +474,7 @@ public class Entity1Graph :
     }
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L11' title='Snippet source file'>snippet source</a> | <a href='#snippet-Entity1Graph.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-Entity1Graph.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -816,8 +818,10 @@ public class DerivedEntity : InheritedEntity
 <!-- snippet: InterfaceGraph.cs -->
 <a id='snippet-InterfaceGraph.cs'></a>
 ```cs
+using GraphQL;
 using GraphQL.EntityFramework;
 
+[GraphQLMetadata("Interface")]
 public class InterfaceGraph :
     EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
 {
@@ -832,14 +836,16 @@ public class InterfaceGraph :
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraph.cs#L1-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-InterfaceGraph.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraph.cs#L1-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-InterfaceGraph.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 <!-- snippet: DerivedGraph.cs -->
 <a id='snippet-DerivedGraph.cs'></a>
 ```cs
+using GraphQL;
 using GraphQL.EntityFramework;
 
+[GraphQLMetadata("Derived")]
 public class DerivedGraph :
     EfObjectGraphType<IntegrationDbContext, DerivedEntity>
 {
@@ -855,7 +861,7 @@ public class DerivedGraph :
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraph.cs#L1-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraph.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraph.cs#L1-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraph.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### GraphQL query
