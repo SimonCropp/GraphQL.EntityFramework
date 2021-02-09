@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" Version="3.3.2" />
-    <PackageReference Include="MarkdownSnippets.MsBuild" Version="23.0.1" />
+    <PackageReference Include="MarkdownSnippets.MsBuild" Version="23.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.2" />
     <PackageReference Include="Xunit" Version="2.4.1" />
     <PackageReference Include="Verify.Xunit" Version="10.7.0" />
