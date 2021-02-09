@@ -2,7 +2,7 @@ schema {
   query: MappingQuery
 }
 
-enum ComparisonGraph {
+enum Comparison {
   contains
   endsWith
   equal
@@ -16,7 +16,7 @@ enum ComparisonGraph {
   startsWith
 }
 
-enum ConnectorGraph {
+enum Connector {
   and
   or
 }
@@ -29,20 +29,20 @@ type MappingChildGraph {
 }
 
 type MappingParentGraph {
-  children(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingChildGraph!]!
+  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [MappingChildGraph!]!
   id: ID!
   jsonProperty: [String]!
   property: String
 }
 
 type MappingQuery {
-  child(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): MappingChildGraph!
-  children(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingChildGraph!]!
-  parent(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): MappingParentGraph!
-  parents(id: ID, ids: [ID], orderBy: [OrderByGraph], where: [WhereExpressionGraph], skip: Int, take: Int): [MappingParentGraph!]!
+  child(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): MappingChildGraph!
+  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [MappingChildGraph!]!
+  parent(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): MappingParentGraph!
+  parents(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [MappingParentGraph!]!
 }
 
-input OrderByGraph {
+input OrderBy {
   path: String!
   descending: Boolean
 }
@@ -56,12 +56,12 @@ enum StringComparison {
   ORDINAL_IGNORE_CASE
 }
 
-input WhereExpressionGraph {
+input WhereExpression {
   path: String
-  comparison: ComparisonGraph
+  comparison: Comparison
   negate: Boolean
   case: StringComparison
   value: [String]
-  connector: ConnectorGraph
-  groupedExpressions: [WhereExpressionGraph]
+  connector: Connector
+  groupedExpressions: [WhereExpression]
 }

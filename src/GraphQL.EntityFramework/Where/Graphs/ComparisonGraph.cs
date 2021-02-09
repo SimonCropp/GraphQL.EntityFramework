@@ -8,6 +8,7 @@ class ComparisonGraph :
 {
     public ComparisonGraph()
     {
+        Name = nameof(Comparison);
         AddValue("contains", null, Comparison.Contains);
         AddValue("endsWith", null, Comparison.EndsWith);
         AddValue("equal", null, Comparison.Equal);

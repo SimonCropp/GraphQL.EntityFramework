@@ -7,6 +7,7 @@ namespace GraphQL.EntityFramework
     {
         public WhereExpressionGraph()
         {
+            Name = nameof(WhereExpression);
             Field(x => x.Path, true);
             Field(x => x.Comparison, true);
             Field(x => x.Negate, true);

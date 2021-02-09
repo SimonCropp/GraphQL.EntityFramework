@@ -5,6 +5,7 @@ class OrderByGraph :
 {
     public OrderByGraph()
     {
+        Name = nameof(OrderBy);
         Field(x => x.Path);
         Field(x => x.Descending, true);
     }

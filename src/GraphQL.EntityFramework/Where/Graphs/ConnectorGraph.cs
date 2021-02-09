@@ -8,6 +8,7 @@ class ConnectorGraph :
 {
     public ConnectorGraph()
     {
+        Name = nameof(Connector);
         AddValue("and", null, Connector.And);
         AddValue("or", null, Connector.Or);
     }

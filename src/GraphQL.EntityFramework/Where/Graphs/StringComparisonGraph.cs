@@ -7,6 +7,7 @@ class StringComparisonGraph :
 {
     public override object? ParseLiteral(IValue value)
     {
+        Name = nameof(StringComparison);
         var literal = base.ParseLiteral(value);
         if (literal != null)
         {
