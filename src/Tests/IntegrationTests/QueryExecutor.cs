@@ -18,8 +18,8 @@ static class QueryExecutor
         query = query.Replace("'", "\"");
         EfGraphQLConventions.RegisterInContainer(
             services,
-            data.Model,
             _ => data,
+            data.Model,
             _ => filters,
             diableTracking);
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);

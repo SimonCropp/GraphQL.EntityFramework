@@ -65,11 +65,9 @@ public class MultiContextTests
 
             EfGraphQLConventions.RegisterInContainer(
                 services,
-                sqlInstance1.Model,
                 userContext => ((UserContext) userContext).DbContext1);
             EfGraphQLConventions.RegisterInContainer(
                 services,
-                sqlInstance2.Model,
                 userContext => ((UserContext) userContext).DbContext2);
 
             #endregion

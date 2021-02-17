@@ -37,8 +37,8 @@ public class DependencyTests
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            sqlInstance.Model,
-            userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
+            userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext,
+            sqlInstance.Model);
         await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
         var executionOptions = new ExecutionOptions
@@ -63,7 +63,6 @@ public class DependencyTests
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            sqlInstance.Model,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
@@ -89,7 +88,6 @@ public class DependencyTests
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            sqlInstance.Model,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
@@ -115,7 +113,6 @@ public class DependencyTests
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            sqlInstance.Model,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
