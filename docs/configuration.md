@@ -42,8 +42,8 @@ The container registration can be done via adding to a [IServiceCollection](http
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
+        IModel model,
         ResolveDbContext<TDbContext>? resolveDbContext = null,
-        IModel? model = null,
         ResolveFilters? resolveFilters = null,
         bool disableTracking = false)
 ```
@@ -145,8 +145,8 @@ Cycles are not allowed in no-tracking queries; either use a tracking query or re
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
+        IModel model,
         ResolveDbContext<TDbContext>? resolveDbContext = null,
-        IModel? model = null,
         ResolveFilters? resolveFilters = null,
         bool disableTracking = false)
 ```
@@ -372,7 +372,7 @@ public class UserContext: Dictionary<string, object>
     public readonly DbContext2 DbContext2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L96-L108' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L98-L110' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -385,12 +385,14 @@ Register both DbContext types in the container and include how those instance ca
 ```cs
 EfGraphQLConventions.RegisterInContainer(
     services,
+    sqlInstance1.Model,
     userContext => ((UserContext) userContext).DbContext1);
 EfGraphQLConventions.RegisterInContainer(
     services,
+    sqlInstance2.Model,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L73' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L75' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -409,7 +411,7 @@ var executionOptions = new ExecutionOptions
     UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L79-L88' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L81-L90' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
