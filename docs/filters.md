@@ -48,25 +48,15 @@ public class MyEntity
     public string? Property { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L9-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L8-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-add-filter-1'></a>
 ```cs
-IModel BuildModel()
-{
-    var builder = new DbContextOptionsBuilder<MyDbContext>();
-    using var dbContext = new MyDbContext(builder.Options);
-    return dbContext.Model;
-}
-
-var model = BuildModel();
-
 var filters = new Filters();
 filters.Add<MyEntity>(
     (userContext, item) => item.Property != "Ignore");
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
-    model,
     resolveFilters: x => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L21-L40' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L19-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
