@@ -13,15 +13,15 @@ namespace GraphQL.EntityFramework
         /// Register the necessary services with the service provider for a data context of <typeparamref name="TDbContext"/>
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-        /// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="model">The <see cref="IModel"/> to use. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
+        /// <param name="resolveDbContext">A function to obtain the <typeparamref name="TDbContext"/> from the GraphQL user context. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
         /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
         #region RegisterInContainer
         public static void RegisterInContainer<TDbContext>(
                 IServiceCollection services,
+                IModel model,
                 ResolveDbContext<TDbContext>? resolveDbContext = null,
-                IModel? model = null,
                 ResolveFilters? resolveFilters = null,
                 bool disableTracking = false)
             #endregion
@@ -38,13 +38,12 @@ namespace GraphQL.EntityFramework
 
         static IEfGraphQLService<TDbContext> Build<TDbContext>(
             ResolveDbContext<TDbContext>? dbContextResolver,
-            IModel? model,
+            IModel model,
             ResolveFilters? filters,
             IServiceProvider provider,
             bool disableTracking)
             where TDbContext : DbContext
         {
-            model ??= ResolveModel<TDbContext>(provider);
             filters ??= provider.GetService<ResolveFilters>();
             dbContextResolver ??= _ => DbContextFromProvider<TDbContext>(provider);
 
@@ -88,22 +87,6 @@ namespace GraphQL.EntityFramework
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();
-        }
-
-        static IModel ResolveModel<TDbContext>(IServiceProvider provider)
-            where TDbContext : DbContext
-        {
-            var model = provider.GetService<IModel>();
-            if (model != null)
-            {
-                return model;
-            }
-            var dbContext = provider.GetService<TDbContext>();
-            if (dbContext != null)
-            {
-                return dbContext.Model;
-            }
-            throw new Exception($"Could not resolve {nameof(IModel)} from the {nameof(IServiceProvider)}. Tried to extract both {nameof(IModel)} and {typeof(TDbContext)}.");
         }
     }
 }

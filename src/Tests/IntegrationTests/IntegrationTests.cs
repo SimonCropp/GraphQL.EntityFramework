@@ -1642,7 +1642,8 @@ fragment childEntityFields on DerivedChild {
             services.AddSingleton(type);
         }
 
-        return await QueryExecutor.ExecuteQuery(query, services, database.NewDbContext(), inputs, filters, diableTracking);
+        await using var integrationDbContext = database.NewDbContext();
+        return await QueryExecutor.ExecuteQuery(query, services, integrationDbContext, inputs, filters, diableTracking);
     }
 
     static IEnumerable<Type> GetGraphQlTypes()
