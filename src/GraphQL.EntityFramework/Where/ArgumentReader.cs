@@ -41,7 +41,7 @@ static class ArgumentReader
             return true;
         }
 
-        throw new Exception($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is not supported.");
+        throw new($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is not supported.");
     }
 
     public static bool TryReadId(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string? expression)
@@ -65,7 +65,7 @@ static class ArgumentReader
                 expression = s;
                 break;
             default:
-                throw new Exception($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is not supported.");
+                throw new($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is not supported.");
         }
 
         return true;
@@ -78,7 +78,7 @@ static class ArgumentReader
         {
             if (skip < 0)
             {
-                throw new Exception("Skip cannot be less than 0.");
+                throw new("Skip cannot be less than 0.");
             }
         }
         return result;
@@ -91,7 +91,7 @@ static class ArgumentReader
         {
             if (take < 0)
             {
-                throw new Exception("Take cannot be less than 0.");
+                throw new("Take cannot be less than 0.");
             }
         }
         return result;

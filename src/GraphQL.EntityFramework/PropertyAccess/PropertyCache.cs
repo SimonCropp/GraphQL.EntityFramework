@@ -44,7 +44,7 @@ static class PropertyCache<TInput>
         }
         catch (ArgumentException exception)
         {
-            throw new Exception($"Failed to create a member expression. Type: {typeof(TInput).FullName}, Path: {path}. Error: {exception.Message}");
+            throw new($"Failed to create a member expression. Type: {typeof(TInput).FullName}, Path: {path}. Error: {exception.Message}");
         }
     }
 
@@ -108,7 +108,7 @@ static class PropertyCache<TInput>
         if (propertyOrField == null)
         {
             // Property does not exist on current type
-            throw new ArgumentException($"'{propertyOrFieldName}' is not a member of type {type.FullName}");
+            throw new($"'{propertyOrFieldName}' is not a member of type {type.FullName}");
         }
 
         return propertyOrField;

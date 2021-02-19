@@ -88,7 +88,7 @@ public class GraphQlController :
         }
         catch (Exception exception)
         {
-            throw new Exception("Could not parse variables.", exception);
+            throw new("Could not parse variables.", exception);
         }
     }
 }
