@@ -224,26 +224,11 @@ namespace GraphQL.EntityFramework
             return false;
         }
 
-        static ConcurrentDictionary<NavigationKey, object> propertyFuncs = new();
-
         static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
         {
-            var func = PropertyToFunc<TSource>(member);
+            var func = PropertyCache<TSource>.GetProperty(member.Name).Func;
             var graphTypeFromType = GraphTypeFromType(member.Name, member.PropertyType, member.IsNullable());
             return (func, graphTypeFromType);
-        }
-
-        static Func<TSource, object> PropertyToFunc<TSource>(PropertyInfo member)
-        {
-            var key = new NavigationKey(typeof(TSource), member.Name);
-
-            return (Func<TSource, object>) propertyFuncs.GetOrAdd(
-                key,
-                x =>
-                {
-                    var lambda = PropertyToObject<TSource>(x.Name);
-                    return lambda.Compile();
-                });
         }
 
         internal static Expression<Func<TSource, object>> PropertyToObject<TSource>(string member)
