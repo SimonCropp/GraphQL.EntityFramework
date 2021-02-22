@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -147,7 +148,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type, navigation.IsNullable);
-            var compile = NavigationExpression<TSource, TReturn>(navigation.Name).Compile();
+            var compile = NavigationFunc<TSource, TReturn>(navigation.Name);
             graphQlService.AddNavigationField(graph, navigation.Name, compile, graphTypeFromType);
         }
 
@@ -158,8 +159,20 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type, false);
-            var compile = NavigationExpression<TSource, IEnumerable<TReturn>>(navigation.Name).Compile();
+            var compile = NavigationFunc<TSource, IEnumerable<TReturn>>(navigation.Name);
             graphQlService.AddNavigationListField(graph, navigation.Name, compile, graphTypeFromType);
+        }
+        public record NavigationKey(Type Type, string Name);
+
+        static ConcurrentDictionary<NavigationKey, object> Funcs = new();
+
+        internal static Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> NavigationFunc<TSource, TReturn>(string name)
+        {
+            var key = new NavigationKey(typeof(TSource), name);
+
+            return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>) Funcs.GetOrAdd(
+                key,
+                x => NavigationExpression<TSource, TReturn>(x.Name).Compile());
         }
 
         internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>> NavigationExpression<TSource, TReturn>(string name)
