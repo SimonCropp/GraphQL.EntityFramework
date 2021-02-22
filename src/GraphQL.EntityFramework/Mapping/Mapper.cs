@@ -164,13 +164,13 @@ namespace GraphQL.EntityFramework
         }
         public record NavigationKey(Type Type, string Name);
 
-        static ConcurrentDictionary<NavigationKey, object> Funcs = new();
+        static ConcurrentDictionary<NavigationKey, object> navigationFuncs = new();
 
         internal static Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> NavigationFunc<TSource, TReturn>(string name)
         {
             var key = new NavigationKey(typeof(TSource), name);
 
-            return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>) Funcs.GetOrAdd(
+            return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>) navigationFuncs.GetOrAdd(
                 key,
                 x => NavigationExpression<TSource, TReturn>(x.Name).Compile());
         }
@@ -224,19 +224,34 @@ namespace GraphQL.EntityFramework
             return false;
         }
 
+        static ConcurrentDictionary<NavigationKey, object> propertyFuncs = new();
+
         static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
         {
-            var lambda = PropertyToObject<TSource>(member);
+            var func = PropertyToFunc<TSource>(member);
             var graphTypeFromType = GraphTypeFromType(member.Name, member.PropertyType, member.IsNullable());
-            return (lambda.Compile(), graphTypeFromType);
+            return (func, graphTypeFromType);
         }
 
-        internal static Expression<Func<TSource, object>> PropertyToObject<TSource>(PropertyInfo member)
+        static Func<TSource, object> PropertyToFunc<TSource>(PropertyInfo member)
+        {
+            var key = new NavigationKey(typeof(TSource), member.Name);
+
+            return (Func<TSource, object>) propertyFuncs.GetOrAdd(
+                key,
+                x =>
+                {
+                    var lambda = PropertyToObject<TSource>(x.Name);
+                    return lambda.Compile();
+                });
+        }
+
+        internal static Expression<Func<TSource, object>> PropertyToObject<TSource>(string member)
         {
             // TSource parameter
             var parameter = Expression.Parameter(typeof(TSource), "source");
             // get property from source instance
-            var property = Expression.Property(parameter, member.Name);
+            var property = Expression.Property(parameter, member);
             // convert member instance to object
             var convert = Expression.Convert(property, typeof(object));
 

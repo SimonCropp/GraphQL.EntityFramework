@@ -63,8 +63,7 @@ public class MappingTests
     [Fact]
     public async Task PropertyToObject()
     {
-        var property = typeof(MappingParent).GetProperty("Property")!;
-        var expression = Mapper<MappingContext>.PropertyToObject<MappingParent>(property);
+        var expression = Mapper<MappingContext>.PropertyToObject<MappingParent>("Property");
         var result = expression.Compile()(new MappingParent {Property = "value"});
         await Verifier.Verify(
             new
