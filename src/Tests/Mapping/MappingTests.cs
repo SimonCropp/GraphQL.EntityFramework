@@ -64,7 +64,7 @@ public class MappingTests
     public async Task PropertyToObject()
     {
         var property = typeof(MappingParent).GetProperty("Property")!;
-        var expression = Mapper.PropertyToObject<MappingParent>(property);
+        var expression = Mapper<MappingContext>.PropertyToObject<MappingParent>(property);
         var result = expression.Compile()(new MappingParent {Property = "value"});
         await Verifier.Verify(
             new
@@ -87,7 +87,7 @@ public class MappingTests
         };
         child.Parent = parent;
         await database.AddData(child, parent);
-        var expression = Mapper.NavigationExpression<MappingContext, MappingChild, MappingParent>("Parent");
+        var expression = Mapper<MappingContext>.NavigationExpression<MappingChild, MappingParent>("Parent");
         var compile = expression.Compile();
         var result = compile(
             new ResolveEfFieldContext<MappingContext, MappingChild>
