@@ -29,7 +29,7 @@ namespace GraphQL.EntityFramework
         /// <param name="exclusions">A list of property names to exclude from mapping.</param>
         public void AutoMap(IReadOnlyList<string>? exclusions = null)
         {
-            Mapper.AutoMap(this, GraphQlService, exclusions);
+            Mapper<TDbContext>.AutoMap(this, GraphQlService, exclusions);
         }
 
         public void AddNavigationConnectionField<TReturn>(

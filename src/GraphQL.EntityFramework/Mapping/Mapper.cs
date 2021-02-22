@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,7 +9,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
 {
-    public static class Mapper
+    public static class Mapper<TDbContext>
+        where TDbContext : DbContext
     {
         static HashSet<Type> ignoredTypes = new();
 
@@ -29,14 +31,14 @@ namespace GraphQL.EntityFramework
         }
 
         const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Static;
-        static MethodInfo addNavigationMethod = typeof(Mapper).GetMethod(nameof(AddNavigation), bindingFlags)!;
-        static MethodInfo addNavigationListMethod = typeof(Mapper).GetMethod(nameof(AddNavigationList), bindingFlags)!;
+        static MethodInfo addNavigationMethod = typeof(Mapper<TDbContext>).GetMethod(nameof(AddNavigation), bindingFlags)!;
+        static MethodInfo addNavigationListMethod = typeof(Mapper<TDbContext>).GetMethod(nameof(AddNavigationList), bindingFlags)!;
 
         /// <summary>
         /// Map all un-mapped properties. Calls <see cref="ComplexGraphType{TSourceType}.AddField"/> for all other properties.
         /// </summary>
         /// <param name="exclusions">A list of property names to exclude from mapping.</param>
-        public static void AutoMap<TSource>(this
+        public static void AutoMap<TSource>(
             ComplexGraphType<TSource> graph,
             IReadOnlyList<string>? exclusions = null)
         {
@@ -51,11 +53,10 @@ namespace GraphQL.EntityFramework
             }
         }
 
-        internal static void AutoMap<TDbContext, TSource>(
+        internal static void AutoMap<TSource>(
             ComplexGraphType<TSource> graph,
             IEfGraphQLService<TDbContext> graphService,
             IReadOnlyList<string>? exclusions = null)
-            where TDbContext : DbContext
         {
             var type = typeof(TSource);
             try
@@ -99,12 +100,11 @@ namespace GraphQL.EntityFramework
             }
         }
 
-        static void MapNavigationProperties<TDbContext, TSource>(
+        static void MapNavigationProperties<TSource>(
             ComplexGraphType<TSource> graph,
             IEfGraphQLService<TDbContext> graphService,
             IReadOnlyList<string>? exclusions,
             IReadOnlyList<Navigation> navigations)
-            where TDbContext : DbContext
         {
             foreach (var navigation in navigations)
             {
@@ -117,22 +117,21 @@ namespace GraphQL.EntityFramework
             }
         }
 
-        static void ProcessNavigation<TDbContext, TSource>(
+        static void ProcessNavigation<TSource>(
             ComplexGraphType<TSource> graph,
             IEfGraphQLService<TDbContext> graphService,
             Navigation navigation)
-            where TDbContext : DbContext
         {
             try
             {
                 if (navigation.IsCollection)
                 {
-                    var genericMethod = addNavigationListMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
+                    var genericMethod = addNavigationListMethod.MakeGenericMethod(typeof(TSource), navigation.Type);
                     genericMethod.Invoke(null, new object[] {graph, graphService, navigation});
                 }
                 else
                 {
-                    var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TDbContext), typeof(TSource), navigation.Type);
+                    var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TSource), navigation.Type);
                     genericMethod.Invoke(null, new object[] {graph, graphService, navigation});
                 }
             }
@@ -142,32 +141,41 @@ namespace GraphQL.EntityFramework
             }
         }
 
-        static void AddNavigation<TDbContext, TSource, TReturn>(
+        static void AddNavigation<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             IEfGraphQLService<TDbContext> graphQlService,
             Navigation navigation)
-            where TDbContext : DbContext
             where TReturn : class
         {
             var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type, navigation.IsNullable);
-            var compile = NavigationExpression<TDbContext, TSource, TReturn>(navigation.Name).Compile();
+            var compile = NavigationFunc<TSource, TReturn>(navigation.Name);
             graphQlService.AddNavigationField(graph, navigation.Name, compile, graphTypeFromType);
         }
 
-        static void AddNavigationList<TDbContext, TSource, TReturn>(
+        static void AddNavigationList<TSource, TReturn>(
             ObjectGraphType<TSource> graph,
             IEfGraphQLService<TDbContext> graphQlService,
             Navigation navigation)
-            where TDbContext : DbContext
             where TReturn : class
         {
             var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type, false);
-            var compile = NavigationExpression<TDbContext, TSource, IEnumerable<TReturn>>(navigation.Name).Compile();
+            var compile = NavigationFunc<TSource, IEnumerable<TReturn>>(navigation.Name);
             graphQlService.AddNavigationListField(graph, navigation.Name, compile, graphTypeFromType);
         }
+        public record NavigationKey(Type Type, string Name);
 
-        internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>> NavigationExpression<TDbContext, TSource, TReturn>(string name)
-            where TDbContext : DbContext
+        static ConcurrentDictionary<NavigationKey, object> navigationFuncs = new();
+
+        internal static Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> NavigationFunc<TSource, TReturn>(string name)
+        {
+            var key = new NavigationKey(typeof(TSource), name);
+
+            return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>) navigationFuncs.GetOrAdd(
+                key,
+                x => NavigationExpression<TSource, TReturn>(x.Name).Compile());
+        }
+
+        internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>> NavigationExpression<TSource, TReturn>(string name)
         {
             // TSource parameter
             var type = typeof(ResolveEfFieldContext<TDbContext, TSource>);
@@ -198,7 +206,7 @@ namespace GraphQL.EntityFramework
                 }
             }
 
-            if (graphType.FieldExists(name))
+            if (FieldExists(graphType, name))
             {
                 return true;
             }
@@ -218,17 +226,17 @@ namespace GraphQL.EntityFramework
 
         static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
         {
-            var lambda = PropertyToObject<TSource>(member);
+            var func = PropertyCache<TSource>.GetProperty(member.Name).Func;
             var graphTypeFromType = GraphTypeFromType(member.Name, member.PropertyType, member.IsNullable());
-            return (lambda.Compile(), graphTypeFromType);
+            return (func, graphTypeFromType);
         }
 
-        internal static Expression<Func<TSource, object>> PropertyToObject<TSource>(PropertyInfo member)
+        internal static Expression<Func<TSource, object>> PropertyToObject<TSource>(string member)
         {
             // TSource parameter
             var parameter = Expression.Parameter(typeof(TSource), "source");
             // get property from source instance
-            var property = Expression.Property(parameter, member.Name);
+            var property = Expression.Property(parameter, member);
             // convert member instance to object
             var convert = Expression.Convert(property, typeof(object));
 
@@ -248,7 +256,7 @@ namespace GraphQL.EntityFramework
             }
         }
 
-        static bool FieldExists(this IComplexGraphType graphType, string name)
+        static bool FieldExists(IComplexGraphType graphType, string name)
         {
             return graphType.Fields.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
         }
