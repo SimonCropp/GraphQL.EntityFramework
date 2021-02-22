@@ -108,7 +108,7 @@ static class PropertyCache<TInput>
         if (propertyOrField == null)
         {
             // Property does not exist on current type
-            throw new($"'{propertyOrFieldName}' is not a member of type {type.FullName}");
+            throw new ArgumentException($"'{propertyOrFieldName}' is not a member of type {type.FullName}");
         }
 
         return propertyOrField;

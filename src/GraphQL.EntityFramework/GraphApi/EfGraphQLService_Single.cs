@@ -124,7 +124,7 @@ namespace GraphQL.EntityFramework
                             return null;
                         }
 
-                        throw new("Not found");
+                        throw new ExecutionError("Not found");
                     })
             };
         }
