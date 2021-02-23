@@ -202,7 +202,8 @@ static class ReflectionCache
 
     public static IEnumerable<PropertyInfo> GetPublicProperties(this Type type)
     {
-        var flags = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance;
+        const BindingFlags flags = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance;
+
         if (!type.IsInterface)
         {
             return type.GetProperties(flags);
