@@ -5,6 +5,7 @@ using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Xunit;
+// ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
 #region GraphQlControllerTests
 
@@ -12,14 +13,14 @@ using Xunit;
 public class GraphQlControllerTests
 {
     static HttpClient client = null!;
-    static WebSocketClient websocketClient = null!;
+    static WebSocketClient webSocket = null!;
 
     static GraphQlControllerTests()
     {
         var server = GetTestServer();
         client = server.CreateClient();
-        websocketClient = server.CreateWebSocketClient();
-        websocketClient.ConfigureRequest =
+        webSocket = server.CreateWebSocketClient();
+        webSocket.ConfigureRequest =
             request =>
             {
                 var headers = request.Headers;

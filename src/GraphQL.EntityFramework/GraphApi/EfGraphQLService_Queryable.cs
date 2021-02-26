@@ -47,13 +47,14 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-
+            
+            var hasId = keyNames.ContainsKey(typeof(TReturn));
             var fieldType = new FieldType
             {
                 Name = name,
                 Description = description,
                 Type = MakeListGraphType<TReturn>(itemGraphType),
-                Arguments = ArgumentAppender.GetQueryArguments(arguments),
+                Arguments = ArgumentAppender.GetQueryArguments(arguments,hasId),
             };
 
             if (resolve != null)
@@ -93,16 +94,14 @@ namespace GraphQL.EntityFramework
             return nonNullType.MakeGenericType(listGraphType.MakeGenericType(itemGraphType));
         }
 
-        static List<string> emptyList = new();
-
-        List<string> GetKeyNames<TSource>()
+        List<string>? GetKeyNames<TSource>()
         {
             if (keyNames.TryGetValue(typeof(TSource), out var names))
             {
                 return names;
             }
 
-            return emptyList;
+            return null;
         }
     }
 }

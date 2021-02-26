@@ -6,19 +6,22 @@ namespace GraphQL.EntityFramework
 {
     public static partial class ArgumentProcessor
     {
-        public static IEnumerable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IEnumerable<TItem> items, IResolveFieldContext<TSource> context)
+        public static IEnumerable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IEnumerable<TItem> items, bool hasId, IResolveFieldContext<TSource> context)
         {
             Guard.AgainstNull(nameof(items), items);
             Guard.AgainstNull(nameof(context), context);
-            return ApplyToAll(items, (type, x) => context.GetArgument(type, x));
+            return ApplyToAll(items, hasId, (type, x) => context.GetArgument(type, x));
         }
 
-        static IEnumerable<TItem> ApplyToAll<TItem>(this IEnumerable<TItem> items, Func<Type, string, object?> getArguments)
+        static IEnumerable<TItem> ApplyToAll<TItem>(this IEnumerable<TItem> items, bool hasId, Func<Type, string, object?> getArguments)
         {
-            if (ArgumentReader.TryReadIds(getArguments, out var values))
+            if (hasId)
             {
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
-                items = items.Where(predicate.Compile());
+                if (ArgumentReader.TryReadIds(getArguments, out var values))
+                {
+                    var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
+                    items = items.Where(predicate.Compile());
+                }
             }
 
             if (ArgumentReader.TryReadWhere(getArguments, out var wheres))

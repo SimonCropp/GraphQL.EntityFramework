@@ -489,14 +489,14 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 public class GraphQlControllerTests
 {
     static HttpClient client = null!;
-    static WebSocketClient websocketClient = null!;
+    static WebSocketClient webSocket = null!;
 
     static GraphQlControllerTests()
     {
         var server = GetTestServer();
         client = server.CreateClient();
-        websocketClient = server.CreateWebSocketClient();
-        websocketClient.ConfigureRequest =
+        webSocket = server.CreateWebSocketClient();
+        webSocket.ConfigureRequest =
             request =>
             {
                 var headers = request.Headers;
@@ -738,7 +738,7 @@ query ($id: ID!)
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L9-L265' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L10-L266' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

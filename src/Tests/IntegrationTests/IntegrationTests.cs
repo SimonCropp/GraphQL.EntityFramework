@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
+using GraphQL.EntityFramework;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,7 @@ public partial class IntegrationTests
         GraphTypeTypeRegistry.Register<DerivedChildEntity, DerivedChildGraph>();
         GraphTypeTypeRegistry.Register<ManyToManyLeftEntity, ManyToManyLeftGraph>();
         GraphTypeTypeRegistry.Register<ManyToManyRightEntity, ManyToManyRightGraph>();
+        GraphTypeTypeRegistry.Register<ParentEntityView, ParentEntityViewGraph>();
 
         sqlInstance = new SqlInstance<IntegrationDbContext>(
             buildTemplate: async data =>
@@ -52,6 +54,29 @@ public partial class IntegrationTests
         from ParentEntities");
             },
             constructInstance: builder => new IntegrationDbContext(builder.Options));
+    }
+
+    [Fact]
+    public async Task SchemaPrint()
+    {
+        await using var database = await sqlInstance.Build();
+        var dbContext = database.Context;
+        ServiceCollection services = new();
+        services.AddSingleton<Query>();
+        services.AddSingleton<Mutation>();
+        services.AddSingleton(database.Context);
+        foreach (var type in GetGraphQlTypes())
+        {
+            services.AddSingleton(type);
+        }
+        EfGraphQLConventions.RegisterInContainer(services, _ => dbContext, dbContext.Model);
+        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
+        await using var provider = services.BuildServiceProvider();
+        using var schema = new Schema(provider);
+
+        SchemaPrinter printer = new(schema);
+        var print = printer.Print();
+        await Verifier.Verify(print);
     }
 
     [Fact]
@@ -1627,7 +1652,7 @@ fragment childEntityFields on DerivedChild {
         string query,
         Inputs? inputs,
         Filters? filters,
-        bool diableTracking,
+        bool disableTracking,
         params object[] entities)
     {
         var dbContext = database.Context;
@@ -1642,7 +1667,7 @@ fragment childEntityFields on DerivedChild {
             services.AddSingleton(type);
         }
 
-        return await QueryExecutor.ExecuteQuery(query, services, database.NewDbContext(), inputs, filters, diableTracking);
+        return await QueryExecutor.ExecuteQuery(query, services, database.NewDbContext(), inputs, filters, disableTracking);
     }
 
     static IEnumerable<Type> GetGraphQlTypes()
