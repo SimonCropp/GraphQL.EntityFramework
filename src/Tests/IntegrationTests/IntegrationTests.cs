@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
+using GraphQL.EntityFramework;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.EntityFrameworkCore;
