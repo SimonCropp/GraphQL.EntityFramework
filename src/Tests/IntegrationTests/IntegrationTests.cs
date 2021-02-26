@@ -1627,7 +1627,7 @@ fragment childEntityFields on DerivedChild {
         string query,
         Inputs? inputs,
         Filters? filters,
-        bool diableTracking,
+        bool disableTracking,
         params object[] entities)
     {
         var dbContext = database.Context;
@@ -1642,7 +1642,7 @@ fragment childEntityFields on DerivedChild {
             services.AddSingleton(type);
         }
 
-        return await QueryExecutor.ExecuteQuery(query, services, database.NewDbContext(), inputs, filters, diableTracking);
+        return await QueryExecutor.ExecuteQuery(query, services, database.NewDbContext(), inputs, filters, disableTracking);
     }
 
     static IEnumerable<Type> GetGraphQlTypes()
