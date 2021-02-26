@@ -35,10 +35,12 @@ namespace GraphQL.EntityFramework
             {
                 builder.Description(description);
             }
+
             builder.PageSize(pageSize).Bidirectional();
             SetField(builder, fieldType);
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
+            var hasId = keyNames.ContainsKey(typeof(TReturn));
             if (resolve != null)
             {
                 builder.ResolveAsync(async context =>
@@ -47,7 +49,8 @@ namespace GraphQL.EntityFramework
 
                     var enumerable = resolve(efFieldContext);
 
-                    enumerable = enumerable.ApplyGraphQlArguments(context);
+
+                    enumerable = enumerable.ApplyGraphQlArguments(hasId, context);
                     enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext);
                     var page = enumerable.ToList();
 
@@ -64,7 +67,7 @@ namespace GraphQL.EntityFramework
 
             var field = graph.AddField(connection.FieldType);
 
-            field.AddWhereArgument(arguments);
+            field.AddWhereArgument(hasId, arguments);
         }
 
         static void SetField(object builder, object fieldType)
@@ -80,7 +83,7 @@ namespace GraphQL.EntityFramework
             var makeGenericType = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSource));
             var genericMethodInfo = makeGenericType.GetMethods().Single(mi => mi.Name == "Create" && mi.IsGenericMethod && mi.GetGenericArguments().Length == 1);
             var genericMethod = genericMethodInfo.MakeGenericMethod(graphType);
-            dynamic? x = genericMethod.Invoke(null, new object[] { name }) ?? null;
+            dynamic? x = genericMethod.Invoke(null, new object[] {name}) ?? null;
             x?.Bidirectional();
             return x?.FieldType!;
         }
