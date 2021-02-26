@@ -41,6 +41,7 @@ public partial class IntegrationTests
         GraphTypeTypeRegistry.Register<DerivedChildEntity, DerivedChildGraph>();
         GraphTypeTypeRegistry.Register<ManyToManyLeftEntity, ManyToManyLeftGraph>();
         GraphTypeTypeRegistry.Register<ManyToManyRightEntity, ManyToManyRightGraph>();
+        GraphTypeTypeRegistry.Register<ParentEntityView, ParentEntityViewGraph>();
 
         sqlInstance = new SqlInstance<IntegrationDbContext>(
             buildTemplate: async data =>
