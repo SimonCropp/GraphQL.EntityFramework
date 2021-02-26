@@ -94,5 +94,23 @@ public class Query :
         AddQueryField(
             name: "manyToManyRightEntities",
             resolve: context => context.DbContext.ManyToManyRightEntities);
+
+        AddQueryField(
+            name: "parentEntityViews",
+            resolve: context => context.DbContext.ParentEntityView);
+
+        efGraphQlService.AddQueryConnectionField<ParentEntityViewGraph, ParentEntityView>(
+            this,
+            name: "parentEntitiesViewConnection",
+            resolve: context => context.DbContext.ParentEntityView);
+
+        AddSingleField(
+            name: "parentEntityView",
+            resolve: context => context.DbContext.ParentEntityView);
+
+        AddSingleField(
+            name: "parentEntityViewNullable",
+            resolve: context => context.DbContext.ParentEntityView,
+            nullable: true);
     }
 }
