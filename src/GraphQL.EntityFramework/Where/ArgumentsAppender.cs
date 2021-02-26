@@ -52,12 +52,15 @@ static class ArgumentAppender
         };
     }
 
-    public static void AddWhereArgument(this FieldType field, IEnumerable<QueryArgument>? extra)
+    public static void AddWhereArgument(this FieldType field, bool hasId, IEnumerable<QueryArgument>? extra)
     {
         var arguments = field.Arguments;
         arguments.Add(whereArgument());
         arguments.Add(orderByArgument());
-        arguments.Add(idsArgument());
+        if (hasId)
+        {
+            arguments.Add(idsArgument());
+        }
         if (extra != null)
         {
             foreach (var argument in extra)
@@ -67,17 +70,19 @@ static class ArgumentAppender
         }
     }
 
-    public static QueryArguments GetQueryArguments(IEnumerable<QueryArgument>? extra)
+    public static QueryArguments GetQueryArguments(IEnumerable<QueryArgument>? extra, bool hasId)
     {
-        var arguments = new QueryArguments
+        var arguments = new QueryArguments();
+        if (hasId)
         {
-            idArgument(),
-            idsArgument(),
-            orderByArgument(),
-            whereArgument(),
-            skipArgument(),
-            takeArgument()
-        };
+            arguments.Add(idArgument());
+            arguments.Add(idsArgument());
+        }
+
+        arguments.Add(orderByArgument());
+        arguments.Add(whereArgument());
+        arguments.Add(skipArgument());
+        arguments.Add(takeArgument());
         if (extra != null)
         {
             foreach (var argument in extra)

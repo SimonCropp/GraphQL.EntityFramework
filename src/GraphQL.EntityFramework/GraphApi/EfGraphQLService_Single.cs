@@ -83,13 +83,14 @@ namespace GraphQL.EntityFramework
                 wrappedType = typeof(NonNullGraphType<>).MakeGenericType(graphType);
             }
 
+            var hasId = keyNames.ContainsKey(typeof(TReturn));
             return new FieldType
             {
                 Name = name,
                 Type = wrappedType,
                 Description = description,
 
-                Arguments = ArgumentAppender.GetQueryArguments(arguments),
+                Arguments = ArgumentAppender.GetQueryArguments(arguments,hasId),
 
                 Resolver = new AsyncFieldResolver<TSource, TReturn?>(
                     async context =>

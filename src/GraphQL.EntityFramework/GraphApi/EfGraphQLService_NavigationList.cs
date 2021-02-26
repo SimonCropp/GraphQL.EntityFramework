@@ -21,13 +21,14 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNullWhiteSpace(nameof(name), name);
-
+            
+            var hasId = keyNames.ContainsKey(typeof(TReturn));
             var field = new FieldType
             {
                 Name = name,
                 Description = description,
                 Type = MakeListGraphType<TReturn>(itemGraphType),
-                Arguments = ArgumentAppender.GetQueryArguments(arguments),
+                Arguments = ArgumentAppender.GetQueryArguments(arguments,hasId),
                 Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames)
             };
 
@@ -38,7 +39,7 @@ namespace GraphQL.EntityFramework
                     {
                         var fieldContext = BuildContext(context);
                         var result = resolve(fieldContext);
-                        result = result.ApplyGraphQlArguments(context);
+                        result = result.ApplyGraphQlArguments(hasId, context);
                         return fieldContext.Filters.ApplyFilter(result, context.UserContext);
                     });
             }

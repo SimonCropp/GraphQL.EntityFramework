@@ -17,18 +17,21 @@ namespace GraphQL.EntityFramework
         static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object?> getArguments, List<string>? keyNames)
             where TItem : class
         {
-            if (ArgumentReader.TryReadIds(getArguments, out var values))
+            if (keyNames != null)
             {
-                var keyName = GetKeyName(keyNames);
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
-                queryable = queryable.Where(predicate);
-            }
+                if (ArgumentReader.TryReadIds(getArguments, out var values))
+                {
+                    var keyName = GetKeyName(keyNames);
+                    var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
+                    queryable = queryable.Where(predicate);
+                }
 
-            if (ArgumentReader.TryReadId(getArguments, out var value))
-            {
-                var keyName = GetKeyName(keyNames);
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.Equal, new[] { value });
-                queryable = queryable.Where(predicate);
+                if (ArgumentReader.TryReadId(getArguments, out var value))
+                {
+                    var keyName = GetKeyName(keyNames);
+                    var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.Equal, new[] {value});
+                    queryable = queryable.Where(predicate);
+                }
             }
 
             if (ArgumentReader.TryReadWhere(getArguments, out var wheres))
@@ -52,12 +55,8 @@ namespace GraphQL.EntityFramework
             return queryable;
         }
 
-        static string GetKeyName(List<string>? keyNames)
+        static string GetKeyName(List<string> keyNames)
         {
-            if (keyNames == null)
-            {
-                return "Id";
-            }
             if (keyNames.Count > 1)
             {
                 throw new("Only one id field is currently supported");
