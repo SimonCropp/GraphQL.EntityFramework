@@ -1,0 +1,320 @@
+type Child {
+  parentAlias: Parent
+  parent: Parent
+  id: ID!
+  nullable: Int
+  parentId: ID
+  property: String
+}
+
+type Child1 {
+  parent: WithManyChildren
+  id: ID!
+  parentId: ID
+}
+
+type Child2 {
+  parent: WithManyChildren
+  id: ID!
+  parentId: ID
+}
+
+type ChildConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [ChildEdge]
+  items: [Child]
+}
+
+type ChildEdge {
+  cursor: String!
+  node: Child
+}
+
+enum Comparison {
+  contains
+  endsWith
+  equal
+  greaterThan
+  greaterThanOrEqual
+  notIn
+  in
+  lessThan
+  lessThanOrEqual
+  like
+  startsWith
+}
+
+enum Connector {
+  and
+  or
+}
+
+type CustomType {
+  id: ID!
+  property: Long!
+}
+
+type Derived implements Interface {
+  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): DerivedChildConnection
+  childrenFromBase(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [DerivedChild!]!
+  id: ID!
+  property: String
+}
+
+type DerivedChild {
+  id: ID!
+  parentId: ID
+  property: String
+  typedParentId: ID
+}
+
+type DerivedChildConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [DerivedChildEdge]
+  items: [DerivedChild]
+}
+
+type DerivedChildEdge {
+  cursor: String!
+  node: DerivedChild
+}
+
+type DerivedWithNavigation implements Interface {
+  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): DerivedChildConnection
+  childrenFromDerived(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): DerivedChildConnection
+  childrenFromBase(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [DerivedChild!]!
+  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [DerivedChild!]!
+  id: ID!
+  property: String
+}
+
+type FilterChild {
+  parent: FilterParent
+  id: ID!
+  property: String
+}
+
+type FilterChildConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [FilterChildEdge]
+  items: [FilterChild]
+}
+
+type FilterChildEdge {
+  cursor: String!
+  node: FilterChild
+}
+
+type FilterParent {
+  childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): FilterChildConnection
+  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [FilterChild!]!
+  id: ID!
+  property: String
+}
+
+type FilterParentConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [FilterParentEdge]
+  items: [FilterParent]
+}
+
+type FilterParentEdge {
+  cursor: String!
+  node: FilterParent
+}
+
+type IncludeNonQueryableA {
+  includeNonQueryableB: IncludeNonQueryableB!
+  id: ID!
+  includeNonQueryableBId: ID!
+}
+
+type IncludeNonQueryableB {
+  includeNonQueryableA: IncludeNonQueryableA!
+  id: ID!
+  includeNonQueryableAId: ID!
+}
+
+interface Interface {
+  id: ID!
+  property: String
+  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): DerivedChildConnection
+}
+
+type InterfaceConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [InterfaceEdge]
+  items: [Interface]
+}
+
+type InterfaceEdge {
+  cursor: String!
+  node: Interface
+}
+
+type Level1 {
+  level2Entity: Level2
+  id: ID!
+  level2EntityId: Int
+}
+
+type Level2 {
+  level3Entity: Level3
+  id: ID!
+  level3EntityId: ID
+}
+
+type Level3 {
+  id: ID!
+  property: String
+}
+
+scalar Long
+
+type ManyToManyLeft {
+  rights: [ManyToManyRight!]!
+  id: String!
+  leftName: String
+}
+
+type ManyToManyRight {
+  lefts(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [ManyToManyLeft!]!
+  id: String!
+  rightName: String
+}
+
+type Mutation {
+  parentEntityMutation(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): Parent!
+}
+
+type NamedId {
+  namedId: ID!
+  property: String
+}
+
+input OrderBy {
+  path: String!
+  descending: Boolean
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Parent {
+  childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): ChildConnection
+  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [Child!]!
+  id: ID!
+  property: String
+}
+
+type ParentConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [ParentEdge]
+  items: [Parent]
+}
+
+type ParentEdge {
+  cursor: String!
+  node: Parent
+}
+
+type ParentView {
+  property: String
+}
+
+type ParentViewConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [ParentViewEdge]
+  items: [ParentView]
+}
+
+type ParentViewEdge {
+  cursor: String!
+  node: ParentView
+}
+
+type Query {
+  customType(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [CustomType!]!
+  skipLevel(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [SkipLevelGraph]!
+  queryFieldWithInclude(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [IncludeNonQueryableA!]!
+  manyChildren(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [WithManyChildren!]!
+  level1Entities(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [Level1!]!
+  withNullableEntities(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [WithNullable!]!
+  namedEntities(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [NamedId!]!
+  misNamed(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [WithMisNamedQueryParent!]!
+  parentEntities(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [Parent!]!
+  childEntities(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [Child!]!
+  parentEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): ParentConnection
+  childEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): ChildConnection
+  parentEntitiesFiltered(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [FilterParent!]!
+  parentEntitiesConnectionFiltered(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): FilterParentConnection
+  parentEntity(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): Parent!
+  parentEntityNullable(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): Parent
+  interfaceGraphConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): InterfaceConnection
+  manyToManyLeftEntities(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [ManyToManyLeft!]!
+  manyToManyRightEntities(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [ManyToManyRight!]!
+  parentEntityViews(orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [ParentView!]!
+  parentEntitiesViewConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy]): ParentViewConnection
+  parentEntityView(orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): ParentView!
+  parentEntityViewNullable(orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): ParentView
+}
+
+type SkipLevelGraph {
+  level3Entity: Level3
+  level2Entity: Level2
+  id: ID!
+  level2EntityId: Int
+}
+
+enum StringComparison {
+  CURRENT_CULTURE
+  CURRENT_CULTURE_IGNORE_CASE
+  INVARIANT_CULTURE
+  INVARIANT_CULTURE_IGNORE_CASE
+  ORDINAL
+  ORDINAL_IGNORE_CASE
+}
+
+input WhereExpression {
+  path: String
+  comparison: Comparison
+  negate: Boolean
+  case: StringComparison
+  value: [String]
+  connector: Connector
+  groupedExpressions: [WhereExpression]
+}
+
+type WithManyChildren {
+  child1: Child1
+  child2: Child2!
+  id: ID!
+}
+
+type WithMisNamedQueryChild {
+  parent: WithMisNamedQueryParent
+  id: ID!
+  parentId: ID
+}
+
+type WithMisNamedQueryParent {
+  misNamedChildren(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [WithMisNamedQueryChild!]!
+  children(id: ID, ids: [ID], orderBy: [OrderBy], where: [WhereExpression], skip: Int, take: Int): [WithMisNamedQueryChild!]!
+  id: ID!
+}
+
+type WithNullable {
+  id: ID!
+  nullable: Int
+}
