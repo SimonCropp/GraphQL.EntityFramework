@@ -55,6 +55,29 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task SchemaPrint()
+    {
+        await using var database = await sqlInstance.Build();
+        var dbContext = database.Context;
+        ServiceCollection services = new();
+        services.AddSingleton<Query>();
+        services.AddSingleton<Mutation>();
+        services.AddSingleton(database.Context);
+        foreach (var type in GetGraphQlTypes())
+        {
+            services.AddSingleton(type);
+        }
+        EfGraphQLConventions.RegisterInContainer(services, _ => dbContext, dbContext.Model);
+        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
+        await using var provider = services.BuildServiceProvider();
+        using var schema = new Schema(provider);
+
+        SchemaPrinter printer = new(schema);
+        var print = printer.Print();
+        await Verifier.Verify(print);
+    }
+
+    [Fact]
     public async Task Where_multiple()
     {
         var query = @"
