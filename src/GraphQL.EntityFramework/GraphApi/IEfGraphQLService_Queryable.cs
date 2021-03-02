@@ -62,5 +62,19 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument>? arguments = null,
             string? description = null) where TUnion : UnionGraphType;
 
+        
+        FieldType AddUnionQueryField<TUnion>(
+            IComplexGraphType graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, object>, Task<IDictionary<Type, IQueryable<object>>>>? resolveAsync = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            string? description = null) where TUnion : UnionGraphType;
+
+        FieldType AddUnionQueryField<TUnion, TSource>(
+            IComplexGraphType graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IDictionary<Type, IQueryable<object>>>>? resolveAsync = null,
+            IEnumerable<QueryArgument>? arguments = null,
+            string? description = null) where TUnion : UnionGraphType;
     }
 }
