@@ -339,7 +339,7 @@ public class GraphQlController :
         }
         catch (Exception exception)
         {
-            throw new Exception("Could not parse variables.", exception);
+            throw new("Could not parse variables.", exception);
         }
     }
 }
@@ -402,7 +402,7 @@ Use the user type to pass in both DbContext instances.
 <!-- snippet: MultiExecutionOptions -->
 <a id='snippet-multiexecutionoptions'></a>
 ```cs
-var executionOptions = new ExecutionOptions
+ExecutionOptions executionOptions = new()
 {
     Schema = schema,
     Query = query,
@@ -734,7 +734,7 @@ query ($id: ID!)
     {
         WebHostBuilder hostBuilder = new();
         hostBuilder.UseStartup<Startup>();
-        return new TestServer(hostBuilder);
+        return new(hostBuilder);
     }
 }
 ```
