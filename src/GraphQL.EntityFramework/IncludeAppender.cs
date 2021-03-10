@@ -48,7 +48,7 @@ class IncludeAppender
 
     List<string> GetPaths(IResolveFieldContext context, IReadOnlyList<Navigation> navigationProperty)
     {
-        var list = new List<string>();
+        List<string> list = new();
 
         AddField(list, context.FieldAst, context.FieldAst.SelectionSet, null, context.FieldDefinition, navigationProperty, context);
 
@@ -143,7 +143,7 @@ class IncludeAppender
 
     public static Dictionary<string, object> GetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames)
     {
-        var metadata = new Dictionary<string, object>();
+        Dictionary<string, object> metadata = new();
         SetIncludeMetadata(fieldName, includeNames, metadata);
         return metadata;
     }

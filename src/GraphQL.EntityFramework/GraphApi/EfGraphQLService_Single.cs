@@ -84,7 +84,7 @@ namespace GraphQL.EntityFramework
             }
 
             var hasId = keyNames.ContainsKey(typeof(TReturn));
-            return new FieldType
+            return new()
             {
                 Name = name,
                 Type = wrappedType,

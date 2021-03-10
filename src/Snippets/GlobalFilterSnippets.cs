@@ -18,7 +18,7 @@ public class GlobalFilterSnippets
     {
         #region add-filter
 
-        var filters = new Filters();
+        Filters filters = new();
         filters.Add<MyEntity>(
             (userContext, item) => item.Property != "Ignore");
         EfGraphQLConventions.RegisterInContainer<MyDbContext>(

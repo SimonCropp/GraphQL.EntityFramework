@@ -59,7 +59,7 @@ namespace GraphQL.EntityFramework
         {
             if (keyNames.Count > 1)
             {
-                throw new("Only one id field is currently supported");
+                throw new Exception("Only one id field is currently supported");
             }
 
             return keyNames[0];

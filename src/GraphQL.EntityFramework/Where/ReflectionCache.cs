@@ -209,10 +209,10 @@ static class ReflectionCache
             return type.GetProperties(flags);
         }
 
-        var propertyInfos = new List<PropertyInfo>();
+        List<PropertyInfo> propertyInfos = new();
 
-        var considered = new List<Type>();
-        var queue = new Queue<Type>();
+        List<Type> considered = new();
+        Queue<Type> queue = new();
         considered.Add(type);
         queue.Enqueue(type);
         while (queue.Count > 0)

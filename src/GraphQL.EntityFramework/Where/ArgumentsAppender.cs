@@ -72,7 +72,7 @@ static class ArgumentAppender
 
     public static QueryArguments GetQueryArguments(IEnumerable<QueryArgument>? extra, bool hasId)
     {
-        var arguments = new QueryArguments();
+        QueryArguments arguments = new();
         if (hasId)
         {
             arguments.Add(idArgument());

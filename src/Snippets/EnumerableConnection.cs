@@ -22,7 +22,7 @@ public class EnumerableConnection
                 return new Connection<Employee>
                 {
                     TotalCount = list.Count,
-                    PageInfo = new PageInfo
+                    PageInfo = new()
                     {
                         HasNextPage = true,
                         HasPreviousPage = false,

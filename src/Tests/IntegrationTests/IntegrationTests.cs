@@ -96,15 +96,15 @@ public partial class IntegrationTests
   }
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Property = "Value2"
         };
-        var entity3 = new ParentEntity
+        ParentEntity entity3 = new()
         {
             Property = "Value3"
         };
@@ -135,8 +135,8 @@ public partial class IntegrationTests
     {
         var query = "{ withNullableEntities (where: {path: 'Nullable', comparison: 'equal', value: '10'}){ id } }";
 
-        var entity1 = new WithNullableEntity();
-        var entity2 = new WithNullableEntity
+        WithNullableEntity entity1 = new();
+        WithNullableEntity entity2 = new()
         {
             Nullable = 10
         };
@@ -151,11 +151,11 @@ public partial class IntegrationTests
     {
         var query = "{ parentEntities (where: {path: 'Property', comparison: 'equal'}){ id } }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Property = null
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Property = "Value2"
         };
@@ -176,11 +176,11 @@ public partial class IntegrationTests
   }
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Property = "Value2"
         };
@@ -201,11 +201,11 @@ public partial class IntegrationTests
   }
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Property = "Value2"
         };
@@ -320,11 +320,11 @@ public partial class IntegrationTests
   }
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Property = "Value2"
         };
@@ -345,11 +345,11 @@ public partial class IntegrationTests
   }
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Property = "Value2"
         };
@@ -370,11 +370,11 @@ public partial class IntegrationTests
   }
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Property = "Value2"
         };
@@ -395,11 +395,11 @@ public partial class IntegrationTests
   }
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Property = "Value2"
         };
@@ -422,16 +422,16 @@ query ($value: String!)
 }
 ";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Property = "Value2"
         };
 
-        var inputs = new Inputs(
+        Inputs inputs = new(
             new Dictionary<string, object>
             {
                 {"value", "value2"}
@@ -452,11 +452,11 @@ query ($value: String!)
   }
 }";
 
-        var entity1 = new CustomTypeEntity
+        CustomTypeEntity entity1 = new()
         {
             Property = long.MaxValue
         };
-        var entity2 = new CustomTypeEntity
+        CustomTypeEntity entity2 = new()
         {
             Property = 3
         };
@@ -489,12 +489,12 @@ query ($value: String!)
     property
   }
 }";
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -513,12 +513,12 @@ query ($value: String!)
     property
   }
 }";
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -551,12 +551,12 @@ query ($value: String!)
     property
   }
 }";
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new ParentEntity
+        ParentEntity entity2 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
@@ -580,12 +580,12 @@ mutation {
   }
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new ChildEntity
+        ChildEntity entity2 = new()
         {
             Property = "Value2",
             Parent = entity1
@@ -597,11 +597,11 @@ mutation {
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity4 = new ParentEntity
+        ParentEntity entity4 = new()
         {
             Property = "Value4"
         };
-        var entity5 = new ChildEntity
+        ChildEntity entity5 = new()
         {
             Property = "Value5",
             Parent = entity4
@@ -627,28 +627,28 @@ mutation {
   }
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new ChildEntity
+        ChildEntity entity2 = new()
         {
             Property = "Value2",
             Parent = entity1
         };
-        var entity3 = new ChildEntity
+        ChildEntity entity3 = new()
         {
             Property = "Value3",
             Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity4 = new ParentEntity
+        ParentEntity entity4 = new()
         {
             Property = "Value4"
         };
-        var entity5 = new ChildEntity
+        ChildEntity entity5 = new()
         {
             Property = "Value5",
             Parent = entity4
@@ -680,28 +680,28 @@ fragment childEntityFields on Child {
   property
 }";
 
-        var entity1 = new ParentEntity
+        ParentEntity entity1 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new ChildEntity
+        ChildEntity entity2 = new()
         {
             Property = "Value2",
             Parent = entity1
         };
-        var entity3 = new ChildEntity
+        ChildEntity entity3 = new()
         {
             Property = "Value3",
             Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity4 = new ParentEntity
+        ParentEntity entity4 = new()
         {
             Property = "Value4"
         };
-        var entity5 = new ChildEntity
+        ChildEntity entity5 = new()
         {
             Property = "Value5",
             Parent = entity4

@@ -193,11 +193,11 @@ static class ConnectionConverter
                 })
             .ToList();
 
-        return new Connection<T>
+        return new()
         {
             TotalCount = count,
             Edges = edges,
-            PageInfo = new PageInfo
+            PageInfo = new()
             {
                 HasNextPage = count > take + skip,
                 HasPreviousPage = skip > 0 && take < count,

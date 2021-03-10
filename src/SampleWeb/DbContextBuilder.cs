@@ -14,48 +14,48 @@ public class DbContextBuilder :
     {
         await context.Database.EnsureCreatedAsync();
 
-        var company1 = new Company
+        Company company1 = new()
         {
             Id = 1,
             Content = "Company1"
         };
-        var employee1 = new Employee
+        Employee employee1 = new()
         {
             Id = 2,
             CompanyId = company1.Id,
             Content = "Employee1",
             Age = 25
         };
-        var employee2 = new Employee
+        Employee employee2 = new()
         {
             Id = 3,
             CompanyId = company1.Id,
             Content = "Employee2",
             Age = 31
         };
-        var company2 = new Company
+        Company company2 = new()
         {
             Id = 4,
             Content = "Company2"
         };
-        var employee4 = new Employee
+        Employee employee4 = new()
         {
             Id = 5,
             CompanyId = company2.Id,
             Content = "Employee4",
             Age = 34
         };
-        var company3 = new Company
+        Company company3 = new()
         {
             Id = 6,
             Content = "Company3"
         };
-        var company4 = new Company
+        Company company4 = new()
         {
             Id = 7,
             Content = "Company4"
         };
-        var employee5 = new Employee
+        Employee employee5 = new()
         {
             Id = 8,
             Content = null,
@@ -63,18 +63,17 @@ public class DbContextBuilder :
         };
         context.AddRange(company1, employee1, employee2, company2, company3, company4, employee4, employee5);
 
-
-        var orderDetail1 = new OrderDetail
+        OrderDetail orderDetail1 = new()
         {
             Id = 1,
-            BillingAddress = new StreetAddress
+            BillingAddress = new()
             {
                 AddressLine1 = "1 Street",
                 AreaCode = "1234",
                 State = "New South Wales",
                 Country = "Australia"
             },
-            ShippingAddress = new StreetAddress
+            ShippingAddress = new()
             {
                 AddressLine1 = "1 Street",
                 AreaCode = "1234",
@@ -94,7 +93,7 @@ public class DbContextBuilder :
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var sqlInstance = new SqlInstance<SampleDbContext>(
+        SqlInstance<SampleDbContext> sqlInstance = new(
             buildTemplate: CreateDb,
             constructInstance: builder => new SampleDbContext(builder.Options));
 

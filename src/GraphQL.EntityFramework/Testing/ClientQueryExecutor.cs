@@ -27,7 +27,7 @@ namespace GraphQL.EntityFramework.Testing
                 query,
                 variables
             };
-            var request = new HttpRequestMessage(HttpMethod.Post, uri)
+            HttpRequestMessage request = new(HttpMethod.Post, uri)
             {
                 Content = new StringContent(ToJson(body), Encoding.UTF8, "application/json")
             };
@@ -42,7 +42,7 @@ namespace GraphQL.EntityFramework.Testing
             var compressed = CompressQuery(query);
             var variablesString = ToJson(variables);
             var getUri = $"{uri}?query={compressed}&variables={variablesString}";
-            var request = new HttpRequestMessage(HttpMethod.Get, getUri);
+            HttpRequestMessage request = new(HttpMethod.Get, getUri);
             headerAction?.Invoke(request.Headers);
             return client.SendAsync(request);
         }

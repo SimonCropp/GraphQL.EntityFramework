@@ -49,7 +49,7 @@ namespace GraphQL.EntityFramework
             }
             catch (GetGraphException exception)
             {
-                throw new($"Failed to map '{graph.GetType().Name}'. {exception.Message}");
+                throw new Exception($"Failed to map '{graph.GetType().Name}'. {exception.Message}");
             }
         }
 
@@ -66,7 +66,7 @@ namespace GraphQL.EntityFramework
                     MapNavigationProperties(graph, graphService, exclusions, navigations);
                 }
 
-                var list = new List<string>();
+                List<string> list = new();
                 if (exclusions != null)
                 {
                     list.AddRange(exclusions);
@@ -81,7 +81,7 @@ namespace GraphQL.EntityFramework
             }
             catch (GetGraphException exception)
             {
-                throw new($"Failed to map '{graph.GetType().Name}'. {exception.Message}");
+                throw new Exception($"Failed to map '{graph.GetType().Name}'. {exception.Message}");
             }
         }
 
@@ -168,7 +168,7 @@ namespace GraphQL.EntityFramework
 
         internal static Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> NavigationFunc<TSource, TReturn>(string name)
         {
-            var key = new NavigationKey(typeof(TSource), name);
+            NavigationKey key = new(typeof(TSource), name);
 
             return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>) navigationFuncs.GetOrAdd(
                 key,
@@ -191,7 +191,7 @@ namespace GraphQL.EntityFramework
         static void AddMember<TSource>(ComplexGraphType<TSource> graph, PropertyInfo property)
         {
             var (compile, propertyGraphType) = Compile<TSource>(property);
-            var resolver = new SimpleFieldResolver<TSource>(compile);
+            SimpleFieldResolver<TSource> resolver = new(compile);
             var graphQlField = graph.Field(type: propertyGraphType, name: property.Name);
             graphQlField.Resolver = resolver;
         }

@@ -44,7 +44,7 @@ static class PropertyCache<TInput>
         }
         catch (ArgumentException exception)
         {
-            throw new($"Failed to create a member expression. Type: {typeof(TInput).FullName}, Path: {path}. Error: {exception.Message}");
+            throw new Exception($"Failed to create a member expression. Type: {typeof(TInput).FullName}, Path: {path}. Error: {exception.Message}");
         }
     }
 
@@ -87,7 +87,7 @@ static class PropertyCache<TInput>
         if (propertyOrField == null && type.IsInterface)
         {
             // Get All the implemented interfaces of the type
-            var baseInterfaces = new List<Type>(type.GetInterfaces());
+            List<Type> baseInterfaces = new(type.GetInterfaces());
 
             // Iterate over inherited interfaces
             foreach (var baseInterfaceType in baseInterfaces)

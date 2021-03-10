@@ -78,7 +78,7 @@ namespace GraphQL.EntityFramework
                 return dataFromRootProvider;
             }
 
-            throw new($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
+            throw new Exception($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
         }
 
         static void RegisterScalarsAndArgs(IServiceCollection services)
@@ -109,7 +109,7 @@ namespace GraphQL.EntityFramework
                 return dbContext.Model;
             }
 
-            throw new($"Could not resolve {nameof(IModel)} from the {nameof(IServiceProvider)}. Tried to extract both {nameof(IModel)} and {typeof(TDbContext)}.");
+            throw new Exception($"Could not resolve {nameof(IModel)} from the {nameof(IServiceProvider)}. Tried to extract both {nameof(IModel)} and {typeof(TDbContext)}.");
         }
     }
 }

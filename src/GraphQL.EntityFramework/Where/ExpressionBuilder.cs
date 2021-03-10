@@ -30,7 +30,7 @@ namespace GraphQL.EntityFramework
         private static Expression MakePredicateBody(IEnumerable<WhereExpression> wheres)
         {
             Expression? mainExpression = null;
-            var previousWhere = new WhereExpression();
+            WhereExpression previousWhere = new();
 
             // Iterate over wheres
             foreach (var where in wheres)

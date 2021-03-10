@@ -32,7 +32,7 @@ public class Startup
         //    options => options.ExposeExceptions = true);
         //graphQl.AddWebSockets();
 
-        var dbContextBuilder = new DbContextBuilder();
+        DbContextBuilder dbContextBuilder = new();
         services.AddSingleton<IHostedService>(dbContextBuilder);
         services.AddSingleton<Func<SampleDbContext>>(_ => dbContextBuilder.BuildDbContext);
         services.AddScoped(_ => dbContextBuilder.BuildDbContext());

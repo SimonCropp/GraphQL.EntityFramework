@@ -23,7 +23,7 @@ namespace GraphQL.EntityFramework
 
             graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
-            var field = new FieldType
+            FieldType field = new()
             {
                 Name = name,
                 Type = graphType,

@@ -10,14 +10,14 @@ static class TypeConverter
     {
         if (values.Length != values.Distinct().Count())
         {
-            throw new("Duplicates detected for In expression.");
+            throw new Exception("Duplicates detected for In expression.");
         }
 
         var hasNull = values.Contains(null);
 
         if (!type.IsNullable() && hasNull)
         {
-            throw new($"Null passed to In expression for non nullable type '{type.FullName}'.");
+            throw new Exception($"Null passed to In expression for non nullable type '{type.FullName}'.");
         }
 
         var list = ConvertStringsToListInternal(values.Where(x => x != null).Select(x=>x!), type);
@@ -136,7 +136,7 @@ static class TypeConverter
                 .ToList();
         }
 
-        throw new($"Could not convert strings to {type.FullName}.");
+        throw new Exception($"Could not convert strings to {type.FullName}.");
     }
 
     public static object? ConvertStringToType(string? value, Type type)

@@ -40,8 +40,8 @@ public class DependencyTests
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext,
             sqlInstance.Model);
         await using var provider = services.BuildServiceProvider();
-        using var schema = new DependencySchema(provider);
-        var executionOptions = new ExecutionOptions
+        using DependencySchema schema = new(provider);
+        ExecutionOptions executionOptions = new()
         {
             Schema = schema,
             Query = query,
@@ -65,8 +65,8 @@ public class DependencyTests
             services,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
-        using var schema = new DependencySchema(provider);
-        var executionOptions = new ExecutionOptions
+        using DependencySchema schema = new(provider);
+        ExecutionOptions executionOptions = new()
         {
             Schema = schema,
             Query = query,
@@ -90,8 +90,8 @@ public class DependencyTests
             services,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
-        using var schema = new DependencySchema(provider);
-        var executionOptions = new ExecutionOptions
+        using DependencySchema schema = new(provider);
+        ExecutionOptions executionOptions = new()
         {
             Schema = schema,
             Query = query,
@@ -115,8 +115,8 @@ public class DependencyTests
             services,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
-        using var schema = new DependencySchema(provider);
-        var executionOptions = new ExecutionOptions
+        using DependencySchema schema = new(provider);
+        ExecutionOptions executionOptions = new()
         {
             Schema = schema,
             Query = query,
@@ -143,7 +143,7 @@ public class DependencyTests
 
     static async Task ExecutionResultData(ExecutionOptions executionOptions)
     {
-        var documentExecuter = new EfDocumentExecuter();
+        EfDocumentExecuter documentExecuter = new();
         var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
         var data = (Dictionary<string, object>) executionResult.Data;
         var objects = (List<object>) data.Single().Value;

@@ -118,6 +118,6 @@ static class ComplexGraphResolver
             return complex;
         }
 
-        throw new($"Could not find resolve a {nameof(IComplexGraphType)} for {fieldType.GetType().FullName}.");
+        throw new Exception($"Could not find resolve a {nameof(IComplexGraphType)} for {fieldType.GetType().FullName}.");
     }
 }
