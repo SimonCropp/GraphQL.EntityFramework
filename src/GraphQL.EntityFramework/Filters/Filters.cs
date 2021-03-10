@@ -30,7 +30,7 @@ namespace GraphQL.EntityFramework
                     }
                     catch (Exception exception)
                     {
-                        throw new Exception($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
+                        throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                     }
                 };
         }
@@ -48,7 +48,7 @@ namespace GraphQL.EntityFramework
                     }
                     catch (Exception exception)
                     {
-                        throw new Exception($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
+                        throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                     }
                 };
         }

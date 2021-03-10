@@ -16,7 +16,7 @@ public class DependencyTests
     {
         GraphTypeTypeRegistry.Register<Entity, EntityGraph>();
 
-        sqlInstance = new SqlInstance<DependencyDbContext>(builder => new DependencyDbContext(builder.Options));
+        sqlInstance = new(builder => new(builder.Options));
     }
 
     static string query = @"

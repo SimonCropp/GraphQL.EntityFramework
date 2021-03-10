@@ -20,22 +20,22 @@ public class MappingTests
         GraphTypeTypeRegistry.Register<MappingParent, MappingParentGraph>();
         GraphTypeTypeRegistry.Register<MappingChild, MappingChildGraph>();
 
-        sqlInstance = new SqlInstance<MappingContext>(
-            constructInstance: builder => new MappingContext(builder.Options));
+        sqlInstance = new(
+            constructInstance: builder => new(builder.Options));
     }
 
     [Fact]
     public async Task SchemaPrint()
     {
-        var graphQlService = new EfGraphQLService<MappingContext>(sqlInstance.Model, _ => null!);
+        EfGraphQLService<MappingContext> graphQlService = new(sqlInstance.Model, _ => null!);
         ServiceCollection services = new();
         EfGraphQLConventions.RegisterInContainer<MappingContext>(services);
         services.AddSingleton(new MappingChildGraph(graphQlService));
         services.AddSingleton(new MappingParentGraph(graphQlService));
         await using var provider = services.BuildServiceProvider();
-        var mappingSchema = new MappingSchema(graphQlService, provider);
+        MappingSchema mappingSchema = new(graphQlService, provider);
 
-        var printer = new SchemaPrinter(mappingSchema);
+        SchemaPrinter printer = new(mappingSchema);
         var print = printer.Print();
         await Verifier.Verify(print);
     }
@@ -46,13 +46,13 @@ public class MappingTests
         await using var database = await sqlInstance.Build();
         var context = database.Context;
 
-        var parent = new MappingParent();
-        var child = new MappingChild
+        MappingParent parent = new();
+        MappingChild child = new()
         {
             Parent = parent
         };
         await database.AddDataUntracked(child, parent);
-        var graphQlService = new EfGraphQLService<MappingContext>(context.Model, _ => context);
+        EfGraphQLService<MappingContext> graphQlService = new(context.Model, _ => context);
         var resolve = await (Task<IEnumerable<MappingChild>>) new MappingQuery(graphQlService).Fields
             .Single(x => x.Name == "children")
             .Resolver
@@ -79,8 +79,8 @@ public class MappingTests
         await using var database = await sqlInstance.Build();
         var context = database.Context;
 
-        var child = new MappingChild();
-        var parent = new MappingParent
+        MappingChild child = new();
+        MappingParent parent = new()
         {
             Property = "value"
         };

@@ -41,7 +41,7 @@ static class ArgumentReader
             return true;
         }
 
-        throw new Exception($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is not supported.");
+        throw new($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is not supported.");
     }
 
     public static bool TryReadId(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string? expression)

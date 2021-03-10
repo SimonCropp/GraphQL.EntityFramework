@@ -17,11 +17,11 @@ public class MultiContextTests
         GraphTypeTypeRegistry.Register<Entity1, Entity1Graph>();
         GraphTypeTypeRegistry.Register<Entity2, Entity2Graph>();
 
-        var sqlInstance1 = new SqlInstance<DbContext1>(
-            constructInstance: builder => new DbContext1(builder.Options));
+        SqlInstance<DbContext1> sqlInstance1 = new(
+            constructInstance: builder => new(builder.Options));
 
-        var sqlInstance2 = new SqlInstance<DbContext2>(
-            constructInstance: builder => new DbContext2(builder.Options));
+        SqlInstance<DbContext2> sqlInstance2 = new(
+            constructInstance: builder => new(builder.Options));
 
         var query = @"
 {
@@ -35,11 +35,11 @@ public class MultiContextTests
   }
 }";
 
-        var entity1 = new Entity1
+        Entity1 entity1 = new()
         {
             Property = "the entity1"
         };
-        var entity2 = new Entity2
+        Entity2 entity2 = new()
         {
             Property = "the entity2"
         };
@@ -73,12 +73,12 @@ public class MultiContextTests
             #endregion
 
             await using var provider = services.BuildServiceProvider();
-            using var schema = new MultiContextSchema(provider);
-            var documentExecuter = new EfDocumentExecuter();
+            using MultiContextSchema schema = new(provider);
+            EfDocumentExecuter documentExecuter = new();
 
             #region MultiExecutionOptions
 
-            var executionOptions = new ExecutionOptions
+            ExecutionOptions executionOptions = new()
             {
                 Schema = schema,
                 Query = query,

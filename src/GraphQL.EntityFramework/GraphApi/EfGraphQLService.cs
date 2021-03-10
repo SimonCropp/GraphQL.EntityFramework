@@ -32,7 +32,7 @@ namespace GraphQL.EntityFramework
             keyNames = model.GetKeyNames();
 
             Navigations = NavigationReader.GetNavigationProperties(model);
-            includeAppender = new IncludeAppender(Navigations);
+            includeAppender = new(Navigations);
         }
 
         public IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> Navigations { get; }

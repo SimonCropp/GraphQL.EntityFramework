@@ -590,7 +590,7 @@ mutation {
             Property = "Value2",
             Parent = entity1
         };
-        var entity3 = new ChildEntity
+        ChildEntity entity3 = new()
         {
             Property = "Value3",
             Parent = entity1
@@ -1039,8 +1039,8 @@ fragment childEntityFields on Child {
     }
   }
 }";
-        var level2 = new IncludeNonQueryableA();
-        var level1 = new IncludeNonQueryableB
+        IncludeNonQueryableA level2 = new();
+        IncludeNonQueryableB level1 = new()
         {
             IncludeNonQueryableA = level2,
         };
@@ -1135,22 +1135,22 @@ fragment childEntityFields on Child {
   }
 }";
 
-        var level3a = new Level3Entity
+        Level3Entity level3a = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Property = "Valuea"
         };
-        var level2a = new Level2Entity
+        Level2Entity level2a = new()
         {
             Level3Entity = level3a
         };
-        var level1a = new Level1Entity
+        Level1Entity level1a = new()
         {
             Level2Entity = level2a
         };
 
-        var level2b = new Level2Entity();
-        var level1b = new Level1Entity
+        Level2Entity level2b = new();
+        Level1Entity level1b = new()
         {
             Level2Entity = level2b
         };
@@ -1187,23 +1187,23 @@ fragment childEntityFields on Child {
         {
             Property = "Value1"
         };
-        var entity2 = new ChildEntity
+        ChildEntity entity2 = new()
         {
             Property = "Value2",
             Parent = entity1
         };
-        var entity3 = new ChildEntity
+        ChildEntity entity3 = new()
         {
             Property = "Value3",
             Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity4 = new ParentEntity
+        ParentEntity entity4 = new()
         {
             Property = "Value4"
         };
-        var entity5 = new ChildEntity
+        ChildEntity entity5 = new()
         {
             Property = "Value5",
             Parent = entity4
@@ -1234,23 +1234,23 @@ fragment childEntityFields on Child {
         {
             Property = "Value1"
         };
-        var entity2 = new ChildEntity
+        ChildEntity entity2 = new()
         {
             Property = "Value2",
             Parent = entity1
         };
-        var entity3 = new ChildEntity
+        ChildEntity entity3 = new()
         {
             Property = "Value3",
             Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity4 = new ParentEntity
+        ParentEntity entity4 = new()
         {
             Property = "Value4"
         };
-        var entity5 = new ChildEntity
+        ChildEntity entity5 = new()
         {
             Property = "Value5",
             Parent = entity4
@@ -1281,23 +1281,23 @@ fragment childEntityFields on Child {
         {
             Property = "Value1"
         };
-        var entity2 = new ChildEntity
+        ChildEntity entity2 = new()
         {
             Property = "Value2",
             Parent = entity1
         };
-        var entity3 = new ChildEntity
+        ChildEntity entity3 = new()
         {
             Property = "Value3",
             Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity4 = new ParentEntity
+        ParentEntity entity4 = new()
         {
             Property = "Value4"
         };
-        var entity5 = new ChildEntity
+        ChildEntity entity5 = new()
         {
             Property = "Value5",
             Parent = entity4
@@ -1329,19 +1329,19 @@ fragment childEntityFields on Child {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var entity2 = new ChildEntity
+        ChildEntity entity2 = new()
         {
             Property = "Value2",
             Parent = entity1
         };
-        var entity3 = new ChildEntity
+        ChildEntity entity3 = new()
         {
             Property = "Value3",
             Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity5 = new ChildEntity
+        ChildEntity entity5 = new()
         {
             Property = "Value5"
         };
@@ -1365,19 +1365,19 @@ fragment childEntityFields on Child {
   }
 }";
 
-        var entity1 = new WithMisNamedQueryParentEntity();
-        var entity2 = new WithMisNamedQueryChildEntity
+        WithMisNamedQueryParentEntity entity1 = new();
+        WithMisNamedQueryChildEntity entity2 = new()
         {
             Parent = entity1
         };
-        var entity3 = new WithMisNamedQueryChildEntity
+        WithMisNamedQueryChildEntity entity3 = new()
         {
             Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity4 = new WithMisNamedQueryParentEntity();
-        var entity5 = new WithMisNamedQueryChildEntity
+        WithMisNamedQueryParentEntity entity4 = new();
+        WithMisNamedQueryChildEntity entity5 = new()
         {
             Parent = entity4
         };
@@ -1407,23 +1407,23 @@ fragment childEntityFields on Child {
         {
             Property = "Value1"
         };
-        var entity2 = new ChildEntity
+        ChildEntity entity2 = new()
         {
             Property = "Value2",
             Parent = entity1
         };
-        var entity3 = new ChildEntity
+        ChildEntity entity3 = new()
         {
             Property = "Value3",
             Parent = entity1
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
-        var entity4 = new ParentEntity
+        ParentEntity entity4 = new()
         {
             Property = "Value4"
         };
-        var entity5 = new ChildEntity
+        ChildEntity entity5 = new()
         {
             Property = "Value5",
             Parent = entity4
@@ -1449,12 +1449,12 @@ fragment childEntityFields on Child {
   }
 }";
 
-        var parent = new WithManyChildrenEntity();
-        var child1 = new Child1Entity
+        WithManyChildrenEntity parent = new();
+        Child1Entity child1 = new()
         {
             Parent = parent
         };
-        var child2 = new Child2Entity
+        Child2Entity child2 = new()
         {
             Parent = parent
         };
@@ -1498,17 +1498,17 @@ fragment childEntityFields on DerivedChild {
   property
 }";
 
-        var derivedEntity1 = new DerivedEntity
+        DerivedEntity derivedEntity1 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
-        var childEntity1 = new DerivedChildEntity
+        DerivedChildEntity childEntity1 = new()
         {
             Property = "Value2",
             Parent = derivedEntity1
         };
-        var childEntity2 = new DerivedChildEntity
+        DerivedChildEntity childEntity2 = new()
         {
             Property = "Value3",
             Parent = derivedEntity1
@@ -1516,17 +1516,17 @@ fragment childEntityFields on DerivedChild {
         derivedEntity1.ChildrenFromBase.Add(childEntity1);
         derivedEntity1.ChildrenFromBase.Add(childEntity2);
 
-        var derivedEntity2 = new DerivedWithNavigationEntity
+        DerivedWithNavigationEntity derivedEntity2 = new()
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             Property = "Value4"
         };
-        var childEntity3 = new DerivedChildEntity
+        DerivedChildEntity childEntity3 = new()
         {
             Property = "Value5",
             Parent = derivedEntity2
         };
-        var childEntity4 = new DerivedChildEntity
+        DerivedChildEntity childEntity4 = new()
         {
             Property = "Value6",
             TypedParent = derivedEntity2
@@ -1554,33 +1554,33 @@ fragment childEntityFields on DerivedChild {
   }
 }";
 
-        var middle11 = new ManyToManyMiddleEntity
+        ManyToManyMiddleEntity middle11 = new()
         {
-            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            ManyToManyLeftEntity = new()
             {
                 Id = "Left1Id",
                 LeftName = "Left1"
             },
-            ManyToManyRightEntity = new ManyToManyRightEntity
+            ManyToManyRightEntity = new()
             {
                 Id = "Right1Id",
                 RightName = "Right1"
             }
         };
 
-        var middle12 = new ManyToManyMiddleEntity
+        ManyToManyMiddleEntity middle12 = new()
         {
             ManyToManyLeftEntity = middle11.ManyToManyLeftEntity,
-            ManyToManyRightEntity = new ManyToManyRightEntity
+            ManyToManyRightEntity = new()
             {
                 Id = "Right2Id",
                 RightName = "Right2"
             }
         };
 
-        var middle21 = new ManyToManyMiddleEntity
+        ManyToManyMiddleEntity middle21 = new()
         {
-            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            ManyToManyLeftEntity = new()
             {
                 Id = "Left2Id",
                 LeftName = "Left2"
@@ -1608,33 +1608,33 @@ fragment childEntityFields on DerivedChild {
   }
 }";
 
-        var middle11 = new ManyToManyMiddleEntity
+        ManyToManyMiddleEntity middle11 = new()
         {
-            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            ManyToManyLeftEntity = new()
             {
                 Id = "Left1Id",
                 LeftName = "Left1"
             },
-            ManyToManyRightEntity = new ManyToManyRightEntity
+            ManyToManyRightEntity = new()
             {
                 Id = "Right1Id",
                 RightName = "Right1"
             }
         };
 
-        var middle12 = new ManyToManyMiddleEntity
+        ManyToManyMiddleEntity middle12 = new()
         {
             ManyToManyLeftEntity = middle11.ManyToManyLeftEntity,
-            ManyToManyRightEntity = new ManyToManyRightEntity
+            ManyToManyRightEntity = new()
             {
                 Id = "Right2Id",
                 RightName = "Right2"
             }
         };
 
-        var middle21 = new ManyToManyMiddleEntity
+        ManyToManyMiddleEntity middle21 = new()
         {
-            ManyToManyLeftEntity = new ManyToManyLeftEntity
+            ManyToManyLeftEntity = new()
             {
                 Id = "Left2Id",
                 LeftName = "Left2"

@@ -5,7 +5,7 @@ public class PropertyCacheTests
     [Fact]
     public void Property()
     {
-        var target = new TargetForProperty
+        TargetForProperty target = new()
         {
             Member = "Value1"
         };
@@ -23,9 +23,9 @@ public class PropertyCacheTests
     [Fact]
     public void PropertyNested()
     {
-        var target = new TargetForPropertyNested
+        TargetForPropertyNested target = new()
         {
-            Child = new TargetChildForPropertyNested
+            Child = new()
             {
                 Member = "Value1"
             }

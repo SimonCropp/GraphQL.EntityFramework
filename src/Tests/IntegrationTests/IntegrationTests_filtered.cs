@@ -20,16 +20,16 @@ public partial class IntegrationTests
   }
 }";
 
-        var entity1 = new FilterParentEntity
+        FilterParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new FilterChildEntity
+        FilterChildEntity entity2 = new()
         {
             Property = "Ignore",
             Parent = entity1
         };
-        var entity3 = new FilterChildEntity
+        FilterChildEntity entity3 = new()
         {
             Property = "Value3",
             Parent = entity1
@@ -43,7 +43,7 @@ public partial class IntegrationTests
 
     static Filters BuildFilters()
     {
-        var filters = new Filters();
+        Filters filters = new();
         filters.Add<FilterParentEntity>((_, item) => item.Property != "Ignore");
         filters.Add<FilterChildEntity>((_, item) => item.Property != "Ignore");
         return filters;
@@ -60,11 +60,11 @@ public partial class IntegrationTests
   }
 }";
 
-        var entity1 = new FilterParentEntity
+        FilterParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new FilterParentEntity
+        FilterParentEntity entity2 = new()
         {
             Property = "Ignore"
         };
@@ -93,11 +93,11 @@ public partial class IntegrationTests
   }
 }
 ";
-        var entity1 = new FilterParentEntity
+        FilterParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new FilterParentEntity
+        FilterParentEntity entity2 = new()
         {
             Property = "Ignore"
         };
@@ -134,15 +134,15 @@ public partial class IntegrationTests
   }
 }
 ";
-        var entity1 = new FilterParentEntity
+        FilterParentEntity entity1 = new()
         {
             Property = "Value1"
         };
-        var entity2 = new FilterChildEntity
+        FilterChildEntity entity2 = new()
         {
             Property = "Ignore"
         };
-        var entity3 = new FilterChildEntity
+        FilterChildEntity entity3 = new()
         {
             Property = "Value3"
         };
