@@ -51,7 +51,7 @@ public class MyEntity
 <sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L8-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-add-filter-1'></a>
 ```cs
-var filters = new Filters();
+Filters filters = new();
 filters.Add<MyEntity>(
     (userContext, item) => item.Property != "Ignore");
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
