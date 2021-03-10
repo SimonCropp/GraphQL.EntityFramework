@@ -349,13 +349,13 @@ public class ExpressionBuilderTests
             {
                 Name = "Person 1",
                 Age = 12,
-                DateOfBirth = new DateTime(2001, 10, 10, 10, 10, 10, DateTimeKind.Utc)
+                DateOfBirth = new(2001, 10, 10, 10, 10, 10, DateTimeKind.Utc)
             },
             new()
             {
                 Name = "Person 2",
                 Age = 13,
-                DateOfBirth = new DateTime(2000, 10, 11, 10, 10, 10, DateTimeKind.Utc)
+                DateOfBirth = new(2000, 10, 11, 10, 10, 10, DateTimeKind.Utc)
             },
         };
 
@@ -399,19 +399,19 @@ public class ExpressionBuilderTests
                     {
                         Name = "Person 1",
                         Age = 12,
-                        DateOfBirth = new DateTime(1999, 10, 10, 10, 10, 10, DateTimeKind.Utc)
+                        DateOfBirth = new(1999, 10, 10, 10, 10, 10, DateTimeKind.Utc)
                     },
                     new()
                     {
                         Name = "Person 2",
                         Age = 12,
-                        DateOfBirth = new DateTime(2001, 10, 10, 10, 10, 10, DateTimeKind.Utc)
+                        DateOfBirth = new(2001, 10, 10, 10, 10, 10, DateTimeKind.Utc)
                     },
                     new()
                     {
                         Name = "Person 4",
                         Age = 11,
-                        DateOfBirth = new DateTime(2000, 10, 10, 10, 10, 10, DateTimeKind.Utc)
+                        DateOfBirth = new(2000, 10, 10, 10, 10, 10, DateTimeKind.Utc)
                     }
                 }
             },
@@ -425,13 +425,13 @@ public class ExpressionBuilderTests
                     {
                         Name = "Person 3",
                         Age = 34,
-                        DateOfBirth = new DateTime(1977, 10, 11, 10, 10, 10, DateTimeKind.Utc)
+                        DateOfBirth = new(1977, 10, 11, 10, 10, 10, DateTimeKind.Utc)
                     },
                     new()
                     {
                         Name = "Person 3",
                         Age = 31,
-                        DateOfBirth = new DateTime(1980, 10, 11, 10, 10, 10, DateTimeKind.Utc)
+                        DateOfBirth = new(1980, 10, 11, 10, 10, 10, DateTimeKind.Utc)
                     },
                 }
             }

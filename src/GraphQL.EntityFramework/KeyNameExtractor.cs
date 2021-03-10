@@ -8,7 +8,7 @@ static class KeyNameExtractor
 {
     public static IReadOnlyDictionary<Type, List<string>> GetKeyNames(this IModel model)
     {
-        var keyNames = new Dictionary<Type, List<string>>();
+        Dictionary<Type, List<string>> keyNames = new();
         foreach (var entityType in model.GetEntityTypes())
         {
             var primaryKey = entityType.FindPrimaryKey();

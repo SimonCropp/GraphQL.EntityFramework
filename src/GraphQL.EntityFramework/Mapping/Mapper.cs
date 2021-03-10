@@ -49,7 +49,7 @@ namespace GraphQL.EntityFramework
             }
             catch (GetGraphException exception)
             {
-                throw new Exception($"Failed to map '{graph.GetType().Name}'. {exception.Message}");
+                throw new($"Failed to map '{graph.GetType().Name}'. {exception.Message}");
             }
         }
 
@@ -81,7 +81,7 @@ namespace GraphQL.EntityFramework
             }
             catch (GetGraphException exception)
             {
-                throw new Exception($"Failed to map '{graph.GetType().Name}'. {exception.Message}");
+                throw new($"Failed to map '{graph.GetType().Name}'. {exception.Message}");
             }
         }
 

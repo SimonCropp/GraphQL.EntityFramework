@@ -10,12 +10,12 @@ static class WhereValidator
             comparison == Comparison.EndsWith ||
             comparison == Comparison.Like)
         {
-            throw new Exception($"Cannot perform {comparison} on {propertyType.FullName}.");
+            throw new($"Cannot perform {comparison} on {propertyType.FullName}.");
         }
 
         if (@case != null)
         {
-            throw new Exception($"Cannot use {nameof(StringComparison)} when comparing {propertyType.FullName}.");
+            throw new($"Cannot use {nameof(StringComparison)} when comparing {propertyType.FullName}.");
         }
     }
 
@@ -24,7 +24,7 @@ static class WhereValidator
         ValidateObject(propertyType, comparison, @case);
         if (comparison == Comparison.In)
         {
-            throw new Exception($"Cannot perform {comparison} on {propertyType.FullName}.");
+            throw new($"Cannot perform {comparison} on {propertyType.FullName}.");
         }
     }
 
@@ -35,12 +35,12 @@ static class WhereValidator
             comparison == Comparison.LessThanOrEqual ||
             comparison == Comparison.LessThan)
         {
-            throw new Exception($"Cannot perform {comparison} on a String.");
+            throw new($"Cannot perform {comparison} on a String.");
         }
 
         if (comparison == Comparison.Like && @case != null)
         {
-            throw new Exception($"{nameof(Comparison.Like)} is not compatible with {nameof(StringComparison)}.");
+            throw new($"{nameof(Comparison.Like)} is not compatible with {nameof(StringComparison)}.");
         }
     }
 
@@ -49,7 +49,7 @@ static class WhereValidator
         ValidateString(comparison, @case);
         if (comparison == Comparison.In)
         {
-            throw new Exception($"Cannot perform {comparison} on a single String.");
+            throw new($"Cannot perform {comparison} on a single String.");
         }
     }
 }

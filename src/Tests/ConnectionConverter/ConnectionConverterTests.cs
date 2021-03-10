@@ -14,14 +14,14 @@ public class ConnectionConverterTests
 {
     static ConnectionConverterTests()
     {
-        sqlInstance = new SqlInstance<MyContext>(
+        sqlInstance = new(
             buildTemplate: async dbContext =>
             {
                 await dbContext.Database.EnsureCreatedAsync();
                 dbContext.AddRange(list.Select(x => new Entity {Property = x}));
                 await dbContext.SaveChangesAsync();
             },
-            constructInstance: builder => new MyContext(builder.Options));
+            constructInstance: builder => new(builder.Options));
     }
 
     static List<string> list = new()

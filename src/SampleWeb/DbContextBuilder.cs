@@ -95,7 +95,7 @@ public class DbContextBuilder :
     {
         SqlInstance<SampleDbContext> sqlInstance = new(
             buildTemplate: CreateDb,
-            constructInstance: builder => new SampleDbContext(builder.Options));
+            constructInstance: builder => new(builder.Options));
 
         database = await sqlInstance.Build("GraphQLEntityFrameworkSample");
     }

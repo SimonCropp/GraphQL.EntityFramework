@@ -259,7 +259,7 @@ query ($id: ID!)
     {
         WebHostBuilder hostBuilder = new();
         hostBuilder.UseStartup<Startup>();
-        return new TestServer(hostBuilder);
+        return new(hostBuilder);
     }
 }
 
