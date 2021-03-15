@@ -25,7 +25,7 @@ namespace GraphQL.EntityFramework
             var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
-            
+
             var hasId = keyNames.ContainsKey(typeof(TReturn));
             field.AddWhereArgument(hasId, arguments);
         }
@@ -45,7 +45,7 @@ namespace GraphQL.EntityFramework
             var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
 
             var field = graph.AddField(connection.FieldType);
-            
+
             var hasId = keyNames.ContainsKey(typeof(TReturn));
             field.AddWhereArgument(hasId,arguments);
         }
