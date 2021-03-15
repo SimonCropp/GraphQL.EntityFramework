@@ -7,21 +7,13 @@ using GraphQL.EntityFramework;
 
 static class ArgumentReader
 {
-    public static bool TryReadWhere(Func<Type, string, object?> getArgument, out IEnumerable<WhereExpression> expression)
+    public static bool TryReadWhere(Func<Type, string, object?> getArgument, out WhereExpression[] expression)
     {
         expression = getArgument.ReadList<WhereExpression>("where");
-
-        if (expression.Any())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return expression.Any();
     }
 
-    public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object?> getArgument)
+    public static OrderBy[] ReadOrderBy(Func<Type, string, object?> getArgument)
     {
         return getArgument.ReadList<OrderBy>("orderBy");
     }
@@ -97,12 +89,12 @@ static class ArgumentReader
         return result;
     }
 
-    static IEnumerable<T> ReadList<T>(this Func<Type, string, object?> getArgument, string name)
+    static T[] ReadList<T>(this Func<Type, string, object?> getArgument, string name)
     {
         var argument = getArgument(typeof(T[]), name);
         if (argument == null)
         {
-            return Enumerable.Empty<T>();
+            return Array.Empty<T>();
         }
 
         return (T[]) argument;
