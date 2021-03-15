@@ -1,7 +1,20 @@
 {
-  parentEntities: [
+  target: {
+    parentEntities: [
+      {
+        property: Value1
+      }
+    ]
+  },
+  sql: [
     {
-      property: Value1
+      Parameters: {
+        @__p_0: 1
+      },
+      Text: 
+SELECT TOP(@__p_0) [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+ORDER BY [p].[Property]
     }
   ]
 }

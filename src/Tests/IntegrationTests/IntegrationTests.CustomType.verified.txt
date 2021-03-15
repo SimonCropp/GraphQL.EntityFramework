@@ -1,10 +1,20 @@
 {
-  customType: [
+  target: {
+    customType: [
+      {
+        property: 3
+      },
+      {
+        property: 9223372036854775807
+      }
+    ]
+  },
+  sql: [
     {
-      property: 3
-    },
-    {
-      property: 9223372036854775807
+      Text: 
+SELECT [c].[Id], [c].[Property]
+FROM [CustomTypeEntities] AS [c]
+ORDER BY [c].[Property]
     }
   ]
 }

@@ -1,7 +1,17 @@
 {
-  withNullableEntities: [
+  target: {
+    withNullableEntities: [
+      {
+        id: Guid_1
+      }
+    ]
+  },
+  sql: [
     {
-      id: Guid_1
+      Text: 
+SELECT [w].[Id], [w].[Nullable]
+FROM [WithNullableEntities] AS [w]
+WHERE [w].[Nullable] = 10
     }
   ]
 }

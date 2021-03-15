@@ -1,7 +1,16 @@
 {
-  parentEntitiesFiltered: [
+  target: {
+    parentEntitiesFiltered: [
+      {
+        property: Value1
+      }
+    ]
+  },
+  sql: [
     {
-      property: Value1
+      Text: 
+SELECT [f].[Id], [f].[Property]
+FROM [FilterParentEntities] AS [f]
     }
   ]
 }

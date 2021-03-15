@@ -1,27 +1,47 @@
 {
-  parentEntitiesConnection: {
-    totalCount: 8,
-    edges: [
-      {
-        cursor: 1,
-        node: {
-          property: Value2
+  target: {
+    parentEntitiesConnection: {
+      totalCount: 8,
+      edges: [
+        {
+          cursor: 1,
+          node: {
+            property: Value2
+          }
+        },
+        {
+          cursor: 2,
+          node: {
+            property: Value3
+          }
         }
-      },
-      {
-        cursor: 2,
-        node: {
+      ],
+      items: [
+        {
+          property: Value2
+        },
+        {
           property: Value3
         }
-      }
-    ],
-    items: [
-      {
-        property: Value2
+      ]
+    }
+  },
+  sql: [
+    {
+      Text: 
+SELECT COUNT(*)
+FROM [ParentEntities] AS [p]
+    },
+    {
+      Parameters: {
+        @__p_0: 1,
+        @__p_1: 2
       },
-      {
-        property: Value3
-      }
-    ]
-  }
+      Text: 
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+    }
+  ]
 }

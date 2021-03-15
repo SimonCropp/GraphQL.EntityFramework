@@ -1,13 +1,40 @@
 {
-  parentEntityMutation: {
-    property: Foo,
-    children: [
-      {
-        property: Value2
+  target: {
+    parentEntityMutation: {
+      property: Foo,
+      children: [
+        {
+          property: Value2
+        },
+        {
+          property: Value3
+        }
+      ]
+    }
+  },
+  sql: [
+    {
+      Text: 
+SELECT [t].[Id], [t].[Property], [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
+FROM (
+    SELECT TOP(2) [p].[Id], [p].[Property]
+    FROM [ParentEntities] AS [p]
+    WHERE [p].[Id] = '00000000-0000-0000-0000-000000000001'
+) AS [t]
+LEFT JOIN [ChildEntities] AS [c] ON [t].[Id] = [c].[ParentId]
+ORDER BY [t].[Id], [c].[Id]
+    },
+    {
+      HasTransaction: true,
+      Parameters: {
+        @p1: Guid_1,
+        @p0: Foo
       },
-      {
-        property: Value3
-      }
-    ]
-  }
+      Text: 
+SET NOCOUNT ON;
+UPDATE [ParentEntities] SET [Property] = @p0
+WHERE [Id] = @p1;
+SELECT @@ROWCOUNT;
+    }
+  ]
 }

@@ -1,22 +1,33 @@
 {
-  childEntities: [
-    {
-      property: Value2,
-      parent: {
-        property: Value1
+  target: {
+    childEntities: [
+      {
+        property: Value2,
+        parent: {
+          property: Value1
+        }
+      },
+      {
+        property: Value3,
+        parent: {
+          property: Value1
+        }
+      },
+      {
+        property: Value5,
+        parent: {
+          property: Value4
+        }
       }
-    },
+    ]
+  },
+  sql: [
     {
-      property: Value3,
-      parent: {
-        property: Value1
-      }
-    },
-    {
-      property: Value5,
-      parent: {
-        property: Value4
-      }
+      Text: 
+SELECT [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property], [p].[Id], [p].[Property]
+FROM [ChildEntities] AS [c]
+LEFT JOIN [ParentEntities] AS [p] ON [c].[ParentId] = [p].[Id]
+ORDER BY [c].[Property]
     }
   ]
 }

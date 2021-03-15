@@ -1,7 +1,17 @@
 {
-  parentEntities: [
+  target: {
+    parentEntities: [
+      {
+        property: Value2
+      }
+    ]
+  },
+  sql: [
     {
-      property: Value2
+      Text: 
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+WHERE [p].[Property] = N'value2'
     }
   ]
 }

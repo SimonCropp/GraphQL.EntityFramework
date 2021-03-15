@@ -1,7 +1,17 @@
 {
-  parentEntities: [
+  target: {
+    parentEntities: [
+      {
+        id: Guid_1
+      }
+    ]
+  },
+  sql: [
     {
-      id: Guid_1
+      Text: 
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+WHERE [p].[Property] IS NULL
     }
   ]
 }

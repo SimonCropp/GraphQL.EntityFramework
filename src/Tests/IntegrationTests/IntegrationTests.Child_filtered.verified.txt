@@ -1,12 +1,23 @@
 {
-  parentEntitiesFiltered: [
+  target: {
+    parentEntitiesFiltered: [
+      {
+        property: Value1,
+        children: [
+          {
+            property: Value3
+          }
+        ]
+      }
+    ]
+  },
+  sql: [
     {
-      property: Value1,
-      children: [
-        {
-          property: Value3
-        }
-      ]
+      Text: 
+SELECT [f].[Id], [f].[Property], [f0].[Id], [f0].[ParentId], [f0].[Property]
+FROM [FilterParentEntities] AS [f]
+LEFT JOIN [FilterChildEntities] AS [f0] ON [f].[Id] = [f0].[ParentId]
+ORDER BY [f].[Id], [f0].[Id]
     }
   ]
 }

@@ -1,10 +1,21 @@
 {
-  parentEntities: [
+  target: {
+    parentEntities: [
+      {
+        property: Value1
+      },
+      {
+        property: Value2
+      }
+    ]
+  },
+  sql: [
     {
-      property: Value1
-    },
-    {
-      property: Value2
+      Text: 
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+WHERE [p].[Property] IN (N'Value1', N'Value2')
+ORDER BY [p].[Property]
     }
   ]
 }

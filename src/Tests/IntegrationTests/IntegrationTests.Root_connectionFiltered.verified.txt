@@ -1,18 +1,38 @@
 {
-  parentEntitiesConnectionFiltered: {
-    totalCount: 2,
-    edges: [
-      {
-        cursor: 0,
-        node: {
+  target: {
+    parentEntitiesConnectionFiltered: {
+      totalCount: 2,
+      edges: [
+        {
+          cursor: 0,
+          node: {
+            property: Value1
+          }
+        }
+      ],
+      items: [
+        {
           property: Value1
         }
-      }
-    ],
-    items: [
-      {
-        property: Value1
-      }
-    ]
-  }
+      ]
+    }
+  },
+  sql: [
+    {
+      Text: 
+SELECT COUNT(*)
+FROM [FilterParentEntities] AS [f]
+    },
+    {
+      Parameters: {
+        @__p_0: 0,
+        @__p_1: 10
+      },
+      Text: 
+SELECT [f].[Id], [f].[Property]
+FROM [FilterParentEntities] AS [f]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+    }
+  ]
 }
