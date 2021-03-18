@@ -64,7 +64,10 @@ namespace GraphQL.EntityFramework
                 SubFields = context.SubFields,
                 Variables = context.Variables,
                 DbContext = ResolveDbContext(context),
-                Filters = ResolveFilter(context)
+                Filters = ResolveFilter(context),
+                Extensions = context.Extensions,
+                RequestServices = context.RequestServices,
+                ResponsePath = context.ResponsePath
             };
         }
 
