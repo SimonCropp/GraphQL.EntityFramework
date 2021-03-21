@@ -14,8 +14,6 @@ public class MultiContextTests
     [Fact]
     public async Task Run()
     {
-        GraphTypeTypeRegistry.Register<Entity1, Entity1Graph>();
-        GraphTypeTypeRegistry.Register<Entity2, Entity2Graph>();
 
         SqlInstance<DbContext1> sqlInstance1 = new(
             constructInstance: builder => new(builder.Options));

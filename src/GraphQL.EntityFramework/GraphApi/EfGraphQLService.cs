@@ -51,13 +51,10 @@ namespace GraphQL.EntityFramework
                 Errors = context.Errors,
                 FieldAst = context.FieldAst,
                 FieldDefinition = context.FieldDefinition,
-                FieldName = context.FieldName,
-                Fragments = context.Fragments,
                 Metrics = context.Metrics,
                 Operation = context.Operation,
                 ParentType = context.ParentType,
                 Path = context.Path,
-                ReturnType = context.ReturnType,
                 RootValue = context.RootValue,
                 Schema = context.Schema,
                 Source = context.Source,
@@ -67,7 +64,9 @@ namespace GraphQL.EntityFramework
                 Filters = ResolveFilter(context),
                 Extensions = context.Extensions,
                 RequestServices = context.RequestServices,
-                ResponsePath = context.ResponsePath
+                ResponsePath = context.ResponsePath,
+                ArrayPool = context.ArrayPool,
+                Parent = context.Parent
             };
         }
 

@@ -1,12 +1,16 @@
 ﻿using System;
-using GraphQL.Utilities;
+using System.Linq;
+using GraphQL.Types;
 
 static class GraphTypeFinder
 {
-    public static Type FindGraphType<TReturn>()
+    public static Type FindGraphType<TReturn>(ISchema schema)
         where TReturn : class
     {
-        var graphType = GraphTypeTypeRegistry.Get<TReturn>();
+        var graphType = schema.TypeMappings
+            .Where(x=>x.graphType == typeof(TReturn))
+            .Select(x=>x.clrType)
+            .SingleOrDefault();
         if (graphType != null)
         {
             return graphType;

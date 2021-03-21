@@ -14,7 +14,6 @@ public class DependencyTests
 
     static DependencyTests()
     {
-        GraphTypeTypeRegistry.Register<Entity, EntityGraph>();
 
         sqlInstance = new(builder => new(builder.Options));
     }

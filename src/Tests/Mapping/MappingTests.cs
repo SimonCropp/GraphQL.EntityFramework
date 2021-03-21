@@ -17,8 +17,6 @@ public class MappingTests
     static MappingTests()
     {
         ArgumentGraphs.Initialise();
-        GraphTypeTypeRegistry.Register<MappingParent, MappingParentGraph>();
-        GraphTypeTypeRegistry.Register<MappingChild, MappingChildGraph>();
 
         sqlInstance = new(
             constructInstance: builder => new(builder.Options));

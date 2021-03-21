@@ -13,7 +13,7 @@ namespace GraphQL.EntityFramework
             return nullableFlags.Single() == 2;
         }
 
-        public static bool IsNullable(this PropertyInfo member)
+        public static bool Nullable(this PropertyInfo member)
         {
             var propertyType = member.PropertyType;
             if (!propertyType.IsValueType)
@@ -56,8 +56,22 @@ namespace GraphQL.EntityFramework
                 //return false;
             }
 
-            return propertyType.IsNullable();
+            return propertyType.Nullable();
         }
+
+        public static bool Nullable(this Type type)
+        {
+            if (!(type == typeof(string)))
+            {
+                if (type.IsGenericType)
+                {
+                    return type.GetGenericTypeDefinition() == typeof(Nullable<>);
+                }
+                return false;
+            }
+            return true;
+        }
+
 
         static bool IsNullableContextAttributeFlagNull(Type type, Attribute attribute)
         {
