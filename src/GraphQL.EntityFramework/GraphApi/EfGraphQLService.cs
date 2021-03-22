@@ -11,7 +11,6 @@ namespace GraphQL.EntityFramework
         IEfGraphQLService<TDbContext>
         where TDbContext : DbContext
     {
-        ISchema schema;
         ResolveFilters? resolveFilters;
         bool disableTracking;
         ResolveDbContext<TDbContext> resolveDbContext;
@@ -19,7 +18,6 @@ namespace GraphQL.EntityFramework
 
         /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
         public EfGraphQLService(
-            ISchema schema,
             IModel model,
             ResolveDbContext<TDbContext> resolveDbContext,
             ResolveFilters? resolveFilters = null,
@@ -27,7 +25,6 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNull(nameof(model), model);
             Guard.AgainstNull(nameof(resolveDbContext), resolveDbContext);
-            this.schema = schema;
             schema.RegisterMappings();
             this.resolveFilters = resolveFilters;
             this.disableTracking = disableTracking;

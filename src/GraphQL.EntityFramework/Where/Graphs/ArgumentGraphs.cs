@@ -17,10 +17,6 @@ static class ArgumentGraphs
         Add<OrderByGraph>();
         Add<ComparisonGraph>();
         Add<ConnectorGraph>();
-    }
-
-    internal static void RegisterMappings(this ISchema schema)
-    {
         schema.RegisterTypeMapping(typeof(Comparison), typeof(ComparisonGraph));
         schema.RegisterTypeMapping(typeof(StringComparison), typeof(StringComparisonGraph));
         schema.RegisterTypeMapping(typeof(Connector), typeof(ComparisonGraph));
