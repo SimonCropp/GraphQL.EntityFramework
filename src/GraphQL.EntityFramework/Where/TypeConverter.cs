@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
+using GraphQL.EntityFramework;
 
 static class TypeConverter
 {

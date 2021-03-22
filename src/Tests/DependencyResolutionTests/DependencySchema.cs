@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 public class DependencySchema :
     GraphQL.Types.Schema
 {
-    public DependencySchema(ServiceProvider provider) :
+    public DependencySchema(IServiceProvider provider) :
         base(provider)
     {
-        GraphTypeTypeRegistry.Register<Entity, EntityGraph>();
+        RegisterTypeMapping(typeof(Entity), typeof(EntityGraph));
         Query = provider.GetService<DependencyQuery>();
     }
 }

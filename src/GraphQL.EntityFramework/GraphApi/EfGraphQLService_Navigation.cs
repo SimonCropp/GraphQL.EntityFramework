@@ -21,15 +21,15 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNullWhiteSpace(nameof(name), name);
 
-            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= schema.FindGraphType<TReturn>();
 
             FieldType field = new()
             {
                 Name = name,
                 Type = graphType,
-                Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
                 Description = description
             };
+            IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
             if (resolve != null)
             {

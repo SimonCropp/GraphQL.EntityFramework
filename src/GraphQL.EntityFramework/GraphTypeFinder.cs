@@ -4,7 +4,7 @@ using GraphQL.Types;
 
 static class GraphTypeFinder
 {
-    public static Type FindGraphType<TReturn>(ISchema schema)
+    public static Type FindGraphType<TReturn>(this ISchema schema)
         where TReturn : class
     {
         var graphType = schema.TypeMappings

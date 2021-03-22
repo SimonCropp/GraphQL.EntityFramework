@@ -72,7 +72,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNull(nameof(resolve), resolve);
 
-            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+            graphType ??= schema.FindGraphType<TReturn>();
             Type? wrappedType;
             if (nullable)
             {

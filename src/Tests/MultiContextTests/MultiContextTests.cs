@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
-using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using VerifyXunit;
 using Xunit;
@@ -14,7 +13,6 @@ public class MultiContextTests
     [Fact]
     public async Task Run()
     {
-
         SqlInstance<DbContext1> sqlInstance1 = new(
             constructInstance: builder => new(builder.Options));
 

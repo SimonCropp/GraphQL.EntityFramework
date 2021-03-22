@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
-using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -14,7 +13,6 @@ public class DependencyTests
 
     static DependencyTests()
     {
-
         sqlInstance = new(builder => new(builder.Options));
     }
 
@@ -33,13 +31,13 @@ public class DependencyTests
         var dbContext = database.Context;
         await AddData(dbContext);
         var services = BuildServiceCollection();
-
+        services.AddSingleton<DependencySchema>();
         EfGraphQLConventions.RegisterInContainer(
             services,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext,
             sqlInstance.Model);
         await using var provider = services.BuildServiceProvider();
-        using DependencySchema schema = new(provider);
+        using var schema = provider.GetRequiredService<DependencySchema>();
         ExecutionOptions executionOptions = new()
         {
             Schema = schema,
