@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Linq;
-using GraphQL.Types;
+using GraphQL;
 
 static class GraphTypeFinder
 {
-    public static Type FindGraphType<TReturn>(this ISchema schema)
+    public static Type FindGraphType<TReturn>()
         where TReturn : class
     {
-        var graphType = schema.TypeMappings
-            .Where(x=>x.graphType == typeof(TReturn))
-            .Select(x=>x.clrType)
-            .SingleOrDefault();
-        if (graphType != null)
-        {
-            return graphType;
-        }
+        var type = typeof(TReturn);
+        return FindGraphType(type);
+    }
 
-        throw new($"Could not resolve a GraphType for {typeof(TReturn).FullName}. Either pass in a GraphType explicitly or register a GraphType using GraphTypeTypeRegistry.Register<{typeof(TReturn).FullName},MyGraphType>().");
+    public static Type FindGraphType(Type type, bool isNullable = false)
+    {
+        return type.GetGraphTypeFromType(isNullable, TypeMappingMode.OutputType);
     }
 }

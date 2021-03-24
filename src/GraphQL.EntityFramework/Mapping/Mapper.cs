@@ -247,7 +247,7 @@ namespace GraphQL.EntityFramework
         {
             try
             {
-                return propertyType.GetGraphTypeFromType(isNullable);
+                return GraphTypeFinder.FindGraphType(propertyType, isNullable);
             }
             catch (ArgumentOutOfRangeException exception)
             {

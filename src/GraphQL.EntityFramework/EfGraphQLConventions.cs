@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using GraphQL.Types;
 using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -38,16 +37,10 @@ namespace GraphQL.EntityFramework
             services.AddHttpContextAccessor();
             services.AddTransient<HttpContextCapture>();
             services.AddSingleton(
-                provider =>
-                {
-                    var descriptor = services.First(x => x.ServiceType.IsAssignableTo(typeof(ISchema)));
-                    var schema = (ISchema) provider.GetRequiredService(descriptor.ServiceType);
-                    return Build(schema, resolveDbContext, model, resolveFilters, provider, disableTracking);
-                });
+                provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking));
         }
 
         static IEfGraphQLService<TDbContext> Build<TDbContext>(
-            ISchema schema,
             ResolveDbContext<TDbContext>? dbContextResolver,
             IModel? model,
             ResolveFilters? filters,
@@ -60,7 +53,6 @@ namespace GraphQL.EntityFramework
             dbContextResolver ??= _ => DbContextFromProvider<TDbContext>(provider);
 
             return new EfGraphQLService<TDbContext>(
-                schema,
                 model,
                 dbContextResolver,
                 filters,

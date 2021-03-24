@@ -17,9 +17,9 @@ static class ArgumentGraphs
         Add<OrderByGraph>();
         Add<ComparisonGraph>();
         Add<ConnectorGraph>();
-        schema.RegisterTypeMapping(typeof(Comparison), typeof(ComparisonGraph));
-        schema.RegisterTypeMapping(typeof(StringComparison), typeof(StringComparisonGraph));
-        schema.RegisterTypeMapping(typeof(Connector), typeof(ComparisonGraph));
+        //schema.RegisterTypeMapping(typeof(Comparison), typeof(ComparisonGraph));
+        //schema.RegisterTypeMapping(typeof(StringComparison), typeof(StringComparisonGraph));
+        //schema.RegisterTypeMapping(typeof(Connector), typeof(ComparisonGraph));
     }
 
     public static void RegisterInContainer(IServiceCollection services)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -25,7 +24,6 @@ namespace GraphQL.EntityFramework
         {
             Guard.AgainstNull(nameof(model), model);
             Guard.AgainstNull(nameof(resolveDbContext), resolveDbContext);
-            schema.RegisterMappings();
             this.resolveFilters = resolveFilters;
             this.disableTracking = disableTracking;
 

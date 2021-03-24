@@ -61,7 +61,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNullWhiteSpace(nameof(name), name);
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
-            itemGraphType ??= schema.FindGraphType<TReturn>();
+            itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
             var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
             var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
