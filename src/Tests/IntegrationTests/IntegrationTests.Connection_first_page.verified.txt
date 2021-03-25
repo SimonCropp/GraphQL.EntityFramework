@@ -36,6 +36,10 @@ SELECT COUNT(*)
 FROM [ParentEntities] AS [p]
     },
     {
+      Parameters: {
+        @__p_0: 1,
+        @__p_1: 2
+      },
       Text: 
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
