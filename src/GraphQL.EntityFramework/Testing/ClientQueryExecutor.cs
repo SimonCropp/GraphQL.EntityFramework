@@ -3,21 +3,21 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace GraphQL.EntityFramework.Testing
 {
-    public static class ClientQueryExecutor
+    public class ClientQueryExecutor
     {
-        static string uri = "graphql";
+        string uri = "graphql";
+        Func<object, string> toJson;
 
-        public static void SetQueryUri(string uri)
+        public ClientQueryExecutor(Func<object, string> toJson, string uri = "graphql")
         {
-            Guard.AgainstNullWhiteSpace(nameof(uri), uri);
-            ClientQueryExecutor.uri = uri;
+            this.uri = uri;
+            this.toJson = toJson;
         }
 
-        public static Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
+        public Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
         {
             Guard.AgainstNull(nameof(client), client);
             Guard.AgainstNullWhiteSpace(nameof(query), query);
@@ -35,7 +35,7 @@ namespace GraphQL.EntityFramework.Testing
             return client.SendAsync(request);
         }
 
-        public static Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
+        public Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
         {
             Guard.AgainstNull(nameof(client), client);
             Guard.AgainstNullWhiteSpace(nameof(query), query);
@@ -47,14 +47,14 @@ namespace GraphQL.EntityFramework.Testing
             return client.SendAsync(request);
         }
 
-        static string ToJson(object? target)
+        string ToJson(object? target)
         {
             if (target == null)
             {
                 return string.Empty;
             }
 
-            return JsonConvert.SerializeObject(target);
+            return toJson(target);
         }
 
         static string CompressQuery(string query)
