@@ -358,7 +358,7 @@ public partial class IntegrationTests
     {
         var query = @"
 {
-  parentEntities (where: {path: 'Property', comparison: 'Like', value: 'value2'})
+  parentEntities (where: {path: 'Property', comparison: 'like', value: 'value2'})
   {
     property
   }
