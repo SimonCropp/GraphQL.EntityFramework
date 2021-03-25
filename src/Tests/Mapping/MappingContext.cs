@@ -19,7 +19,7 @@ public class MappingContext :
         parentBuilder.Property(e => e.JsonProperty)
             .HasConversion(
                 v => JsonConvert.SerializeObject(v),
-                v => JsonConvert.DeserializeObject<IList<string>>(v));
+                v => JsonConvert.DeserializeObject<IList<string>>(v)!);
 
         modelBuilder.Entity<MappingChild>();
     }
