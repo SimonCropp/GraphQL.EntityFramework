@@ -1,11 +1,14 @@
 {
-  target: {
-    namedEntities: [
+  target: 
+{
+  "data": {
+    "namedEntities": [
       {
-        property: Value1
+        "property": "Value1"
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 
