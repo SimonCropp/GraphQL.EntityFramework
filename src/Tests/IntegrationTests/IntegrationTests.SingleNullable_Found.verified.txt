@@ -1,9 +1,12 @@
 {
-  target: {
-    parentEntityNullable: {
-      property: Value1
+  target: 
+{
+  "data": {
+    "parentEntityNullable": {
+      "property": "Value1"
     }
-  },
+  }
+},
   sql: [
     {
       Text: 

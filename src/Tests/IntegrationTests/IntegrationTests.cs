@@ -830,7 +830,7 @@ fragment childEntityFields on Child {
     {
         var query = @"
 {
-  parentEntities (where: {path: 'Property', comparison: 'In', value: 'value2'})
+  parentEntities (where: {path: 'Property', comparison: 'in', value: 'value2'})
   {
     property
   }
@@ -855,7 +855,7 @@ fragment childEntityFields on Child {
         var query = @"
 {
   parentEntities
-  (where: {path: 'Property', comparison: 'In', value: ['Value1', 'Value2']}, orderBy: {path: ""property""})
+  (where: {path: 'Property', comparison: 'in', value: ['Value1', 'Value2']}, orderBy: {path: ""property""})
   {
     property
   }

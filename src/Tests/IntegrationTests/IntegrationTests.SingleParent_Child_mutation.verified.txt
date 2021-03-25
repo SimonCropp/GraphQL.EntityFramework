@@ -1,17 +1,20 @@
 {
-  target: {
-    parentEntityMutation: {
-      property: Foo,
-      children: [
+  target: 
+{
+  "data": {
+    "parentEntityMutation": {
+      "property": "Foo",
+      "children": [
         {
-          property: Value2
+          "property": "Value2"
         },
         {
-          property: Value3
+          "property": "Value3"
         }
       ]
     }
-  },
+  }
+},
   sql: [
     {
       Text: 

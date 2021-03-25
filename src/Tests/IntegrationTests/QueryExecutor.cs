@@ -1,12 +1,15 @@
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.EntityFramework;
+using GraphQL.NewtonsoftJson;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 static class QueryExecutor
 {
-    public static async Task<object> ExecuteQuery<TDbContext>(
+    static DocumentWriter? writer = new(true);
+
+    public static async Task<string> ExecuteQuery<TDbContext>(
         string query,
         ServiceCollection services,
         TDbContext data,
@@ -36,6 +39,6 @@ static class QueryExecutor
         };
 
         var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        return executionResult.Data;
+        return await writer.WriteToStringAsync(executionResult);
     }
 }

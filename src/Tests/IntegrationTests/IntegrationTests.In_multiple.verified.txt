@@ -1,21 +1,4 @@
 {
-  target: {
-    parentEntities: [
-      {
-        property: Value1
-      },
-      {
-        property: Value2
-      }
-    ]
-  },
-  sql: [
-    {
-      Text: 
-SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-WHERE [p].[Property] IN (N'Value1', N'Value2')
-ORDER BY [p].[Property]
-    }
-  ]
+  target: Argument 'where' has invalid value. In field 'comparison': [Expected type 'Comparison', found "in".],
+  sql: []
 }

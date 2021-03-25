@@ -1,13 +1,16 @@
 {
-  target: {
-    manyChildren: [
+  target: 
+{
+  "data": {
+    "manyChildren": [
       {
-        child1: {
-          id: Guid_1
+        "child1": {
+          "id": "a303caf9-61c6-4408-97fe-9f01c5fbf498"
         }
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 
