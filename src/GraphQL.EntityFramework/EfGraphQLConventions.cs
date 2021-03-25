@@ -37,15 +37,9 @@ namespace GraphQL.EntityFramework
             services.AddHttpContextAccessor();
             services.AddTransient<HttpContextCapture>();
             services.AddSingleton(
-                provider =>
-                {
-                    return Build(resolveDbContext, model, resolveFilters, provider, disableTracking);
-                });
+                provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking));
             services.AddSingleton<IEfGraphQLService<TDbContext>>(
-                provider =>
-                {
-                    return provider.GetRequiredService<EfGraphQLService<TDbContext>>();
-                });
+                provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
         }
 
         static EfGraphQLService<TDbContext> Build<TDbContext>(
