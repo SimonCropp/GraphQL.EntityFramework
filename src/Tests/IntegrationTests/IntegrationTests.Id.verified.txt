@@ -1,17 +1,20 @@
 {
-  target: {
-    parentEntities: [
+  target: 
+{
+  "data": {
+    "parentEntities": [
       {
-        property: Value1
+        "property": "Value1"
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-WHERE [p].[Id] = '00000000-0000-0000-0000-000000000001'
+WHERE [p].[Id] = 'Guid_1'
     }
   ]
 }

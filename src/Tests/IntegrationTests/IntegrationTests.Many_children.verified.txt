@@ -1,13 +1,16 @@
 {
-  target: {
-    manyChildren: [
+  target: 
+{
+  "data": {
+    "manyChildren": [
       {
-        child1: {
-          id: Guid_1
+        "child1": {
+          "id": "Guid_1"
         }
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 

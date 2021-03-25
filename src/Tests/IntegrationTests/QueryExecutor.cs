@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 static class QueryExecutor
 {
-    public static async Task<object> ExecuteQuery<TDbContext>(
+    public static async Task<string> ExecuteQuery<TDbContext>(
         string query,
         ServiceCollection services,
         TDbContext data,
@@ -25,9 +25,9 @@ static class QueryExecutor
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         await using var provider = services.BuildServiceProvider();
         using Schema schema = new(provider);
-        EfDocumentExecuter documentExecuter = new();
+        EfDocumentExecuter executer = new();
 
-        ExecutionOptions executionOptions = new()
+        ExecutionOptions options = new()
         {
             Schema = schema,
             Query = query,
@@ -35,7 +35,7 @@ static class QueryExecutor
             Inputs = inputs,
         };
 
-        var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        return executionResult.Data;
+        var result = await executer.ExecuteWithErrorCheck(options);
+        return await result.Serialize();
     }
 }

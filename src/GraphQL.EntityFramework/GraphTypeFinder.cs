@@ -1,17 +1,17 @@
 ﻿using System;
-using GraphQL.Utilities;
+using GraphQL;
 
 static class GraphTypeFinder
 {
-    public static Type FindGraphType<TReturn>()
+    public static Type FindGraphType<TReturn>(bool isNullable = false)
         where TReturn : class
     {
-        var graphType = GraphTypeTypeRegistry.Get<TReturn>();
-        if (graphType != null)
-        {
-            return graphType;
-        }
+        var type = typeof(TReturn);
+        return FindGraphType(type, isNullable);
+    }
 
-        throw new($"Could not resolve a GraphType for {typeof(TReturn).FullName}. Either pass in a GraphType explicitly or register a GraphType using GraphTypeTypeRegistry.Register<{typeof(TReturn).FullName},MyGraphType>().");
+    public static Type FindGraphType(Type type, bool isNullable = false)
+    {
+        return type.GetGraphTypeFromType(isNullable, TypeMappingMode.OutputType);
     }
 }

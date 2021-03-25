@@ -1,15 +1,18 @@
 {
-  target: {
-    level1Entities: [
+  target: 
+{
+  "data": {
+    "level1Entities": [
       {
-        level2Entity: {
-          level3Entity: {
-            property: Value
+        "level2Entity": {
+          "level3Entity": {
+            "property": "Value"
           }
         }
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 

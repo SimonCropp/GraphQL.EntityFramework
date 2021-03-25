@@ -1,11 +1,14 @@
 {
-  target: {
-    parentEntities: [
+  target: 
+{
+  "data": {
+    "parentEntities": [
       {
-        property: Value2
+        "property": "Value2"
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 

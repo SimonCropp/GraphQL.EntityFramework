@@ -1,23 +1,26 @@
 {
-  target: {
-    childEntities: [
+  target: 
+{
+  "data": {
+    "childEntities": [
       {
-        parentAlias: {
-          property: Value1
+        "parentAlias": {
+          "property": "Value1"
         }
       },
       {
-        parentAlias: {
-          property: Value1
+        "parentAlias": {
+          "property": "Value1"
         }
       },
       {
-        parentAlias: {
-          property: Value4
+        "parentAlias": {
+          "property": "Value4"
         }
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 

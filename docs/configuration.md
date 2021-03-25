@@ -267,6 +267,7 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
+    DocumentWriter writer = new(true);
 
     public GraphQlController(ISchema schema, IDocumentExecuter executer)
     {
@@ -275,7 +276,7 @@ public class GraphQlController :
     }
 
     [HttpPost]
-    public Task<ExecutionResult> Post(
+    public Task Post(
         [BindRequired, FromBody] PostBody body,
         CancellationToken cancellation)
     {
@@ -290,7 +291,7 @@ public class GraphQlController :
     }
 
     [HttpGet]
-    public Task<ExecutionResult> Get(
+    public Task Get(
         [FromQuery] string query,
         [FromQuery] string? variables,
         [FromQuery] string? operationName,
@@ -300,7 +301,7 @@ public class GraphQlController :
         return Execute(query, operationName, jObject, cancellation);
     }
 
-    async Task<ExecutionResult> Execute(string query,
+    async Task Execute(string query,
         string? operationName,
         JObject? variables,
         CancellationToken cancellation)
@@ -319,11 +320,7 @@ public class GraphQlController :
         };
         var executeAsync = await executer.ExecuteAsync(options);
 
-        return new()
-        {
-            Data = executeAsync.Data,
-            Errors = executeAsync.Errors
-        };
+        await writer.WriteAsync(Response.Body, executeAsync, cancellation);
     }
 
     static JObject? ParseVariables(string? variables)
@@ -344,7 +341,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L95' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L92' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -372,7 +369,7 @@ public class UserContext: Dictionary<string, object>
     public readonly DbContext2 DbContext2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L96-L108' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L92-L104' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -390,7 +387,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L73' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L60-L69' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -409,7 +406,7 @@ ExecutionOptions executionOptions = new()
     UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L79-L88' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L75-L84' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -489,6 +486,7 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 public class GraphQlControllerTests
 {
     static HttpClient client = null!;
+    static ClientQueryExecutor clientQueryExecutor;
     static WebSocketClient webSocket = null!;
 
     static GraphQlControllerTests()
@@ -502,6 +500,7 @@ public class GraphQlControllerTests
                 var headers = request.Headers;
                 headers["Sec-WebSocket-Protocol"] = "graphql-ws";
             };
+        clientQueryExecutor = new ClientQueryExecutor(JsonConvert.SerializeObject);
     }
 
     [Fact]
@@ -514,7 +513,7 @@ public class GraphQlControllerTests
     id
   }
 }";
-        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        using var response = await clientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
         await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
@@ -535,7 +534,7 @@ query ($id: ID!)
             id = "1"
         };
 
-        using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
         await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
@@ -556,7 +555,7 @@ query ($id: ID!)
             id = "99"
         };
 
-        using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
         Assert.Contains("Not found", result);
     }
@@ -577,7 +576,7 @@ query ($id: ID!)
             id = "1"
         };
 
-        using var response = await ClientQueryExecutor.ExecuteGet(client, query, variables);
+        using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
         await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
@@ -601,7 +600,7 @@ query {
     }
   }
 }";
-        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        using var response = await clientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
         await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
@@ -616,7 +615,7 @@ query {
     averageAge
   }
 }";
-        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        using var response = await clientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
         await Verifier.Verify(await response.Content.ReadAsStringAsync());
     }
@@ -629,20 +628,20 @@ query {
   employees (
     where: [
       {groupedExpressions: [
-        {path: ""content"", comparison: ""contains"", value: ""4"", connector: ""or""},
+        {path: ""content"", comparison: contains, value: ""4"", connector: or},
 
-          { path: ""content"", comparison: ""contains"", value: ""2""}
-      ], connector: ""and""},
-      {path: ""age"", comparison: ""greaterThanOrEqual"", value: ""31""}
+          { path: ""content"", comparison: contains, value: ""2""}
+      ], connector: and},
+      {path: ""age"", comparison: greaterThanOrEqual, value: ""31""}
   	]
   ) {
     id
   }
 }";
-        using var response = await ClientQueryExecutor.ExecuteGet(client, query);
+        using var response = await clientQueryExecutor.ExecuteGet(client, query);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("{\"employees\":[{\"id\":3},{\"id\":5}]}", result);
         response.EnsureSuccessStatusCode();
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -655,12 +654,10 @@ query {
     id
   }
 }";
-        using var response = await ClientQueryExecutor.ExecutePost(client, query);
+        using var response = await clientQueryExecutor.ExecutePost(client, query);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains(
-            "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
-            result);
         response.EnsureSuccessStatusCode();
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -678,10 +675,10 @@ query ($id: ID!)
         {
             id = "1"
         };
-        using var response = await ClientQueryExecutor.ExecutePost(client, query, variables);
+        using var response = await clientQueryExecutor.ExecutePost(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
         response.EnsureSuccessStatusCode();
+        await Verifier.Verify(result);
     }
 
     //TODO: https://github.com/graphql-dotnet/graphql-client
@@ -738,7 +735,7 @@ query ($id: ID!)
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L10-L266' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L11-L267' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -776,7 +773,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     return executionResult;
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L9-L33' title='Snippet source file'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L21-L45' title='Snippet source file'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

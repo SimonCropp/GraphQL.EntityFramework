@@ -74,7 +74,7 @@ class IncludeAppender
 
         foreach (var fragmentSpread in selectionSet.Selections.OfType<FragmentSpread>())
         {
-            var fragmentDefinition = context.Fragments.FindDefinition(fragmentSpread.Name);
+            var fragmentDefinition = context.Document.Fragments.FindDefinition(fragmentSpread.Name);
             if (fragmentDefinition == null)
             {
                 continue;
@@ -139,13 +139,6 @@ class IncludeAppender
     {
         var name = field.Name.ToLowerInvariant();
         return name == "edges" || name == "items" || name == "node";
-    }
-
-    public static Dictionary<string, object> GetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames)
-    {
-        Dictionary<string, object> metadata = new();
-        SetIncludeMetadata(fieldName, includeNames, metadata);
-        return metadata;
     }
 
     public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string>? includeNames)

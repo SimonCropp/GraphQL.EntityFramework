@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
+using GraphQL.EntityFramework;
 
 static class TypeConverter
 {
@@ -15,7 +16,7 @@ static class TypeConverter
 
         var hasNull = values.Contains(null);
 
-        if (!type.IsNullable() && hasNull)
+        if (!type.Nullable() && hasNull)
         {
             throw new($"Null passed to In expression for non nullable type '{type.FullName}'.");
         }

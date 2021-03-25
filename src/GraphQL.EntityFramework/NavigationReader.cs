@@ -23,7 +23,7 @@ static class NavigationReader
             .Select(x =>
             {
                 var (itemType, isCollection) = GetNavigationType(x);
-                return new Navigation(x.Name, itemType, x.PropertyInfo.IsNullable(), isCollection);
+                return new Navigation(x.Name, itemType, x.PropertyInfo.Nullable(), isCollection);
             })
             .ToList();
     }

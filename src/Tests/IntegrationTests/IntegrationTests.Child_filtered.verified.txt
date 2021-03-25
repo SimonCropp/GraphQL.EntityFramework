@@ -1,16 +1,19 @@
 {
-  target: {
-    parentEntitiesFiltered: [
+  target: 
+{
+  "data": {
+    "parentEntitiesFiltered": [
       {
-        property: Value1,
-        children: [
+        "property": "Value1",
+        "children": [
           {
-            property: Value3
+            "property": "Value3"
           }
         ]
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 

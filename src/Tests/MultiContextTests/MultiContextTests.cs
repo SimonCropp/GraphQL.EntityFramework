@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
-using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using VerifyXunit;
 using Xunit;
@@ -14,9 +13,6 @@ public class MultiContextTests
     [Fact]
     public async Task Run()
     {
-        GraphTypeTypeRegistry.Register<Entity1, Entity1Graph>();
-        GraphTypeTypeRegistry.Register<Entity2, Entity2Graph>();
-
         SqlInstance<DbContext1> sqlInstance1 = new(
             constructInstance: builder => new(builder.Options));
 
@@ -88,7 +84,7 @@ public class MultiContextTests
             #endregion
 
             var result = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-            await Verifier.Verify(result.Data);
+            await Verifier.Verify(result.Serialize());
         }
     }
 }

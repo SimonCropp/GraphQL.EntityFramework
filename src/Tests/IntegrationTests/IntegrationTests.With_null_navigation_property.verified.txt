@@ -1,27 +1,30 @@
 {
-  target: {
-    childEntities: [
+  target: 
+{
+  "data": {
+    "childEntities": [
       {
-        property: Value2,
-        parent: {
-          property: Value1
+        "property": "Value2",
+        "parent": {
+          "property": "Value1"
         }
       },
       {
-        property: Value3,
-        parent: {
-          property: Value1
+        "property": "Value3",
+        "parent": {
+          "property": "Value1"
         }
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 
 SELECT [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property], [p].[Id], [p].[Property]
 FROM [ChildEntities] AS [c]
 LEFT JOIN [ParentEntities] AS [p] ON [c].[ParentId] = [p].[Id]
-WHERE [c].[ParentId] = '00000000-0000-0000-0000-000000000001'
+WHERE [c].[ParentId] = 'Guid_1'
 ORDER BY [c].[Property]
     }
   ]

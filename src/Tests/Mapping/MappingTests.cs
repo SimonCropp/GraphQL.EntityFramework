@@ -16,24 +16,19 @@ public class MappingTests
 
     static MappingTests()
     {
-        ArgumentGraphs.Initialise();
-        GraphTypeTypeRegistry.Register<MappingParent, MappingParentGraph>();
-        GraphTypeTypeRegistry.Register<MappingChild, MappingChildGraph>();
-
-        sqlInstance = new(
-            constructInstance: builder => new(builder.Options));
+        sqlInstance = new(builder => new(builder.Options));
     }
 
     [Fact]
     public async Task SchemaPrint()
     {
-        EfGraphQLService<MappingContext> graphQlService = new(sqlInstance.Model, _ => null!);
         ServiceCollection services = new();
-        EfGraphQLConventions.RegisterInContainer<MappingContext>(services);
-        services.AddSingleton(new MappingChildGraph(graphQlService));
-        services.AddSingleton(new MappingParentGraph(graphQlService));
+        EfGraphQLConventions.RegisterInContainer<MappingContext>(services, model:sqlInstance.Model);
+        services.AddSingleton<MappingChildGraph>();
+        services.AddSingleton<MappingParentGraph>();
+        services.AddSingleton<MappingSchema>();
         await using var provider = services.BuildServiceProvider();
-        MappingSchema mappingSchema = new(graphQlService, provider);
+        var mappingSchema = provider.GetRequiredService<MappingSchema>();
 
         SchemaPrinter printer = new(mappingSchema);
         var print = printer.Print();
@@ -44,7 +39,6 @@ public class MappingTests
     public async Task Resolve()
     {
         await using var database = await sqlInstance.Build();
-        var context = database.Context;
 
         MappingParent parent = new();
         MappingChild child = new()
@@ -52,8 +46,13 @@ public class MappingTests
             Parent = parent
         };
         await database.AddDataUntracked(child, parent);
-        EfGraphQLService<MappingContext> graphQlService = new(context.Model, _ => context);
-        var resolve = await (Task<IEnumerable<MappingChild>>) new MappingQuery(graphQlService).Fields
+        ServiceCollection services = new();
+        services.AddSingleton<MappingQuery>();
+        EfGraphQLConventions.RegisterInContainer(services,_ => database.NewDbContext(), model:sqlInstance.Model);
+        await using var provider = services.BuildServiceProvider();
+        var mappingQuery = provider.GetRequiredService<MappingQuery>();
+
+        var resolve = await (Task<IEnumerable<MappingChild>>)mappingQuery.Fields
             .Single(x => x.Name == "children")
             .Resolver
             .Resolve(new ResolveFieldContext());

@@ -1,17 +1,20 @@
 {
-  target: {
-    namedEntities: [
+  target: 
+{
+  "data": {
+    "namedEntities": [
       {
-        property: Value1
+        "property": "Value1"
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 
 SELECT [n].[NamedId], [n].[Property]
 FROM [NamedEntities] AS [n]
-WHERE [n].[NamedId] = '00000000-0000-0000-0000-000000000001'
+WHERE [n].[NamedId] = 'Guid_1'
     }
   ]
 }

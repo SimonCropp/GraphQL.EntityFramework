@@ -38,9 +38,11 @@ namespace GraphQL.EntityFramework
             services.AddTransient<HttpContextCapture>();
             services.AddSingleton(
                 provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking));
+            services.AddSingleton<IEfGraphQLService<TDbContext>>(
+                provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
         }
 
-        static IEfGraphQLService<TDbContext> Build<TDbContext>(
+        static EfGraphQLService<TDbContext> Build<TDbContext>(
             ResolveDbContext<TDbContext>? dbContextResolver,
             IModel? model,
             ResolveFilters? filters,

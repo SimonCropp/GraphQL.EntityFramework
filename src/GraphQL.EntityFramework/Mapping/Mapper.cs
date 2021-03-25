@@ -227,7 +227,7 @@ namespace GraphQL.EntityFramework
         static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
         {
             var func = PropertyCache<TSource>.GetProperty(member.Name).Func;
-            var graphTypeFromType = GraphTypeFromType(member.Name, member.PropertyType, member.IsNullable());
+            var graphTypeFromType = GraphTypeFromType(member.Name, member.PropertyType, member.Nullable());
             return (func, graphTypeFromType);
         }
 
@@ -247,7 +247,7 @@ namespace GraphQL.EntityFramework
         {
             try
             {
-                return propertyType.GetGraphTypeFromType(isNullable);
+                return GraphTypeFinder.FindGraphType(propertyType, isNullable);
             }
             catch (ArgumentOutOfRangeException exception)
             {

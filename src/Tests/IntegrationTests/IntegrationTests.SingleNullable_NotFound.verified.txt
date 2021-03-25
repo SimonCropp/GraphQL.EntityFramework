@@ -1,13 +1,16 @@
 {
-  target: {
-    parentEntityNullable: null
-  },
+  target: 
+{
+  "data": {
+    "parentEntityNullable": null
+  }
+},
   sql: [
     {
       Text: 
 SELECT TOP(2) [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-WHERE [p].[Id] = '00000000-0000-0000-0000-000000000001'
+WHERE [p].[Id] = 'Guid_1'
     }
   ]
 }

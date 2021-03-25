@@ -27,9 +27,9 @@ namespace GraphQL.EntityFramework
             {
                 Name = name,
                 Type = graphType,
-                Metadata = IncludeAppender.GetIncludeMetadata(name, includeNames),
                 Description = description
             };
+            IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
             if (resolve != null)
             {
