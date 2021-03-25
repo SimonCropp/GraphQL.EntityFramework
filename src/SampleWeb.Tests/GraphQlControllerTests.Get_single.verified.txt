@@ -1,1 +1,7 @@
-{"data":{"company":{"id":1}},"errors":null,"query":null,"document":null,"operation":null,"perf":null,"extensions":null}
+{
+  "data": {
+    "company": {
+      "id": 1
+    }
+  }
+}

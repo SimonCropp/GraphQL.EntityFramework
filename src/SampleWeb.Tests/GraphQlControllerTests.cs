@@ -156,11 +156,11 @@ query {
   employees (
     where: [
       {groupedExpressions: [
-        {path: ""content"", comparison: ""contains"", value: ""4"", connector: ""or""},
+        {path: ""content"", comparison: contains, value: ""4"", connector: or},
 
-          { path: ""content"", comparison: ""contains"", value: ""2""}
-      ], connector: ""and""},
-      {path: ""age"", comparison: ""greaterThanOrEqual"", value: ""31""}
+          { path: ""content"", comparison: contains, value: ""2""}
+      ], connector: and},
+      {path: ""age"", comparison: greaterThanOrEqual, value: ""31""}
   	]
   ) {
     id
@@ -168,8 +168,8 @@ query {
 }";
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("{\"employees\":[{\"id\":3},{\"id\":5}]}", result);
         response.EnsureSuccessStatusCode();
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -184,10 +184,8 @@ query {
 }";
         using var response = await clientQueryExecutor.ExecutePost(client, query);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains(
-            "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
-            result);
         response.EnsureSuccessStatusCode();
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -207,8 +205,8 @@ query ($id: ID!)
         };
         using var response = await clientQueryExecutor.ExecutePost(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
         response.EnsureSuccessStatusCode();
+        await Verifier.Verify(result);
     }
 
     //TODO: https://github.com/graphql-dotnet/graphql-client

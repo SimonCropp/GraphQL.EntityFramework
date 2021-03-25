@@ -24,13 +24,13 @@ class ComparisonGraph :
 
     public override bool CanParseLiteral(IValue value)
     {
-        value = TryToEnumValue(value);
+        value = value.TryToEnumValue();
         return base.CanParseLiteral(value);
     }
 
     public override object? ParseLiteral(IValue value)
     {
-        var literal = base.ParseLiteral(TryToEnumValue(value));
+        var literal = base.ParseLiteral(value.TryToEnumValue());
         if (literal != null)
         {
             return literal;
@@ -46,15 +46,5 @@ class ComparisonGraph :
         }
 
         return null;
-    }
-    
-    static IValue TryToEnumValue(IValue value)
-    {
-        if (value is StringValue stringValue)
-        {
-            return new EnumValue(stringValue.Value);
-        }
-
-        return value;
     }
 }

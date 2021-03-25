@@ -16,6 +16,7 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
+    DocumentWriter writer = new(true);
 
     public GraphQlController(ISchema schema, IDocumentExecuter executer)
     {
@@ -24,7 +25,7 @@ public class GraphQlController :
     }
 
     [HttpPost]
-    public Task<ExecutionResult> Post(
+    public Task Post(
         [BindRequired, FromBody] PostBody body,
         CancellationToken cancellation)
     {
@@ -39,7 +40,7 @@ public class GraphQlController :
     }
 
     [HttpGet]
-    public Task<ExecutionResult> Get(
+    public Task Get(
         [FromQuery] string query,
         [FromQuery] string? variables,
         [FromQuery] string? operationName,
@@ -49,7 +50,7 @@ public class GraphQlController :
         return Execute(query, operationName, jObject, cancellation);
     }
 
-    async Task<ExecutionResult> Execute(string query,
+    async Task Execute(string query,
         string? operationName,
         JObject? variables,
         CancellationToken cancellation)
@@ -68,11 +69,7 @@ public class GraphQlController :
         };
         var executeAsync = await executer.ExecuteAsync(options);
 
-        return new()
-        {
-            Data = executeAsync.Data,
-            Errors = executeAsync.Errors
-        };
+        await writer.WriteAsync(Response.Body, executeAsync, cancellation);
     }
 
     static JObject? ParseVariables(string? variables)
