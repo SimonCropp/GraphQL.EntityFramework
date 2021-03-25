@@ -267,6 +267,7 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
+    DocumentWriter writer = new(true);
 
     public GraphQlController(ISchema schema, IDocumentExecuter executer)
     {
@@ -275,7 +276,7 @@ public class GraphQlController :
     }
 
     [HttpPost]
-    public Task<ExecutionResult> Post(
+    public Task Post(
         [BindRequired, FromBody] PostBody body,
         CancellationToken cancellation)
     {
@@ -290,7 +291,7 @@ public class GraphQlController :
     }
 
     [HttpGet]
-    public Task<ExecutionResult> Get(
+    public Task Get(
         [FromQuery] string query,
         [FromQuery] string? variables,
         [FromQuery] string? operationName,
@@ -300,7 +301,7 @@ public class GraphQlController :
         return Execute(query, operationName, jObject, cancellation);
     }
 
-    async Task<ExecutionResult> Execute(string query,
+    async Task Execute(string query,
         string? operationName,
         JObject? variables,
         CancellationToken cancellation)
@@ -319,11 +320,7 @@ public class GraphQlController :
         };
         var executeAsync = await executer.ExecuteAsync(options);
 
-        return new()
-        {
-            Data = executeAsync.Data,
-            Errors = executeAsync.Errors
-        };
+        await writer.WriteAsync(Response.Body, executeAsync, cancellation);
     }
 
     static JObject? ParseVariables(string? variables)
@@ -344,7 +341,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L95' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L11-L92' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -631,11 +628,11 @@ query {
   employees (
     where: [
       {groupedExpressions: [
-        {path: ""content"", comparison: ""contains"", value: ""4"", connector: ""or""},
+        {path: ""content"", comparison: contains, value: ""4"", connector: or},
 
-          { path: ""content"", comparison: ""contains"", value: ""2""}
-      ], connector: ""and""},
-      {path: ""age"", comparison: ""greaterThanOrEqual"", value: ""31""}
+          { path: ""content"", comparison: contains, value: ""2""}
+      ], connector: and},
+      {path: ""age"", comparison: greaterThanOrEqual, value: ""31""}
   	]
   ) {
     id
@@ -643,8 +640,8 @@ query {
 }";
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("{\"employees\":[{\"id\":3},{\"id\":5}]}", result);
         response.EnsureSuccessStatusCode();
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -659,10 +656,8 @@ query {
 }";
         using var response = await clientQueryExecutor.ExecutePost(client, query);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains(
-            "{\"companies\":[{\"id\":1},{\"id\":4},{\"id\":6},{\"id\":7}]}",
-            result);
         response.EnsureSuccessStatusCode();
+        await Verifier.Verify(result);
     }
 
     [Fact]
@@ -682,8 +677,8 @@ query ($id: ID!)
         };
         using var response = await clientQueryExecutor.ExecutePost(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("{\"companies\":[{\"id\":1}]}", result);
         response.EnsureSuccessStatusCode();
+        await Verifier.Verify(result);
     }
 
     //TODO: https://github.com/graphql-dotnet/graphql-client
@@ -740,7 +735,7 @@ query ($id: ID!)
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L11-L269' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L11-L267' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -778,7 +773,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     return executionResult;
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L9-L33' title='Snippet source file'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L21-L45' title='Snippet source file'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
