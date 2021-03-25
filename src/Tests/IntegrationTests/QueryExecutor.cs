@@ -1,14 +1,11 @@
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.EntityFramework;
-using GraphQL.NewtonsoftJson;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 static class QueryExecutor
 {
-    static DocumentWriter? writer = new(true);
-
     public static async Task<string> ExecuteQuery<TDbContext>(
         string query,
         ServiceCollection services,
@@ -28,9 +25,9 @@ static class QueryExecutor
         EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         await using var provider = services.BuildServiceProvider();
         using Schema schema = new(provider);
-        EfDocumentExecuter documentExecuter = new();
+        EfDocumentExecuter executer = new();
 
-        ExecutionOptions executionOptions = new()
+        ExecutionOptions options = new()
         {
             Schema = schema,
             Query = query,
@@ -38,7 +35,7 @@ static class QueryExecutor
             Inputs = inputs,
         };
 
-        var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        return await writer.WriteToStringAsync(executionResult);
+        var result = await executer.ExecuteWithErrorCheck(options);
+        return await result.Serialize();
     }
 }

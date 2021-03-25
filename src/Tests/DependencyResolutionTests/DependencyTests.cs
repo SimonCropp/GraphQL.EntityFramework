@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
 using Microsoft.Extensions.DependencyInjection;
+using VerifyXunit;
 using Xunit;
 
+[UsesVerify]
 public class DependencyTests
 {
     static SqlInstance<DependencyDbContext> sqlInstance;
@@ -88,7 +91,7 @@ public class DependencyTests
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
         using DependencySchema schema = new(provider);
-        ExecutionOptions executionOptions = new()
+        ExecutionOptions options = new()
         {
             Schema = schema,
             Query = query,
@@ -96,7 +99,7 @@ public class DependencyTests
             Inputs = null
         };
 
-        await ExecutionResultData(executionOptions);
+        await ExecutionResultData(options);
     }
 
     [Fact]
@@ -113,7 +116,7 @@ public class DependencyTests
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
         using DependencySchema schema = new(provider);
-        ExecutionOptions executionOptions = new()
+        ExecutionOptions options = new()
         {
             Schema = schema,
             Query = query,
@@ -121,7 +124,7 @@ public class DependencyTests
             Inputs = null
         };
 
-        await ExecutionResultData(executionOptions);
+        await ExecutionResultData(options);
     }
 
     static ServiceCollection BuildServiceCollection()
@@ -138,12 +141,12 @@ public class DependencyTests
         return dbContext.SaveChangesAsync();
     }
 
-    static async Task ExecutionResultData(ExecutionOptions executionOptions)
+    static async Task ExecutionResultData(
+        ExecutionOptions executionOptions,
+        [CallerFilePath] string sourceFile = "")
     {
-        EfDocumentExecuter documentExecuter = new();
-        var executionResult = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        var data = (Dictionary<string, object>) executionResult.Data;
-        var objects = (List<object>) data.Single().Value;
-        Assert.Single(objects);
+        EfDocumentExecuter executer = new();
+        var result = await executer.ExecuteWithErrorCheck(executionOptions);
+        await Verifier.Verify(result.Serialize(), sourceFile: sourceFile).ScrubInlineGuids();
     }
 }

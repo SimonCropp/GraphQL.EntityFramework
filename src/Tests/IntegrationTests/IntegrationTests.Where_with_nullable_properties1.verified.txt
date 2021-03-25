@@ -1,11 +1,14 @@
 {
-  target: {
-    withNullableEntities: [
+  target: 
+{
+  "data": {
+    "withNullableEntities": [
       {
-        id: Guid_1
+        "id": "Guid_1"
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 

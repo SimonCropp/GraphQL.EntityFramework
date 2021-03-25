@@ -84,7 +84,7 @@ public class MultiContextTests
             #endregion
 
             var result = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-            await Verifier.Verify(result.Data);
+            await Verifier.Verify(result.Serialize());
         }
     }
 }

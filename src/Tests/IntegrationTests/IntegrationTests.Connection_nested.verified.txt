@@ -1,95 +1,96 @@
 {
-  target: {
-    parentEntities: [
+  target: 
+{
+  "data": {
+    "parentEntities": [
       {
-        id: Guid_1,
-        childrenConnection: {
-          edges: [],
-          pageInfo: {
-            endCursor: -1,
-            hasNextPage: false
+        "id": "Guid_1",
+        "childrenConnection": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
           }
         }
       },
       {
-        id: Guid_2,
-        childrenConnection: {
-          edges: [],
-          pageInfo: {
-            endCursor: -1,
-            hasNextPage: false
+        "id": "Guid_2",
+        "childrenConnection": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
           }
         }
       },
       {
-        id: Guid_3,
-        childrenConnection: {
-          edges: [],
-          pageInfo: {
-            endCursor: -1,
-            hasNextPage: false
+        "id": "Guid_3",
+        "childrenConnection": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
           }
         }
       },
       {
-        id: Guid_4,
-        childrenConnection: {
-          edges: [],
-          pageInfo: {
-            endCursor: -1,
-            hasNextPage: false
+        "id": "Guid_4",
+        "childrenConnection": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
           }
         }
       },
       {
-        id: Guid_5,
-        childrenConnection: {
-          edges: [],
-          pageInfo: {
-            endCursor: -1,
-            hasNextPage: false
+        "id": "Guid_5",
+        "childrenConnection": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
           }
         }
       },
       {
-        id: Guid_6,
-        childrenConnection: {
-          edges: [],
-          pageInfo: {
-            endCursor: -1,
-            hasNextPage: false
+        "id": "Guid_6",
+        "childrenConnection": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
           }
         }
       },
       {
-        id: Guid_7,
-        childrenConnection: {
-          edges: [],
-          pageInfo: {
-            endCursor: -1,
-            hasNextPage: false
+        "id": "Guid_7",
+        "childrenConnection": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
           }
         }
       },
       {
-        id: Guid_8,
-        childrenConnection: {
-          edges: [],
-          pageInfo: {
-            endCursor: -1,
-            hasNextPage: false
+        "id": "Guid_8",
+        "childrenConnection": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
           }
         }
       }
     ]
-  },
+  }
+},
   sql: [
     {
       Text: 
-SELECT [p].[Id], [p].[Property], [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
+SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-LEFT JOIN [ChildEntities] AS [c] ON [p].[Id] = [c].[ParentId]
-ORDER BY [p].[Id], [c].[Id]
     }
   ]
 }

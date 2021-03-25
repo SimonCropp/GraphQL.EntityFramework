@@ -17,7 +17,7 @@
       Text: 
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-WHERE [p].[Id] IN ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002')
+WHERE [p].[Id] IN ('Guid_1', 'Guid_2')
     }
   ]
 }
