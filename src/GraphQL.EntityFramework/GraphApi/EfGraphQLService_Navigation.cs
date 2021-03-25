@@ -21,7 +21,7 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNullWhiteSpace(nameof(name), name);
 
-            graphType ??= typeof(TReturn).GetGraphTypeFromType();
+            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
             FieldType field = new()
             {
