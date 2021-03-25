@@ -5,7 +5,7 @@
     "manyChildren": [
       {
         "child1": {
-          "id": "a303caf9-61c6-4408-97fe-9f01c5fbf498"
+          "id": "Guid_1"
         }
       }
     ]

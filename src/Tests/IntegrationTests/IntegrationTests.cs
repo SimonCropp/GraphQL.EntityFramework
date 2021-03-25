@@ -1607,7 +1607,7 @@ fragment childEntityFields on DerivedChild {
         try
         {
             var result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking);
-            await Verifier.Verify(result, sourceFile: sourceFile);
+            await Verifier.Verify(result, sourceFile: sourceFile).ScrubInlineGuids();
         }
         catch (ExecutionError executionError)
         {
