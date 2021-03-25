@@ -23,9 +23,10 @@ public class MappingTests
     public async Task SchemaPrint()
     {
         ServiceCollection services = new();
-        EfGraphQLConventions.RegisterInContainer<MappingContext>(services);
+        EfGraphQLConventions.RegisterInContainer<MappingContext>(services, model:sqlInstance.Model);
         services.AddSingleton<MappingChildGraph>();
         services.AddSingleton<MappingParentGraph>();
+        services.AddSingleton<MappingSchema>();
         await using var provider = services.BuildServiceProvider();
         var mappingSchema = provider.GetRequiredService<MappingSchema>();
 
