@@ -1,7 +1,5 @@
 # Configuration
 
-toc
-
 
 ## Container Registration
 
