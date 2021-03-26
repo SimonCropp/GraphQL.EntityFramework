@@ -7,29 +7,6 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 # Configuration
 
-<!-- toc -->
-## Contents
-
-  * [Container Registration](#container-registration)
-    * [Inputs](#inputs)
-    * [Usage](#usage)
-  * [DocumentExecuter](#documentexecuter)
-  * [Connection Types](#connection-types)
-  * [DependencyInjection and ASP.Net Core](#dependencyinjection-and-aspnet-core)
-  * [Multiple DbContexts](#multiple-dbcontexts)
-    * [UserContext](#usercontext)
-    * [Register in container](#register-in-container)
-    * [ExecutionOptions](#executionoptions)
-    * [Query](#query)
-    * [GraphType](#graphtype)
-  * [Testing the GraphQlController](#testing-the-graphqlcontroller)
-  * [GraphQlExtensions](#graphqlextensions)
-    * [ExecuteWithErrorCheck](#executewitherrorcheck)
-  * [EF Core TPH and GraphQL Interface](#ef-core-tph-and-graphql-interface)
-    * [EF Core Entities](#ef-core-entities)
-    * [GraphQL types](#graphql-types)
-    * [GraphQL query](#graphql-query)<!-- endToc -->
-
 
 ## Container Registration
 
