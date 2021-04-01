@@ -779,7 +779,6 @@ public abstract class InheritedEntity
 <!-- snippet: DerivedEntity.cs -->
 <a id='snippet-DerivedEntity.cs'></a>
 ```cs
-
 public class DerivedEntity : InheritedEntity
 {
 }
