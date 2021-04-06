@@ -16,7 +16,7 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
-    DocumentWriter writer = new(true);
+    static DocumentWriter writer = new(true);
 
     public GraphQlController(ISchema schema, IDocumentExecuter executer)
     {

@@ -34,27 +34,15 @@ namespace GraphQL.EntityFramework
         static MethodInfo addNavigationMethod = typeof(Mapper<TDbContext>).GetMethod(nameof(AddNavigation), bindingFlags)!;
         static MethodInfo addNavigationListMethod = typeof(Mapper<TDbContext>).GetMethod(nameof(AddNavigationList), bindingFlags)!;
 
-        /// <summary>
-        /// Map all un-mapped properties. Calls <see cref="ComplexGraphType{TSourceType}.AddField"/> for all other properties.
-        /// </summary>
-        /// <param name="exclusions">A list of property names to exclude from mapping.</param>
+        [Obsolete("Use AutoRegisteringObjectGraphType or AutoRegisteringInputObjectGraphType")]
         public static void AutoMap<TSource>(
-            ComplexGraphType<TSource> graph,
+            ObjectGraphType<TSource> graph,
             IReadOnlyList<string>? exclusions = null)
         {
-            var type = typeof(TSource);
-            try
-            {
-                MapProperties(graph, type, exclusions);
-            }
-            catch (GetGraphException exception)
-            {
-                throw new($"Failed to map '{graph.GetType().Name}'. {exception.Message}");
-            }
         }
 
         internal static void AutoMap<TSource>(
-            ComplexGraphType<TSource> graph,
+            ObjectGraphType<TSource> graph,
             IEfGraphQLService<TDbContext> graphService,
             IReadOnlyList<string>? exclusions = null)
         {
