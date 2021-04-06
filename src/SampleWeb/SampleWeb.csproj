@@ -11,7 +11,7 @@
     <!--<PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="3.5.0-alpha0046" />-->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.5" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
     <PackageReference Include="ProjectDefaults" Version="1.0.54" PrivateAssets="All" />
   </ItemGroup>
