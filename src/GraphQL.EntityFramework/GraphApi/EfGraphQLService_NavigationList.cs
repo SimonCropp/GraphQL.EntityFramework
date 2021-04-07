@@ -28,7 +28,7 @@ namespace GraphQL.EntityFramework
                 Name = name,
                 Description = description,
                 Type = MakeListGraphType<TReturn>(itemGraphType),
-                Arguments = ArgumentAppender.GetQueryArguments(arguments,hasId),
+                Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, true),
             };
 
             IncludeAppender.SetIncludeMetadata(field, name, includeNames);

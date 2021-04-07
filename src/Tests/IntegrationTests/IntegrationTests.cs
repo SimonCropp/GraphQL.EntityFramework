@@ -450,7 +450,7 @@ query ($value: String!)
     {
         var query = @"
 {
-  parentEntity(id: ""00000000-0000-0000-0000-000000000001"", orderBy: {path: ""property""}) {
+  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
     property
   }
 }";
@@ -473,7 +473,7 @@ query ($value: String!)
     {
         var query = @"
 {
-  parentEntity(id: ""00000000-0000-0000-0000-000000000001"", orderBy: {path: ""property""}) {
+  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
     property
   }
 }";

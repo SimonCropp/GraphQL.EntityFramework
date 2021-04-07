@@ -54,7 +54,7 @@ namespace GraphQL.EntityFramework
                 Name = name,
                 Description = description,
                 Type = MakeListGraphType<TReturn>(itemGraphType),
-                Arguments = ArgumentAppender.GetQueryArguments(arguments,hasId),
+                Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, true),
             };
 
             if (resolve != null)
@@ -69,6 +69,7 @@ namespace GraphQL.EntityFramework
                         {
                             query = query.AsNoTracking();
                         }
+
                         query = includeAppender.AddIncludes(query, context);
                         query = query.ApplyGraphQlArguments(context, names, true);
 
@@ -91,17 +92,14 @@ namespace GraphQL.EntityFramework
             {
                 return GraphTypeFinder.FindGraphType<IEnumerable<TReturn>>();
             }
+
             return nonNullType.MakeGenericType(listGraphType.MakeGenericType(itemGraphType));
         }
 
         List<string>? GetKeyNames<TSource>()
         {
-            if (keyNames.TryGetValue(typeof(TSource), out var names))
-            {
-                return names;
-            }
-
-            return null;
+            keyNames.TryGetValue(typeof(TSource), out var names);
+            return names;
         }
     }
 }

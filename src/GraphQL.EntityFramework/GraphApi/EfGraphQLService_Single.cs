@@ -81,7 +81,7 @@ namespace GraphQL.EntityFramework
                 Type = graphType,
                 Description = description,
 
-                Arguments = ArgumentAppender.GetQueryArguments(arguments,hasId),
+                Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, false),
 
                 Resolver = new AsyncFieldResolver<TSource, TReturn?>(
                     async context =>
@@ -95,6 +95,7 @@ namespace GraphQL.EntityFramework
                         {
                             query = query.AsNoTracking();
                         }
+
                         query = includeAppender.AddIncludes(query, context);
                         query = query.ApplyGraphQlArguments(context, names, false);
                         var single = await query.SingleOrDefaultAsync(context.CancellationToken);
@@ -107,6 +108,7 @@ namespace GraphQL.EntityFramework
                                 {
                                     await mutate.Invoke(efFieldContext, single);
                                 }
+
                                 return single;
                             }
                         }

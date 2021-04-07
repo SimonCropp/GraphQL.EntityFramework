@@ -70,7 +70,7 @@ static class ArgumentAppender
         }
     }
 
-    public static QueryArguments GetQueryArguments(IEnumerable<QueryArgument>? extra, bool hasId)
+    public static QueryArguments GetQueryArguments(IEnumerable<QueryArgument>? extra, bool hasId, bool applyOrder)
     {
         QueryArguments arguments = new();
         if (hasId)
@@ -79,10 +79,14 @@ static class ArgumentAppender
             arguments.Add(idsArgument());
         }
 
-        arguments.Add(orderByArgument());
         arguments.Add(whereArgument());
-        arguments.Add(skipArgument());
-        arguments.Add(takeArgument());
+        if (applyOrder)
+        {
+            arguments.Add(orderByArgument());
+            arguments.Add(skipArgument());
+            arguments.Add(takeArgument());
+        }
+
         if (extra != null)
         {
             foreach (var argument in extra)
