@@ -85,7 +85,7 @@ namespace GraphQL.EntityFramework
                         }
                         query = includeAppender.AddIncludes(query, context);
                         var names = GetKeyNames<TReturn>();
-                        query = query.ApplyGraphQlArguments(context, names);
+                        query = query.ApplyGraphQlArguments(context, names, true);
                         return query
                             .ApplyConnectionContext(
                                 context.First,

@@ -6,27 +6,27 @@ namespace GraphQL.EntityFramework
 {
     public static partial class ArgumentProcessor
     {
-        public static IQueryable<TItem> ApplyGraphQlArguments<TItem>(this IQueryable<TItem> queryable, IResolveFieldContext context, List<string>? keyNames = null)
+        public static IQueryable<TItem> ApplyGraphQlArguments<TItem>(
+            this IQueryable<TItem> queryable,
+            IResolveFieldContext context,
+            List<string>? keyNames,
+            bool applyOrder)
             where TItem : class
         {
             Guard.AgainstNull(nameof(queryable), queryable);
             Guard.AgainstNull(nameof(context), context);
-            return ApplyToAll(queryable, (type, x) => context.GetArgument(type, x), keyNames);
-        }
+            object? GetArguments(Type type, string x) => context.GetArgument(type, x);
 
-        static IQueryable<TItem> ApplyToAll<TItem>(this IQueryable<TItem> queryable, Func<Type, string, object?> getArguments, List<string>? keyNames)
-            where TItem : class
-        {
             if (keyNames != null)
             {
-                if (ArgumentReader.TryReadIds(getArguments, out var values))
+                if (ArgumentReader.TryReadIds(GetArguments, out var values))
                 {
                     var keyName = GetKeyName(keyNames);
                     var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
                     queryable = queryable.Where(predicate);
                 }
 
-                if (ArgumentReader.TryReadId(getArguments, out var value))
+                if (ArgumentReader.TryReadId(GetArguments, out var value))
                 {
                     var keyName = GetKeyName(keyNames);
                     var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.Equal, new[] {value});
@@ -34,22 +34,25 @@ namespace GraphQL.EntityFramework
                 }
             }
 
-            if (ArgumentReader.TryReadWhere(getArguments, out var wheres))
+            if (ArgumentReader.TryReadWhere(GetArguments, out var wheres))
             {
                 var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
                 queryable = queryable.Where(predicate);
             }
 
-            queryable = Order(queryable, getArguments);
-
-            if (ArgumentReader.TryReadSkip(getArguments, out var skip))
+            if (applyOrder)
             {
-                queryable = queryable.Skip(skip);
-            }
+                queryable = Order(queryable, GetArguments);
 
-            if (ArgumentReader.TryReadTake(getArguments, out var take))
-            {
-                queryable = queryable.Take(take);
+                if (ArgumentReader.TryReadSkip(GetArguments, out var skip))
+                {
+                    queryable = queryable.Skip(skip);
+                }
+
+                if (ArgumentReader.TryReadTake(GetArguments, out var take))
+                {
+                    queryable = queryable.Take(take);
+                }
             }
 
             return queryable;

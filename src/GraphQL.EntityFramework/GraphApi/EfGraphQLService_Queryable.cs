@@ -70,7 +70,7 @@ namespace GraphQL.EntityFramework
                             query = query.AsNoTracking();
                         }
                         query = includeAppender.AddIncludes(query, context);
-                        query = query.ApplyGraphQlArguments(context, names);
+                        query = query.ApplyGraphQlArguments(context, names, true);
 
                         var list = await query
                             .ToListAsync(context.CancellationToken);
