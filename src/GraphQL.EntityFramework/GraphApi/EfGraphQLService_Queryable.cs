@@ -90,7 +90,7 @@ namespace GraphQL.EntityFramework
         {
             if (itemGraphType == null)
             {
-                return GraphTypeFinder.FindGraphType<IEnumerable<TReturn>>();
+                itemGraphType = GraphTypeFinder.FindGraphType<TReturn>();
             }
 
             return nonNullType.MakeGenericType(listGraphType.MakeGenericType(itemGraphType));
