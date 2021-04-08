@@ -215,7 +215,7 @@ namespace GraphQL.EntityFramework
         static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
         {
             var func = PropertyCache<TSource>.GetProperty(member.Name).Func;
-            var graphTypeFromType = GraphTypeFromType(member.Name, member.PropertyType, member.Nullable());
+            var graphTypeFromType = GraphTypeFromType(member.Name, member.PropertyType, member.IsNullable());
             return (func, graphTypeFromType);
         }
 

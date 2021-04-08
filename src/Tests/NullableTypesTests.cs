@@ -9,26 +9,26 @@ public class NullableTypesTests
     public void Class()
     {
         var nullProperty = typeof(TargetClass).GetProperty("NullProperty")!;
-        Assert.True(nullProperty.Nullable());
+        Assert.True(nullProperty.IsNullable());
 
         var property = typeof(TargetClass).GetProperty("Property")!;
-        Assert.False(property.Nullable());
+        Assert.False(property.IsNullable());
     }
 
     [Fact]
     public void Record()
     {
         var nullProperty = typeof(TargetRecord).GetProperty("NullProperty")!;
-        Assert.True(nullProperty.Nullable());
+        Assert.True(nullProperty.IsNullable());
 
         var property = typeof(TargetRecord).GetProperty("Property")!;
-        Assert.False(property.Nullable());
+        Assert.False(property.IsNullable());
 
         var structProperty = typeof(TargetRecord).GetProperty("StructProperty")!;
-        Assert.False(structProperty.Nullable());
+        Assert.False(structProperty.IsNullable());
 
         var nullStructProperty = typeof(TargetRecord).GetProperty("NullStructProperty")!;
-        Assert.True(nullStructProperty.Nullable());
+        Assert.True(nullStructProperty.IsNullable());
     }
 
     public class TargetClass
@@ -44,14 +44,14 @@ public class NullableTypesTests
     public void ClassNullableDisable()
     {
         var nullProperty = typeof(TargetClassNullableDisable).GetProperty("NullProperty")!;
-        Assert.True(nullProperty.Nullable());
+        Assert.True(nullProperty.IsNullable());
     }
 
     [Fact]
     public void RecordNullableDisable()
     {
         var nullProperty = typeof(TargetRecordNullableDisable).GetProperty("NullProperty")!;
-        Assert.True(nullProperty.Nullable());
+        Assert.True(nullProperty.IsNullable());
     }
 
     //Ensure NullableTypes.IsNullable does not interpret nullable string in #nullable disable as non nullable one

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace GraphQL.EntityFramework
 {
-    static class NullableTypes
+    public static class NullableTypes
     {
         static bool GetNullableFlag(Type type, Attribute attribute)
         {
@@ -13,7 +13,7 @@ namespace GraphQL.EntityFramework
             return nullableFlags.Single() == 2;
         }
 
-        public static bool Nullable(this PropertyInfo member)
+        public static bool IsNullable(this PropertyInfo member)
         {
             var propertyType = member.PropertyType;
             if (!propertyType.IsValueType)
@@ -71,7 +71,6 @@ namespace GraphQL.EntityFramework
             }
             return true;
         }
-
 
         static bool IsNullableContextAttributeFlagNull(Type type, Attribute attribute)
         {
