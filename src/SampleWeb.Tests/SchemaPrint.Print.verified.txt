@@ -1,6 +1,6 @@
 type Company {
-  employees(id: ID, ids: [ID], where: [WhereExpression], orderBy: [OrderBy], skip: Int, take: Int): [Employee!]!
-  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): EmployeeConnection
+  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
+  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): EmployeeConnection
   content: String
   id: Int!
 }
@@ -74,13 +74,13 @@ type PageInfo {
 }
 
 type Query {
-  companies(id: ID, ids: [ID], where: [WhereExpression], orderBy: [OrderBy], skip: Int, take: Int): [Company!]!
-  company(id: ID, ids: [ID], where: [WhereExpression]): Company!
-  companyOrNull(id: ID, ids: [ID], where: [WhereExpression]): Company
-  companiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): CompanyConnection
-  employees(id: ID, ids: [ID], where: [WhereExpression], orderBy: [OrderBy], skip: Int, take: Int): [Employee!]!
-  employeesByArgument(id: ID, ids: [ID], where: [WhereExpression], orderBy: [OrderBy], skip: Int, take: Int, content: String): [Employee!]!
-  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression], orderBy: [OrderBy], ids: [ID]): EmployeeConnection
+  companies(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Company!]!
+  company(id: ID, ids: [ID!], where: [WhereExpression!]): Company!
+  companyOrNull(id: ID, ids: [ID!], where: [WhereExpression!]): Company
+  companiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): CompanyConnection
+  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
+  employeesByArgument(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int, content: String): [Employee!]!
+  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): EmployeeConnection
   employeeSummary(where: [WhereExpression]): [EmployeeSummary]
 }
 

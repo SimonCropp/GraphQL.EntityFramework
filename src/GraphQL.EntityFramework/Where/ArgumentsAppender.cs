@@ -4,7 +4,7 @@ using GraphQL.Types;
 
 static class ArgumentAppender
 {
-    static QueryArgument<ListGraphType<WhereExpressionGraph>> whereArgument()
+    static QueryArgument<ListGraphType<NonNullGraphType<WhereExpressionGraph>>> whereArgument()
     {
         return new()
         {
@@ -12,7 +12,7 @@ static class ArgumentAppender
         };
     }
 
-    static QueryArgument<ListGraphType<OrderByGraph>> orderByArgument()
+    static QueryArgument<ListGraphType<NonNullGraphType<OrderByGraph>>> orderByArgument()
     {
         return new()
         {
@@ -20,7 +20,7 @@ static class ArgumentAppender
         };
     }
 
-    static QueryArgument<ListGraphType<IdGraphType>> idsArgument()
+    static QueryArgument<ListGraphType<NonNullGraphType<IdGraphType>>> idsArgument()
     {
         return new()
         {
