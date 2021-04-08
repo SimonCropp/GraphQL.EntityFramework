@@ -31,24 +31,11 @@ static class NavigationReader
     static (Type itemType, bool isCollection) GetNavigationType(INavigationBase navigation)
     {
         var navigationType = navigation.ClrType;
-        Type? collectionType;
-
-        if (navigationType.IsGenericType && navigationType.GetGenericTypeDefinition() == typeof(ICollection<>))
+        if (navigationType.TryGetCollectionType(out var collectionGenericType))
         {
-            collectionType = navigationType;
-        }
-        else
-        {
-            collectionType = navigationType.GetInterfaces()
-                .SingleOrDefault(x => x.IsGenericType &&
-                                      x.GetGenericTypeDefinition() == typeof(ICollection<>));
+            return (collectionGenericType, true);
         }
 
-        if (collectionType == null)
-        {
-            return (navigationType, false);
-        }
-
-        return (collectionType.GetGenericArguments().Single(), true);
+        return (navigationType, false);
     }
 }

@@ -200,6 +200,31 @@ static class ReflectionCache
         return false;
     }
 
+    public static bool TryGetCollectionType(this Type type, [NotNullWhen(true)] out Type? collectionGenericType)
+    {
+        Type? collectionType;
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ICollection<>))
+        {
+            collectionType = type;
+        }
+        else
+        {
+            collectionType = type.GetInterfaces()
+                .SingleOrDefault(x => x.IsGenericType &&
+                                      x.GetGenericTypeDefinition() == typeof(ICollection<>));
+        }
+
+        if (collectionType == null)
+        {
+            collectionGenericType = null;
+            return false;
+        }
+
+        collectionGenericType = collectionType.GetGenericArguments().Single();
+        return true;
+    }
+
     public static IEnumerable<PropertyInfo> GetPublicProperties(this Type type)
     {
         const BindingFlags flags = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance;

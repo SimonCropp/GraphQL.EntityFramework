@@ -231,10 +231,21 @@ namespace GraphQL.EntityFramework
             return Expression.Lambda<Func<TSource, object>>(convert, parameter);
         }
 
+
+        static Type listGraphType = typeof(ListGraphType<>);
+        static Type nonNullType = typeof(NonNullGraphType<>);
         static Type GraphTypeFromType(string name, Type propertyType, bool isNullable)
         {
             try
             {
+                if (propertyType.TryGetCollectionType(out var collectionGenericType))
+                {
+                    if (isNullable)
+                    {
+                        return listGraphType.MakeGenericType(GraphTypeFinder.FindGraphType(collectionGenericType));
+                    }
+                    return nonNullType.MakeGenericType(listGraphType.MakeGenericType(GraphTypeFinder.FindGraphType(collectionGenericType)));
+                }
                 return GraphTypeFinder.FindGraphType(propertyType, isNullable);
             }
             catch (ArgumentOutOfRangeException exception)

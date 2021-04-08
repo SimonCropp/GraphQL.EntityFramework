@@ -31,7 +31,7 @@ type MappingChild {
 type MappingParent {
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
   id: ID!
-  jsonProperty: [String]!
+  jsonProperty: [String!]!
   property: String
 }
 
