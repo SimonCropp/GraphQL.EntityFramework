@@ -5,6 +5,13 @@ using Xunit;
 
 public class NullableTypesTests
 {
+    //[Fact]
+    //public void GenericType()
+    //{
+    //    //Assert.False(NullableTypes.Nullable<TargetClass>());
+    //    Assert.True(NullableTypes.Nullable<TargetClass?>());
+    //}
+
     [Fact]
     public void Class()
     {
