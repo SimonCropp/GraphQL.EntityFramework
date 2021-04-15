@@ -9,7 +9,9 @@ static class ArgumentGraphs
 {
     static Dictionary<Type, GraphType> entries = new();
 
+#if !NETSTANDARD2_1
     [ModuleInitializer]
+#endif
     public static void Initialize()
     {
         Add<StringComparisonGraph>();
