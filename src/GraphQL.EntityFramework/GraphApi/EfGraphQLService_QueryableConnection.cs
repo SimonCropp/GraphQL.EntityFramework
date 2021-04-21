@@ -88,7 +88,8 @@ namespace GraphQL.EntityFramework
                         query = query.ApplyGraphQlArguments(context, names, true);
                         return query
                             .ApplyConnectionContext(
-                                context.First,
+                            //TODO: ?? pageSize should not be required https://github.com/graphql-dotnet/graphql-dotnet/issues/2518
+                                context.First ?? pageSize,
                                 context.After,
                                 context.Last,
                                 context.Before,
