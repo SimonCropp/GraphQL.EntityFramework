@@ -31,13 +31,13 @@ namespace GraphQL.EntityFramework
             var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
             var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
+            SetField(builder, fieldType);
             if (description != null)
             {
                 builder.Description(description);
             }
 
             builder.PageSize(pageSize).Bidirectional();
-            SetField(builder, fieldType);
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
             var hasId = keyNames.ContainsKey(typeof(TReturn));
@@ -48,7 +48,6 @@ namespace GraphQL.EntityFramework
                     var efFieldContext = BuildContext(context);
 
                     var enumerable = resolve(efFieldContext);
-
 
                     enumerable = enumerable.ApplyGraphQlArguments(hasId, context);
                     enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext);

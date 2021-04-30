@@ -65,12 +65,12 @@ namespace GraphQL.EntityFramework
             var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
             var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
+            SetField(builder, fieldType);
             if (description != null)
             {
                 builder.Description(description);
             }
             builder.PageSize(pageSize).Bidirectional();
-            SetField(builder, fieldType);
 
             if (resolve != null)
             {
@@ -88,8 +88,7 @@ namespace GraphQL.EntityFramework
                         query = query.ApplyGraphQlArguments(context, names, true);
                         return query
                             .ApplyConnectionContext(
-                            //TODO: ?? pageSize should not be required https://github.com/graphql-dotnet/graphql-dotnet/issues/2518
-                                context.First ?? pageSize,
+                                context.First,
                                 context.After,
                                 context.Last,
                                 context.Before,
