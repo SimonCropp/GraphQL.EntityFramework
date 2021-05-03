@@ -1,30 +1,7 @@
 version: 2
 updates:
 - package-ecosystem: nuget
-  directory: "/"
+  directory: "/src"
   schedule:
     interval: daily
-    time: "19:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: GraphQL
-    versions:
-    - 4.0.0
-    - 4.0.1
-    - 4.0.2
-    - 4.3.0
-  - dependency-name: GraphQL.NewtonsoftJson
-    versions:
-    - 4.0.0
-    - 4.0.1
-    - 4.0.2
-    - 4.3.0
-  - dependency-name: Newtonsoft.Json
-    versions:
-    - 13.0.1
-  - dependency-name: Verify.Xunit
-    versions:
-    - 11.1.0
-  - dependency-name: Microsoft.AspNetCore.Mvc.NewtonsoftJson
-    versions:
-    - 5.0.4
