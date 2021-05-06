@@ -35,9 +35,9 @@ namespace GraphQL.Builders
             FieldType = fieldType;
             
             Argument<IntGraphType, int?>("page",
-                "Get page");
+                "Get page", default(int?));
             Argument<IntGraphType, int?>("row",
-                "Specifies the number of row");
+                "Specifies the number of row", default(int?));
 
 
         }
@@ -109,7 +109,7 @@ namespace GraphQL.Builders
         }
 
         public PaginationBuilder<TSourceType> Argument<TArgumentGraphType, TArgumentType>(string name, string description,
-            TArgumentType defaultValue = default)
+            TArgumentType defaultValue)
             where TArgumentGraphType : IGraphType
         {
             FieldType.Arguments.Add(new QueryArgument(typeof(TArgumentGraphType))

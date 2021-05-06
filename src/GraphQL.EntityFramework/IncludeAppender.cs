@@ -174,7 +174,11 @@ class IncludeAppender
             list.Add(path);
         }
 
-        ProcessSubFields(list, paths.First(), subFields, graph!, navigations[entityType!], context);
+        foreach (var path in paths)
+        {
+            ProcessSubFields(list, path, subFields, graph!, navigations[entityType!], context);
+            
+        }
     }
 
     static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)
