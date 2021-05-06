@@ -19,11 +19,12 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
+            var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description, disableDefaultArguments);
             return graph.AddField(field);
         }
 
@@ -35,11 +36,12 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
+            var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description, disableDefaultArguments);
             return graph.AddField(field);
         }
 
@@ -51,11 +53,12 @@ namespace GraphQL.EntityFramework
             Type? graphType = null,
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-            var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
+            var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description, disableDefaultArguments);
             return graph.AddField(field);
         }
 
@@ -66,7 +69,8 @@ namespace GraphQL.EntityFramework
             IEnumerable<QueryArgument>? arguments,
             Type? graphType,
             bool nullable,
-            string? description)
+            string? description,
+            bool disableDefaultArguments)
             where TReturn : class
         {
             Guard.AgainstNullWhiteSpace(nameof(name), name);
@@ -89,7 +93,7 @@ namespace GraphQL.EntityFramework
                 Type = wrappedType,
                 Description = description,
 
-                Arguments = ArgumentAppender.GetQueryArguments(arguments),
+                Arguments = disableDefaultArguments ? new QueryArguments(arguments ?? new QueryArgument[] { }) : ArgumentAppender.GetQueryArguments(arguments),
 
                 Resolver = new AsyncFieldResolver<TSource, TReturn?>(
                     async context =>
@@ -111,6 +115,7 @@ namespace GraphQL.EntityFramework
                                 {
                                     await mutate.Invoke(efFieldContext, single);
                                 }
+
                                 return single;
                             }
                         }

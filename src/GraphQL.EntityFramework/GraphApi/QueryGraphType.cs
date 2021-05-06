@@ -109,10 +109,11 @@ namespace GraphQL.EntityFramework
             string name = nameof(TReturn),
             IEnumerable<QueryArgument>? arguments = null,
             bool nullable = false,
-            string? description = null)
+            string? description = null,
+            bool disableDefaultArguments = false)
             where TReturn : class
         {
-            return GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable, description);
+            return GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable, description, disableDefaultArguments);
         }
 
         public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
