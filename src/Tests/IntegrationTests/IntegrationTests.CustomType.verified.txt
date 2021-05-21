@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "customType": [
@@ -14,7 +14,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT [c].[Id], [c].[Property]
 FROM [CustomTypeEntities] AS [c]
 ORDER BY [c].[Property]

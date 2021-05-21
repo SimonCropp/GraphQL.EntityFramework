@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "manyChildren": [
@@ -13,7 +13,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT [w].[Id], [c].[Id], [c].[ParentId], [c0].[Id], [c0].[ParentId]
 FROM [WithManyChildrenEntities] AS [w]
 LEFT JOIN [Child2Entities] AS [c] ON [w].[Id] = [c].[ParentId]

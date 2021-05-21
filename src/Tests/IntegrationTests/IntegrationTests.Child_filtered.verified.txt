@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "parentEntitiesFiltered": [
@@ -16,7 +16,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT [f].[Id], [f].[Property], [f0].[Id], [f0].[ParentId], [f0].[Property]
 FROM [FilterParentEntities] AS [f]
 LEFT JOIN [FilterChildEntities] AS [f0] ON [f].[Id] = [f0].[ParentId]

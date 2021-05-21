@@ -88,10 +88,7 @@ namespace GraphQL.EntityFramework
         static Type MakeListGraphType<TReturn>(Type? itemGraphType)
             where TReturn : class
         {
-            if (itemGraphType == null)
-            {
-                itemGraphType = GraphTypeFinder.FindGraphType<TReturn>();
-            }
+            itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
             return nonNullType.MakeGenericType(listGraphType.MakeGenericType(itemGraphType));
         }

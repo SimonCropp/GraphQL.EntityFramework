@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "level1Entities": [
@@ -15,7 +15,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT [l].[Id], [l].[Level2EntityId], [l].[Level2EntityId1], [l0].[Id], [l0].[Level3EntityId], [l1].[Id], [l1].[Property]
 FROM [Level1Entities] AS [l]
 LEFT JOIN [Level2Entities] AS [l0] ON [l].[Level2EntityId1] = [l0].[Id]

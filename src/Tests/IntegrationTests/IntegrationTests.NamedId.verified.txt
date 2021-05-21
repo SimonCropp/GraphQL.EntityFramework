@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "namedEntities": [
@@ -11,7 +11,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT [n].[NamedId], [n].[Property]
 FROM [NamedEntities] AS [n]
 WHERE [n].[NamedId] = 'Guid_1'

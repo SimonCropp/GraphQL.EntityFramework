@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "withNullableEntities": [
@@ -11,7 +11,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT [w].[Id], [w].[Nullable]
 FROM [WithNullableEntities] AS [w]
 WHERE [w].[Nullable] IS NULL

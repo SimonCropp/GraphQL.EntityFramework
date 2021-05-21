@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "parentEntity": {
@@ -17,7 +17,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT [t].[Id], [t].[Property], [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
 FROM (
     SELECT TOP(2) [p].[Id], [p].[Property]

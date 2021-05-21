@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "parentEntities": [
@@ -14,7 +14,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
 ORDER BY [p].[Property] DESC

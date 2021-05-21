@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "parentEntityMutation": {
@@ -17,7 +17,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT [t].[Id], [t].[Property], [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
 FROM (
     SELECT TOP(2) [p].[Id], [p].[Property]
@@ -33,7 +33,7 @@ ORDER BY [t].[Id], [c].[Id]
         @p1: Guid_1,
         @p0: Foo
       },
-      Text: 
+      Text:
 SET NOCOUNT ON;
 UPDATE [ParentEntities] SET [Property] = @p0
 WHERE [Id] = @p1;

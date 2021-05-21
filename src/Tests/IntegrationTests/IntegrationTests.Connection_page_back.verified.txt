@@ -1,5 +1,5 @@
-{
-  target: 
+﻿{
+  target:
 {
   "data": {
     "parentEntitiesConnection": {
@@ -31,7 +31,7 @@
 },
   sql: [
     {
-      Text: 
+      Text:
 SELECT COUNT(*)
 FROM [ParentEntities] AS [p]
     },
@@ -40,7 +40,7 @@ FROM [ParentEntities] AS [p]
         @__p_0: 0,
         @__p_1: 2
       },
-      Text: 
+      Text:
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
 ORDER BY (SELECT 1)
