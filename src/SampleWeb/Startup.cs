@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Runtime.InteropServices;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 public class Startup
 {
@@ -28,10 +31,32 @@ public class Startup
         //    options => options.ExposeExceptions = true);
         //graphQl.AddWebSockets();
 
-        DbContextBuilder dbContextBuilder = new();
-        services.AddSingleton<IHostedService>(dbContextBuilder);
-        services.AddSingleton<Func<SampleDbContext>>(_ => dbContextBuilder.BuildDbContext);
-        services.AddScoped(_ => dbContextBuilder.BuildDbContext());
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            DbContextBuilder dbContextBuilder = new();
+            services.AddSingleton<IHostedService>(dbContextBuilder);
+
+            services.AddSingleton<Func<SampleDbContext>>(_ => dbContextBuilder.BuildDbContext);
+            services.AddScoped(_ => dbContextBuilder.BuildDbContext());
+        }
+        else
+        {
+            var _connection = new SqliteConnection("DataSource=:memory:");
+            _connection.Open();
+
+            var _options = new DbContextOptionsBuilder<SampleDbContext>()
+                .UseSqlite(_connection)
+                .Options;
+            var _context = new SampleDbContext(_options);
+
+            DbContextBuilder.CreateDb(_context).Wait();
+
+            services.AddScoped(_ =>
+            {
+                return _context;
+            });
+        }
+
         services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
         services.AddSingleton<ISchema, Schema>();
         var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);

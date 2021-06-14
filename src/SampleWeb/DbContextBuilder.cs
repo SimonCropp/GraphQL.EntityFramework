@@ -10,7 +10,7 @@ public class DbContextBuilder :
 {
     static SqlDatabase<SampleDbContext> database = null!;
 
-    static async Task CreateDb(SampleDbContext context)
+    internal static async Task CreateDb(SampleDbContext context)
     {
         await context.Database.EnsureCreatedAsync();
 
