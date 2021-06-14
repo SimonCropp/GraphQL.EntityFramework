@@ -41,18 +41,18 @@ public class Startup
         }
         else
         {
-            var _connection = new SqliteConnection("DataSource=:memory:");
-            _connection.Open();
-
-            var _options = new DbContextOptionsBuilder<SampleDbContext>()
-                .UseSqlite(_connection)
-                .Options;
-            var _context = new SampleDbContext(_options);
-
-            DbContextBuilder.CreateDb(_context).Wait();
-
             services.AddScoped(_ =>
             {
+                var _connection = new SqliteConnection("DataSource=:memory:");
+                _connection.Open();
+
+                var _options = new DbContextOptionsBuilder<SampleDbContext>()
+                    .UseSqlite(_connection)
+                    .Options;
+                var _context = new SampleDbContext(_options);
+
+                DbContextBuilder.CreateDb(_context).Wait();
+
                 return _context;
             });
         }
