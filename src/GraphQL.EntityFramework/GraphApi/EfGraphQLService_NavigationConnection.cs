@@ -80,9 +80,13 @@ namespace GraphQL.EntityFramework
         static object GetFieldType<TSource>(string name, Type graphType)
         {
             var makeGenericType = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSource));
-            var genericMethodInfo = makeGenericType.GetMethods().Single(mi => mi.Name == "Create" && mi.IsGenericMethod && mi.GetGenericArguments().Length == 1);
+            var genericMethodInfo = makeGenericType
+                .GetMethods()
+                .Single(method => method.Name == "Create" &&
+                                  method.IsGenericMethod &&
+                                  method.GetGenericArguments().Length == 1);
             var genericMethod = genericMethodInfo.MakeGenericMethod(graphType);
-            dynamic? x = genericMethod.Invoke(null, new object[] {name}) ?? null;
+            dynamic? x = genericMethod.Invoke(null, new object[] { name }) ?? null;
             x?.Bidirectional();
             return x?.FieldType!;
         }
