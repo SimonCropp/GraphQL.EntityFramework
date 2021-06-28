@@ -11,6 +11,9 @@ namespace GraphQL.EntityFramework
     partial class EfGraphQLService<TDbContext>
         where TDbContext : DbContext
     {
+        MethodInfo addEnumerableConnection = typeof(EfGraphQLService<TDbContext>)
+            .GetMethod("AddEnumerableConnection", BindingFlags.Instance| BindingFlags.NonPublic)!;
+
         public void AddNavigationConnectionField<TSource, TReturn>(
             ComplexGraphType<TSource> graph,
             string name,
@@ -28,15 +31,28 @@ namespace GraphQL.EntityFramework
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
             itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-            var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
-            var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
-            SetField(builder, fieldType);
+            var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
+            addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize, description, arguments, includeNames });
+        }
+
+        void AddEnumerableConnection<TSource, TGraph, TReturn>(
+            ComplexGraphType<TSource> graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
+            int pageSize,
+            string? description,
+            IEnumerable<QueryArgument>? arguments,
+            IEnumerable<string>? includeNames)
+            where TGraph : IGraphType
+            where TReturn : class
+        {
+            var builder = ConnectionBuilder<TSource>.Create<TGraph>(name);
+
             if (description != null)
             {
                 builder.Description(description);
             }
-
             builder.PageSize(pageSize).Bidirectional();
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
@@ -62,9 +78,7 @@ namespace GraphQL.EntityFramework
                 });
             }
 
-            var connection = builder;
-
-            var field = graph.AddField(connection.FieldType);
+            var field = graph.AddField(builder.FieldType);
 
             field.AddWhereArgument(hasId, arguments);
         }
