@@ -11,7 +11,7 @@ namespace GraphQL.EntityFramework
     partial class EfGraphQLService<TDbContext>
         where TDbContext : DbContext
     {
-        MethodInfo addEnumerableConnection = typeof(EfGraphQLService<TDbContext>)
+        static MethodInfo addEnumerableConnection = typeof(EfGraphQLService<TDbContext>)
             .GetMethod("AddEnumerableConnection", BindingFlags.Instance| BindingFlags.NonPublic)!;
 
         public void AddNavigationConnectionField<TSource, TReturn>(
@@ -79,32 +79,6 @@ namespace GraphQL.EntityFramework
             var field = graph.AddField(builder.FieldType);
 
             field.AddWhereArgument(hasId, arguments);
-        }
-
-        static void SetField(object builder, object fieldType)
-        {
-            var fieldTypeField = builder.GetType()
-                .GetProperty("FieldType", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)!;
-            fieldTypeField.SetValue(builder, fieldType);
-        }
-
-        //TODO: can return null
-        static object GetFieldType<TSource>(string name, Type graphType)
-        {
-            var makeGenericType = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSource));
-            var genericMethodInfo = makeGenericType
-                .GetMethods()
-                .Single(method => method.Name == "Create" &&
-                                  method.IsGenericMethod &&
-                                  method.GetGenericArguments().Length == 1);
-            var genericMethod = genericMethodInfo.MakeGenericMethod(graphType);
-            dynamic? x = genericMethod.Invoke(null, new object[] { name }) ?? null;
-            x?.Bidirectional();
-            return x?.FieldType!;
-        }
-
-        class FakeGraph : GraphType
-        {
         }
     }
 }
