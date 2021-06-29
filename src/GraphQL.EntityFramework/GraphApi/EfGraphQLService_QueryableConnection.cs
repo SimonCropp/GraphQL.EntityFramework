@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using GraphQL.Builders;
 using GraphQL.Types;
+using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
@@ -54,7 +55,8 @@ namespace GraphQL.EntityFramework
             where TGraph : IGraphType
             where TReturn : class
         {
-            var builder = ConnectionBuilder<TSource>.Create<TGraph>(name);
+            var builder = ConnectionBuilder.Create<TGraph, TSource>();
+            builder.Name(name);
             if (description != null)
             {
                 builder.Description(description);
@@ -87,10 +89,13 @@ namespace GraphQL.EntityFramework
                     });
             }
 
+            // TODO: works around https://github.com/graphql-dotnet/graphql-dotnet/pull/2581/
+            builder.FieldType.Type = typeof(NonNullGraphType<ConnectionType<TGraph, EdgeType<TGraph>>>);
             var field = graph.AddField(builder.FieldType);
 
             var hasId = keyNames.ContainsKey(typeof(TReturn));
             field.AddWhereArgument(hasId, arguments);
         }
+
     }
 }
