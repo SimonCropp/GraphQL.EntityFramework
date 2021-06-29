@@ -18,7 +18,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
             Guard.AgainstNullWhiteSpace(nameof(name), name);
 
             graphType ??= GraphTypeFinder.FindGraphType<TReturn>();

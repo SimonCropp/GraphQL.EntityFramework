@@ -19,7 +19,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
             var field = BuildQueryField(graphType, name, resolve, arguments, description);
             return graph.AddField(field);
         }
@@ -33,7 +32,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
             var field = BuildQueryField(itemGraphType, name, resolve, arguments, description);
             return graph.AddField(field);
         }

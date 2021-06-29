@@ -13,7 +13,6 @@ namespace GraphQL.EntityFramework
 
         public EfInterfaceGraphType(IEfGraphQLService<TDbContext> graphQlService)
         {
-            Guard.AgainstNull(nameof(graphQlService), graphQlService);
             GraphQlService = graphQlService;
         }
 
@@ -73,13 +72,11 @@ namespace GraphQL.EntityFramework
 
         public TDbContext ResolveDbContext(IResolveFieldContext<TSource> context)
         {
-            Guard.AgainstNull(nameof(context), context);
             return GraphQlService.ResolveDbContext(context);
         }
 
         public TDbContext ResolveDbContext(IResolveFieldContext context)
         {
-            Guard.AgainstNull(nameof(context), context);
             return GraphQlService.ResolveDbContext(context);
         }
     }

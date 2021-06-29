@@ -31,8 +31,6 @@ namespace GraphQL.EntityFramework
 
             where TDbContext : DbContext
         {
-            Guard.AgainstNull(nameof(services), services);
-
             RegisterScalarsAndArgs(services);
             services.AddHttpContextAccessor();
             services.AddTransient<HttpContextCapture>();
@@ -90,7 +88,6 @@ namespace GraphQL.EntityFramework
 
         public static void RegisterConnectionTypesInContainer(IServiceCollection services)
         {
-            Guard.AgainstNull(nameof(services), services);
             services.AddTransient(typeof(ConnectionType<>));
             services.AddTransient(typeof(EdgeType<>));
             services.AddSingleton<PageInfoType>();

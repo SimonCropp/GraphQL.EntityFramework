@@ -20,7 +20,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
             BuildQueryConnectionField(graph, name, resolve, arguments, pageSize, itemGraphType, description);
         }
 
@@ -34,7 +33,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
             BuildQueryConnectionField(graph, name, resolve, arguments, pageSize, itemGraphType, description);
         }
 

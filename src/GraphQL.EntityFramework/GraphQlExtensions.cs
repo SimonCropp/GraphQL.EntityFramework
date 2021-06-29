@@ -24,8 +24,6 @@ namespace GraphQL.EntityFramework
             this IDocumentExecuter executer,
             ExecutionOptions options)
         {
-            Guard.AgainstNull(nameof(executer), executer);
-            Guard.AgainstNull(nameof(options), options);
             var executionResult = await executer.ExecuteAsync(options);
 
             var errors = executionResult.Errors;
