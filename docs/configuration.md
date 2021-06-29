@@ -161,7 +161,6 @@ namespace GraphQL.EntityFramework
     {
         protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
         {
-            Guard.AgainstNull(nameof(context), context);
             if (context.Operation.OperationType == OperationType.Query)
             {
                 return new SerialExecutionStrategy();
@@ -171,7 +170,7 @@ namespace GraphQL.EntityFramework
     }
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfDocumentExecuter.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfDocumentExecuter.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -732,8 +731,6 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     this IDocumentExecuter executer,
     ExecutionOptions options)
 {
-    Guard.AgainstNull(nameof(executer), executer);
-    Guard.AgainstNull(nameof(options), options);
     var executionResult = await executer.ExecuteAsync(options);
 
     var errors = executionResult.Errors;
@@ -750,7 +747,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     return executionResult;
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L21-L45' title='Snippet source file'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L21-L43' title='Snippet source file'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
