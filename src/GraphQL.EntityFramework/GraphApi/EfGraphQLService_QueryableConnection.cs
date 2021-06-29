@@ -21,13 +21,7 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-
-            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
-
-            var field = graph.AddField(connection.FieldType);
-
-            var hasId = keyNames.ContainsKey(typeof(TReturn));
-            field.AddWhereArgument(hasId, arguments);
+            BuildQueryConnectionField(graph, name, resolve, arguments, pageSize, itemGraphType, description);
         }
 
         public void AddQueryConnectionField<TSource, TReturn>(
@@ -41,18 +35,14 @@ namespace GraphQL.EntityFramework
             where TReturn : class
         {
             Guard.AgainstNull(nameof(graph), graph);
-
-            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
-
-            var field = graph.AddField(connection.FieldType);
-
-            var hasId = keyNames.ContainsKey(typeof(TReturn));
-            field.AddWhereArgument(hasId,arguments);
+            BuildQueryConnectionField(graph, name, resolve, arguments, pageSize, itemGraphType, description);
         }
 
-        ConnectionBuilder<TSource> BuildQueryConnectionField<TSource, TReturn>(
+        void BuildQueryConnectionField<TSource, TReturn>(
+            IComplexGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
+            IEnumerable<QueryArgument>? arguments,
             int pageSize,
             Type? itemGraphType,
             string? description)
@@ -98,7 +88,10 @@ namespace GraphQL.EntityFramework
                     });
             }
 
-            return builder;
+            var field = graph.AddField(builder.FieldType);
+
+            var hasId = keyNames.ContainsKey(typeof(TReturn));
+            field.AddWhereArgument(hasId, arguments);
         }
     }
 }
