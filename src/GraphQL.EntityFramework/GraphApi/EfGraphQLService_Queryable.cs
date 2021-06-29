@@ -44,7 +44,7 @@ namespace GraphQL.EntityFramework
             string? description)
             where TReturn : class
         {
-            Guard.AgainstNullWhiteSpace(nameof(name), name);
+            Guard.AgainstWhiteSpace(nameof(name), name);
 
             var hasId = keyNames.ContainsKey(typeof(TReturn));
             FieldType fieldType = new()

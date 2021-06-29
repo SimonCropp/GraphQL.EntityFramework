@@ -66,7 +66,7 @@ namespace GraphQL.EntityFramework
             string? description)
             where TReturn : class
         {
-            Guard.AgainstNullWhiteSpace(nameof(name), name);
+            Guard.AgainstWhiteSpace(nameof(name), name);
 
             graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 

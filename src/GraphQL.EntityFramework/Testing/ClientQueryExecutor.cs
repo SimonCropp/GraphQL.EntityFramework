@@ -19,7 +19,7 @@ namespace GraphQL.EntityFramework.Testing
 
         public Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
         {
-            Guard.AgainstNullWhiteSpace(nameof(query), query);
+            Guard.AgainstWhiteSpace(nameof(query), query);
             query = CompressQuery(query);
             var body = new
             {
@@ -36,7 +36,7 @@ namespace GraphQL.EntityFramework.Testing
 
         public Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
         {
-            Guard.AgainstNullWhiteSpace(nameof(query), query);
+            Guard.AgainstWhiteSpace(nameof(query), query);
             var compressed = CompressQuery(query);
             var variablesString = ToJson(variables);
             var getUri = $"{uri}?query={compressed}&variables={variablesString}";
