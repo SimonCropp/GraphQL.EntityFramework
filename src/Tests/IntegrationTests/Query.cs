@@ -112,5 +112,10 @@ public class Query :
             name: "parentEntityViewNullable",
             resolve: context => context.DbContext.ParentEntityView,
             nullable: true);
+
+        AddSingleField(
+            name: "ownedParent",
+            resolve: context => context.DbContext.OwnedParents,
+            nullable: true);
     }
 }

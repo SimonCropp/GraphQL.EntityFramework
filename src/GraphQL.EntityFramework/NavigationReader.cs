@@ -9,10 +9,16 @@ static class NavigationReader
 {
     public static IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> GetNavigationProperties(IModel model)
     {
-        return model
-            .GetEntityTypes()
-            .Where(x => !x.IsOwned())
-            .ToDictionary(x => x.ClrType, GetNavigations);
+        var dictionary = new Dictionary<Type, IReadOnlyList<Navigation>>();
+        foreach (var property in model.GetEntityTypes())
+        {
+            if (!dictionary.ContainsKey(property.ClrType))
+            {
+                dictionary[property.ClrType] = GetNavigations(property);
+            }
+        }
+
+        return dictionary;
     }
 
     static IReadOnlyList<Navigation> GetNavigations(IEntityType entity)

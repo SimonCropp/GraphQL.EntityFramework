@@ -29,6 +29,8 @@ public class Schema :
         RegisterTypeMapping(typeof(ManyToManyLeftEntity), typeof(ManyToManyLeftGraph));
         RegisterTypeMapping(typeof(ManyToManyRightEntity), typeof(ManyToManyRightGraph));
         RegisterTypeMapping(typeof(ParentEntityView), typeof(ParentEntityViewGraph));
+        RegisterTypeMapping(typeof(OwnedParent), typeof(OwnedParentGraph));
+        RegisterTypeMapping(typeof(OwnedChild), typeof(OwnedChildGraph));
         Query = (Query)resolver.GetService(typeof(Query))!;
         Mutation = (Mutation)resolver.GetService(typeof(Mutation))!;
         RegisterType(typeof(DerivedGraph));
