@@ -108,12 +108,12 @@ namespace GraphQL.EntityFramework
                 if (navigation.IsCollection)
                 {
                     var genericMethod = addNavigationListMethod.MakeGenericMethod(typeof(TSource), navigation.Type);
-                    genericMethod.Invoke(null, new object[] {graph, graphService, navigation});
+                    genericMethod.Invoke(null, new object[] { graph, graphService, navigation });
                 }
                 else
                 {
                     var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TSource), navigation.Type);
-                    genericMethod.Invoke(null, new object[] {graph, graphService, navigation});
+                    genericMethod.Invoke(null, new object[] { graph, graphService, navigation });
                 }
             }
             catch (TargetInvocationException exception)
@@ -143,6 +143,7 @@ namespace GraphQL.EntityFramework
             var compile = NavigationFunc<TSource, IEnumerable<TReturn>>(navigation.Name);
             graphQlService.AddNavigationListField(graph, navigation.Name, compile, graphTypeFromType);
         }
+
         public record NavigationKey(Type Type, string Name);
 
         static ConcurrentDictionary<NavigationKey, object> navigationFuncs = new();
@@ -151,7 +152,7 @@ namespace GraphQL.EntityFramework
         {
             NavigationKey key = new(typeof(TSource), name);
 
-            return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>) navigationFuncs.GetOrAdd(
+            return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>)navigationFuncs.GetOrAdd(
                 key,
                 x => NavigationExpression<TSource, TReturn>(x.Name).Compile());
         }
@@ -224,9 +225,9 @@ namespace GraphQL.EntityFramework
             return Expression.Lambda<Func<TSource, object>>(convert, parameter);
         }
 
-
         static Type listGraphType = typeof(ListGraphType<>);
         static Type nonNullType = typeof(NonNullGraphType<>);
+
         static Type GraphTypeFromType(string name, Type propertyType, bool isNullable)
         {
             try
@@ -237,8 +238,10 @@ namespace GraphQL.EntityFramework
                     {
                         return listGraphType.MakeGenericType(GraphTypeFinder.FindGraphType(collectionGenericType));
                     }
+
                     return nonNullType.MakeGenericType(listGraphType.MakeGenericType(GraphTypeFinder.FindGraphType(collectionGenericType)));
                 }
+
                 return GraphTypeFinder.FindGraphType(propertyType, isNullable);
             }
             catch (ArgumentOutOfRangeException exception)

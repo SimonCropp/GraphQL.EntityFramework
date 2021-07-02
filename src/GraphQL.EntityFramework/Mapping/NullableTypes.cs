@@ -11,7 +11,7 @@ namespace GraphQL.EntityFramework
         static bool GetNullableFlag(Type type, Attribute attribute)
         {
             var field = type.GetField("NullableFlags")!;
-            var nullableFlags = (byte[]) field.GetValue(attribute)!;
+            var nullableFlags = (byte[])field.GetValue(attribute)!;
             return nullableFlags.Single() == 2;
         }
 
@@ -24,6 +24,7 @@ namespace GraphQL.EntityFramework
                 {
                     return (bool)nullable;
                 }
+
                 if (CheckForNullable(member.GetGetMethod()!.GetCustomAttributes(), out nullable))
                 {
                     return (bool)nullable;
@@ -41,7 +42,7 @@ namespace GraphQL.EntityFramework
             return propertyType.Nullable();
         }
 
-        static bool CheckForNullable(IEnumerable<Attribute> attributes, [NotNullWhen(true)]out bool? isNullable)
+        static bool CheckForNullable(IEnumerable<Attribute> attributes, [NotNullWhen(true)] out bool? isNullable)
         {
             foreach (var attribute in attributes)
             {
@@ -60,12 +61,12 @@ namespace GraphQL.EntityFramework
             var type = attribute.GetType();
             switch (type)
             {
-                case {Name: "NullableAttribute"}:
+                case { Name: "NullableAttribute" }:
                 {
                     isNullable = GetNullableFlag(type, attribute);
                     return true;
                 }
-                case {Name: "NullableContextAttribute"}:
+                case { Name: "NullableContextAttribute" }:
                 {
                     isNullable = IsNullableContextAttributeFlagNull(type, attribute);
                     return true;
@@ -82,6 +83,7 @@ namespace GraphQL.EntityFramework
             {
                 return true;
             }
+
             if (CheckForNullable(type.GetCustomAttributes(), out var nullable))
             {
                 return (bool)nullable;
@@ -92,13 +94,13 @@ namespace GraphQL.EntityFramework
                 return type.GetGenericTypeDefinition() == typeof(Nullable<>);
             }
 
-            return false;
+            return type.IsClass;
         }
 
         static bool IsNullableContextAttributeFlagNull(Type type, Attribute attribute)
         {
             var field = type.GetField("Flag")!;
-            var defaultFlag = (byte) field.GetValue(attribute)!;
+            var defaultFlag = (byte)field.GetValue(attribute)!;
             return defaultFlag == 2;
         }
     }
