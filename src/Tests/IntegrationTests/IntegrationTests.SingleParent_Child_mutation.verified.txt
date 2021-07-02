@@ -30,8 +30,8 @@ ORDER BY [t].[Id], [c].[Id]
     {
       HasTransaction: true,
       Parameters: {
-        @p1: Guid_1,
-        @p0: Foo
+        @p0: Foo,
+        @p1: Guid_1
       },
       Text:
 SET NOCOUNT ON;

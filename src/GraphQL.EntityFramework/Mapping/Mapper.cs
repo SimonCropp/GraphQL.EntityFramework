@@ -34,13 +34,6 @@ namespace GraphQL.EntityFramework
         static MethodInfo addNavigationMethod = typeof(Mapper<TDbContext>).GetMethod(nameof(AddNavigation), bindingFlags)!;
         static MethodInfo addNavigationListMethod = typeof(Mapper<TDbContext>).GetMethod(nameof(AddNavigationList), bindingFlags)!;
 
-        [Obsolete("Use AutoRegisteringObjectGraphType or AutoRegisteringInputObjectGraphType")]
-        public static void AutoMap<TSource>(
-            ObjectGraphType<TSource> graph,
-            IReadOnlyList<string>? exclusions = null)
-        {
-        }
-
         internal static void AutoMap<TSource>(
             ObjectGraphType<TSource> graph,
             IEfGraphQLService<TDbContext> graphService,
