@@ -1625,8 +1625,8 @@ fragment childEntityFields on DerivedChild {
             services.AddSingleton(type);
         }
 
-        SqlRecording.StartRecording();
         await using var context = database.NewDbContext();
+        SqlRecording.StartRecording();
         try
         {
             var result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking);
