@@ -31,8 +31,8 @@ public class SampleDbContext :
             .IsRequired();
         modelBuilder.Entity<Employee>();
 
-        modelBuilder.Entity<OrderDetail>().OwnsOne(p => p.BillingAddress);
-        modelBuilder.Entity<OrderDetail>().OwnsOne(p => p.ShippingAddress);
-
+        var order = modelBuilder.Entity<OrderDetail>();
+        order.OwnsOne(p => p.BillingAddress);
+        order.OwnsOne(p => p.ShippingAddress);
     }
 }
