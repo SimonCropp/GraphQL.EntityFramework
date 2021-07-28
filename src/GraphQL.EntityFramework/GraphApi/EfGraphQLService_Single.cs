@@ -22,7 +22,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
             var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
             return graph.AddField(field);
         }
@@ -38,7 +37,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
             var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
             return graph.AddField(field);
         }
@@ -54,7 +52,6 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
             var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
             return graph.AddField(field);
         }
@@ -69,8 +66,7 @@ namespace GraphQL.EntityFramework
             string? description)
             where TReturn : class
         {
-            Guard.AgainstNullWhiteSpace(nameof(name), name);
-            Guard.AgainstNull(nameof(resolve), resolve);
+            Guard.AgainstWhiteSpace(nameof(name), name);
 
             graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 

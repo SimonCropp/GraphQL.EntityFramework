@@ -22,8 +22,6 @@ namespace GraphQL.EntityFramework
             ResolveFilters? resolveFilters = null,
             bool disableTracking = false)
         {
-            Guard.AgainstNull(nameof(model), model);
-            Guard.AgainstNull(nameof(resolveDbContext), resolveDbContext);
             this.resolveFilters = resolveFilters;
             this.disableTracking = disableTracking;
 
@@ -72,7 +70,6 @@ namespace GraphQL.EntityFramework
 
         public TDbContext ResolveDbContext(IResolveFieldContext context)
         {
-            Guard.AgainstNull(nameof(context), context);
             return resolveDbContext(context.UserContext);
         }
 

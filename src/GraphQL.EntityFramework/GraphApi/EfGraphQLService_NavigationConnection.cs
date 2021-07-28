@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using GraphQL.Builders;
 using GraphQL.Types;
+using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
@@ -11,6 +12,9 @@ namespace GraphQL.EntityFramework
     partial class EfGraphQLService<TDbContext>
         where TDbContext : DbContext
     {
+        static MethodInfo addEnumerableConnection = typeof(EfGraphQLService<TDbContext>)
+            .GetMethod("AddEnumerableConnection", BindingFlags.Instance| BindingFlags.NonPublic)!;
+
         public void AddNavigationConnectionField<TSource, TReturn>(
             ComplexGraphType<TSource> graph,
             string name,
@@ -22,21 +26,33 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
-
-            Guard.AgainstNullWhiteSpace(nameof(name), name);
+            Guard.AgainstWhiteSpace(nameof(name), name);
             Guard.AgainstNegative(nameof(pageSize), pageSize);
 
             itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-            var fieldType = GetFieldType<TSource>(name, itemGraphType);
 
-            var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
-            SetField(builder, fieldType);
+            var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
+            addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize, description, arguments, includeNames });
+        }
+
+        void AddEnumerableConnection<TSource, TGraph, TReturn>(
+            ComplexGraphType<TSource> graph,
+            string name,
+            Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
+            int pageSize,
+            string? description,
+            IEnumerable<QueryArgument>? arguments,
+            IEnumerable<string>? includeNames)
+            where TGraph : IGraphType
+            where TReturn : class
+        {
+            var builder = ConnectionBuilder.Create<TGraph, TSource>();
+            builder.Name(name);
+
             if (description != null)
             {
                 builder.Description(description);
             }
-
             builder.PageSize(pageSize).Bidirectional();
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
@@ -62,33 +78,11 @@ namespace GraphQL.EntityFramework
                 });
             }
 
-            var connection = builder;
-
-            var field = graph.AddField(connection.FieldType);
+            // TODO: works around https://github.com/graphql-dotnet/graphql-dotnet/pull/2581/
+            builder.FieldType.Type = typeof(NonNullGraphType<ConnectionType<TGraph, EdgeType<TGraph>>>);
+            var field = graph.AddField(builder.FieldType);
 
             field.AddWhereArgument(hasId, arguments);
-        }
-
-        static void SetField(object builder, object fieldType)
-        {
-            var fieldTypeField = builder.GetType()
-                .GetProperty("FieldType", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)!;
-            fieldTypeField.SetValue(builder, fieldType);
-        }
-
-        //TODO: can return null
-        static object GetFieldType<TSource>(string name, Type graphType)
-        {
-            var makeGenericType = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSource));
-            var genericMethodInfo = makeGenericType.GetMethods().Single(mi => mi.Name == "Create" && mi.IsGenericMethod && mi.GetGenericArguments().Length == 1);
-            var genericMethod = genericMethodInfo.MakeGenericMethod(graphType);
-            dynamic? x = genericMethod.Invoke(null, new object[] {name}) ?? null;
-            x?.Bidirectional();
-            return x?.FieldType!;
-        }
-
-        class FakeGraph : GraphType
-        {
         }
     }
 }

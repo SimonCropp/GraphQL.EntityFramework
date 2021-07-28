@@ -13,8 +13,6 @@ namespace GraphQL.EntityFramework
             bool applyOrder)
             where TItem : class
         {
-            Guard.AgainstNull(nameof(queryable), queryable);
-            Guard.AgainstNull(nameof(context), context);
             object? GetArguments(Type type, string x) => context.GetArgument(type, x);
 
             if (keyNames != null)

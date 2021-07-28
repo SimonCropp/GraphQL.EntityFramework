@@ -469,6 +469,29 @@ query ($value: String!)
     }
 
     [Fact]
+    public async Task Owned()
+    {
+        var query = @"
+{
+  ownedParent(id: ""00000000-0000-0000-0000-000000000001"") {
+    property
+    child1 {
+      property
+    }
+  }
+}";
+        OwnedParent entity1 = new()
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Parent value",
+            Child1 = new OwnedChild { Property = "Value1" },
+            Child2 = new OwnedChild { Property = "Value2" }
+        };
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { entity1 });
+    }
+
+    [Fact]
     public async Task Single_Found()
     {
         var query = @"
@@ -1602,8 +1625,8 @@ fragment childEntityFields on DerivedChild {
             services.AddSingleton(type);
         }
 
-        SqlRecording.StartRecording();
         await using var context = database.NewDbContext();
+        SqlRecording.StartRecording();
         try
         {
             var result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking);

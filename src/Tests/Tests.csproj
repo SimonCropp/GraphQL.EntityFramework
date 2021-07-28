@@ -4,16 +4,16 @@
     <NoWarn>EF1000</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EfLocalDb" Version="10.1.0" />
+    <PackageReference Include="EfLocalDb" Version="10.7.0" />
     <PackageReference Include="GraphQL" Version="4.5.0" />
     <PackageReference Include="GraphQL.NewtonsoftJson" Version="4.5.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.8" />
     <PackageReference Include="Verify.SqlServer" Version="2.16.0" />
     <PackageReference Include="Xunit" Version="2.4.1" />
-    <PackageReference Include="Verify.Xunit" Version="11.18.2" />
+    <PackageReference Include="Verify.Xunit" Version="11.20.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.54" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.56" PrivateAssets="All" />
   </ItemGroup>
 </Project>

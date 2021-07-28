@@ -20,7 +20,6 @@ namespace GraphQL.EntityFramework
         public void Add<TEntity>(Filter<TEntity> filter)
             where TEntity : class
         {
-            Guard.AgainstNull(nameof(filter), filter);
             funcs[typeof(TEntity)] =
                 (context, item) =>
                 {
@@ -38,7 +37,6 @@ namespace GraphQL.EntityFramework
         public void Add<TEntity>(AsyncFilter<TEntity> filter)
             where TEntity : class
         {
-            Guard.AgainstNull(nameof(filter), filter);
             funcs[typeof(TEntity)] =
                 async (context, item) =>
                 {

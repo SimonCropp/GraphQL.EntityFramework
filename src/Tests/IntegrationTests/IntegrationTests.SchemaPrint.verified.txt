@@ -1,4 +1,4 @@
-type Child {
+﻿type Child {
   parentAlias: Parent
   parent: Parent
   id: ID!
@@ -56,7 +56,7 @@ type CustomType {
 }
 
 type Derived implements Interface {
-  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection
+  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
   childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   id: ID!
   property: String
@@ -82,8 +82,8 @@ type DerivedChildEdge {
 }
 
 type DerivedWithNavigation implements Interface {
-  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection
-  childrenFromDerived(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection
+  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
+  childrenFromDerived(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
   childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   id: ID!
@@ -109,7 +109,7 @@ type FilterChildEdge {
 }
 
 type FilterParent {
-  childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): FilterChildConnection
+  childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): FilterChildConnection!
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterChild!]!
   id: ID!
   property: String
@@ -142,7 +142,7 @@ type IncludeNonQueryableB {
 interface Interface {
   id: ID!
   property: String
-  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection
+  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
 }
 
 type InterfaceConnection {
@@ -202,6 +202,17 @@ input OrderBy {
   descending: Boolean
 }
 
+type OwnedChild {
+  property: String!
+}
+
+type OwnedParent {
+  child1: OwnedChild!
+  child2: OwnedChild!
+  id: ID!
+  property: String
+}
+
 type PageInfo {
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
@@ -210,7 +221,7 @@ type PageInfo {
 }
 
 type Parent {
-  childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ChildConnection
+  childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ChildConnection!
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   id: ID!
   property: String
@@ -255,19 +266,20 @@ type Query {
   misNamed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryParent!]!
   parentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
   childEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
-  parentEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ParentConnection
-  childEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ChildConnection
+  parentEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ParentConnection!
+  childEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ChildConnection!
   parentEntitiesFiltered(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterParent!]!
-  parentEntitiesConnectionFiltered(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): FilterParentConnection
+  parentEntitiesConnectionFiltered(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): FilterParentConnection!
   parentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
   parentEntityNullable(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  interfaceGraphConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): InterfaceConnection
+  interfaceGraphConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): InterfaceConnection!
   manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
   manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
   parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentView!]!
-  parentEntitiesViewConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!]): ParentViewConnection
+  parentEntitiesViewConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!]): ParentViewConnection!
   parentEntityView(where: [WhereExpression!]): ParentView!
   parentEntityViewNullable(where: [WhereExpression!]): ParentView
+  ownedParent(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
 }
 
 type SkipLevelGraph {

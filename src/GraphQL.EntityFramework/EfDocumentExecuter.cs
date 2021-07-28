@@ -8,7 +8,6 @@ namespace GraphQL.EntityFramework
     {
         protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
         {
-            Guard.AgainstNull(nameof(context), context);
             if (context.Operation.OperationType == OperationType.Query)
             {
                 return new SerialExecutionStrategy();

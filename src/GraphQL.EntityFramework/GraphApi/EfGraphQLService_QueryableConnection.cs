@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using GraphQL.Builders;
 using GraphQL.Types;
+using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework
@@ -10,6 +12,9 @@ namespace GraphQL.EntityFramework
     partial class EfGraphQLService<TDbContext>
         where TDbContext : DbContext
     {
+        static MethodInfo addQueryableConnection = typeof(EfGraphQLService<TDbContext>)
+            .GetMethod("AddQueryableConnection", BindingFlags.Instance| BindingFlags.NonPublic)!;
+
         public void AddQueryConnectionField<TReturn>(
             IComplexGraphType graph,
             string name,
@@ -20,14 +25,9 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
-
-            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
-
-            var field = graph.AddField(connection.FieldType);
-
-            var hasId = keyNames.ContainsKey(typeof(TReturn));
-            field.AddWhereArgument(hasId, arguments);
+            itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+            var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(object), itemGraphType, typeof(TReturn));
+            addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description });
         }
 
         public void AddQueryConnectionField<TSource, TReturn>(
@@ -40,32 +40,23 @@ namespace GraphQL.EntityFramework
             string? description = null)
             where TReturn : class
         {
-            Guard.AgainstNull(nameof(graph), graph);
-
-            var connection = BuildQueryConnectionField(name, resolve, pageSize, itemGraphType, description);
-
-            var field = graph.AddField(connection.FieldType);
-
-            var hasId = keyNames.ContainsKey(typeof(TReturn));
-            field.AddWhereArgument(hasId,arguments);
+            itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+            var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
+            addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description });
         }
 
-        ConnectionBuilder<TSource> BuildQueryConnectionField<TSource, TReturn>(
+        void AddQueryableConnection<TSource, TGraph, TReturn>(
+            IComplexGraphType graph,
             string name,
             Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
+            IEnumerable<QueryArgument>? arguments,
             int pageSize,
-            Type? itemGraphType,
             string? description)
+            where TGraph : IGraphType
             where TReturn : class
         {
-            Guard.AgainstNullWhiteSpace(nameof(name), name);
-            Guard.AgainstNegative(nameof(pageSize), pageSize);
-
-            itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-            var fieldType = GetFieldType<TSource>(name, itemGraphType);
-
-            var builder = ConnectionBuilder<TSource>.Create<FakeGraph>(name);
-            SetField(builder, fieldType);
+            var builder = ConnectionBuilder.Create<TGraph, TSource>();
+            builder.Name(name);
             if (description != null)
             {
                 builder.Description(description);
@@ -98,7 +89,13 @@ namespace GraphQL.EntityFramework
                     });
             }
 
-            return builder;
+            // TODO: works around https://github.com/graphql-dotnet/graphql-dotnet/pull/2581/
+            builder.FieldType.Type = typeof(NonNullGraphType<ConnectionType<TGraph, EdgeType<TGraph>>>);
+            var field = graph.AddField(builder.FieldType);
+
+            var hasId = keyNames.ContainsKey(typeof(TReturn));
+            field.AddWhereArgument(hasId, arguments);
         }
+
     }
 }
