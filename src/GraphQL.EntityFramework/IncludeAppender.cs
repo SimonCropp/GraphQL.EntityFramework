@@ -20,7 +20,7 @@ class IncludeAppender
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class
     {
-        if (context.SubFields == null)
+        if (context.SubFields is null)
         {
             return query;
         }
@@ -75,7 +75,7 @@ class IncludeAppender
         foreach (var fragmentSpread in selectionSet.Selections.OfType<FragmentSpread>())
         {
             var fragmentDefinition = context.Document.Fragments.FindDefinition(fragmentSpread.Name);
-            if (fragmentDefinition == null)
+            if (fragmentDefinition is null)
             {
                 continue;
             }
@@ -115,7 +115,7 @@ class IncludeAppender
 
     static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)
     {
-        if (parentPath == null)
+        if (parentPath is null)
         {
             return includeNames;
         }
@@ -128,7 +128,7 @@ class IncludeAppender
         foreach (var subField in subFields)
         {
             var single = graph.Fields.SingleOrDefault(x => x.Name == subField.Name);
-            if (single != null)
+            if (single is not null)
             {
                 AddField(list, subField, subField.SelectionSet, parentPath, single, navigationProperties, context);
             }
@@ -148,7 +148,7 @@ class IncludeAppender
 
     static void SetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames, IDictionary<string, object> metadata)
     {
-        if (includeNames == null)
+        if (includeNames is null)
         {
             metadata["_EF_IncludeName"] = FieldNameToArray(fieldName);
         }

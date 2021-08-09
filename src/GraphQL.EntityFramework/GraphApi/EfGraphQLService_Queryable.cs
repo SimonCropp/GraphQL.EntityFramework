@@ -55,7 +55,7 @@ namespace GraphQL.EntityFramework
                 Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, true),
             };
 
-            if (resolve != null)
+            if (resolve is not null)
             {
                 fieldType.Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
                     async context =>

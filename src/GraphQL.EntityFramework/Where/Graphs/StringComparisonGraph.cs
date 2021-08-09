@@ -9,7 +9,7 @@ class StringComparisonGraph :
     {
         Name = nameof(StringComparison);
         var literal = base.ParseLiteral(value);
-        if (literal != null)
+        if (literal is not null)
         {
             return literal;
         }

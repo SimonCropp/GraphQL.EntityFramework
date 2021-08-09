@@ -13,7 +13,7 @@ static class KeyNameExtractor
         {
             var primaryKey = entityType.FindPrimaryKey();
             //This can happen for views
-            if (primaryKey == null)
+            if (primaryKey is null)
             {
                 continue;
             }

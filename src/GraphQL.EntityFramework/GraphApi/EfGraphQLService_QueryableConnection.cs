@@ -57,13 +57,13 @@ namespace GraphQL.EntityFramework
         {
             var builder = ConnectionBuilder.Create<TGraph, TSource>();
             builder.Name(name);
-            if (description != null)
+            if (description is not null)
             {
                 builder.Description(description);
             }
             builder.PageSize(pageSize).Bidirectional();
 
-            if (resolve != null)
+            if (resolve is not null)
             {
                 builder.Resolve(
                     context =>

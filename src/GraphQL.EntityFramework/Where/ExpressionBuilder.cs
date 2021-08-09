@@ -58,7 +58,7 @@ namespace GraphQL.EntityFramework
                 }
 
                 // If this is the first where processed
-                if (mainExpression == null)
+                if (mainExpression is null)
                 {
                     // Assign to main expression
                     mainExpression = nextExpression;
@@ -260,7 +260,7 @@ namespace GraphQL.EntityFramework
             MethodCallExpression equalsBody;
 
             // If string comparison not provided
-            if (comparison == null)
+            if (comparison is null)
             {
                 // Do basic string compare
                 equalsBody = Expression.Call(null, ReflectionCache.StringEqual, ExpressionCache.StringParam, property.Left);
@@ -289,7 +289,7 @@ namespace GraphQL.EntityFramework
             var valueConstant = Expression.Constant(value, typeof(string));
             var nullCheck = Expression.NotEqual(left, ExpressionCache.Null);
 
-            if (stringComparison == null)
+            if (stringComparison is null)
             {
                 switch (comparison)
                 {

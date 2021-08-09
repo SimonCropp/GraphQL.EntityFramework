@@ -61,7 +61,7 @@ static class ArgumentAppender
         {
             arguments.Add(idsArgument());
         }
-        if (extra != null)
+        if (extra is not null)
         {
             foreach (var argument in extra)
             {
@@ -87,7 +87,7 @@ static class ArgumentAppender
             arguments.Add(takeArgument());
         }
 
-        if (extra != null)
+        if (extra is not null)
         {
             foreach (var argument in extra)
             {

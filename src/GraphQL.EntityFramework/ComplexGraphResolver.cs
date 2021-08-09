@@ -82,7 +82,7 @@ static class ComplexGraphResolver
     {
         var type = graph.GetType();
 
-        while (type != null)
+        while (type is not null)
         {
             if (type.IsGenericType)
             {

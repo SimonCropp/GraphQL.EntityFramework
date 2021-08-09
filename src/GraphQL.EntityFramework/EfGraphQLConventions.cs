@@ -67,13 +67,13 @@ namespace GraphQL.EntityFramework
                 .HttpContext?
                 .RequestServices
                 .GetService<TDbContext>();
-            if (dataFromHttpContext != null)
+            if (dataFromHttpContext is not null)
             {
                 return dataFromHttpContext;
             }
 
             var dataFromRootProvider = provider.GetService<TDbContext>();
-            if (dataFromRootProvider != null)
+            if (dataFromRootProvider is not null)
             {
                 return dataFromRootProvider;
             }
@@ -97,13 +97,13 @@ namespace GraphQL.EntityFramework
             where TDbContext : DbContext
         {
             var model = provider.GetService<IModel>();
-            if (model != null)
+            if (model is not null)
             {
                 return model;
             }
 
             var dbContext = provider.GetService<TDbContext>();
-            if (dbContext != null)
+            if (dbContext is not null)
             {
                 return dbContext.Model;
             }

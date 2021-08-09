@@ -31,7 +31,7 @@ class ComparisonGraph :
     public override object? ParseLiteral(IValue value)
     {
         var literal = base.ParseLiteral(value.TryToEnumValue());
-        if (literal != null)
+        if (literal is not null)
         {
             return literal;
         }

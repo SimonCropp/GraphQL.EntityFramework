@@ -13,7 +13,7 @@ static class WhereValidator
             throw new($"Cannot perform {comparison} on {propertyType.FullName}.");
         }
 
-        if (@case != null)
+        if (@case is not null)
         {
             throw new($"Cannot use {nameof(StringComparison)} when comparing {propertyType.FullName}.");
         }
@@ -38,7 +38,7 @@ static class WhereValidator
             throw new($"Cannot perform {comparison} on a String.");
         }
 
-        if (comparison == Comparison.Like && @case != null)
+        if (comparison == Comparison.Like && @case is not null)
         {
             throw new($"{nameof(Comparison.Like)} is not compatible with {nameof(StringComparison)}.");
         }

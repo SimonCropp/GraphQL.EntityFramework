@@ -96,7 +96,7 @@ namespace GraphQL.EntityFramework
         internal virtual async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity? item)
             where TEntity : class
         {
-            if (item == null)
+            if (item is null)
             {
                 return false;
             }

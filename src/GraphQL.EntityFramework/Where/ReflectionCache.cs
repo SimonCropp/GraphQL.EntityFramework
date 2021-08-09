@@ -184,7 +184,7 @@ static class ReflectionCache
         }
 
         var underlying = Nullable.GetUnderlyingType(type);
-        if (underlying == null)
+        if (underlying is null)
         {
             enumType = typeof(object);
             return false;
@@ -215,7 +215,7 @@ static class ReflectionCache
                                       x.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
 
-        if (collectionType == null)
+        if (collectionType is null)
         {
             collectionGenericType = null;
             return false;

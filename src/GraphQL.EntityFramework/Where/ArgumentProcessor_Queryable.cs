@@ -15,7 +15,7 @@ namespace GraphQL.EntityFramework
         {
             object? GetArguments(Type type, string x) => context.GetArgument(type, x);
 
-            if (keyNames != null)
+            if (keyNames is not null)
             {
                 if (ArgumentReader.TryReadIds(GetArguments, out var values))
                 {

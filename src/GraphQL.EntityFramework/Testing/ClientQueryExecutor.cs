@@ -47,7 +47,7 @@ namespace GraphQL.EntityFramework.Testing
 
         string ToJson(object? target)
         {
-            if (target == null)
+            if (target is null)
             {
                 return string.Empty;
             }

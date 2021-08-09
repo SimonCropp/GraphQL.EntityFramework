@@ -21,7 +21,7 @@ static class TypeConverter
             throw new($"Null passed to In expression for non nullable type '{type.FullName}'.");
         }
 
-        var list = ConvertStringsToListInternal(values.Where(x => x != null).Select(x=>x!), type);
+        var list = ConvertStringsToListInternal(values.Where(x => x is not null).Select(x=>x!), type);
         if (hasNull)
         {
             list.Add(null);
@@ -143,9 +143,9 @@ static class TypeConverter
     public static object? ConvertStringToType(string? value, Type type)
     {
         var underlyingType = Nullable.GetUnderlyingType(type);
-        if (underlyingType != null)
+        if (underlyingType is not null)
         {
-            if (value == null)
+            if (value is null)
             {
                 return null;
             }

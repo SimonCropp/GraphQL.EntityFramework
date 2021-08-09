@@ -48,12 +48,12 @@ namespace GraphQL.EntityFramework
                 }
 
                 List<string> list = new();
-                if (exclusions != null)
+                if (exclusions is not null)
                 {
                     list.AddRange(exclusions);
                 }
 
-                if (navigations != null)
+                if (navigations is not null)
                 {
                     list.AddRange(navigations.Select(x => x.Name));
                 }
@@ -180,7 +180,7 @@ namespace GraphQL.EntityFramework
 
         static bool ShouldIgnore(IComplexGraphType graphType, string name, Type propertyType, IReadOnlyList<string>? localIgnores = null)
         {
-            if (localIgnores != null)
+            if (localIgnores is not null)
             {
                 if (localIgnores.Contains(name, StringComparer.OrdinalIgnoreCase))
                 {

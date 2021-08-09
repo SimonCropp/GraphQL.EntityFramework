@@ -231,14 +231,14 @@ query ($id: ID!)
 //            websocketClient,
 //            response =>
 //            {
-//                if (response == null)
+//                if (response is null)
 //                {
 //                    return;
 //                }
 
 //                Assert.Null(response.Errors);
 
-//                if (response.Data != null)
+//                if (response.Data is not null)
 //                {
 //                    resetEvent.Set();
 //                }

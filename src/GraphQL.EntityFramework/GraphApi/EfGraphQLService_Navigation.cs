@@ -30,7 +30,7 @@ namespace GraphQL.EntityFramework
             };
             IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
-            if (resolve != null)
+            if (resolve is not null)
             {
                 field.Resolver = new AsyncFieldResolver<TSource, TReturn?>(
                     async context =>

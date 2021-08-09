@@ -74,7 +74,7 @@ public class GraphQlController :
 
     static JObject? ParseVariables(string? variables)
     {
-        if (variables == null)
+        if (variables is null)
         {
             return null;
         }

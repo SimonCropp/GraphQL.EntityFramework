@@ -49,7 +49,7 @@ namespace GraphQL.EntityFramework
             var builder = ConnectionBuilder.Create<TGraph, TSource>();
             builder.Name(name);
 
-            if (description != null)
+            if (description is not null)
             {
                 builder.Description(description);
             }
@@ -57,7 +57,7 @@ namespace GraphQL.EntityFramework
             IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
             var hasId = keyNames.ContainsKey(typeof(TReturn));
-            if (resolve != null)
+            if (resolve is not null)
             {
                 builder.ResolveAsync(async context =>
                 {

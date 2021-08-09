@@ -63,21 +63,21 @@ static class PropertyCache<TInput>
         MemberInfo? propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsPublic);
 
         // If not found
-        if (propertyOrField == null)
+        if (propertyOrField is null)
         {
             // Attempt to get public field
             propertyOrField = type.GetField(propertyOrFieldName, bindingFlagsPublic);
         }
 
         // If not found
-        if (propertyOrField == null)
+        if (propertyOrField is null)
         {
             // Attempt to get non-public property
             propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsNonPublic);
         }
 
         // If not found
-        if (propertyOrField == null)
+        if (propertyOrField is null)
         {
             // Attempt to get non-public property
             propertyOrField = type.GetField(propertyOrFieldName, bindingFlagsNonPublic);
@@ -96,7 +96,7 @@ static class PropertyCache<TInput>
                 propertyOrField = GetPropertyOrField(baseInterfaceType, propertyOrFieldName);
 
                 // If property found
-                if (propertyOrField != null)
+                if (propertyOrField is not null)
                 {
                     // Break execution
                     break;
@@ -105,7 +105,7 @@ static class PropertyCache<TInput>
         }
 
         // If property is still empty
-        if (propertyOrField == null)
+        if (propertyOrField is null)
         {
             // Property does not exist on current type
             throw new ArgumentException($"'{propertyOrFieldName}' is not a member of type {type.FullName}");

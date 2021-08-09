@@ -29,7 +29,7 @@ static class ArgumentReader
     public static bool TryReadIds(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string[]? expression)
     {
         var argument = getArgument(typeof(object), "ids");
-        if (argument == null)
+        if (argument is null)
         {
             expression = null;
             return false;
@@ -47,7 +47,7 @@ static class ArgumentReader
     public static bool TryReadId(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string? expression)
     {
         var argument = getArgument(typeof(object), "id");
-        if (argument == null)
+        if (argument is null)
         {
             expression = null;
             return false;
@@ -100,7 +100,7 @@ static class ArgumentReader
     static IEnumerable<T> ReadList<T>(this Func<Type, string, object?> getArgument, string name)
     {
         var argument = getArgument(typeof(T[]), name);
-        if (argument == null)
+        if (argument is null)
         {
             return Enumerable.Empty<T>();
         }
@@ -111,7 +111,7 @@ static class ArgumentReader
     static bool TryReadInt(this Func<Type, string, object?> getArgument, string name, out int value)
     {
         var argument = getArgument(typeof(int), name);
-        if (argument == null)
+        if (argument is null)
         {
             value = 0;
             return false;

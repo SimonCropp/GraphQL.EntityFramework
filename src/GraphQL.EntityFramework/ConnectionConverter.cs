@@ -20,7 +20,7 @@ static class ConnectionConverter
     public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, int? after, int? last, int? before)
         where T : class
     {
-        if (last == null)
+        if (last is null)
         {
             return First(list, first.GetValueOrDefault(0), after, before, list.Count);
         }
@@ -32,7 +32,7 @@ static class ConnectionConverter
         where T : class
     {
         int skip;
-        if (before == null)
+        if (before is null)
         {
             skip = after.GetValueOrDefault(0);
         }
@@ -48,7 +48,7 @@ static class ConnectionConverter
         where T : class
     {
         int skip;
-        if (after == null)
+        if (after is null)
         {
             // last before
             skip = before.GetValueOrDefault(count) - last;
@@ -106,7 +106,7 @@ static class ConnectionConverter
     {
         var count = await list.CountAsync(cancellation);
         cancellation.ThrowIfCancellationRequested();
-        if (last == null)
+        if (last is null)
         {
             return await First(list, first.GetValueOrDefault(0), after, before, count, context, filters, cancellation);
         }
@@ -126,7 +126,7 @@ static class ConnectionConverter
         where TItem : class
     {
         int skip;
-        if (before == null)
+        if (before is null)
         {
             skip = after + 1 ?? 0;
         }
@@ -150,7 +150,7 @@ static class ConnectionConverter
         where TItem : class
     {
         int skip;
-        if (after == null)
+        if (after is null)
         {
             // last before
             skip = before.GetValueOrDefault(count) - last;
@@ -210,13 +210,13 @@ static class ConnectionConverter
     static void Parse(string? afterString, string? beforeString, out int? after, out int? before)
     {
         after = null;
-        if (afterString != null)
+        if (afterString is not null)
         {
             after = int.Parse(afterString);
         }
 
         before = null;
-        if (beforeString != null)
+        if (beforeString is not null)
         {
             before = int.Parse(beforeString);
         }

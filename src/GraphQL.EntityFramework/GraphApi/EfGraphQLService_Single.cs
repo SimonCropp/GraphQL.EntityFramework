@@ -96,11 +96,11 @@ namespace GraphQL.EntityFramework
                         query = query.ApplyGraphQlArguments(context, names, false);
                         var single = await query.SingleOrDefaultAsync(context.CancellationToken);
 
-                        if (single != null)
+                        if (single is not null)
                         {
                             if (await efFieldContext.Filters.ShouldInclude(context.UserContext, single))
                             {
-                                if (mutate != null)
+                                if (mutate is not null)
                                 {
                                     await mutate.Invoke(efFieldContext, single);
                                 }
