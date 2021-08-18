@@ -3,7 +3,7 @@
     <TargetFrameworks>net5.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GraphQL" Version="4.5.0" />
+    <PackageReference Include="GraphQL" Version="4.6.0" />
     <PackageReference Include="MarkdownSnippets.MsBuild" Version="23.1.4" PrivateAssets="all" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
     <PackageReference Include="Xunit" Version="2.4.1" />
