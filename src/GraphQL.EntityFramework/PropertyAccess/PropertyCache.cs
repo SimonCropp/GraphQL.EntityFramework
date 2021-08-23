@@ -56,7 +56,7 @@ static class PropertyCache<TInput>
     /// </summary>
     /// <param name="type">Type to retrieve property from</param>
     /// <param name="propertyOrFieldName">Name of property or field</param>
-    static MemberInfo? GetPropertyOrField(Type type, string propertyOrFieldName)
+    static MemberInfo GetPropertyOrField(Type type, string propertyOrFieldName)
     {
         // Member search binding flags
         const BindingFlags bindingFlagsPublic = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
@@ -85,12 +85,8 @@ static class PropertyCache<TInput>
                 // Recurse looking in the parent interface for the property
                 propertyOrField = GetPropertyOrField(baseInterfaceType, propertyOrFieldName);
 
-                // If property found
-                if (propertyOrField is not null)
-                {
-                    // Break execution
-                    break;
-                }
+                // property found
+                break;
             }
         }
 
