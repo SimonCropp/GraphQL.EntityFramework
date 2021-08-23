@@ -245,7 +245,7 @@ namespace GraphQL.EntityFramework
         static Expression MakeObjectIn(string[] values, Property<T> property)
         {
             // Attempt to convert the string values to the object type
-            var objects = TypeConverter.ConvertStringsToList(values, property.PropertyType);
+            var objects = TypeConverter.ConvertStringsToList(values, property.Info);
             // Make the object values a constant expression
             var constant = Expression.Constant(objects);
             // Build and return the expression body

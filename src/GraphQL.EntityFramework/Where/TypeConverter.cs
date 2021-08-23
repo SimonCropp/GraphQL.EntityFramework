@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using GraphQL;
-using GraphQL.EntityFramework;
 
 static class TypeConverter
 {
-    public static IList ConvertStringsToList(string?[] values, Type type)
+    public static IList ConvertStringsToList(string?[] values, MemberInfo property)
     {
         if (values.Length != values.Distinct().Count())
         {
@@ -16,7 +16,8 @@ static class TypeConverter
 
         var hasNull = values.Contains(null);
 
-        if (!type.Nullable() && hasNull)
+        var type = property.GetNullabilityInfo().Type;
+        if (!property.IsNullable() && hasNull)
         {
             throw new($"Null passed to In expression for non nullable type '{type.FullName}'.");
         }
