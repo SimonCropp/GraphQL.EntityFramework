@@ -40,7 +40,7 @@ static class PropertyCache<TInput>
         {
             return path.Split('.')
                 .Aggregate(parameter, (current, property) =>
-                    Expression.MakeMemberAccess(current, GetPropertyOrField(current.Type, property)));
+                    Expression.MakeMemberAccess(current, GetPropertyOrField(current.Type, property)!));
         }
         catch (ArgumentException exception)
         {
@@ -53,35 +53,22 @@ static class PropertyCache<TInput>
     /// </summary>
     /// <param name="type">Type to retrieve property from</param>
     /// <param name="propertyOrFieldName">Name of property or field</param>
-    static MemberInfo GetPropertyOrField(Type type, string propertyOrFieldName)
+    static MemberInfo? GetPropertyOrField(Type type, string propertyOrFieldName)
     {
         // Member search binding flags
         const BindingFlags bindingFlagsPublic = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
         const BindingFlags bindingFlagsNonPublic = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
 
         // Attempt to get the public property
-        MemberInfo? propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsPublic);
+        var propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsPublic) ?? (MemberInfo?)type.GetField(propertyOrFieldName, bindingFlagsPublic);
 
         // If not found
-        if (propertyOrField is null)
-        {
-            // Attempt to get public field
-            propertyOrField = type.GetField(propertyOrFieldName, bindingFlagsPublic);
-        }
 
         // If not found
-        if (propertyOrField is null)
-        {
-            // Attempt to get non-public property
-            propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsNonPublic);
-        }
+        propertyOrField ??= type.GetProperty(propertyOrFieldName, bindingFlagsNonPublic);
 
         // If not found
-        if (propertyOrField is null)
-        {
-            // Attempt to get non-public property
-            propertyOrField = type.GetField(propertyOrFieldName, bindingFlagsNonPublic);
-        }
+        propertyOrField ??= type.GetField(propertyOrFieldName, bindingFlagsNonPublic);
 
         // If property/ field was not resolved
         if (propertyOrField == null && type.IsInterface)
