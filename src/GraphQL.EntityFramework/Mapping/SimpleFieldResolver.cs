@@ -14,6 +14,6 @@ class SimpleFieldResolver<TSource> :
 
     public object Resolve(IResolveFieldContext context)
     {
-        return func((TSource) context.Source);
+        return func((TSource) context.Source!);
     }
 }

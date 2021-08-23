@@ -54,8 +54,8 @@ public class MappingTests
 
         var resolve = await (Task<IEnumerable<MappingChild>>)mappingQuery.Fields
             .Single(x => x.Name == "children")
-            .Resolver
-            .Resolve(new ResolveFieldContext());
+            .Resolver!
+            .Resolve(new ResolveFieldContext())!;
         await Verifier.Verify(resolve);
     }
 

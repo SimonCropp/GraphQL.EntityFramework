@@ -10,10 +10,10 @@ public class DerivedWithNavigationGraph :
     {
         AddNavigationConnectionField(
             name: "childrenFromInterface",
-            e => e.Source.ChildrenFromBase);
+            e => e.Source!.ChildrenFromBase);
         AddNavigationConnectionField(
             name: "childrenFromDerived",
-            e => e.Source.Children,
+            e => e.Source!.Children,
             includeNames: new[] { "Children" });
         AutoMap();
         Interface<InterfaceGraph>();

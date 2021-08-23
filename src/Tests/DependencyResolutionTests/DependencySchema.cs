@@ -8,6 +8,6 @@ public class DependencySchema :
         base(provider)
     {
         RegisterTypeMapping(typeof(Entity), typeof(EntityGraph));
-        Query = provider.GetService<DependencyQuery>();
+        Query = provider.GetRequiredService<DependencyQuery>();
     }
 }

@@ -17,7 +17,7 @@ public class EnumerableConnection
             {
                 var skip = context.First.GetValueOrDefault(0);
                 var take = context.PageSize.GetValueOrDefault(10);
-                var list = context.Source.Employees;
+                var list = context.Source!.Employees;
                 var page = list.Skip(skip).Take(take);
                 return new Connection<Employee>
                 {

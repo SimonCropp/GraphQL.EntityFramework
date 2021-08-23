@@ -10,7 +10,7 @@ public class ChildGraph :
     {
         AddNavigationField(
             name: "parentAlias",
-            resolve: context => context.Source.Parent,
+            resolve: context => context.Source!.Parent,
             graphType: typeof(ParentGraph),
             includeNames: new[] {"Parent"});
         AutoMap();

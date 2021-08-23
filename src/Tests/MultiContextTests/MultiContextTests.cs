@@ -90,7 +90,7 @@ public class MultiContextTests
 }
 
 #region MultiUserContext
-public class UserContext: Dictionary<string, object>
+public class UserContext: Dictionary<string, object?>
 {
     public UserContext(DbContext1 context1, DbContext2 context2)
     {

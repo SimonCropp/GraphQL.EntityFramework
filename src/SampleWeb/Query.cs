@@ -69,7 +69,7 @@ public class Query :
 
                 if (context.HasArgument("where"))
                 {
-                    var wheres = context.GetArgument<List<WhereExpression>>("where");
+                    var wheres = context.GetArgument<List<WhereExpression>>("where")!;
 
                     var predicate = ExpressionBuilder<Employee>.BuildPredicate(wheres);
                     query = query.Where(predicate);
