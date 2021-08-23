@@ -8,4 +8,5 @@ record Property<TInput>(
     ParameterExpression SourceParameter,
     Func<TInput, object> Func,
     Type PropertyType,
+    MemberInfo Info,
     MethodInfo? ListContainsMethod);

@@ -22,6 +22,8 @@ static class PropertyCache<TInput>
                 var lambda = Expression.Lambda<Func<TInput, object>>(converted, SourceParameter);
                 var compile = lambda.Compile();
                 var listContainsMethod = ReflectionCache.GetListContains(left.Type);
+                
+                var body = (MemberExpression)left;
                 return new Property<TInput>
                 (
                     Left: left,
@@ -29,6 +31,7 @@ static class PropertyCache<TInput>
                     SourceParameter: SourceParameter,
                     Func: compile,
                     PropertyType: left.Type,
+                    Info: body.Member,
                     ListContainsMethod: listContainsMethod
                 );
             });
