@@ -333,7 +333,7 @@ A user context that exposes both types.
 <!-- snippet: MultiUserContext -->
 <a id='snippet-multiusercontext'></a>
 ```cs
-public class UserContext: Dictionary<string, object>
+public class UserContext: Dictionary<string, object?>
 {
     public UserContext(DbContext1 context1, DbContext2 context2)
     {
@@ -824,7 +824,7 @@ public class DerivedGraph :
     {
         AddNavigationConnectionField(
             name: "childrenFromInterface",
-            e => e.Source.ChildrenFromBase);
+            e => e.Source!.ChildrenFromBase);
         AutoMap();
         Interface<InterfaceGraph>();
         IsTypeOf = obj => obj is DerivedEntity;

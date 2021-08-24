@@ -37,12 +37,12 @@ static class ComplexGraphResolver
     static Resolved GetOrAdd(FieldType fieldType)
     {
         return cache.GetOrAdd(
-            fieldType.ResolvedType,
+            fieldType.ResolvedType!,
             graphType =>
             {
                 if (graphType is ListGraphType listGraphType)
                 {
-                    graphType = listGraphType.ResolvedType;
+                    graphType = listGraphType.ResolvedType!;
                 }
 
                 if (graphType is UnionGraphType unionGraphType)
@@ -52,13 +52,13 @@ static class ComplexGraphResolver
 
                 if (graphType is NonNullGraphType nonNullGraphType)
                 {
-                    graphType = nonNullGraphType.ResolvedType;
+                    graphType = nonNullGraphType.ResolvedType!;
                     if (graphType is ListGraphType innerListGraphType)
                     {
-                        graphType = innerListGraphType.ResolvedType;
+                        graphType = innerListGraphType.ResolvedType!;
                         if (graphType is NonNullGraphType innerNonNullGraphType)
                         {
-                            graphType = innerNonNullGraphType.ResolvedType;
+                            graphType = innerNonNullGraphType.ResolvedType!;
                         }
 
                         if (graphType is UnionGraphType innerUnionGraphType)

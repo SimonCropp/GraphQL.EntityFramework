@@ -13,7 +13,7 @@ public class WithManyChildrenGraph :
             name: "child1",
             resolve: context =>
             {
-                Assert.NotNull(context.Source.Child2);
+                Assert.NotNull(context.Source!.Child2);
                 Assert.NotNull(context.Source.Child1);
                 return context.Source.Child1;
             },

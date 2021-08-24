@@ -10,7 +10,7 @@ public class DerivedGraph :
     {
         AddNavigationConnectionField(
             name: "childrenFromInterface",
-            e => e.Source.ChildrenFromBase);
+            e => e.Source!.ChildrenFromBase);
         AutoMap();
         Interface<InterfaceGraph>();
         IsTypeOf = obj => obj is DerivedEntity;

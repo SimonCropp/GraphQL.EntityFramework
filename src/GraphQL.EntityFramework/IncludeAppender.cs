@@ -50,7 +50,7 @@ class IncludeAppender
     {
         List<string> list = new();
 
-        AddField(list, context.FieldAst, context.FieldAst.SelectionSet, null, context.FieldDefinition, navigationProperty, context);
+        AddField(list, context.FieldAst, context.FieldAst.SelectionSet!, null, context.FieldDefinition, navigationProperty, context);
 
         return list;
     }
@@ -66,7 +66,7 @@ class IncludeAppender
 
         foreach (var inlineFragment in selectionSet.Selections.OfType<InlineFragment>())
         {
-            if (inlineFragment.Type.GraphTypeFromType(context.Schema) is IComplexGraphType graphFragment)
+            if (inlineFragment.Type!.GraphTypeFromType(context.Schema) is IComplexGraphType graphFragment)
             {
                 AddField(list, field, inlineFragment.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graphFragment);
             }
@@ -130,7 +130,7 @@ class IncludeAppender
             var single = graph.Fields.SingleOrDefault(x => x.Name == subField.Name);
             if (single is not null)
             {
-                AddField(list, subField, subField.SelectionSet, parentPath, single, navigationProperties, context);
+                AddField(list, subField, subField.SelectionSet!, parentPath, single, navigationProperties, context);
             }
         }
     }
@@ -146,7 +146,7 @@ class IncludeAppender
         SetIncludeMetadata(fieldName, includeNames, fieldType.Metadata);
     }
 
-    static void SetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames, IDictionary<string, object> metadata)
+    static void SetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames, IDictionary<string, object?> metadata)
     {
         if (includeNames is null)
         {
@@ -167,7 +167,7 @@ class IncludeAppender
     {
         if (fieldType.Metadata.TryGetValue("_EF_IncludeName", out var fieldNameObject))
         {
-            value = (string[])fieldNameObject;
+            value = (string[])fieldNameObject!;
             return true;
         }
 

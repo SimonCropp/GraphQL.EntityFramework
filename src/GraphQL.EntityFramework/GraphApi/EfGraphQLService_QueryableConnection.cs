@@ -80,9 +80,9 @@ namespace GraphQL.EntityFramework
                         return query
                             .ApplyConnectionContext(
                                 context.First,
-                                context.After,
+                                context.After!,
                                 context.Last,
-                                context.Before,
+                                context.Before!,
                                 context,
                                 context.CancellationToken,
                                 efFieldContext.Filters);

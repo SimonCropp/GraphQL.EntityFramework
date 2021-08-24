@@ -54,7 +54,7 @@ static class ArgumentAppender
 
     public static void AddWhereArgument(this FieldType field, bool hasId, IEnumerable<QueryArgument>? extra)
     {
-        var arguments = field.Arguments;
+        var arguments = field.Arguments!;
         arguments.Add(whereArgument());
         arguments.Add(orderByArgument());
         if (hasId)

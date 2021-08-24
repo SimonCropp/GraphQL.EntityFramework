@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 public class UserContextSingleDb<TDbContext> :
-    Dictionary<string, object>
+    Dictionary<string, object?>
     where TDbContext : DbContext
 {
     public UserContextSingleDb(TDbContext context)

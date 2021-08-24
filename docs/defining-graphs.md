@@ -95,10 +95,10 @@ public class CompanyGraph :
     {
         AddNavigationListField(
             name: "employees",
-            resolve: context => context.Source.Employees);
+            resolve: context => context.Source!.Employees);
         AddNavigationConnectionField(
             name: "employeesConnection",
-            resolve: context => context.Source.Employees,
+            resolve: context => context.Source!.Employees,
             includeNames: new[] {"Employees"});
         AutoMap();
     }
@@ -224,7 +224,7 @@ public class CompanyGraph :
     {
         AddNavigationConnectionField(
             name: "employees",
-            resolve: context => context.Source.Employees);
+            resolve: context => context.Source!.Employees);
     }
 }
 ```
@@ -327,7 +327,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
 
         if (context.HasArgument("where"))
         {
-            var wheres = context.GetArgument<List<WhereExpression>>("where");
+            var wheres = context.GetArgument<List<WhereExpression>>("where")!;
 
             var predicate = ExpressionBuilder<Employee>.BuildPredicate(wheres);
             query = query.Where(predicate);

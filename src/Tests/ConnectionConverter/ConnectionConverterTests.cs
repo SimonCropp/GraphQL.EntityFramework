@@ -60,7 +60,7 @@ public class ConnectionConverterTests
         await using var database = await sqlInstance.Build(databaseSuffix: $"{first.GetValueOrDefault(0)}{after.GetValueOrDefault(0)}{last.GetValueOrDefault(0)}{before.GetValueOrDefault(0)}");
         var entities = database.Context.Entities;
         var connection = await ConnectionConverter.ApplyConnectionContext<string, Entity>(entities.OrderBy(x=>x.Property), first, after, last, before, fieldContext, new Filters());
-        await Verifier.Verify(connection.Items.OrderBy(x => x.Property))
+        await Verifier.Verify(connection.Items!.OrderBy(x => x!.Property))
             .UseParameters(first, after, last, before);
     }
 

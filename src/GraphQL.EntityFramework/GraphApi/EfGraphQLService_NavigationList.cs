@@ -40,7 +40,7 @@ namespace GraphQL.EntityFramework
                         var fieldContext = BuildContext(context);
                         var result = resolve(fieldContext);
                         result = result.ApplyGraphQlArguments(hasId, context);
-                        return fieldContext.Filters.ApplyFilter(result, context.UserContext);
+                        return fieldContext.Filters.ApplyFilter(result, context.UserContext)!;
                     });
             }
 
