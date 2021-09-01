@@ -314,7 +314,7 @@ In some cases, it may be necessary to use `Field` instead of `AddQueryField`/`Ad
 ```cs
 Field<ListGraphType<EmployeeSummaryGraph>>(
     name: "employeeSummary",
-    arguments: new QueryArguments(
+    arguments: new(
         new QueryArgument<ListGraphType<WhereExpressionGraph>>
         {
             Name = "where"
