@@ -56,7 +56,7 @@ public class Query :
 
         Field<ListGraphType<EmployeeSummaryGraph>>(
             name: "employeeSummary",
-            arguments: new QueryArguments(
+            arguments: new(
                 new QueryArgument<ListGraphType<WhereExpressionGraph>>
                 {
                     Name = "where"

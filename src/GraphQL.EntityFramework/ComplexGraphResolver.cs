@@ -74,7 +74,7 @@ static class ComplexGraphResolver
                     graph = complexType;
                 }
 
-                return new Resolved(ResolvedEntityType(graphType), graph);
+                return new(ResolvedEntityType(graphType), graph);
             });
     }
 

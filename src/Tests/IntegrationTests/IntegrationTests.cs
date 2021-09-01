@@ -484,8 +484,8 @@ query ($value: String!)
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Parent value",
-            Child1 = new OwnedChild { Property = "Value1" },
-            Child2 = new OwnedChild { Property = "Value2" }
+            Child1 = new() { Property = "Value1" },
+            Child2 = new() { Property = "Value2" }
         };
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { entity1 });

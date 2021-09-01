@@ -94,7 +94,7 @@ public class ExpressionBuilderTests
             .Select(parse => parse.Field)
             .ToList();
 
-        Assert.Equal(resultGuidAndNull, new List<Guid?> {null, guid});
+        Assert.Equal(resultGuidAndNull, new() {null, guid});
     }
 
     public class TargetWithNullableRequiringParse

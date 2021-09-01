@@ -24,8 +24,7 @@ static class PropertyCache<TInput>
                 var listContainsMethod = ReflectionCache.GetListContains(left.Type);
                 
                 var body = (MemberExpression)left;
-                return new Property<TInput>
-                (
+                return new(
                     Left: left,
                     Lambda: lambda,
                     SourceParameter: SourceParameter,

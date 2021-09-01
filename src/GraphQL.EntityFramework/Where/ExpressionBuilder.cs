@@ -170,7 +170,7 @@ namespace GraphQL.EntityFramework
                 .MakeGenericType(listItemType)
                 .GetMethods(BindingFlags.Public | BindingFlags.Static)
                 .Single(m => m.Name == "BuildPredicate" && m.GetParameters().Length == 5)
-                .Invoke(new object(), new object[] { listPath, comparison, values!, false, stringComparison! })!;
+                .Invoke(new(), new object[] { listPath, comparison, values!, false, stringComparison! })!;
 
             // Generate a method info for the Any Enumerable Static Method
             var anyInfo = typeof(Enumerable)

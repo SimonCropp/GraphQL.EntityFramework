@@ -52,7 +52,7 @@ namespace GraphQL.EntityFramework
             filters ??= provider.GetService<ResolveFilters>();
             dbContextResolver ??= _ => DbContextFromProvider<TDbContext>(provider);
 
-            return new EfGraphQLService<TDbContext>(
+            return new(
                 model,
                 dbContextResolver,
                 filters,
