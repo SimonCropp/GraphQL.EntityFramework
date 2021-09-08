@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL.EntityFramework.GraphApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -26,6 +27,24 @@ namespace GraphQL.EntityFramework
             this.disableTracking = disableTracking;
 
             this.resolveDbContext = resolveDbContext;
+
+            keyNames = model.GetKeyNames();
+
+            Navigations = NavigationReader.GetNavigationProperties(model);
+            includeAppender = new(Navigations);
+        }
+        
+        public EfGraphQLService
+        (
+            IModel model,
+            IDbContextResolver<TDbContext> contextResolver,
+            IFilterResolver filterResolver,
+            bool disableTracking = false
+        )
+        {
+            this.resolveFilters = filterResolver.ResolveFilters;
+            this.disableTracking = disableTracking;
+            this.resolveDbContext = contextResolver.ResolveDbContext;
 
             keyNames = model.GetKeyNames();
 

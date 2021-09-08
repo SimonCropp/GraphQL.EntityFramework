@@ -81,7 +81,7 @@ namespace GraphQL.EntityFramework
             throw new($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
         }
 
-        static void RegisterScalarsAndArgs(IServiceCollection services)
+        public static void RegisterScalarsAndArgs(IServiceCollection services)
         {
             ArgumentGraphs.RegisterInContainer(services);
         }
