@@ -74,7 +74,7 @@ public class Query :
     }
 }
 ```
-<sup><a href='/src/Snippets/RootQuery.cs#L7-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-rootquery' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/RootQuery.cs#L6-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-rootquery' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -104,7 +104,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup><a href='/src/Snippets/TypedGraph.cs#L9-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-typedgraph' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/TypedGraph.cs#L7-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-typedgraph' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -133,7 +133,7 @@ public class Query :
     }
 }
 ```
-<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L7-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L6-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -228,7 +228,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L8-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L7-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -343,7 +343,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L55-L88' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L54-L87' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
