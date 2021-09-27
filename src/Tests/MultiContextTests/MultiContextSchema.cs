@@ -1,6 +1,4 @@
-﻿using System;
-
-public class MultiContextSchema :
+﻿public class MultiContextSchema :
     GraphQL.Types.Schema
 {
     public MultiContextSchema(IServiceProvider provider) :

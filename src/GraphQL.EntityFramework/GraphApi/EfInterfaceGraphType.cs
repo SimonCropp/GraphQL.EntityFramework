@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework

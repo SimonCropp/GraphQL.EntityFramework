@@ -1,5 +1,4 @@
-﻿using System;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 

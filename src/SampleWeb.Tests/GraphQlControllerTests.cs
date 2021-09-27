@@ -1,5 +1,4 @@
 ﻿using System.Net.Http;
-using System.Threading.Tasks;
 using VerifyXunit;
 using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;

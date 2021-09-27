@@ -1,5 +1,4 @@
-﻿using System;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 
 static class WhereValidator
 {

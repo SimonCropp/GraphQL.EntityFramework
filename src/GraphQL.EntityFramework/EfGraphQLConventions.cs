@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using GraphQL.Types.Relay;
+﻿using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,5 +1,4 @@
 ﻿using GraphQL.EntityFramework;
-using System.Collections.Generic;
 using GraphQL;
 
 [GraphQLMetadata("DerivedChild")]

@@ -1,5 +1,4 @@
-﻿using System;
-using GraphQL;
+﻿using GraphQL;
 
 static class GraphTypeFinder
 {

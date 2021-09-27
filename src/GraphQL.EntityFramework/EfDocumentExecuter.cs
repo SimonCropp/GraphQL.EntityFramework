@@ -1,5 +1,6 @@
 ﻿using GraphQL.Execution;
 using GraphQL.Language.AST;
+using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
 namespace GraphQL.EntityFramework
 {

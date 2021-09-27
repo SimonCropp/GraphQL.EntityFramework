@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.NewtonsoftJson;
 

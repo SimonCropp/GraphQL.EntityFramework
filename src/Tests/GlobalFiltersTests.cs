@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 using Filters = GraphQL.EntityFramework.Filters;
 
 public class GlobalFiltersTests

@@ -1,5 +1,4 @@
-﻿using System;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.Resolvers;
 
 class SimpleFieldResolver<TSource> :

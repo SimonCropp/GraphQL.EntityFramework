@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.EntityFramework;
 using Microsoft.EntityFrameworkCore;

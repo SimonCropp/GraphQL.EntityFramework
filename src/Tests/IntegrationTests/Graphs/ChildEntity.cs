@@ -1,6 +1,4 @@
-﻿using System;
-
-public class ChildEntity
+﻿public class ChildEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string? Property { get; set; }

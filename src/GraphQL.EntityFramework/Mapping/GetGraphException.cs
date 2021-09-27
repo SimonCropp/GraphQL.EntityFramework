@@ -1,6 +1,4 @@
-﻿using System;
-
-class GetGraphException :
+﻿class GetGraphException :
     Exception
 {
     public GetGraphException(string message):

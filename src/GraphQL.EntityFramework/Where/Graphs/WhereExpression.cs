@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GraphQL.EntityFramework
+﻿namespace GraphQL.EntityFramework
 {
     public class WhereExpression
     {

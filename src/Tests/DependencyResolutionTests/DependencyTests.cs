@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using EfLocalDb;
+﻿using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
 using Microsoft.Extensions.DependencyInjection;

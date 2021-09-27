@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using GraphQL.Resolvers;
+﻿using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-
-namespace GraphQL.EntityFramework
+﻿namespace GraphQL.EntityFramework
 {
     [DebuggerDisplay("Name = {Name}, Type = {Type}")]
     public record Navigation

@@ -1,6 +1,4 @@
-﻿using System;
-
-public class WithManyChildrenEntity
+﻿public class WithManyChildrenEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Child1Entity Child1 { get; set; } = null!;

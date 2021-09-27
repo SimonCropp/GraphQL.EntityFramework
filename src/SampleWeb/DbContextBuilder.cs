@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using EfLocalDb;
+﻿using EfLocalDb;
 using Microsoft.Extensions.Hosting;
 
 // LocalDb is used to make the sample simpler.

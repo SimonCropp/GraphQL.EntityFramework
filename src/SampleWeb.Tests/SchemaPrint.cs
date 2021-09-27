@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

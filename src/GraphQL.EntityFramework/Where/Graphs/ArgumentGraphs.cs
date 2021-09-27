@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 

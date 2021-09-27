@@ -1,6 +1,4 @@
-﻿using System;
-
-public class Level1Entity
+﻿public class Level1Entity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public int? Level2EntityId { get; set; }

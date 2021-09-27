@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 using VerifyXunit;
 using Xunit;
 

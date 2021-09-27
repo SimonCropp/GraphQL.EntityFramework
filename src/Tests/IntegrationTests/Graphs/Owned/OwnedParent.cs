@@ -1,6 +1,4 @@
-﻿using System;
-
-public class OwnedParent
+﻿public class OwnedParent
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string? Property { get; set; }

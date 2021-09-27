@@ -1,5 +1,3 @@
-using System;
-
 static class Guard
 {
     public static void AgainstWhiteSpace(string argumentName, string value)

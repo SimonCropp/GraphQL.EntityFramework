@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 
 class NullFilters :
     Filters
