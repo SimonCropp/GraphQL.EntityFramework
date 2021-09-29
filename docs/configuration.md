@@ -71,13 +71,12 @@ A delegate that resolves the DbContext.
 ```cs
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphQL.EntityFramework
-{
-    public delegate TDbContext ResolveDbContext<out TDbContext>(object userContext)
-        where TDbContext : DbContext;
-}
+namespace GraphQL.EntityFramework;
+
+public delegate TDbContext ResolveDbContext<out TDbContext>(object userContext)
+    where TDbContext : DbContext;
 ```
-<sup><a href='/src/GraphQL.EntityFramework/GraphApi/ResolveDbContext.cs#L1-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-ResolveDbContext.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/GraphApi/ResolveDbContext.cs#L1-L6' title='Snippet source file'>snippet source</a> | <a href='#snippet-ResolveDbContext.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 It has access to the current GraphQL user context.
@@ -92,12 +91,11 @@ A delegate that resolves the [Filters](filters.md).
 <!-- snippet: ResolveFilters.cs -->
 <a id='snippet-ResolveFilters.cs'></a>
 ```cs
-namespace GraphQL.EntityFramework
-{
-    public delegate Filters? ResolveFilters(object userContext);
-}
+namespace GraphQL.EntityFramework;
+
+public delegate Filters? ResolveFilters(object userContext);
 ```
-<sup><a href='/src/GraphQL.EntityFramework/Filters/ResolveFilters.cs#L1-L4' title='Snippet source file'>snippet source</a> | <a href='#snippet-ResolveFilters.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/Filters/ResolveFilters.cs#L1-L3' title='Snippet source file'>snippet source</a> | <a href='#snippet-ResolveFilters.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 It has access to the current GraphQL user context.
@@ -155,23 +153,22 @@ using GraphQL.Execution;
 using GraphQL.Language.AST;
 using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
-namespace GraphQL.EntityFramework
+namespace GraphQL.EntityFramework;
+
+public class EfDocumentExecuter :
+    DocumentExecuter
 {
-    public class EfDocumentExecuter :
-        DocumentExecuter
+    protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
     {
-        protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
+        if (context.Operation.OperationType == OperationType.Query)
         {
-            if (context.Operation.OperationType == OperationType.Query)
-            {
-                return new SerialExecutionStrategy();
-            }
-            return base.SelectExecutionStrategy(context);
+            return new SerialExecutionStrategy();
         }
+        return base.SelectExecutionStrategy(context);
     }
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfDocumentExecuter.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfDocumentExecuter.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -748,7 +745,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     return executionResult;
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L19-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L18-L40' title='Snippet source file'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

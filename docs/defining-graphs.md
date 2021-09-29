@@ -343,7 +343,7 @@ Field<ListGraphType<EmployeeSummaryGraph>>(
             };
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L54-L87' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L53-L86' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -371,7 +371,7 @@ public class Query :
     }
 }
 ```
-<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L8-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L7-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
