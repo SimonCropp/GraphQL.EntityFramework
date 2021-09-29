@@ -1,22 +1,21 @@
-﻿namespace GraphQL.EntityFramework
+﻿namespace GraphQL.EntityFramework;
+
+public enum Comparison
 {
-    public enum Comparison
-    {
-        // Both
-        Equal,
-        In,
-        NotIn,
+    // Both
+    Equal,
+    In,
+    NotIn,
 
-        // Object/ List
-        GreaterThan,
-        GreaterThanOrEqual,
-        LessThan,
-        LessThanOrEqual,
+    // Object/ List
+    GreaterThan,
+    GreaterThanOrEqual,
+    LessThan,
+    LessThanOrEqual,
 
-        // String
-        StartsWith,
-        EndsWith,
-        Contains,
-        Like
-    }
+    // String
+    StartsWith,
+    EndsWith,
+    Contains,
+    Like
 }

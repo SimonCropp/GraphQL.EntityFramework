@@ -1,8 +1,7 @@
-﻿namespace GraphQL.EntityFramework
+﻿namespace GraphQL.EntityFramework;
+
+public enum Connector
 {
-    public enum Connector
-    {
-        And,
-        Or
-    }
+    And,
+    Or
 }

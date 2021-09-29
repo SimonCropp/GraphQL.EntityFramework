@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 
 public class Query :
     QueryGraphType<IntegrationDbContext>

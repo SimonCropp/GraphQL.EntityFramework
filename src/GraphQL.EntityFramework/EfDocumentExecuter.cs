@@ -2,18 +2,17 @@
 using GraphQL.Language.AST;
 using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
-namespace GraphQL.EntityFramework
+namespace GraphQL.EntityFramework;
+
+public class EfDocumentExecuter :
+    DocumentExecuter
 {
-    public class EfDocumentExecuter :
-        DocumentExecuter
+    protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
     {
-        protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
+        if (context.Operation.OperationType == OperationType.Query)
         {
-            if (context.Operation.OperationType == OperationType.Query)
-            {
-                return new SerialExecutionStrategy();
-            }
-            return base.SelectExecutionStrategy(context);
+            return new SerialExecutionStrategy();
         }
+        return base.SelectExecutionStrategy(context);
     }
 }

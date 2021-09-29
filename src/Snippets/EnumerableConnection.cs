@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 
 public class EnumerableConnection

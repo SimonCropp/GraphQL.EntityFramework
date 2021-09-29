@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using EfLocalDb;
+﻿using EfLocalDb;
 using GraphQL;
 using Microsoft.EntityFrameworkCore;
 using VerifyXunit;

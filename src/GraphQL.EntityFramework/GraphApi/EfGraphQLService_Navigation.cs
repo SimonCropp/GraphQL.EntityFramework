@@ -2,50 +2,49 @@
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphQL.EntityFramework
+namespace GraphQL.EntityFramework;
+
+partial class EfGraphQLService<TDbContext>
+    where TDbContext : DbContext
 {
-    partial class EfGraphQLService<TDbContext>
-        where TDbContext : DbContext
+    public FieldType AddNavigationField<TSource, TReturn>(
+        ComplexGraphType<TSource> graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
+        Type? graphType = null,
+        IEnumerable<string>? includeNames = null,
+        string? description = null)
+        where TReturn : class
     {
-        public FieldType AddNavigationField<TSource, TReturn>(
-            ComplexGraphType<TSource> graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
-            Type? graphType = null,
-            IEnumerable<string>? includeNames = null,
-            string? description = null)
-            where TReturn : class
+        Guard.AgainstWhiteSpace(nameof(name), name);
+
+        graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+
+        FieldType field = new()
         {
-            Guard.AgainstWhiteSpace(nameof(name), name);
+            Name = name,
+            Type = graphType,
+            Description = description
+        };
+        IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
-            graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+        if (resolve is not null)
+        {
+            field.Resolver = new AsyncFieldResolver<TSource, TReturn?>(
+                async context =>
+                {
+                    var fieldContext = BuildContext(context);
 
-            FieldType field = new()
-            {
-                Name = name,
-                Type = graphType,
-                Description = description
-            };
-            IncludeAppender.SetIncludeMetadata(field, name, includeNames);
-
-            if (resolve is not null)
-            {
-                field.Resolver = new AsyncFieldResolver<TSource, TReturn?>(
-                    async context =>
+                    var result = resolve(fieldContext);
+                    if (await fieldContext.Filters.ShouldInclude(context.UserContext, result))
                     {
-                        var fieldContext = BuildContext(context);
+                        return result;
+                    }
 
-                        var result = resolve(fieldContext);
-                        if (await fieldContext.Filters.ShouldInclude(context.UserContext, result))
-                        {
-                            return result;
-                        }
-
-                        return null;
-                    });
-            }
-
-            return graph.AddField(field);
+                    return null;
+                });
         }
+
+        return graph.AddField(field);
     }
 }

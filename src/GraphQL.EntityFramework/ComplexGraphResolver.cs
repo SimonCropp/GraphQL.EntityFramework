@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 

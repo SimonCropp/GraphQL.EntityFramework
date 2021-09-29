@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using EfLocalDb;
+﻿using EfLocalDb;
 using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Types;

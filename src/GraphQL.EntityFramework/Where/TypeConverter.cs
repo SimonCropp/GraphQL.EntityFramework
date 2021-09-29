@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Reflection;
-using GraphQL;
+﻿using GraphQL;
 
 static class TypeConverter
 {

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.EntityFramework;
 
 [GraphQLMetadata("WithMisNamedQueryParent")]

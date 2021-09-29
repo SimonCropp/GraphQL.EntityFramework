@@ -1,60 +1,59 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace GraphQL.EntityFramework.Testing
+namespace GraphQL.EntityFramework.Testing;
+
+public class ClientQueryExecutor
 {
-    public class ClientQueryExecutor
+    string uri = "graphql";
+    Func<object, string> toJson;
+
+    public ClientQueryExecutor(Func<object, string> toJson, string uri = "graphql")
     {
-        string uri = "graphql";
-        Func<object, string> toJson;
+        this.uri = uri;
+        this.toJson = toJson;
+    }
 
-        public ClientQueryExecutor(Func<object, string> toJson, string uri = "graphql")
+    public Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
+    {
+        Guard.AgainstWhiteSpace(nameof(query), query);
+        query = CompressQuery(query);
+        var body = new
         {
-            this.uri = uri;
-            this.toJson = toJson;
+            query,
+            variables
+        };
+        HttpRequestMessage request = new(HttpMethod.Post, uri)
+        {
+            Content = new StringContent(ToJson(body), Encoding.UTF8, "application/json")
+        };
+        headerAction?.Invoke(request.Headers);
+        return client.SendAsync(request);
+    }
+
+    public Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
+    {
+        Guard.AgainstWhiteSpace(nameof(query), query);
+        var compressed = CompressQuery(query);
+        var variablesString = ToJson(variables);
+        var getUri = $"{uri}?query={compressed}&variables={variablesString}";
+        HttpRequestMessage request = new(HttpMethod.Get, getUri);
+        headerAction?.Invoke(request.Headers);
+        return client.SendAsync(request);
+    }
+
+    string ToJson(object? target)
+    {
+        if (target is null)
+        {
+            return string.Empty;
         }
 
-        public Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
-        {
-            Guard.AgainstWhiteSpace(nameof(query), query);
-            query = CompressQuery(query);
-            var body = new
-            {
-                query,
-                variables
-            };
-            HttpRequestMessage request = new(HttpMethod.Post, uri)
-            {
-                Content = new StringContent(ToJson(body), Encoding.UTF8, "application/json")
-            };
-            headerAction?.Invoke(request.Headers);
-            return client.SendAsync(request);
-        }
+        return toJson(target);
+    }
 
-        public Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
-        {
-            Guard.AgainstWhiteSpace(nameof(query), query);
-            var compressed = CompressQuery(query);
-            var variablesString = ToJson(variables);
-            var getUri = $"{uri}?query={compressed}&variables={variablesString}";
-            HttpRequestMessage request = new(HttpMethod.Get, getUri);
-            headerAction?.Invoke(request.Headers);
-            return client.SendAsync(request);
-        }
-
-        string ToJson(object? target)
-        {
-            if (target is null)
-            {
-                return string.Empty;
-            }
-
-            return toJson(target);
-        }
-
-        static string CompressQuery(string query)
-        {
-            return Compress.Query(query);
-        }
+    static string CompressQuery(string query)
+    {
+        return Compress.Query(query);
     }
 }

@@ -2,117 +2,116 @@
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphQL.EntityFramework
+namespace GraphQL.EntityFramework;
+
+partial class EfGraphQLService<TDbContext>
+    where TDbContext : DbContext
 {
-    partial class EfGraphQLService<TDbContext>
-        where TDbContext : DbContext
+    public FieldType AddSingleField<TReturn>(
+        IObjectGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        IEnumerable<QueryArgument>? arguments = null,
+        bool nullable = false,
+        string? description = null)
+        where TReturn : class
     {
-        public FieldType AddSingleField<TReturn>(
-            IObjectGraphType graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false,
-            string? description = null)
-            where TReturn : class
+        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
+        return graph.AddField(field);
+    }
+
+    public FieldType AddSingleField<TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        IEnumerable<QueryArgument>? arguments = null,
+        bool nullable = false,
+        string? description = null)
+        where TReturn : class
+    {
+        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
+        return graph.AddField(field);
+    }
+
+    public FieldType AddSingleField<TSource, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        IEnumerable<QueryArgument>? arguments = null,
+        bool nullable = false,
+        string? description = null)
+        where TReturn : class
+    {
+        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
+        return graph.AddField(field);
+    }
+
+    FieldType BuildSingleField<TSource, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
+        IEnumerable<QueryArgument>? arguments,
+        Type? graphType,
+        bool nullable,
+        string? description)
+        where TReturn : class
+    {
+        Guard.AgainstWhiteSpace(nameof(name), name);
+
+        graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
+
+        var hasId = keyNames.ContainsKey(typeof(TReturn));
+        return new()
         {
-            var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
-            return graph.AddField(field);
-        }
+            Name = name,
+            Type = graphType,
+            Description = description,
 
-        public FieldType AddSingleField<TReturn>(
-            IComplexGraphType graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-            Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false,
-            string? description = null)
-            where TReturn : class
-        {
-            var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
-            return graph.AddField(field);
-        }
+            Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, false),
 
-        public FieldType AddSingleField<TSource, TReturn>(
-            IComplexGraphType graph,
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
-            Type? graphType = null,
-            IEnumerable<QueryArgument>? arguments = null,
-            bool nullable = false,
-            string? description = null)
-            where TReturn : class
-        {
-            var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
-            return graph.AddField(field);
-        }
+            Resolver = new AsyncFieldResolver<TSource, TReturn?>(
+                async context =>
+                {
+                    var efFieldContext = BuildContext(context);
 
-        FieldType BuildSingleField<TSource, TReturn>(
-            string name,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-            Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
-            IEnumerable<QueryArgument>? arguments,
-            Type? graphType,
-            bool nullable,
-            string? description)
-            where TReturn : class
-        {
-            Guard.AgainstWhiteSpace(nameof(name), name);
+                    var names = GetKeyNames<TReturn>();
 
-            graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
-
-            var hasId = keyNames.ContainsKey(typeof(TReturn));
-            return new()
-            {
-                Name = name,
-                Type = graphType,
-                Description = description,
-
-                Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, false),
-
-                Resolver = new AsyncFieldResolver<TSource, TReturn?>(
-                    async context =>
+                    var query = resolve(efFieldContext);
+                    if (disableTracking)
                     {
-                        var efFieldContext = BuildContext(context);
+                        query = query.AsNoTracking();
+                    }
 
-                        var names = GetKeyNames<TReturn>();
+                    query = includeAppender.AddIncludes(query, context);
+                    query = query.ApplyGraphQlArguments(context, names, false);
+                    var single = await query.SingleOrDefaultAsync(context.CancellationToken);
 
-                        var query = resolve(efFieldContext);
-                        if (disableTracking)
+                    if (single is not null)
+                    {
+                        if (await efFieldContext.Filters.ShouldInclude(context.UserContext, single))
                         {
-                            query = query.AsNoTracking();
-                        }
-
-                        query = includeAppender.AddIncludes(query, context);
-                        query = query.ApplyGraphQlArguments(context, names, false);
-                        var single = await query.SingleOrDefaultAsync(context.CancellationToken);
-
-                        if (single is not null)
-                        {
-                            if (await efFieldContext.Filters.ShouldInclude(context.UserContext, single))
+                            if (mutate is not null)
                             {
-                                if (mutate is not null)
-                                {
-                                    await mutate.Invoke(efFieldContext, single);
-                                }
-
-                                return single;
+                                await mutate.Invoke(efFieldContext, single);
                             }
-                        }
 
-                        if (nullable)
-                        {
-                            return null;
+                            return single;
                         }
+                    }
 
-                        throw new ExecutionError("Not found");
-                    })
-            };
-        }
+                    if (nullable)
+                    {
+                        return null;
+                    }
+
+                    throw new ExecutionError("Not found");
+                })
+        };
     }
 }

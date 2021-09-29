@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using GraphQL.EntityFramework;
+﻿using GraphQL.EntityFramework;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 

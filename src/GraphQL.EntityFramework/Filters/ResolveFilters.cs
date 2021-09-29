@@ -1,4 +1,3 @@
-﻿namespace GraphQL.EntityFramework
-{
-    public delegate Filters? ResolveFilters(object userContext);
-}
+﻿namespace GraphQL.EntityFramework;
+
+public delegate Filters? ResolveFilters(object userContext);

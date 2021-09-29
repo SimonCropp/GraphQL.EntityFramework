@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Language.AST;

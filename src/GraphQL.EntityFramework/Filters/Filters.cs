@@ -1,127 +1,124 @@
-﻿using System.Linq;
+﻿namespace GraphQL.EntityFramework;
 
-namespace GraphQL.EntityFramework
+#region FiltersSignature
+
+public class Filters
 {
-    #region FiltersSignature
+    public delegate bool Filter<in TEntity>(object userContext, TEntity input)
+        where TEntity : class;
 
-    public class Filters
+    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TEntity input)
+        where TEntity : class;
+
+    #endregion
+
+    public void Add<TEntity>(Filter<TEntity> filter)
+        where TEntity : class
     {
-        public delegate bool Filter<in TEntity>(object userContext, TEntity input)
-            where TEntity : class;
-
-        public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TEntity input)
-            where TEntity : class;
-
-        #endregion
-
-        public void Add<TEntity>(Filter<TEntity> filter)
-            where TEntity : class
-        {
-            funcs[typeof(TEntity)] =
-                (context, item) =>
-                {
-                    try
-                    {
-                        return Task.FromResult(filter(context, (TEntity) item));
-                    }
-                    catch (Exception exception)
-                    {
-                        throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
-                    }
-                };
-        }
-
-        public void Add<TEntity>(AsyncFilter<TEntity> filter)
-            where TEntity : class
-        {
-            funcs[typeof(TEntity)] =
-                async (context, item) =>
-                {
-                    try
-                    {
-                        return await filter(context, (TEntity) item);
-                    }
-                    catch (Exception exception)
-                    {
-                        throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
-                    }
-                };
-        }
-
-        Dictionary<Type, Func<object, object, Task<bool>>> funcs = new();
-
-        internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
-            where TEntity : class
-        {
-            if (funcs.Count == 0)
+        funcs[typeof(TEntity)] =
+            (context, item) =>
             {
-                return result;
-            }
-
-            var filters = FindFilters<TEntity>().ToList();
-            if (filters.Count == 0)
-            {
-                return result;
-            }
-
-            List<TEntity> list = new();
-            foreach (var item in result)
-            {
-                if (await ShouldInclude(userContext, item, filters))
+                try
                 {
-                    list.Add(item);
+                    return Task.FromResult(filter(context, (TEntity) item));
                 }
-            }
-
-            return list;
-        }
-
-        static async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item, List<Func<object, TEntity, Task<bool>>> filters)
-            where TEntity : class
-        {
-            foreach (var func in filters)
-            {
-                if (!await func(userContext, item))
+                catch (Exception exception)
                 {
-                    return false;
+                    throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                 }
-            }
+            };
+    }
 
-            return true;
+    public void Add<TEntity>(AsyncFilter<TEntity> filter)
+        where TEntity : class
+    {
+        funcs[typeof(TEntity)] =
+            async (context, item) =>
+            {
+                try
+                {
+                    return await filter(context, (TEntity) item);
+                }
+                catch (Exception exception)
+                {
+                    throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
+                }
+            };
+    }
+
+    Dictionary<Type, Func<object, object, Task<bool>>> funcs = new();
+
+    internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
+        where TEntity : class
+    {
+        if (funcs.Count == 0)
+        {
+            return result;
         }
 
-        internal virtual async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity? item)
-            where TEntity : class
+        var filters = FindFilters<TEntity>().ToList();
+        if (filters.Count == 0)
         {
-            if (item is null)
+            return result;
+        }
+
+        List<TEntity> list = new();
+        foreach (var item in result)
+        {
+            if (await ShouldInclude(userContext, item, filters))
+            {
+                list.Add(item);
+            }
+        }
+
+        return list;
+    }
+
+    static async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item, List<Func<object, TEntity, Task<bool>>> filters)
+        where TEntity : class
+    {
+        foreach (var func in filters)
+        {
+            if (!await func(userContext, item))
             {
                 return false;
             }
+        }
 
-            if (funcs.Count == 0)
-            {
-                return true;
-            }
+        return true;
+    }
 
-            foreach (var func in FindFilters<TEntity>())
-            {
-                if (!await func(userContext, item))
-                {
-                    return false;
-                }
-            }
+    internal virtual async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity? item)
+        where TEntity : class
+    {
+        if (item is null)
+        {
+            return false;
+        }
 
+        if (funcs.Count == 0)
+        {
             return true;
         }
 
-        IEnumerable<Func<object, TEntity, Task<bool>>> FindFilters<TEntity>()
-            where TEntity : class
+        foreach (var func in FindFilters<TEntity>())
         {
-            var type = typeof(TEntity);
-            foreach (var pair in funcs.Where(x => x.Key.IsAssignableFrom(type)))
+            if (!await func(userContext, item))
             {
-                yield return (context, item) => pair.Value(context, item);
+                return false;
             }
+        }
+
+        return true;
+    }
+
+    IEnumerable<Func<object, TEntity, Task<bool>>> FindFilters<TEntity>()
+        where TEntity : class
+    {
+        var type = typeof(TEntity);
+        foreach (var pair in funcs.Where(x => x.Key.IsAssignableFrom(type)))
+        {
+            yield return (context, item) => pair.Value(context, item);
         }
     }
 }
