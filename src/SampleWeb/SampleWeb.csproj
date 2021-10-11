@@ -6,13 +6,13 @@
     <Folder Include="wwwroot\" />
     <PackageReference Include="EfLocalDb" Version="10.7.1" />
     <PackageReference Include="graphiql" Version="2.0.0" />
-    <PackageReference Include="GraphQL.NewtonsoftJson" Version="4.6.0" />
-    <PackageReference Include="GraphQL" Version="4.6.0" />
+    <PackageReference Include="GraphQL.NewtonsoftJson" Version="4.6.1" />
+    <PackageReference Include="GraphQL" Version="4.6.1" />
     <!--<PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="3.5.0-alpha0046" />-->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.10" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.59-beta.5" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.59" PrivateAssets="all" />
   </ItemGroup>
 </Project>

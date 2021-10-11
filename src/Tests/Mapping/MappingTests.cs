@@ -19,7 +19,7 @@ public class MappingTests
     [Fact]
     public async Task SchemaPrint()
     {
-        ServiceCollection services = new();
+        var services = new ServiceCollection();
         EfGraphQLConventions.RegisterInContainer<MappingContext>(services, model:sqlInstance.Model);
         services.AddSingleton<MappingChildGraph>();
         services.AddSingleton<MappingParentGraph>();
@@ -27,7 +27,7 @@ public class MappingTests
         await using var provider = services.BuildServiceProvider();
         var mappingSchema = provider.GetRequiredService<MappingSchema>();
 
-        SchemaPrinter printer = new(mappingSchema);
+        var printer = new SchemaPrinter(mappingSchema);
         var print = printer.Print();
         await Verifier.Verify(print);
     }
@@ -37,8 +37,8 @@ public class MappingTests
     {
         await using var database = await sqlInstance.Build();
 
-        MappingParent parent = new();
-        MappingChild child = new()
+        var parent = new MappingParent();
+        var child = new MappingChild
         {
             Parent = parent
         };
@@ -75,8 +75,8 @@ public class MappingTests
         await using var database = await sqlInstance.Build();
         var context = database.Context;
 
-        MappingChild child = new();
-        MappingParent parent = new()
+        var child = new MappingChild();
+        var parent = new MappingParent
         {
             Property = "value"
         };
