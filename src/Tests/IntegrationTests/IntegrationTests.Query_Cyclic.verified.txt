@@ -67,7 +67,7 @@ SELECT [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property], [p].[Id], [p].[
 FROM [ChildEntities] AS [c]
 LEFT JOIN [ParentEntities] AS [p] ON [c].[ParentId] = [p].[Id]
 LEFT JOIN [ChildEntities] AS [c0] ON [p].[Id] = [c0].[ParentId]
-ORDER BY [c].[Property], [c].[Id], [p].[Id], [c0].[Id]
+ORDER BY [c].[Property], [c].[Id], [p].[Id]
     }
   ]
 }
