@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />
-    <PackageReference Include="EfLocalDb" Version="10.7.1" />
+    <PackageReference Include="EfLocalDb" Version="10.8.0" />
     <PackageReference Include="graphiql" Version="2.0.0" />
     <PackageReference Include="GraphQL.NewtonsoftJson" Version="4.6.1" />
     <PackageReference Include="GraphQL" Version="4.6.1" />
     <!--<PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="3.5.0-alpha0046" />-->
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
     <PackageReference Include="ProjectDefaults" Version="1.0.61" PrivateAssets="All" />
   </ItemGroup>

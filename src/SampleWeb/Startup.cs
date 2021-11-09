@@ -1,9 +1,11 @@
-﻿using GraphiQl;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using GraphiQl;
 using GraphQL.EntityFramework;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -32,7 +34,6 @@ public class Startup
         services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
         services.AddSingleton<ISchema, Schema>();
         var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
-        mvc.SetCompatibilityVersion(CompatibilityVersion.Latest);
         mvc.AddNewtonsoftJson();
     }
 

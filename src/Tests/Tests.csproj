@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>net6</TargetFrameworks>
     <NoWarn>EF1000</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EfLocalDb" Version="10.7.1" />
+    <PackageReference Include="EfLocalDb" Version="10.8.0" />
     <PackageReference Include="GraphQL" Version="4.6.1" />
     <PackageReference Include="GraphQL.NewtonsoftJson" Version="4.6.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
     <PackageReference Include="Verify.SqlServer" Version="2.16.2" />
     <PackageReference Include="Xunit" Version="2.4.1" />
     <PackageReference Include="Verify.Xunit" Version="14.2.0" />
