@@ -25,7 +25,7 @@ FROM (
     WHERE [p].[Id] = 'Guid_1'
 ) AS [t]
 LEFT JOIN [ChildEntities] AS [c] ON [t].[Id] = [c].[ParentId]
-ORDER BY [t].[Id], [c].[Id]
+ORDER BY [t].[Id]
     }
   ]
 }
