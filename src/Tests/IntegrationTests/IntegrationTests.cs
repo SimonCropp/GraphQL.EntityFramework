@@ -4,6 +4,7 @@ using GraphQL.EntityFramework;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using VerifyTests;
 using VerifyXunit;
@@ -26,7 +27,11 @@ public partial class IntegrationTests
         select Property
         from ParentEntities");
             },
-            constructInstance: builder => new(builder.Options));
+            constructInstance: builder =>
+            {
+                builder.ConfigureWarnings(x => x.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
+                return new(builder.Options);
+            });
     }
 
     [Fact]
