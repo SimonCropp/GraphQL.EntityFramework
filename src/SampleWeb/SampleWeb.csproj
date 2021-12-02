@@ -13,6 +13,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.61" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.62" PrivateAssets="all" />
   </ItemGroup>
 </Project>

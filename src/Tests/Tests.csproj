@@ -14,6 +14,6 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.61" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.62" PrivateAssets="all" />
   </ItemGroup>
 </Project>
