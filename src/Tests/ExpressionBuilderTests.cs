@@ -1,5 +1,4 @@
 using GraphQL.EntityFramework;
-using Xunit;
 
 public class ExpressionBuilderTests
 {

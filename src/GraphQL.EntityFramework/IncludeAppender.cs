@@ -84,7 +84,7 @@ class IncludeAppender
         {
             if (subFields.Count > 0)
             {
-                ProcessSubFields(list, parentPath, subFields, graph!, parentNavigationProperties, context);
+                ProcessSubFields(list, parentPath, subFields, graph, parentNavigationProperties, context);
             }
 
             return;
@@ -107,7 +107,7 @@ class IncludeAppender
             list.Add(path);
         }
 
-        ProcessSubFields(list, paths.First(), subFields, graph!, navigations[entityType!], context);
+        ProcessSubFields(list, paths.First(), subFields, graph, navigations[entityType], context);
     }
 
     static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)

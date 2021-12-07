@@ -6,9 +6,6 @@ using GraphQL.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
-using VerifyTests;
-using VerifyXunit;
-using Xunit;
 using Filters = GraphQL.EntityFramework.Filters;
 
 [UsesVerify]

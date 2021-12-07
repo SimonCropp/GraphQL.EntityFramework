@@ -1,5 +1,4 @@
 ﻿using EfLocalDb;
-using Microsoft.Extensions.Hosting;
 
 // LocalDb is used to make the sample simpler.
 // Replace with a real DbContext

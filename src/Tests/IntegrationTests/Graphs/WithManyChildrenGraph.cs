@@ -1,6 +1,5 @@
 ﻿using GraphQL;
 using GraphQL.EntityFramework;
-using Xunit;
 
 [GraphQLMetadata("WithManyChildren")]
 public class WithManyChildrenGraph :

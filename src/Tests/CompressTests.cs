@@ -1,6 +1,4 @@
 ﻿using GraphQL.EntityFramework;
-using VerifyXunit;
-using Xunit;
 
 [UsesVerify]
 public class CompressTests

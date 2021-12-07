@@ -1,8 +1,6 @@
 ﻿using EfLocalDb;
 using GraphQL;
 using Microsoft.EntityFrameworkCore;
-using VerifyXunit;
-using Xunit;
 
 [UsesVerify]
 public class ConnectionConverterTests

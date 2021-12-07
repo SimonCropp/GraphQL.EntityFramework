@@ -1,10 +1,7 @@
-﻿using System.Net.Http;
-using VerifyXunit;
-using GraphQL.EntityFramework.Testing;
+﻿using GraphQL.EntityFramework.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
-using Xunit;
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
 #region GraphQlControllerTests

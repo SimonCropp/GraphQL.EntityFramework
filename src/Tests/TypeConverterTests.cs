@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-public class TypeConverterTests
+﻿public class TypeConverterTests
 {
     [Theory]
     [InlineData(typeof(int), "12", 12)]

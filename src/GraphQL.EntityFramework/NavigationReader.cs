@@ -1,5 +1,4 @@
 ﻿using GraphQL.EntityFramework;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 static class NavigationReader

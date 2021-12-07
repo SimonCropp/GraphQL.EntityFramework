@@ -3,8 +3,6 @@ using GraphQL;
 using GraphQL.EntityFramework;
 using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
-using VerifyXunit;
-using Xunit;
 
 [UsesVerify]
 public class MappingTests

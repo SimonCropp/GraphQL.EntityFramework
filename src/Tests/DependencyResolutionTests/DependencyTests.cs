@@ -2,8 +2,6 @@
 using GraphQL;
 using GraphQL.EntityFramework;
 using Microsoft.Extensions.DependencyInjection;
-using VerifyXunit;
-using Xunit;
 
 [UsesVerify]
 public class DependencyTests

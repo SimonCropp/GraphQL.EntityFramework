@@ -3,8 +3,6 @@ using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using VerifyXunit;
-using Xunit;
 
 [UsesVerify]
 public class SchemaPrint

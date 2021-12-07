@@ -1,5 +1,4 @@
-﻿using Xunit;
-using Filters = GraphQL.EntityFramework.Filters;
+﻿using Filters = GraphQL.EntityFramework.Filters;
 
 public partial class IntegrationTests
 {

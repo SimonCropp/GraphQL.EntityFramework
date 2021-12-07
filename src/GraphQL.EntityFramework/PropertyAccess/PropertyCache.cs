@@ -37,7 +37,7 @@ static class PropertyCache<TInput>
         {
             return path.Split('.')
                 .Aggregate(parameter, (current, property) =>
-                    Expression.MakeMemberAccess(current, GetPropertyOrField(current.Type, property)!));
+                    Expression.MakeMemberAccess(current, GetPropertyOrField(current.Type, property)));
         }
         catch (ArgumentException exception)
         {
