@@ -164,11 +164,12 @@ public class EfDocumentExecuter :
         {
             return new SerialExecutionStrategy();
         }
+
         return base.SelectExecutionStrategy(context);
     }
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfDocumentExecuter.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfDocumentExecuter.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -732,7 +733,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     var executionResult = await executer.ExecuteAsync(options);
 
     var errors = executionResult.Errors;
-    if (errors != null && errors.Count > 0)
+    if (errors is { Count: > 0 })
     {
         if (errors.Count == 1)
         {
