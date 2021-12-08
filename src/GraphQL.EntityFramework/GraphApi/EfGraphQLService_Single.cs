@@ -90,6 +90,9 @@ partial class EfGraphQLService<TDbContext>
 
                     query = includeAppender.AddIncludes(query, context);
                     query = query.ApplyGraphQlArguments(context, names, false);
+
+                    QueryLogger.Write(query);
+
                     var single = await query.SingleOrDefaultAsync(context.CancellationToken);
 
                     if (single is not null)

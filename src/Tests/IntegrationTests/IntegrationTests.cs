@@ -56,6 +56,43 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task LogQuery()
+    {
+        string? queryText = null;
+        QueryLogger.Enable(s => queryText = s);
+        var query = @"
+{
+  parentEntities
+  (where:
+    [
+      {path: 'Property', comparison: startsWith, value: 'Valu'}
+      {path: 'Property', comparison: endsWith, value: 'ue3'}
+    ]
+  )
+  {
+    property
+  }
+}";
+
+        ParentEntity entity1 = new()
+        {
+            Property = "Value1"
+        };
+        ParentEntity entity2 = new()
+        {
+            Property = "Value2"
+        };
+        ParentEntity entity3 = new()
+        {
+            Property = "Value3"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] {entity1, entity2, entity3});
+        Assert.NotNull(queryText);
+    }
+
+    [Fact]
     public async Task Where_multiple()
     {
         var query = @"

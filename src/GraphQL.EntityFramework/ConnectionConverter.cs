@@ -170,6 +170,7 @@ static class ConnectionConverter
         where TItem : class
     {
         var page = list.Skip(skip).Take(take);
+        QueryLogger.Write(page);
         IEnumerable<TItem> result = await page.ToListAsync(cancellation);
         result = await filters.ApplyFilter(result, context.UserContext);
 

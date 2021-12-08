@@ -68,6 +68,8 @@ partial class EfGraphQLService<TDbContext>
                     query = includeAppender.AddIncludes(query, context);
                     query = query.ApplyGraphQlArguments(context, names, true);
 
+                    QueryLogger.Write(query);
+
                     var list = await query
                         .ToListAsync(context.CancellationToken);
                     return await fieldContext.Filters.ApplyFilter(list, context.UserContext);

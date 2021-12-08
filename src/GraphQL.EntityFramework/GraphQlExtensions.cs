@@ -24,7 +24,7 @@ public static class GraphQlExtensions
         var executionResult = await executer.ExecuteAsync(options);
 
         var errors = executionResult.Errors;
-        if (errors != null && errors.Count > 0)
+        if (errors is { Count: > 0 })
         {
             if (errors.Count == 1)
             {

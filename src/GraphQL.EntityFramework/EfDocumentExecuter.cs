@@ -13,6 +13,7 @@ public class EfDocumentExecuter :
         {
             return new SerialExecutionStrategy();
         }
+
         return base.SelectExecutionStrategy(context);
     }
 }
