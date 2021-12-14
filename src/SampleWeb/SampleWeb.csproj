@@ -9,10 +9,10 @@
     <PackageReference Include="GraphQL.NewtonsoftJson" Version="4.6.1" />
     <PackageReference Include="GraphQL" Version="4.6.1" />
     <!--<PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="3.5.0-alpha0046" />-->
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.62" PrivateAssets="all" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.63" PrivateAssets="all" />
   </ItemGroup>
 </Project>

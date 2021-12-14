@@ -4,12 +4,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" Version="4.6.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.1" />
     <PackageReference Include="Xunit" Version="2.4.1" />
-    <PackageReference Include="Verify.Xunit" Version="14.10.1" />
+    <PackageReference Include="Verify.Xunit" Version="14.11.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <ProjectReference Include="..\SampleWeb\SampleWeb.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.62" PrivateAssets="all" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.63" PrivateAssets="all" />
   </ItemGroup>
 </Project>
