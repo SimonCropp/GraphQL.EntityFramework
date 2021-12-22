@@ -14,6 +14,6 @@ query ($id: String!)
     id
   }
 }";
-        return Verifier.Verify(Compress.Query(query));
+        return Verify(Compress.Query(query));
     }
 }

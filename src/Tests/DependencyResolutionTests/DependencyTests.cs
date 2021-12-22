@@ -141,6 +141,6 @@ public class DependencyTests
     {
         EfDocumentExecuter executer = new();
         var result = await executer.ExecuteWithErrorCheck(executionOptions);
-        await Verifier.Verify(result.Serialize(), sourceFile: sourceFile).ScrubInlineGuids();
+        await Verify(result.Serialize(), sourceFile: sourceFile).ScrubInlineGuids();
     }
 }

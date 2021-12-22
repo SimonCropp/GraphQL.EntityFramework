@@ -53,7 +53,7 @@ public class ConnectionConverterTests
         await using var database = await sqlInstance.Build(databaseSuffix: $"{first.GetValueOrDefault(0)}{after.GetValueOrDefault(0)}{last.GetValueOrDefault(0)}{before.GetValueOrDefault(0)}");
         var entities = database.Context.Entities;
         var connection = await ConnectionConverter.ApplyConnectionContext<string, Entity>(entities.OrderBy(x=>x.Property), first, after, last, before, fieldContext, new());
-        await Verifier.Verify(connection.Items!.OrderBy(x => x!.Property))
+        await Verify(connection.Items!.OrderBy(x => x!.Property))
             .UseParameters(first, after, last, before);
     }
 
@@ -85,7 +85,7 @@ public class ConnectionConverterTests
     {
 
         var connection = ConnectionConverter.ApplyConnectionContext(list, first, after, last, before);
-        return Verifier.Verify(connection).UseParameters(first, after, last, before);
+        return Verify(connection).UseParameters(first, after, last, before);
     }
 
     public class Entity

@@ -27,7 +27,7 @@ public class MappingTests
 
         var printer = new SchemaPrinter(mappingSchema);
         var print = printer.Print();
-        await Verifier.Verify(print);
+        await Verify(print);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class MappingTests
             .Single(x => x.Name == "children")
             .Resolver!
             .Resolve(new ResolveFieldContext())!;
-        await Verifier.Verify(resolve);
+        await Verify(resolve);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class MappingTests
     {
         var expression = Mapper<MappingContext>.PropertyToObject<MappingParent>("Property");
         var result = expression.Compile()(new() {Property = "value"});
-        await Verifier.Verify(
+        await Verify(
             new
             {
                 expression,
@@ -88,7 +88,7 @@ public class MappingTests
                 DbContext = context,
                 Source = child
             });
-        await Verifier.Verify(
+        await Verify(
             new
             {
                 expression,

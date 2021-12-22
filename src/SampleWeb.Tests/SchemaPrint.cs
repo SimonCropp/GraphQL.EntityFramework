@@ -18,6 +18,6 @@ public class SchemaPrint
         var schema = provider.GetRequiredService<ISchema>();
         SchemaPrinter printer = new(schema);
         var print = printer.Print();
-        await Verifier.Verify(print);
+        await Verify(print);
     }
 }

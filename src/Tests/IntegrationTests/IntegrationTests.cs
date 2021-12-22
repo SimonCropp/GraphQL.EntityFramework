@@ -52,7 +52,7 @@ public partial class IntegrationTests
 
         SchemaPrinter printer = new(schema);
         var print = printer.Print();
-        await Verifier.Verify(print);
+        await Verify(print);
     }
 
     [Fact]
@@ -1664,11 +1664,11 @@ fragment childEntityFields on DerivedChild {
         try
         {
             var result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking);
-            await Verifier.Verify(result, sourceFile: sourceFile).ScrubInlineGuids();
+            await Verify(result, sourceFile: sourceFile).ScrubInlineGuids();
         }
         catch (ExecutionError executionError)
         {
-            await Verifier.Verify(executionError.Message, sourceFile: sourceFile);
+            await Verify(executionError.Message, sourceFile: sourceFile);
         }
     }
 
