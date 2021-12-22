@@ -490,7 +490,7 @@ public class GraphQlControllerTests
 }";
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        await Verifier.Verify(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -511,7 +511,7 @@ query ($id: ID!)
 
         using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        await Verifier.Verify(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -553,7 +553,7 @@ query ($id: ID!)
 
         using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        await Verifier.Verify(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -577,7 +577,7 @@ query {
 }";
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        await Verifier.Verify(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -592,7 +592,7 @@ query {
 }";
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
-        await Verifier.Verify(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -616,7 +616,7 @@ query {
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         var result = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
-        await Verifier.Verify(result);
+        await Verify(result);
     }
 
     [Fact]
@@ -632,7 +632,7 @@ query {
         using var response = await clientQueryExecutor.ExecutePost(client, query);
         var result = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
-        await Verifier.Verify(result);
+        await Verify(result);
     }
 
     [Fact]
@@ -653,7 +653,7 @@ query ($id: ID!)
         using var response = await clientQueryExecutor.ExecutePost(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
-        await Verifier.Verify(result);
+        await Verify(result);
     }
 
     //TODO: https://github.com/graphql-dotnet/graphql-client
