@@ -30,7 +30,7 @@ static class ArgumentGraphs
     static void Add<T>()
         where T : GraphType, new()
     {
-        T value = new();
+        var value = new T();
         entries.Add(typeof(T), value);
     }
 }

@@ -9,11 +9,9 @@ public class MultiContextTests
     [Fact]
     public async Task Run()
     {
-        SqlInstance<DbContext1> sqlInstance1 = new(
-            constructInstance: builder => new(builder.Options));
+        var sqlInstance1 = new SqlInstance<DbContext1>(constructInstance: builder => new(builder.Options));
 
-        SqlInstance<DbContext2> sqlInstance2 = new(
-            constructInstance: builder => new(builder.Options));
+        var sqlInstance2 = new SqlInstance<DbContext2>(constructInstance: builder => new(builder.Options));
 
         var query = @"
 {
@@ -27,16 +25,16 @@ public class MultiContextTests
   }
 }";
 
-        Entity1 entity1 = new()
+        var entity1 = new Entity1
         {
             Property = "the entity1"
         };
-        Entity2 entity2 = new()
+        var entity2 = new Entity2
         {
             Property = "the entity2"
         };
 
-        ServiceCollection services = new();
+        var services = new ServiceCollection();
 
         services.AddSingleton<MultiContextQuery>();
         services.AddSingleton<Entity1Graph>();
@@ -64,12 +62,12 @@ public class MultiContextTests
         #endregion
 
         await using var provider = services.BuildServiceProvider();
-        using MultiContextSchema schema = new(provider);
-        EfDocumentExecuter documentExecuter = new();
+        using var schema = new MultiContextSchema(provider);
+        var documentExecuter = new EfDocumentExecuter();
 
         #region MultiExecutionOptions
 
-        ExecutionOptions executionOptions = new()
+        var executionOptions = new ExecutionOptions
         {
             Schema = schema,
             Query = query,

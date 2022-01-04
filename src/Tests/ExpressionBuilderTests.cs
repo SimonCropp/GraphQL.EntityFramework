@@ -10,7 +10,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void Nested()
     {
-        List<Target> list = new()
+        var list = new List<Target>
         {
             new()
             {
@@ -32,7 +32,7 @@ public class ExpressionBuilderTests
     public void Nullable_requiring_parse()
     {
         var guid = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        List<TargetWithNullableRequiringParse> list = new()
+        var list = new List<TargetWithNullableRequiringParse>
         {
             new()
             {
@@ -61,7 +61,7 @@ public class ExpressionBuilderTests
     public void Nullable_requiring_parse_In()
     {
         var guid = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        List<TargetWithNullableRequiringParse> list = new()
+        var list = new List<TargetWithNullableRequiringParse>
         {
             new()
             {
@@ -101,7 +101,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void Nullable()
     {
-        List<TargetWithNullable> list = new()
+        var list = new List<TargetWithNullable>
         {
             new()
             {
@@ -136,7 +136,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void InList()
     {
-        List<TargetForIn> list = new()
+        var list = new List<TargetForIn>
         {
             new()
             {
@@ -157,7 +157,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void NotInList()
     {
-        List<TargetForIn> list = new()
+        var list = new List<TargetForIn>
         {
             new()
             {
@@ -183,7 +183,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void InIntList()
     {
-        List<TargetForInInt> list = new()
+        var list = new List<TargetForInInt>
         {
             new()
             {
@@ -204,7 +204,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void NotInIntList()
     {
-        List<TargetForInInt> list = new()
+        var list = new List<TargetForInInt>
         {
             new()
             {
@@ -230,7 +230,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void InGuidList()
     {
-        List<TargetForInGuid> list = new()
+        var list = new List<TargetForInGuid>
         {
             new()
             {
@@ -251,7 +251,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void NotInGuidList()
     {
-        List<TargetForInGuid> list = new()
+        var list = new List<TargetForInGuid>
         {
             new()
             {
@@ -277,7 +277,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void Field()
     {
-        List<TargetWithField> list = new()
+        var list = new List<TargetWithField>
         {
             new()
             {
@@ -298,7 +298,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void Contains()
     {
-        List<TargetWithField> list = new()
+        var list = new List<TargetWithField>
         {
             new()
             {
@@ -339,7 +339,7 @@ public class ExpressionBuilderTests
     [InlineData("DateOfBirth.Day", Comparison.Equal, "11", "Person 2")]
     public void Combos(string name, Comparison expression, string value, string expectedName, bool negate = false, StringComparison? stringComparison = null)
     {
-        List<Person> people = new()
+        var people = new List<Person>
         {
             new()
             {
@@ -384,7 +384,7 @@ public class ExpressionBuilderTests
     [InlineData("Employees[Company.Employees[Name]]", Comparison.Contains, "son 2", "Company 1")]
     public void ListMemberQueryCombos(string name, Comparison expression, string value, string expectedName, bool negate = false, StringComparison? stringComparison = null)
     {
-        List<Company> companies = new()
+        var companies = new List<Company>
         {
             new()
             {

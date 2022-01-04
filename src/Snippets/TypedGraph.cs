@@ -14,10 +14,10 @@ public class TypedGraph
         {
             AddNavigationListField(
                 name: "employees",
-                resolve: context => context.Source!.Employees);
+                resolve: context => context.Source.Employees);
             AddNavigationConnectionField(
                 name: "employeesConnection",
-                resolve: context => context.Source!.Employees,
+                resolve: context => context.Source.Employees,
                 includeNames: new[] {"Employees"});
             AutoMap();
         }

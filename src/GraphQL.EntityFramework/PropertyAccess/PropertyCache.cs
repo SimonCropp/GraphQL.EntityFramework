@@ -17,7 +17,7 @@ static class PropertyCache<TInput>
                 var lambda = Expression.Lambda<Func<TInput, object>>(converted, SourceParameter);
                 var compile = lambda.Compile();
                 var listContainsMethod = ReflectionCache.GetListContains(left.Type);
-                
+
                 var body = (MemberExpression)left;
                 return new(
                     Left: left,
@@ -71,7 +71,7 @@ static class PropertyCache<TInput>
         if (propertyOrField == null && type.IsInterface)
         {
             // Get All the implemented interfaces of the type
-            List<Type> baseInterfaces = new(type.GetInterfaces());
+            var baseInterfaces = new List<Type>(type.GetInterfaces());
 
             // Iterate over inherited interfaces
             foreach (var baseInterfaceType in baseInterfaces)

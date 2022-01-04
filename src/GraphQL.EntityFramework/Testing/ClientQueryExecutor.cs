@@ -22,7 +22,7 @@ public class ClientQueryExecutor
             query,
             variables
         };
-        HttpRequestMessage request = new(HttpMethod.Post, uri)
+        var request = new HttpRequestMessage(HttpMethod.Post, uri)
         {
             Content = new StringContent(ToJson(body), Encoding.UTF8, "application/json")
         };
@@ -36,7 +36,7 @@ public class ClientQueryExecutor
         var compressed = CompressQuery(query);
         var variablesString = ToJson(variables);
         var getUri = $"{uri}?query={compressed}&variables={variablesString}";
-        HttpRequestMessage request = new(HttpMethod.Get, getUri);
+        var request = new HttpRequestMessage(HttpMethod.Get, getUri);
         headerAction?.Invoke(request.Headers);
         return client.SendAsync(request);
     }

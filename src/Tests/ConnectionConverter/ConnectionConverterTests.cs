@@ -49,7 +49,7 @@ public class ConnectionConverterTests
     [InlineData(null, 7, 2, null)]
     public async Task Queryable(int? first, int? after, int? last, int? before)
     {
-        ResolveFieldContext<string> fieldContext = new();
+        var fieldContext = new ResolveFieldContext<string>();
         await using var database = await sqlInstance.Build(databaseSuffix: $"{first.GetValueOrDefault(0)}{after.GetValueOrDefault(0)}{last.GetValueOrDefault(0)}{before.GetValueOrDefault(0)}");
         var entities = database.Context.Entities;
         var connection = await ConnectionConverter.ApplyConnectionContext<string, Entity>(entities.OrderBy(x=>x.Property), first, after, last, before, fieldContext, new());

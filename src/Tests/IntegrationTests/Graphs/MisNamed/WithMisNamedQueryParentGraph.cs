@@ -12,7 +12,7 @@ public class WithMisNamedQueryParentGraph :
             name: "misNamedChildren",
             resolve: context =>
             {
-                var parentId = context.Source!.Id;
+                var parentId = context.Source.Id;
                 return context.DbContext.WithMisNamedQueryChildEntities
                     .Where(x => x.ParentId == parentId);
             });

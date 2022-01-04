@@ -26,7 +26,7 @@ public static class ExpressionBuilder<T>
     private static Expression MakePredicateBody(IEnumerable<WhereExpression> wheres)
     {
         Expression? mainExpression = null;
-        WhereExpression previousWhere = new();
+        var previousWhere = new WhereExpression();
 
         // Iterate over wheres
         foreach (var where in wheres)

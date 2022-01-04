@@ -35,7 +35,7 @@ public class DependencyTests
             sqlInstance.Model);
         await using var provider = services.BuildServiceProvider();
         using var schema = provider.GetRequiredService<DependencySchema>();
-        ExecutionOptions executionOptions = new()
+        var executionOptions = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
@@ -59,8 +59,8 @@ public class DependencyTests
             services,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
-        using DependencySchema schema = new(provider);
-        ExecutionOptions executionOptions = new()
+        using var schema = new DependencySchema(provider);
+        var executionOptions = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
@@ -84,8 +84,8 @@ public class DependencyTests
             services,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
-        using DependencySchema schema = new(provider);
-        ExecutionOptions options = new()
+        using var schema = new DependencySchema(provider);
+        var options = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
@@ -109,8 +109,8 @@ public class DependencyTests
             services,
             userContext => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
         await using var provider = services.BuildServiceProvider();
-        using DependencySchema schema = new(provider);
-        ExecutionOptions options = new()
+        using var schema = new DependencySchema(provider);
+        var options = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
@@ -123,7 +123,7 @@ public class DependencyTests
 
     static ServiceCollection BuildServiceCollection()
     {
-        ServiceCollection services = new();
+        var services = new ServiceCollection();
         services.AddSingleton<DependencyQuery>();
         services.AddSingleton(typeof(EntityGraph));
         return services;
@@ -139,7 +139,7 @@ public class DependencyTests
         ExecutionOptions executionOptions,
         [CallerFilePath] string sourceFile = "")
     {
-        EfDocumentExecuter executer = new();
+        var executer = new EfDocumentExecuter();
         var result = await executer.ExecuteWithErrorCheck(executionOptions);
         await Verify(result.Serialize(), sourceFile: sourceFile).ScrubInlineGuids();
     }

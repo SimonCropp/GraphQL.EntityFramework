@@ -62,7 +62,7 @@ public class Filters
             return result;
         }
 
-        List<TEntity> list = new();
+        var list = new List<TEntity>();
         foreach (var item in result)
         {
             if (await ShouldInclude(userContext, item, filters))

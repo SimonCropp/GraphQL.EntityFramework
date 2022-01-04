@@ -20,7 +20,7 @@ partial class EfGraphQLService<TDbContext>
 
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
-        FieldType field = new()
+        var field = new FieldType
         {
             Name = name,
             Type = graphType,

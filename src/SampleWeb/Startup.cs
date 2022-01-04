@@ -21,7 +21,7 @@ public class Startup
         //    options => options.ExposeExceptions = true);
         //graphQl.AddWebSockets();
 
-        DbContextBuilder dbContextBuilder = new();
+        var dbContextBuilder = new DbContextBuilder();
         services.AddSingleton<IHostedService>(dbContextBuilder);
         services.AddSingleton<Func<SampleDbContext>>(_ => dbContextBuilder.BuildDbContext);
         services.AddScoped(_ => dbContextBuilder.BuildDbContext());

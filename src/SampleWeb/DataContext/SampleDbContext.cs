@@ -17,9 +17,9 @@ public class SampleDbContext :
 
     static IModel BuildStaticModel()
     {
-        DbContextOptionsBuilder builder = new();
+        var builder = new DbContextOptionsBuilder();
         builder.UseSqlServer("Fake");
-        using SampleDbContext dbContext = new(builder.Options);
+        using var dbContext = new SampleDbContext(builder.Options);
         return dbContext.Model;
     }
 

@@ -41,7 +41,7 @@ public class MappingTests
             Parent = parent
         };
         await database.AddDataUntracked(child, parent);
-        ServiceCollection services = new();
+        var services = new ServiceCollection();
         services.AddSingleton<MappingQuery>();
         EfGraphQLConventions.RegisterInContainer(services,_ => database.NewDbContext(), model:sqlInstance.Model);
         await using var provider = services.BuildServiceProvider();

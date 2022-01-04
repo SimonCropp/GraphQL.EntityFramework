@@ -45,7 +45,7 @@ class IncludeAppender
 
     List<string> GetPaths(IResolveFieldContext context, IReadOnlyList<Navigation> navigationProperty)
     {
-        List<string> list = new();
+        var list = new List<string>();
 
         AddField(list, context.FieldAst, context.FieldAst.SelectionSet!, null, context.FieldDefinition, navigationProperty, context);
 

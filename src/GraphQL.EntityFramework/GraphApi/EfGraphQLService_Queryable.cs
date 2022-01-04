@@ -44,7 +44,7 @@ partial class EfGraphQLService<TDbContext>
         Guard.AgainstWhiteSpace(nameof(name), name);
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
-        FieldType fieldType = new()
+        var fieldType = new FieldType
         {
             Name = name,
             Description = description,

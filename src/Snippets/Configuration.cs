@@ -10,9 +10,9 @@ class Configuration
     {
         public static IModel GetInstance()
         {
-            DbContextOptionsBuilder builder = new();
+            var builder = new DbContextOptionsBuilder();
             builder.UseSqlServer("Fake");
-            using MyDbContext context = new(builder.Options);
+            using var context = new MyDbContext(builder.Options);
             return context.Model;
         }
     }

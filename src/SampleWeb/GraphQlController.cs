@@ -52,7 +52,7 @@ public class GraphQlController :
         JObject? variables,
         CancellationToken cancellation)
     {
-        ExecutionOptions options = new()
+        var options = new ExecutionOptions
         {
             Schema = schema,
             Query = query,

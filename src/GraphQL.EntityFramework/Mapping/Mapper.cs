@@ -42,7 +42,7 @@ public static class Mapper<TDbContext>
                 MapNavigationProperties(graph, graphService, exclusions, navigations);
             }
 
-            List<string> list = new();
+            var list = new List<string>();
             if (exclusions is not null)
             {
                 list.AddRange(exclusions);
@@ -145,7 +145,7 @@ public static class Mapper<TDbContext>
 
     internal static Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> NavigationFunc<TSource, TReturn>(string name)
     {
-        NavigationKey key = new(typeof(TSource), name);
+        var key = new NavigationKey(typeof(TSource), name);
 
         return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>)navigationFuncs.GetOrAdd(
             key,
@@ -168,7 +168,7 @@ public static class Mapper<TDbContext>
     static void AddMember<TSource>(ComplexGraphType<TSource> graph, PropertyInfo property)
     {
         var (compile, propertyGraphType) = Compile<TSource>(property);
-        SimpleFieldResolver<TSource> resolver = new(compile);
+        var resolver = new SimpleFieldResolver<TSource>(compile);
         var graphQlField = graph.Field(type: propertyGraphType, name: property.Name);
         graphQlField.Resolver = resolver;
     }
