@@ -51,9 +51,9 @@ static class ModelBuilder
 {
     public static IModel GetInstance()
     {
-        DbContextOptionsBuilder builder = new();
+        var builder = new DbContextOptionsBuilder();
         builder.UseSqlServer("Fake");
-        using MyDbContext context = new(builder.Options);
+        using var context = new MyDbContext(builder.Options);
         return context.Model;
     }
 }
@@ -281,7 +281,7 @@ public class GraphQlController :
         JObject? variables,
         CancellationToken cancellation)
     {
-        ExecutionOptions options = new()
+        var options = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
@@ -344,7 +344,7 @@ public class UserContext: Dictionary<string, object?>
     public readonly DbContext2 DbContext2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L86-L98' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L84-L96' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -362,7 +362,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L55-L64' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L53-L62' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -374,14 +374,14 @@ Use the user type to pass in both DbContext instances.
 <!-- snippet: MultiExecutionOptions -->
 <a id='snippet-multiexecutionoptions'></a>
 ```cs
-ExecutionOptions executionOptions = new()
+var executionOptions = new ExecutionOptions
 {
     Schema = schema,
     Query = query,
     UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L70-L79' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L68-L77' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -704,7 +704,7 @@ query ($id: ID!)
 
     static TestServer GetTestServer()
     {
-        WebHostBuilder hostBuilder = new();
+        var hostBuilder = new WebHostBuilder();
         hostBuilder.UseStartup<Startup>();
         return new(hostBuilder);
     }
@@ -820,7 +820,7 @@ public class DerivedGraph :
     {
         AddNavigationConnectionField(
             name: "childrenFromInterface",
-            e => e.Source!.ChildrenFromBase);
+            e => e.Source.ChildrenFromBase);
         AutoMap();
         Interface<InterfaceGraph>();
         IsTypeOf = obj => obj is DerivedEntity;
