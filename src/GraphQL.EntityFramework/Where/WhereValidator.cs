@@ -4,10 +4,11 @@ static class WhereValidator
 {
     public static void ValidateObject(Type propertyType, Comparison comparison, StringComparison? @case)
     {
-        if (comparison == Comparison.Contains ||
-            comparison == Comparison.StartsWith ||
-            comparison == Comparison.EndsWith ||
-            comparison == Comparison.Like)
+        if (comparison is
+            Comparison.Contains or
+            Comparison.StartsWith or
+            Comparison.EndsWith or
+            Comparison.Like)
         {
             throw new($"Cannot perform {comparison} on {propertyType.FullName}.");
         }
@@ -29,10 +30,11 @@ static class WhereValidator
 
     public static void ValidateString(Comparison comparison, StringComparison? @case)
     {
-        if (comparison == Comparison.GreaterThan ||
-            comparison == Comparison.GreaterThanOrEqual ||
-            comparison == Comparison.LessThanOrEqual ||
-            comparison == Comparison.LessThan)
+        if (comparison is
+            Comparison.GreaterThan or
+            Comparison.GreaterThanOrEqual or
+            Comparison.LessThanOrEqual or
+            Comparison.LessThan)
         {
             throw new($"Cannot perform {comparison} on a String.");
         }

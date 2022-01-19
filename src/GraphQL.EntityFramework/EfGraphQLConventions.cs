@@ -61,7 +61,7 @@ public static class EfGraphQLConventions
         where TDbContext : DbContext
     {
         var dataFromHttpContext = provider.GetService<HttpContextCapture>()?
-            .HttpContextAccessor?
+            .HttpContextAccessor
             .HttpContext?
             .RequestServices
             .GetService<TDbContext>();

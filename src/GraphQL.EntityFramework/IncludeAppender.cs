@@ -135,7 +135,7 @@ class IncludeAppender
     static bool IsConnectionNode(Field field)
     {
         var name = field.Name.ToLowerInvariant();
-        return name == "edges" || name == "items" || name == "node";
+        return name is "edges" or "items" or "node";
     }
 
     public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string>? includeNames)
