@@ -10,7 +10,7 @@
     <PackageReference Include="GraphQL" Version="4.7.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
-    <PackageReference Include="NullabilityInfo" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="NullabilityInfo" Version="1.0.4" PrivateAssets="all" />
     <PackageReference Include="ProjectDefaults" Version="1.0.63" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" Condition="$(Configuration) == 'Release'" />
   </ItemGroup>
