@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="NullabilityInfo" Version="1.0.7" PrivateAssets="all" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.64" PrivateAssets="all" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.68" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" Condition="$(Configuration) == 'Release'" />
   </ItemGroup>
 </Project>
