@@ -6,8 +6,6 @@ public class ParentEntityViewGraph :
     EfObjectGraphType<IntegrationDbContext, ParentEntityView>
 {
     public ParentEntityViewGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
-        base(graphQlService)
-    {
+        base(graphQlService) =>
         AutoMap();
-    }
 }

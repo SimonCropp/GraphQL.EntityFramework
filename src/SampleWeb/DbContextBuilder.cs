@@ -83,10 +83,8 @@ public class DbContextBuilder :
         await context.SaveChangesAsync();
     }
 
-    public SampleDbContext BuildDbContext()
-    {
-        return database.NewDbContext();
-    }
+    public SampleDbContext BuildDbContext() =>
+        database.NewDbContext();
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -95,8 +93,6 @@ public class DbContextBuilder :
         database = await sqlInstance.Build("GraphQLEntityFrameworkSample");
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    public Task StopAsync(CancellationToken cancellationToken) =>
+        Task.CompletedTask;
 }

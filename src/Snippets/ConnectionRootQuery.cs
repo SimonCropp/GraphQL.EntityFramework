@@ -9,12 +9,10 @@ class ConnectionRootQuery
         QueryGraphType<MyDbContext>
     {
         public Query(IEfGraphQLService<MyDbContext> graphQlService) :
-            base(graphQlService)
-        {
+            base(graphQlService) =>
             AddQueryConnectionField(
                 name: "companies",
                 resolve: context => context.DbContext.Companies);
-        }
     }
 
     #endregion

@@ -31,9 +31,8 @@ static class ComplexGraphResolver
         return entityType != null;
     }
 
-    static Resolved GetOrAdd(FieldType fieldType)
-    {
-        return cache.GetOrAdd(
+    static Resolved GetOrAdd(FieldType fieldType) =>
+        cache.GetOrAdd(
             fieldType.ResolvedType!,
             graphType =>
             {
@@ -73,7 +72,6 @@ static class ComplexGraphResolver
 
                 return new(ResolvedEntityType(graphType), graph);
             });
-    }
 
     static Type? ResolvedEntityType(IGraphType graph)
     {

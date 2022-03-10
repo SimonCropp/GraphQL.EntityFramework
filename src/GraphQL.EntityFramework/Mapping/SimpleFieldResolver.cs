@@ -6,13 +6,9 @@ class SimpleFieldResolver<TSource> :
 {
     Func<TSource, object> func;
 
-    public SimpleFieldResolver(Func<TSource, object> func)
-    {
+    public SimpleFieldResolver(Func<TSource, object> func) =>
         this.func = func;
-    }
 
-    public object Resolve(IResolveFieldContext context)
-    {
-        return func((TSource) context.Source!);
-    }
+    public object Resolve(IResolveFieldContext context) =>
+        func((TSource) context.Source!);
 }

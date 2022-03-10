@@ -9,10 +9,8 @@ public class MappingTests
 {
     static SqlInstance<MappingContext> sqlInstance;
 
-    static MappingTests()
-    {
+    static MappingTests() =>
         sqlInstance = new(builder => new(builder.Options));
-    }
 
     [Fact]
     public async Task SchemaPrint()

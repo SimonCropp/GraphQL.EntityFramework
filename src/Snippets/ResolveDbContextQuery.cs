@@ -10,8 +10,7 @@ class ResolveDbContextQuery
         QueryGraphType<MyDbContext>
     {
         public Query(IEfGraphQLService<MyDbContext> graphQlService) :
-            base(graphQlService)
-        {
+            base(graphQlService) =>
             Field<ListGraphType<CompanyGraph>>(
                 name: "oldCompanies",
                 resolve: context =>
@@ -20,7 +19,6 @@ class ResolveDbContextQuery
                     var dbContext = ResolveDbContext(context);
                     return dbContext.Companies.Where(x => x.Age > 10);
                 });
-        }
     }
 
     #endregion

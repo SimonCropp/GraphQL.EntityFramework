@@ -6,8 +6,6 @@ public class ManyToManyRightGraph :
     EfObjectGraphType<IntegrationDbContext, ManyToManyRightEntity>
 {
     public ManyToManyRightGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
-        base(graphQlService)
-    {
+        base(graphQlService) =>
         AutoMap();
-    }
 }

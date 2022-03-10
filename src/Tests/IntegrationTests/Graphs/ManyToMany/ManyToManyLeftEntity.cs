@@ -2,10 +2,8 @@
 
 public class ManyToManyLeftEntity
 {
-    public ManyToManyLeftEntity()
-    {
+    public ManyToManyLeftEntity() =>
         Rights = new HashSet<ManyToManyRightEntity>();
-    }
 
     [Key]
     public string Id { get; set; } = null!;

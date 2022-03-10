@@ -8,20 +8,10 @@ static class ArgumentReader
     {
         expression = getArgument.ReadList<WhereExpression>("where");
 
-        if (expression.Any())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return expression.Any();
     }
 
-    public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object?> getArgument)
-    {
-        return getArgument.ReadList<OrderBy>("orderBy");
-    }
+    public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object?> getArgument) => getArgument.ReadList<OrderBy>("orderBy");
 
     public static bool TryReadIds(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string[]? expression)
     {

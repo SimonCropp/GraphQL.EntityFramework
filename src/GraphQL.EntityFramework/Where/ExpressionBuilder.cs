@@ -79,26 +79,20 @@ public static class ExpressionBuilder<T>
     /// <summary>
     /// Create a single predicate for the single set of supplied conditional arguments
     /// </summary>
-    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values)
-    {
-        return BuildPredicate(path, comparison, values, null);
-    }
+    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values) =>
+        BuildPredicate(path, comparison, values, null);
 
     /// <summary>
     /// Create a single predicate for the single set of supplied conditional arguments
     /// </summary>
-    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison)
-    {
-        return BuildPredicate(path, comparison, values, false, stringComparison);
-    }
+    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison) =>
+        BuildPredicate(path, comparison, values, false, stringComparison);
 
     /// <summary>
     /// Create a single predicate for the single set of supplied conditional arguments
     /// </summary>
-    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate)
-    {
-        return BuildPredicate(path, comparison, values, negate, null);
-    }
+    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate) =>
+        BuildPredicate(path, comparison, values, negate, null);
 
     /// <summary>
     /// Create a single predicate for the single set of supplied conditional arguments
@@ -360,10 +354,8 @@ public static class ExpressionBuilder<T>
     /// <summary>
     /// Checks the path for matching list property marker
     /// </summary>
-    private static bool HasListInPath(string path)
-    {
-        return Regex.IsMatch(path, LIST_PROPERTY_PATTERN);
-    }
+    private static bool HasListInPath(string path) =>
+        Regex.IsMatch(path, LIST_PROPERTY_PATTERN);
 
     /// <summary>
     /// Combine expressions by a specified binary operator
@@ -384,10 +376,8 @@ public static class ExpressionBuilder<T>
     /// <summary>
     /// Negates a supplied expression
     /// </summary>
-    static Expression NegateExpression(Expression expression)
-    {
-        return Expression.Not(expression);
-    }
+    static Expression NegateExpression(Expression expression) =>
+        Expression.Not(expression);
 
     #endregion
 }

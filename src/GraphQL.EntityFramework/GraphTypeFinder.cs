@@ -9,8 +9,6 @@ static class GraphTypeFinder
         return FindGraphType(type, isNullable);
     }
 
-    public static Type FindGraphType(Type type, bool isNullable = false)
-    {
-        return type.GetGraphTypeFromType(isNullable, TypeMappingMode.OutputType);
-    }
+    public static Type FindGraphType(Type type, bool isNullable = false) =>
+        type.GetGraphTypeFromType(isNullable, TypeMappingMode.OutputType);
 }

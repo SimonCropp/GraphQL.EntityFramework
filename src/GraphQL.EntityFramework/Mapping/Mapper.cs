@@ -12,18 +12,14 @@ public static class Mapper<TDbContext>
     /// <summary>
     /// Add a property type to exclude from mapping.
     /// </summary>
-    public static void AddIgnoredType<T>()
-    {
+    public static void AddIgnoredType<T>() =>
         ignoredTypes.Add(typeof(T));
-    }
 
     /// <summary>
     /// Add a property type to exclude from mapping.
     /// </summary>
-    public static void AddIgnoredType(Type type)
-    {
+    public static void AddIgnoredType(Type type) =>
         ignoredTypes.Add(type);
-    }
 
     const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Static;
     static MethodInfo addNavigationMethod = typeof(Mapper<TDbContext>).GetMethod(nameof(AddNavigation), bindingFlags)!;
@@ -246,8 +242,6 @@ public static class Mapper<TDbContext>
         }
     }
 
-    static bool FieldExists(IComplexGraphType graphType, string name)
-    {
-        return graphType.Fields.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-    }
+    static bool FieldExists(IComplexGraphType graphType, string name) =>
+        graphType.Fields.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 }

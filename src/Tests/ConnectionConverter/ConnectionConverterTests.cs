@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 [UsesVerify]
 public class ConnectionConverterTests
 {
-    static ConnectionConverterTests()
-    {
+    static ConnectionConverterTests() =>
         sqlInstance = new(
             buildTemplate: async dbContext =>
             {
@@ -15,7 +14,6 @@ public class ConnectionConverterTests
                 await dbContext.SaveChangesAsync();
             },
             constructInstance: builder => new(builder.Options));
-    }
 
     static List<string> list = new()
     {
@@ -104,9 +102,7 @@ public class ConnectionConverterTests
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
             modelBuilder.Entity<Entity>();
-        }
     }
 }

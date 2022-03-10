@@ -79,10 +79,8 @@ public static class EfGraphQLConventions
         throw new($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
     }
 
-    static void RegisterScalarsAndArgs(IServiceCollection services)
-    {
+    static void RegisterScalarsAndArgs(IServiceCollection services) =>
         ArgumentGraphs.RegisterInContainer(services);
-    }
 
     public static void RegisterConnectionTypesInContainer(IServiceCollection services)
     {

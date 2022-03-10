@@ -10,12 +10,10 @@ class ConnectionTypedGraph
         EfObjectGraphType<MyDbContext, Company>
     {
         public CompanyGraph(IEfGraphQLService<MyDbContext> graphQlService) :
-            base(graphQlService)
-        {
+            base(graphQlService) =>
             AddNavigationConnectionField(
                 name: "employees",
                 resolve: context => context.Source.Employees);
-        }
     }
 
     #endregion

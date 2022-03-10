@@ -6,8 +6,6 @@ public class OwnedChildGraph :
     EfObjectGraphType<IntegrationDbContext, OwnedChild>
 {
     public OwnedChildGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
-        base(graphQlService)
-    {
+        base(graphQlService) =>
         AutoMap();
-    }
 }

@@ -3,53 +3,41 @@ using GraphQL.Types;
 
 static class ArgumentAppender
 {
-    static QueryArgument<ListGraphType<NonNullGraphType<WhereExpressionGraph>>> whereArgument()
-    {
-        return new()
+    static QueryArgument<ListGraphType<NonNullGraphType<WhereExpressionGraph>>> whereArgument() =>
+        new()
         {
             Name = "where"
         };
-    }
 
-    static QueryArgument<ListGraphType<NonNullGraphType<OrderByGraph>>> orderByArgument()
-    {
-        return new()
+    static QueryArgument<ListGraphType<NonNullGraphType<OrderByGraph>>> orderByArgument() =>
+        new()
         {
             Name = "orderBy"
         };
-    }
 
-    static QueryArgument<ListGraphType<NonNullGraphType<IdGraphType>>> idsArgument()
-    {
-        return new()
+    static QueryArgument<ListGraphType<NonNullGraphType<IdGraphType>>> idsArgument() =>
+        new()
         {
             Name = "ids"
         };
-    }
 
-    static QueryArgument<IdGraphType> idArgument()
-    {
-        return new()
+    static QueryArgument<IdGraphType> idArgument() =>
+        new()
         {
             Name = "id"
         };
-    }
 
-    static QueryArgument<IntGraphType> skipArgument()
-    {
-        return new()
+    static QueryArgument<IntGraphType> skipArgument() =>
+        new()
         {
             Name = "skip"
         };
-    }
 
-    static QueryArgument<IntGraphType> takeArgument()
-    {
-        return new()
+    static QueryArgument<IntGraphType> takeArgument() =>
+        new()
         {
             Name = "take"
         };
-    }
 
     public static void AddWhereArgument(this FieldType field, bool hasId, IEnumerable<QueryArgument>? extra)
     {

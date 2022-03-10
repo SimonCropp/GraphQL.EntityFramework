@@ -6,13 +6,9 @@ public static class QueryLogger
 {
     static Action<string>? log;
 
-    public static void Enable(Action<string> log)
-    {
+    public static void Enable(Action<string> log) =>
         QueryLogger.log = log;
-    }
 
-    internal static void Write(IQueryable queryable)
-    {
+    internal static void Write(IQueryable queryable) =>
         log?.Invoke(queryable.ToQueryString());
-    }
 }

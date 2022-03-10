@@ -5,9 +5,8 @@ static class PropertyCache<TInput>
     public static ParameterExpression SourceParameter = Expression.Parameter(typeof(TInput));
     static ConcurrentDictionary<string, Property<TInput>> properties = new();
 
-    public static Property<TInput> GetProperty(string path)
-    {
-        return properties.GetOrAdd(
+    public static Property<TInput> GetProperty(string path) =>
+        properties.GetOrAdd(
             path,
             x =>
             {
@@ -29,7 +28,6 @@ static class PropertyCache<TInput>
                     ListContainsMethod: listContainsMethod
                 );
             });
-    }
 
     static Expression AggregatePath(string path, Expression parameter)
     {

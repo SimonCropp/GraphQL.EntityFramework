@@ -24,10 +24,8 @@ public class GraphQlController :
     [HttpPost]
     public Task Post(
         [BindRequired, FromBody] PostBody body,
-        CancellationToken cancellation)
-    {
-        return Execute(body.Query, body.OperationName, body.Variables, cancellation);
-    }
+        CancellationToken cancellation) =>
+        Execute(body.Query, body.OperationName, body.Variables, cancellation);
 
     public class PostBody
     {

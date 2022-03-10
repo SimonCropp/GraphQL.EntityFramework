@@ -6,8 +6,6 @@ public class FilterChildGraph :
     EfObjectGraphType<IntegrationDbContext, FilterChildEntity>
 {
     public FilterChildGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
-        base(graphQlService)
-    {
+        base(graphQlService) =>
         AutoMap();
-    }
 }

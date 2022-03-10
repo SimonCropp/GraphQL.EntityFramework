@@ -35,9 +35,8 @@ public partial class EfGraphQLService<TDbContext> :
     IncludeAppender includeAppender;
 
     ResolveEfFieldContext<TDbContext, TSource> BuildContext<TSource>(
-        IResolveFieldContext<TSource> context)
-    {
-        return new()
+        IResolveFieldContext<TSource> context) =>
+        new()
         {
             UserContext = context.UserContext,
             Arguments = context.Arguments,
@@ -63,12 +62,9 @@ public partial class EfGraphQLService<TDbContext> :
             ArrayPool = context.ArrayPool,
             Parent = context.Parent
         };
-    }
 
-    public TDbContext ResolveDbContext(IResolveFieldContext context)
-    {
-        return resolveDbContext(context.UserContext);
-    }
+    public TDbContext ResolveDbContext(IResolveFieldContext context) =>
+        resolveDbContext(context.UserContext);
 
     Filters ResolveFilter<TSource>(IResolveFieldContext<TSource> context)
     {
@@ -77,8 +73,6 @@ public partial class EfGraphQLService<TDbContext> :
     }
 
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
-        where TItem : class
-    {
-        return includeAppender.AddIncludes(query, context);
-    }
+        where TItem : class =>
+        includeAppender.AddIncludes(query, context);
 }

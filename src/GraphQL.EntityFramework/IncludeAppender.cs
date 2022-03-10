@@ -9,10 +9,8 @@ class IncludeAppender
 {
     IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations;
 
-    public IncludeAppender(IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations)
-    {
+    public IncludeAppender(IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations) =>
         this.navigations = navigations;
-    }
 
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class
@@ -138,10 +136,8 @@ class IncludeAppender
         return name is "edges" or "items" or "node";
     }
 
-    public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string>? includeNames)
-    {
+    public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string>? includeNames) =>
         SetIncludeMetadata(fieldName, includeNames, fieldType.Metadata);
-    }
 
     static void SetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames, IDictionary<string, object?> metadata)
     {
@@ -155,10 +151,8 @@ class IncludeAppender
         }
     }
 
-    static string[] FieldNameToArray(string fieldName)
-    {
-        return new[] { char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1) };
-    }
+    static string[] FieldNameToArray(string fieldName) =>
+        new[] { char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1) };
 
     static bool TryGetIncludeMetadata(FieldType fieldType, [NotNullWhen(true)] out string[]? value)
     {

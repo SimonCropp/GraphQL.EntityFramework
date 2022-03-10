@@ -13,8 +13,7 @@ public class Filters
     #endregion
 
     public void Add<TEntity>(Filter<TEntity> filter)
-        where TEntity : class
-    {
+        where TEntity : class =>
         funcs[typeof(TEntity)] =
             (context, item) =>
             {
@@ -27,11 +26,9 @@ public class Filters
                     throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                 }
             };
-    }
 
     public void Add<TEntity>(AsyncFilter<TEntity> filter)
-        where TEntity : class
-    {
+        where TEntity : class =>
         funcs[typeof(TEntity)] =
             async (context, item) =>
             {
@@ -44,7 +41,6 @@ public class Filters
                     throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                 }
             };
-    }
 
     Dictionary<Type, Func<object, object, Task<bool>>> funcs = new();
 

@@ -5,8 +5,6 @@ static class ResultSerializer
 {
     static DocumentWriter writer = new(true);
 
-    public static Task<string> Serialize(this ExecutionResult result)
-    {
-        return writer.WriteToStringAsync(result);
-    }
+    public static Task<string> Serialize(this ExecutionResult result) =>
+        writer.WriteToStringAsync(result);
 }

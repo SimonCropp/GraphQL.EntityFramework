@@ -2,10 +2,8 @@
 
 public static partial class ArgumentProcessor
 {
-    public static IEnumerable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IEnumerable<TItem> items, bool hasId, IResolveFieldContext<TSource> context)
-    {
-        return ApplyToAll(items, hasId, (type, x) => context.GetArgument(type, x));
-    }
+    public static IEnumerable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IEnumerable<TItem> items, bool hasId, IResolveFieldContext<TSource> context) =>
+        ApplyToAll(items, hasId, (type, x) => context.GetArgument(type, x));
 
     static IEnumerable<TItem> ApplyToAll<TItem>(this IEnumerable<TItem> items, bool hasId, Func<Type, string, object?> getArguments)
     {

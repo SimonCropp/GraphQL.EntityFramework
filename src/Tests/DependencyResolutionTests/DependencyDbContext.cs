@@ -10,8 +10,5 @@ public class DependencyDbContext :
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Entity>();
-    }
+    protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.Entity<Entity>();
 }

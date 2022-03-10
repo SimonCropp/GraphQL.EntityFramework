@@ -10,8 +10,6 @@ public class DbContext1 :
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
+    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.Entity<Entity1>();
-    }
 }

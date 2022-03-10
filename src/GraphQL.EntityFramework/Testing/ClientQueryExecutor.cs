@@ -51,8 +51,6 @@ public class ClientQueryExecutor
         return toJson(target);
     }
 
-    static string CompressQuery(string query)
-    {
-        return Compress.Query(query);
-    }
+    static string CompressQuery(string query) =>
+        Compress.Query(query);
 }

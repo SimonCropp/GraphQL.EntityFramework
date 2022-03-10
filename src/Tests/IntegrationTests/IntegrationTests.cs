@@ -13,8 +13,7 @@ public partial class IntegrationTests
 {
     static SqlInstance<IntegrationDbContext> sqlInstance;
 
-    static IntegrationTests()
-    {
+    static IntegrationTests() =>
         sqlInstance = new(
             buildTemplate: async data =>
             {
@@ -29,7 +28,6 @@ public partial class IntegrationTests
                 builder.ConfigureWarnings(x => x.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
                 return new(builder.Options);
             });
-    }
 
     [Fact]
     public async Task SchemaPrint()
@@ -1668,10 +1666,8 @@ fragment childEntityFields on DerivedChild {
         }
     }
 
-    static IEnumerable<Type> GetGraphQlTypes()
-    {
-        return typeof(IntegrationTests).Assembly
+    static IEnumerable<Type> GetGraphQlTypes() =>
+        typeof(IntegrationTests).Assembly
             .GetTypes()
             .Where(x => !x.IsAbstract && typeof(GraphType).IsAssignableFrom(x));
-    }
 }

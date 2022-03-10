@@ -8,10 +8,8 @@ public class DependencyTests
 {
     static SqlInstance<DependencyDbContext> sqlInstance;
 
-    static DependencyTests()
-    {
+    static DependencyTests() =>
         sqlInstance = new(builder => new(builder.Options));
-    }
 
     static string query = @"
 {
