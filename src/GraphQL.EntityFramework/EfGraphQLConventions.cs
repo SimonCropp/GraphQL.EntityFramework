@@ -1,4 +1,4 @@
-﻿using GraphQL.Types.Relay;
+using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +23,8 @@ public static class EfGraphQLConventions
             ResolveDbContext<TDbContext>? resolveDbContext = null,
             IModel? model = null,
             ResolveFilters? resolveFilters = null,
-            bool disableTracking = false)
+            bool disableTracking = false,
+            bool disableAsync = false)
 
         #endregion
 
@@ -33,7 +34,7 @@ public static class EfGraphQLConventions
         services.AddHttpContextAccessor();
         services.AddTransient<HttpContextCapture>();
         services.AddSingleton(
-            provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking));
+            provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, disableAsync));
         services.AddSingleton<IEfGraphQLService<TDbContext>>(
             provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
     }
@@ -43,7 +44,8 @@ public static class EfGraphQLConventions
         IModel? model,
         ResolveFilters? filters,
         IServiceProvider provider,
-        bool disableTracking)
+        bool disableTracking,
+        bool disableAsync)
         where TDbContext : DbContext
     {
         model ??= ResolveModel<TDbContext>(provider);
@@ -54,7 +56,8 @@ public static class EfGraphQLConventions
             model,
             dbContextResolver,
             filters,
-            disableTracking);
+            disableTracking,
+            disableAsync);
     }
 
     static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider)
