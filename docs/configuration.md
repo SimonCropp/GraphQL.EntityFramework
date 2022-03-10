@@ -112,9 +112,7 @@ Setting `disableTracking` to true results in the use of `EntityFrameworkQueryabl
 The Include path 'DataItems->Section' results in a cycle.
 Cycles are not allowed in no-tracking queries; either use a tracking query or remove the cycle.
 ```
-#### DisableAsync
 
-Setting `disableAsync` to true will improve performance when reading large data (binary, text) from database. It is a known issue to read large data asynchronously in SqlClient. For more information please see:  https://github.com/dotnet/SqlClient/issues/593
 
 ### Usage
 
