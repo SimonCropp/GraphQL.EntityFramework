@@ -253,10 +253,8 @@ public class GraphQlController :
     [HttpPost]
     public Task Post(
         [BindRequired, FromBody] PostBody body,
-        CancellationToken cancellation)
-    {
-        return Execute(body.Query, body.OperationName, body.Variables, cancellation);
-    }
+        CancellationToken cancellation) =>
+        Execute(body.Query, body.OperationName, body.Variables, cancellation);
 
     public class PostBody
     {
@@ -316,7 +314,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L8-L89' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L8-L87' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -440,13 +438,11 @@ public class Entity1Graph :
     EfObjectGraphType<DbContext1, Entity1>
 {
     public Entity1Graph(IEfGraphQLService<DbContext1> graphQlService) :
-        base(graphQlService)
-    {
+        base(graphQlService) =>
         AutoMap();
-    }
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-Entity1Graph.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L11' title='Snippet source file'>snippet source</a> | <a href='#snippet-Entity1Graph.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

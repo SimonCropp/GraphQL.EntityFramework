@@ -125,15 +125,13 @@ public class Query :
     QueryGraphType<MyDbContext>
 {
     public Query(IEfGraphQLService<MyDbContext> graphQlService) :
-        base(graphQlService)
-    {
+        base(graphQlService) =>
         AddQueryConnectionField(
             name: "companies",
             resolve: context => context.DbContext.Companies);
-    }
 }
 ```
-<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L6-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L6-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -220,15 +218,13 @@ public class CompanyGraph :
     EfObjectGraphType<MyDbContext, Company>
 {
     public CompanyGraph(IEfGraphQLService<MyDbContext> graphQlService) :
-        base(graphQlService)
-    {
+        base(graphQlService) =>
         AddNavigationConnectionField(
             name: "employees",
             resolve: context => context.Source.Employees);
-    }
 }
 ```
-<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L7-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L7-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -358,8 +354,7 @@ public class Query :
     QueryGraphType<MyDbContext>
 {
     public Query(IEfGraphQLService<MyDbContext> graphQlService) :
-        base(graphQlService)
-    {
+        base(graphQlService) =>
         Field<ListGraphType<CompanyGraph>>(
             name: "oldCompanies",
             resolve: context =>
@@ -368,10 +363,9 @@ public class Query :
                 var dbContext = ResolveDbContext(context);
                 return dbContext.Companies.Where(x => x.Age > 10);
             });
-    }
 }
 ```
-<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L7-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L7-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
