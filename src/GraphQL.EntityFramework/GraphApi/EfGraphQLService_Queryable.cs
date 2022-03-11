@@ -1,4 +1,4 @@
-﻿using GraphQL.Resolvers;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
@@ -70,8 +70,17 @@ partial class EfGraphQLService<TDbContext>
 
                     QueryLogger.Write(query);
 
-                    var list = await query
-                        .ToListAsync(context.CancellationToken);
+                    List<TReturn> list;
+                    if (disableAsync)
+                    {
+                        list = query.ToList();
+                    }
+                    else
+                    {
+                        list = await query
+                            .ToListAsync(context.CancellationToken);
+                    }
+
                     return await fieldContext.Filters.ApplyFilter(list, context.UserContext);
                 });
         }

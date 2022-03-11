@@ -1,0 +1,18 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntity": {
+      "id": "Guid_1"
+    }
+  }
+},
+  sql: [
+    {
+      Text:
+SELECT TOP(2) [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+WHERE [p].[Id] = 'Guid_1'
+    }
+  ]
+}

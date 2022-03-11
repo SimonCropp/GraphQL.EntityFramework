@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace GraphQL.EntityFramework;
@@ -9,6 +9,7 @@ public partial class EfGraphQLService<TDbContext> :
 {
     ResolveFilters? resolveFilters;
     bool disableTracking;
+    bool disableAsync;
     ResolveDbContext<TDbContext> resolveDbContext;
     IReadOnlyDictionary<Type, List<string>> keyNames;
 
@@ -17,11 +18,12 @@ public partial class EfGraphQLService<TDbContext> :
         IModel model,
         ResolveDbContext<TDbContext> resolveDbContext,
         ResolveFilters? resolveFilters = null,
-        bool disableTracking = false)
+        bool disableTracking = false,
+        bool disableAsync = false)
     {
         this.resolveFilters = resolveFilters;
         this.disableTracking = disableTracking;
-
+        this.disableAsync = disableAsync;
         this.resolveDbContext = resolveDbContext;
 
         keyNames = model.GetKeyNames();

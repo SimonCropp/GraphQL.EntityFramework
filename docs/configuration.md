@@ -22,9 +22,10 @@ public static void RegisterInContainer<TDbContext>(
         ResolveDbContext<TDbContext>? resolveDbContext = null,
         IModel? model = null,
         ResolveFilters? resolveFilters = null,
-        bool disableTracking = false)
+        bool disableTracking = false,
+        bool disableAsync = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L19-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L19-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-registerincontainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
@@ -123,9 +124,10 @@ public static void RegisterInContainer<TDbContext>(
         ResolveDbContext<TDbContext>? resolveDbContext = null,
         IModel? model = null,
         ResolveFilters? resolveFilters = null,
-        bool disableTracking = false)
+        bool disableTracking = false,
+        bool disableAsync = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L19-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L19-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-registerincontainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(

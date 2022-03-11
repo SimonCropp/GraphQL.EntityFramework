@@ -1,4 +1,4 @@
-﻿using GraphQL.Resolvers;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
@@ -93,7 +93,15 @@ partial class EfGraphQLService<TDbContext>
 
                     QueryLogger.Write(query);
 
-                    var single = await query.SingleOrDefaultAsync(context.CancellationToken);
+                    TReturn? single;
+                    if (disableAsync)
+                    {
+                        single = query.SingleOrDefault();
+                    }
+                    else
+                    {
+                        single = await query.SingleOrDefaultAsync(context.CancellationToken);
+                    }
 
                     if (single is not null)
                     {
