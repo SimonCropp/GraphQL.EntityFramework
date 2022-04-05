@@ -21,15 +21,9 @@ class ComparisonGraph :
         AddValue("startsWith", null, Comparison.StartsWith);
     }
 
-    public override bool CanParseLiteral(IValue value)
-    {
-        value = value.TryToEnumValue();
-        return base.CanParseLiteral(value);
-    }
-
     public override object? ParseLiteral(IValue value)
     {
-        var literal = base.ParseLiteral(value.TryToEnumValue());
+        var literal = base.ParseLiteral(value);
         if (literal is not null)
         {
             return literal;

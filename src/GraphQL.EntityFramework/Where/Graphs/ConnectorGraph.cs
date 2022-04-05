@@ -12,15 +12,9 @@ class ConnectorGraph :
         AddValue("or", null, Connector.Or);
     }
 
-    public override bool CanParseLiteral(IValue value)
-    {
-        value = value.TryToEnumValue();
-        return base.CanParseLiteral(value);
-    }
-
     public override object? ParseLiteral(IValue value)
     {
-        var literal = base.ParseLiteral(value.TryToEnumValue());
+        var literal = base.ParseLiteral(value);
 
         if (literal is not null)
         {
