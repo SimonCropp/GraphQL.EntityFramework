@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using GraphQL;
 using GraphQL.EntityFramework;
-using GraphQL.Language.AST;
 using GraphQL.Types;
+using GraphQLParser.AST;
 using Microsoft.EntityFrameworkCore;
 
 class IncludeAppender
@@ -50,32 +50,36 @@ class IncludeAppender
         return list;
     }
 
-    void AddField(List<string> list, Field field, SelectionSet selectionSet, string? parentPath, FieldType fieldType, IReadOnlyList<Navigation> parentNavigationProperties, IResolveFieldContext context, IComplexGraphType? graph = null)
+    void AddField(List<string> list, GraphQLField field, GraphQLSelectionSet selectionSet, string? parentPath, FieldType fieldType, IReadOnlyList<Navigation> parentNavigationProperties, IResolveFieldContext context, IComplexGraphType? graph = null)
     {
         if (graph == null && !fieldType.TryGetComplexGraph(out graph))
         {
             return;
         }
 
-        var subFields = selectionSet.Selections.OfType<Field>().ToList();
+        var subFields = selectionSet.Selections.OfType<GraphQLField>().ToList();
 
-        foreach (var inlineFragment in selectionSet.Selections.OfType<InlineFragment>())
+        foreach (var inlineFragment in selectionSet.Selections.OfType<GraphQLInlineFragment>())
         {
-            if (inlineFragment.Type!.GraphTypeFromType(context.Schema) is IComplexGraphType graphFragment)
-            {
-                AddField(list, field, inlineFragment.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graphFragment);
-            }
+            Debug.WriteLine(inlineFragment);
+            //TODO:
+            // if (inlineFragment.Type!.GraphTypeFromType(context.Schema) is IComplexGraphType graphFragment)
+            // {
+            //     AddField(list, field, inlineFragment.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graphFragment);
+            // }
         }
 
-        foreach (var fragmentSpread in selectionSet.Selections.OfType<FragmentSpread>())
+        foreach (var fragmentSpread in selectionSet.Selections.OfType<GraphQLFragmentSpread>())
         {
-            var fragmentDefinition = context.Document.Fragments.FindDefinition(fragmentSpread.Name);
-            if (fragmentDefinition is null)
-            {
-                continue;
-            }
-
-            AddField(list, field, fragmentDefinition.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graph);
+            Debug.WriteLine(fragmentSpread);
+            //TODO:
+            // var fragmentDefinition = context.Document.Fragments.FindDefinition(fragmentSpread.Name);
+            // if (fragmentDefinition is null)
+            // {
+            //     continue;
+            // }
+            //
+            // AddField(list, field, fragmentDefinition.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graph);
         }
 
         if (IsConnectionNode(field) || field == context.FieldAst)
@@ -118,7 +122,7 @@ class IncludeAppender
         return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-    void ProcessSubFields(List<string> list, string? parentPath, ICollection<Field> subFields, IComplexGraphType graph, IReadOnlyList<Navigation> navigationProperties, IResolveFieldContext context)
+    void ProcessSubFields(List<string> list, string? parentPath, List<GraphQLField> subFields, IComplexGraphType graph, IReadOnlyList<Navigation> navigationProperties, IResolveFieldContext context)
     {
         foreach (var subField in subFields)
         {
@@ -130,9 +134,9 @@ class IncludeAppender
         }
     }
 
-    static bool IsConnectionNode(Field field)
+    static bool IsConnectionNode(GraphQLField field)
     {
-        var name = field.Name.ToLowerInvariant();
+        var name = field.Name.StringValue.ToLowerInvariant();
         return name is "edges" or "items" or "node";
     }
 

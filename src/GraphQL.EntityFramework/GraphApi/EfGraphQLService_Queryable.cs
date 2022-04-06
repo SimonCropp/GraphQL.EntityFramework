@@ -54,7 +54,7 @@ partial class EfGraphQLService<TDbContext>
 
         if (resolve is not null)
         {
-            fieldType.Resolver = new AsyncFieldResolver<TSource, IEnumerable<TReturn>>(
+            fieldType.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
                 async context =>
                 {
                     var fieldContext = BuildContext(context);

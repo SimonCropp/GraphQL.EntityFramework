@@ -38,7 +38,7 @@ public class DependencyTests
             Schema = schema,
             Query = query,
             UserContext = new UserContextSingleDb<DependencyDbContext>(dbContext),
-            Inputs = null
+            Variables = null
         };
 
         await ExecutionResultData(executionOptions);
@@ -63,7 +63,7 @@ public class DependencyTests
             Schema = schema,
             Query = query,
             UserContext = new UserContextSingleDb<DependencyDbContext>(dbContext),
-            Inputs = null
+            Variables = null
         };
 
         await ExecutionResultData(executionOptions);
@@ -88,7 +88,7 @@ public class DependencyTests
             Schema = schema,
             Query = query,
             UserContext = new UserContextSingleDb<DependencyDbContext>(dbContext),
-            Inputs = null
+            Variables = null
         };
 
         await ExecutionResultData(options);
@@ -113,7 +113,7 @@ public class DependencyTests
             Schema = schema,
             Query = query,
             UserContext = new UserContextSingleDb<DependencyDbContext>(dbContext),
-            Inputs = null
+            Variables = null
         };
 
         await ExecutionResultData(options);

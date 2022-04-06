@@ -9,7 +9,7 @@ static class ArgumentGraphs
     [ModuleInitializer]
     public static void Initialize()
     {
-        Add<StringComparisonGraph>();
+        Add<EnumerationGraphType<StringComparison>>();
         Add<WhereExpressionGraph>();
         Add<OrderByGraph>();
         Add<ComparisonGraph>();

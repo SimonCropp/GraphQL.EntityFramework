@@ -1,5 +1,4 @@
-﻿using GraphQL.Language.AST;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using GraphQL.EntityFramework;
 
 class ConnectorGraph :
@@ -8,28 +7,29 @@ class ConnectorGraph :
     public ConnectorGraph()
     {
         Name = nameof(Connector);
-        AddValue("and", null, Connector.And);
-        AddValue("or", null, Connector.Or);
+        Add("and", Connector.And);
+        Add("or", Connector.Or);
     }
 
-    public override object? ParseLiteral(IValue value)
-    {
-        var literal = base.ParseLiteral(value);
-
-        if (literal is not null)
-        {
-            return literal;
-        }
-
-        if (value is StringValue str)
-        {
-            var strValue = str.Value;
-            if (Enum.TryParse(strValue, true, out Connector comparison))
-            {
-                return comparison;
-            }
-        }
-
-        return null;
-    }
+    //TODO:
+    // public override object? ParseLiteral(IValue value)
+    // {
+    //     var literal = base.ParseLiteral(value);
+    //
+    //     if (literal is not null)
+    //     {
+    //         return literal;
+    //     }
+    //
+    //     if (value is StringValue str)
+    //     {
+    //         var strValue = str.Value;
+    //         if (Enum.TryParse(strValue, true, out Connector comparison))
+    //         {
+    //             return comparison;
+    //         }
+    //     }
+    //
+    //     return null;
+    // }
 }

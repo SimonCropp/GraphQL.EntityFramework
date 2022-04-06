@@ -58,11 +58,13 @@ public partial class EfGraphQLService<TDbContext> :
             Variables = context.Variables,
             DbContext = ResolveDbContext(context),
             Filters = ResolveFilter(context),
-            Extensions = context.Extensions,
             RequestServices = context.RequestServices,
             ResponsePath = context.ResponsePath,
             ArrayPool = context.ArrayPool,
-            Parent = context.Parent
+            Parent = context.Parent,
+            Directives = context.Directives,
+            InputExtensions = context.InputExtensions,
+            OutputExtensions = context.OutputExtensions
         };
 
     public TDbContext ResolveDbContext(IResolveFieldContext context) =>
