@@ -172,7 +172,7 @@ snippet: MultiContextQuery.cs
 
 Use a DbContext in a Graph:
 
-snippet: Entity1Graph.cs
+snippet: Entity1GraphType.cs
 
 
 ## Testing the GraphQlController
@@ -198,17 +198,20 @@ snippet: ExecuteWithErrorCheck
 
 Map a [table-per-hierarchy (TPH) EF Core pattern](https://docs.microsoft.com/en-us/ef/core/modeling/inheritance) to a [GraphQL interface](https://graphql-dotnet.github.io/docs/getting-started/interfaces) to describe the shared properties in the base type, and then each type in the hierarchy to its own GraphQL type. From now on, a GraphQL query returning the interface type could be defined, allowing clients to request either common properties or specific one using [inline fragments](https://graphql.org/learn/queries/#inline-fragments).
 
+
 ### EF Core Entities
 
 snippet: InheritedEntity.cs
 
 snippet: DerivedEntity.cs
 
+
 ### GraphQL types
 
-snippet: InterfaceGraph.cs
+snippet: InterfaceGraphType.cs
 
-snippet: DerivedGraph.cs
+snippet: DerivedGraphType.cs
+
 
 ### GraphQL query
 
