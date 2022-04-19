@@ -52,7 +52,7 @@ public class Query :
 
         #region ManuallyApplyWhere
 
-        Field<ListGraphType<EmployeeSummaryGraph>>(
+        Field<ListGraphType<EmployeeSummaryGraphType>>(
             name: "employeeSummary",
             arguments: new(
                 new QueryArgument<ListGraphType<WhereExpressionGraph>>

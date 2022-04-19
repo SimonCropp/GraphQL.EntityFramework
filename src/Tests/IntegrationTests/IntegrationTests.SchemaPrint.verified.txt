@@ -239,20 +239,20 @@ type ParentEdge {
   node: Parent!
 }
 
-type ParentView {
+type ParentEntityView {
   property: String
 }
 
-type ParentViewConnection {
+type ParentEntityViewConnection {
   totalCount: Int
   pageInfo: PageInfo!
-  edges: [ParentViewEdge]
-  items: [ParentView!]
+  edges: [ParentEntityViewEdge]
+  items: [ParentEntityView!]
 }
 
-type ParentViewEdge {
+type ParentEntityViewEdge {
   cursor: String!
-  node: ParentView!
+  node: ParentEntityView!
 }
 
 type Query {
@@ -275,10 +275,10 @@ type Query {
   interfaceGraphConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): InterfaceConnection!
   manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
   manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
-  parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentView!]!
-  parentEntitiesViewConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!]): ParentViewConnection!
-  parentEntityView(where: [WhereExpression!]): ParentView!
-  parentEntityViewNullable(where: [WhereExpression!]): ParentView
+  parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentEntityView!]!
+  parentEntitiesViewConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!]): ParentEntityViewConnection!
+  parentEntityView(where: [WhereExpression!]): ParentEntityView!
+  parentEntityViewNullable(where: [WhereExpression!]): ParentEntityView
   ownedParent(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
 }
 

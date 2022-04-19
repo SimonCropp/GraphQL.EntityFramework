@@ -37,8 +37,8 @@ public class MultiContextTests
         var services = new ServiceCollection();
 
         services.AddSingleton<MultiContextQuery>();
-        services.AddSingleton<Entity1Graph>();
-        services.AddSingleton<Entity2Graph>();
+        services.AddSingleton<Entity1GraphType>();
+        services.AddSingleton<Entity2GraphType>();
 
         await using var database1 = await sqlInstance1.Build();
         await using var database2 = await sqlInstance2.Build();

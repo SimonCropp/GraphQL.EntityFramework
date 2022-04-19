@@ -17,8 +17,8 @@ public class MappingTests
     {
         var services = new ServiceCollection();
         EfGraphQLConventions.RegisterInContainer<MappingContext>(services, model:sqlInstance.Model);
-        services.AddSingleton<MappingChildGraph>();
-        services.AddSingleton<MappingParentGraph>();
+        services.AddSingleton<MappingChildGraphType>();
+        services.AddSingleton<MappingParentGraphType>();
         services.AddSingleton<MappingSchema>();
         await using var provider = services.BuildServiceProvider();
         var mappingSchema = provider.GetRequiredService<MappingSchema>();
