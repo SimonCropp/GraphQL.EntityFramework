@@ -61,8 +61,8 @@ partial class EfGraphQLService<TDbContext>
 
         if (resolve is not null)
         {
-            builder.Resolve(
-                context =>
+            builder.ResolveAsync(
+                async context =>
                 {
                     var efFieldContext = BuildContext(context);
                     var query = resolve(efFieldContext);
@@ -70,10 +70,11 @@ partial class EfGraphQLService<TDbContext>
                     {
                         query = query.AsNoTracking();
                     }
+
                     query = includeAppender.AddIncludes(query, context);
                     var names = GetKeyNames<TReturn>();
                     query = query.ApplyGraphQlArguments(context, names, true);
-                    return query
+                    return await query
                         .ApplyConnectionContext(
                             context.First,
                             context.After!,
