@@ -32,13 +32,13 @@ partial class EfGraphQLService<TDbContext>
 
         if (resolve is not null)
         {
-            field.Resolver = new FuncFieldResolver<TSource, Task<IEnumerable<TReturn>>>(
-                context =>
+            field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
+                async context =>
                 {
                     var fieldContext = BuildContext(context);
                     var result = resolve(fieldContext);
                     result = result.ApplyGraphQlArguments(hasId, context);
-                    return fieldContext.Filters.ApplyFilter(result, context.UserContext);
+                    return await fieldContext.Filters.ApplyFilter(result, context.UserContext);
                 });
         }
 
