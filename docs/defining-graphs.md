@@ -308,7 +308,7 @@ In some cases, it may be necessary to use `Field` instead of `AddQueryField`/`Ad
 <!-- snippet: ManuallyApplyWhere -->
 <a id='snippet-manuallyapplywhere'></a>
 ```cs
-Field<ListGraphType<EmployeeSummaryGraph>>(
+Field<ListGraphType<EmployeeSummaryGraphType>>(
     name: "employeeSummary",
     arguments: new(
         new QueryArgument<ListGraphType<WhereExpressionGraph>>

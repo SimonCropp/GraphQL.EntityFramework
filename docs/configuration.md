@@ -410,22 +410,20 @@ public class MultiContextQuery :
 
 Use a DbContext in a Graph:
 
-<!-- snippet: Entity1Graph.cs -->
-<a id='snippet-Entity1Graph.cs'></a>
+<!-- snippet: Entity1GraphType.cs -->
+<a id='snippet-Entity1GraphType.cs'></a>
 ```cs
-using GraphQL;
 using GraphQL.EntityFramework;
 
-[GraphQLMetadata(nameof(Entity1))]
-public class Entity1Graph :
+public class Entity1GraphType :
     EfObjectGraphType<DbContext1, Entity1>
 {
-    public Entity1Graph(IEfGraphQLService<DbContext1> graphQlService) :
+    public Entity1GraphType(IEfGraphQLService<DbContext1> graphQlService) :
         base(graphQlService) =>
         AutoMap();
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1Graph.cs#L1-L11' title='Snippet source file'>snippet source</a> | <a href='#snippet-Entity1Graph.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1GraphType.cs#L1-L9' title='Snippet source file'>snippet source</a> | <a href='#snippet-Entity1GraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -733,6 +731,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
 
 Map a [table-per-hierarchy (TPH) EF Core pattern](https://docs.microsoft.com/en-us/ef/core/modeling/inheritance) to a [GraphQL interface](https://graphql-dotnet.github.io/docs/getting-started/interfaces) to describe the shared properties in the base type, and then each type in the hierarchy to its own GraphQL type. From now on, a GraphQL query returning the interface type could be defined, allowing clients to request either common properties or specific one using [inline fragments](https://graphql.org/learn/queries/#inline-fragments).
 
+
 ### EF Core Entities
 
 <!-- snippet: InheritedEntity.cs -->
@@ -758,19 +757,18 @@ public class DerivedEntity : InheritedEntity
 <sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedEntity.cs#L1-L4' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedEntity.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
+
 ### GraphQL types
 
-<!-- snippet: InterfaceGraph.cs -->
-<a id='snippet-InterfaceGraph.cs'></a>
+<!-- snippet: InterfaceGraphType.cs -->
+<a id='snippet-InterfaceGraphType.cs'></a>
 ```cs
-using GraphQL;
 using GraphQL.EntityFramework;
 
-[GraphQLMetadata("Interface")]
-public class InterfaceGraph :
+public class InterfaceGraphType :
     EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
 {
-    public InterfaceGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+    public InterfaceGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
         Field(e => e.Id);
@@ -781,33 +779,32 @@ public class InterfaceGraph :
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraph.cs#L1-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-InterfaceGraph.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraphType.cs#L1-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-InterfaceGraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-<!-- snippet: DerivedGraph.cs -->
-<a id='snippet-DerivedGraph.cs'></a>
+<!-- snippet: DerivedGraphType.cs -->
+<a id='snippet-DerivedGraphType.cs'></a>
 ```cs
-using GraphQL;
 using GraphQL.EntityFramework;
 
-[GraphQLMetadata("Derived")]
-public class DerivedGraph :
+public class DerivedGraphType :
     EfObjectGraphType<IntegrationDbContext, DerivedEntity>
 {
-    public DerivedGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+    public DerivedGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
         AddNavigationConnectionField(
             name: "childrenFromInterface",
             e => e.Source.ChildrenFromBase);
         AutoMap();
-        Interface<InterfaceGraph>();
+        Interface<InterfaceGraphType>();
         IsTypeOf = obj => obj is DerivedEntity;
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraph.cs#L1-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraph.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraphType.cs#L1-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
 
 ### GraphQL query
 
