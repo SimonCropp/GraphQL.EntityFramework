@@ -7,7 +7,7 @@ public class MappingSchema :
         base(provider)
     {
         Query = new MappingQuery(graphQlService);
-        RegisterTypeMapping(typeof(MappingParent), typeof(MappingParentGraph));
-        RegisterTypeMapping(typeof(MappingChild), typeof(MappingChildGraph));
+        RegisterTypeMapping(typeof(MappingParent), typeof(MappingParentGraphType));
+        RegisterTypeMapping(typeof(MappingChild), typeof(MappingChildGraphType));
     }
 }

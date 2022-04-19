@@ -52,12 +52,12 @@ public class Query :
             name: "childEntities",
             resolve: context => context.DbContext.ChildEntities);
 
-        efGraphQlService.AddQueryConnectionField<ParentGraph, ParentEntity>(
+        efGraphQlService.AddQueryConnectionField<ParentGraphType, ParentEntity>(
             this,
             name: "parentEntitiesConnection",
             resolve: context => context.DbContext.ParentEntities);
 
-        efGraphQlService.AddQueryConnectionField<ChildGraph, ChildEntity>(
+        efGraphQlService.AddQueryConnectionField<ChildGraphType, ChildEntity>(
             this,
             name: "childEntitiesConnection",
             resolve: context => context.DbContext.ChildEntities);
@@ -66,7 +66,7 @@ public class Query :
             name: "parentEntitiesFiltered",
             resolve: context => context.DbContext.FilterParentEntities);
 
-        efGraphQlService.AddQueryConnectionField<FilterParentGraph, FilterParentEntity>(
+        efGraphQlService.AddQueryConnectionField<FilterParentGraphType, FilterParentEntity>(
             this,
             name: "parentEntitiesConnectionFiltered",
             resolve: context => context.DbContext.FilterParentEntities);
@@ -82,7 +82,7 @@ public class Query :
 
         efGraphQlService.AddQueryConnectionField(
             this,
-            itemGraphType: typeof(InterfaceGraph),
+            itemGraphType: typeof(InterfaceGraphType),
             name: "interfaceGraphConnection",
             resolve: context => context.DbContext.InheritedEntities);
 
@@ -98,7 +98,7 @@ public class Query :
             name: "parentEntityViews",
             resolve: context => context.DbContext.ParentEntityView);
 
-        efGraphQlService.AddQueryConnectionField<ParentEntityViewGraph, ParentEntityView>(
+        efGraphQlService.AddQueryConnectionField<ParentEntityViewGraphType, ParentEntityView>(
             this,
             name: "parentEntitiesViewConnection",
             resolve: context => context.DbContext.ParentEntityView);
