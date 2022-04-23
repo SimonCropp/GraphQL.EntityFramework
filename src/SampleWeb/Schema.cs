@@ -4,9 +4,9 @@
     public Schema(IServiceProvider provider, Query query) :
         base(provider)
     {
-        RegisterTypeMapping(typeof(Employee), typeof(EmployeeGraph));
-        RegisterTypeMapping(typeof(EmployeeSummary), typeof(EmployeeSummaryGraph));
-        RegisterTypeMapping(typeof(Company), typeof(CompanyGraph));
+        RegisterTypeMapping(typeof(Employee), typeof(EmployeeGraphType));
+        RegisterTypeMapping(typeof(EmployeeSummary), typeof(EmployeeSummaryGraphType));
+        RegisterTypeMapping(typeof(Company), typeof(CompanyGraphType));
         Query = query;
         //   Subscription = (Subscription)provider.GetService(typeof(Subscription));
     }

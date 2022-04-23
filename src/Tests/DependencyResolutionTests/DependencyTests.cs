@@ -123,7 +123,7 @@ public class DependencyTests
     {
         var services = new ServiceCollection();
         services.AddSingleton<DependencyQuery>();
-        services.AddSingleton(typeof(EntityGraph));
+        services.AddSingleton(typeof(EntityGraphType));
         return services;
     }
 

@@ -6,7 +6,7 @@ public class DependencySchema :
     public DependencySchema(IServiceProvider provider) :
         base(provider)
     {
-        RegisterTypeMapping(typeof(Entity), typeof(EntityGraph));
+        RegisterTypeMapping(typeof(Entity), typeof(EntityGraphType));
         Query = provider.GetRequiredService<DependencyQuery>();
     }
 }
