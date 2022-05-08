@@ -16,10 +16,6 @@ public class Startup
         {
             services.AddSingleton(type);
         }
-        //TODO: re add for subscriptions
-        //var graphQl = services.AddGraphQL(
-        //    options => options.ExposeExceptions = true);
-        //graphQl.AddWebSockets();
 
         var dbContextBuilder = new DbContextBuilder();
         services.AddSingleton<IHostedService>(dbContextBuilder);
