@@ -102,7 +102,6 @@ class IncludeAppender
             return;
         }
 
-        //todo: do a single check to avoid allocations
         var paths = GetPaths(parentPath, includeNames).ToList();
         foreach (var path in paths)
         {
