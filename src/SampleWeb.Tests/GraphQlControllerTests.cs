@@ -205,53 +205,6 @@ query ($id: ID!)
         await Verify(result);
     }
 
-    //TODO: https://github.com/graphql-dotnet/graphql-client
-  //  [Fact]
-//    public async Task Should_subscribe_to_companies()
-//    {
-//        var resetEvent = new AutoResetEvent(false);
-
-//        var result = new GraphQLHttpSubscriptionResult(
-//            new Uri("http://example.com/graphql"),
-//            new GraphQLRequest
-//            {
-//                Query = @"
-//subscription
-//{
-//  companyChanged
-//  {
-//    id
-//  }
-//}"
-//            },
-//            websocketClient,
-//            response =>
-//            {
-//                if (response is null)
-//                {
-//                    return;
-//                }
-
-//                Assert.Null(response.Errors);
-
-//                if (response.Data is not null)
-//                {
-//                    resetEvent.Set();
-//                }
-//            });
-
-
-//        var cancellationSource = new CancellationTokenSource();
-
-//        var task = result.StartAsync(cancellationSource.Token);
-
-//        Assert.True(resetEvent.WaitOne(TimeSpan.FromSeconds(10)));
-
-//        cancellationSource.Cancel();
-
-//        await task;
-//    }
-
     static TestServer GetTestServer()
     {
         var hostBuilder = new WebHostBuilder();
