@@ -19,25 +19,4 @@ class ComparisonGraph :
         Add("like", Comparison.Like);
         Add("startsWith", Comparison.StartsWith);
     }
-
-    //TODO:
-    // public override object? ParseLiteral(IValue value)
-    // {
-    //     var literal = base.ParseLiteral(value);
-    //     if (literal is not null)
-    //     {
-    //         return literal;
-    //     }
-    //
-    //     if (value is StringValue str)
-    //     {
-    //         var strValue = str.Value;
-    //         if (Enum.TryParse(strValue, true, out Comparison comparison))
-    //         {
-    //             return comparison;
-    //         }
-    //     }
-    //
-    //     return null;
-    // }
 }

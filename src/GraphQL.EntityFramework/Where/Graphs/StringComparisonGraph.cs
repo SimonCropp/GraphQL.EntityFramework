@@ -1,26 +1,17 @@
-﻿// using GraphQL.Language.AST;
-// using GraphQL.Types;
-//
-// class StringComparisonGraph :
-//     EnumerationGraphType<StringComparison>
-// {
-//     public override object? ParseLiteral(IValue value)
-//     {
-//         Name = nameof(StringComparison);
-//         var literal = base.ParseLiteral(value);
-//         if (literal is not null)
-//         {
-//             return literal;
-//         }
-//
-//         if (value is StringValue str)
-//         {
-//             if (Enum.TryParse(str.Value, true, out StringComparison comparison))
-//             {
-//                 return comparison;
-//             }
-//         }
-//
-//         return null;
-//     }
-// }
+using GraphQL.Types;
+
+class StringComparisonGraph :
+    EnumerationGraphType
+{
+    public StringComparisonGraph()
+    {
+        Name = nameof(StringComparison);
+        const string deprecation = "Use the camel case alternative";
+        AddValue("currentCulture", null, StringComparison.CurrentCulture);
+        AddValue("currentCultureIgnoreCase", null, StringComparison.CurrentCultureIgnoreCase);
+        AddValue("invariantCulture", null, StringComparison.InvariantCulture);
+        AddValue("invariantCultureIgnoreCase", null, StringComparison.InvariantCultureIgnoreCase);
+        AddValue("ordinal", null, StringComparison.Ordinal);
+        AddValue("ordinalIgnoreCase", null, StringComparison.OrdinalIgnoreCase);
+    }
+}
