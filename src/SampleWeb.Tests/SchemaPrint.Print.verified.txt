@@ -86,17 +86,11 @@ type Query {
 
 enum StringComparison {
   currentCulture
-  CURRENT_CULTURE
   currentCultureIgnoreCase
-  CURRENT_CULTURE_IGNORE_CASE
   invariantCulture
-  INVARIANT_CULTURE
   invariantCultureIgnoreCase
-  INVARIANT_CULTURE_IGNORE_CASE
   ordinal
-  ORDINAL
   ordinalIgnoreCase
-  ORDINAL_IGNORE_CASE
 }
 
 input WhereExpression {
