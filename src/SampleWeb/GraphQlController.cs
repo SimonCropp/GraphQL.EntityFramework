@@ -1,10 +1,7 @@
-﻿using System.Text.Json;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.SystemTextJson;
-using GraphQL.Transport;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 #region GraphQlController
 [Route("[controller]")]
@@ -22,12 +19,6 @@ public class GraphQlController :
         this.executer = executer;
     }
 
-    [HttpPost]
-    public Task Post(
-        [BindRequired, FromBody] GraphQLRequest request,
-        CancellationToken cancellation) =>
-        Execute(request.Query, request.OperationName, request.Variables, cancellation);
-
     [HttpGet]
     public Task Get(
         [FromQuery] string query,
@@ -35,12 +26,7 @@ public class GraphQlController :
         [FromQuery] string? operationName,
         CancellationToken cancellation)
     {
-        Inputs? inputs = null;
-        if (variables != null)
-        {
-            inputs = JsonSerializer.Deserialize<Inputs?>(variables);
-        }
-
+        var inputs = variables.ToInputs();
         return Execute(query, operationName, inputs, cancellation);
     }
 
