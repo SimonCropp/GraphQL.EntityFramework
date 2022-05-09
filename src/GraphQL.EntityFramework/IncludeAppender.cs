@@ -61,25 +61,24 @@ class IncludeAppender
 
         foreach (var inlineFragment in selectionSet.Selections.OfType<GraphQLInlineFragment>())
         {
-            Debug.WriteLine(inlineFragment);
-            //TODO:
-            // if (inlineFragment.Type!.GraphTypeFromType(context.Schema) is IComplexGraphType graphFragment)
-            // {
-            //     AddField(list, field, inlineFragment.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graphFragment);
-            // }
+            if (inlineFragment.TypeCondition!.Type.GraphTypeFromType(context.Schema) is IComplexGraphType graphFragment)
+            {
+                AddField(list, field, inlineFragment.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graphFragment);
+            }
         }
 
         foreach (var fragmentSpread in selectionSet.Selections.OfType<GraphQLFragmentSpread>())
         {
-            Debug.WriteLine(fragmentSpread);
-            //TODO:
-            // var fragmentDefinition = context.Document.Fragments.FindDefinition(fragmentSpread.Name);
-            // if (fragmentDefinition is null)
-            // {
-            //     continue;
-            // }
-            //
-            // AddField(list, field, fragmentDefinition.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graph);
+            var name = fragmentSpread.FragmentName.Name;
+            var fragmentDefinition = context.Document.Definitions
+                .OfType<GraphQLFragmentDefinition>()
+                .SingleOrDefault(x=>x.FragmentName.Name == name);
+            if (fragmentDefinition is null)
+            {
+                continue;
+            }
+
+            AddField(list, field, fragmentDefinition.SelectionSet, parentPath, fieldType, parentNavigationProperties, context, graph);
         }
 
         if (IsConnectionNode(field) || field == context.FieldAst)
