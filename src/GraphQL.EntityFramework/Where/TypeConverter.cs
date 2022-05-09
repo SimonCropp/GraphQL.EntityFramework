@@ -17,23 +17,22 @@ static class TypeConverter
             throw new($"Null passed to In expression for non nullable type '{type.FullName}'.");
         }
 
-        var list = ConvertStringsToListInternal(values.Where(x => x is not null).Select(x=>x!), type);
+        var list = ConvertStringsToListInternal(values.Where(x => x is not null).Select(x => x!), type);
         if (hasNull)
         {
             list.Add(null);
         }
+
         return list;
     }
 
-    static bool ParseBoolean(string value)
-    {
-        switch (value)
+    static bool ParseBoolean(string value) =>
+        value switch
         {
-            case "1": return true;
-            case "0": return false;
-            default: return bool.Parse(value);
-        }
-    }
+            "1" => true,
+            "0" => false,
+            _ => bool.Parse(value)
+        };
 
     static IList ConvertStringsToListInternal(IEnumerable<string> values, Type type)
     {
