@@ -33,7 +33,7 @@ static class QueryExecutor
             Schema = schema,
             Query = query,
             UserContext = new UserContextSingleDb<TDbContext>(data),
-            Inputs = inputs,
+            Variables = inputs,
         };
 
         var result = await executer.ExecuteWithErrorCheck(options);

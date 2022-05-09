@@ -1,9 +1,7 @@
 ﻿using GraphQL;
-using GraphQL.NewtonsoftJson;
+using GraphQL.SystemTextJson;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json.Linq;
 
 #region GraphQlController
 [Route("[controller]")]
@@ -13,25 +11,12 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
-    static DocumentWriter writer = new(true);
+    static GraphQLSerializer writer = new(true);
 
     public GraphQlController(ISchema schema, IDocumentExecuter executer)
     {
         this.schema = schema;
         this.executer = executer;
-    }
-
-    [HttpPost]
-    public Task Post(
-        [BindRequired, FromBody] PostBody body,
-        CancellationToken cancellation) =>
-        Execute(body.Query, body.OperationName, body.Variables, cancellation);
-
-    public class PostBody
-    {
-        public string? OperationName;
-        public string Query = null!;
-        public JObject? Variables;
     }
 
     [HttpGet]
@@ -41,13 +26,13 @@ public class GraphQlController :
         [FromQuery] string? operationName,
         CancellationToken cancellation)
     {
-        var jObject = ParseVariables(variables);
-        return Execute(query, operationName, jObject, cancellation);
+        var inputs = variables.ToInputs();
+        return Execute(query, operationName, inputs, cancellation);
     }
 
     async Task Execute(string query,
         string? operationName,
-        JObject? variables,
+        Inputs? variables,
         CancellationToken cancellation)
     {
         var options = new ExecutionOptions
@@ -55,7 +40,7 @@ public class GraphQlController :
             Schema = schema,
             Query = query,
             OperationName = operationName,
-            Inputs = variables?.ToInputs(),
+            Variables = variables,
             CancellationToken = cancellation,
 #if (DEBUG)
             ThrowOnUnhandledException = true,
@@ -65,23 +50,6 @@ public class GraphQlController :
         var executeAsync = await executer.ExecuteAsync(options);
 
         await writer.WriteAsync(Response.Body, executeAsync, cancellation);
-    }
-
-    static JObject? ParseVariables(string? variables)
-    {
-        if (variables is null)
-        {
-            return null;
-        }
-
-        try
-        {
-            return JObject.Parse(variables);
-        }
-        catch (Exception exception)
-        {
-            throw new("Could not parse variables.", exception);
-        }
     }
 }
 #endregion

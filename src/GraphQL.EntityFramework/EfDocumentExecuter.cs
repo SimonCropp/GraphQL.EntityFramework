@@ -1,5 +1,5 @@
 ﻿using GraphQL.Execution;
-using GraphQL.Language.AST;
+using GraphQLParser.AST;
 using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
 namespace GraphQL.EntityFramework;
@@ -9,7 +9,7 @@ public class EfDocumentExecuter :
 {
     protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
     {
-        if (context.Operation.OperationType == OperationType.Query)
+        if (context.Operation.Operation == OperationType.Query)
         {
             return new SerialExecutionStrategy();
         }

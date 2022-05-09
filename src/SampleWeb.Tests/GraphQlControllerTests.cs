@@ -43,7 +43,7 @@ public class GraphQlControllerTests
     }
 
     [Fact]
-    public async Task Get_single()
+    public async Task Single()
     {
         var query = @"
 query ($id: ID!)
@@ -64,7 +64,7 @@ query ($id: ID!)
     }
 
     [Fact]
-    public async Task Get_single_not_found()
+    public async Task Single_not_found()
     {
         var query = @"
 query ($id: ID!)
@@ -85,7 +85,7 @@ query ($id: ID!)
     }
 
     [Fact]
-    public async Task Get_variable()
+    public async Task Variable()
     {
         var query = @"
 query ($id: ID!)
@@ -106,7 +106,7 @@ query ($id: ID!)
     }
 
     [Fact]
-    public async Task Get_companies_paging()
+    public async Task Companies_paging()
     {
         var after = 1;
         var query = @"
@@ -130,7 +130,7 @@ query {
     }
 
     [Fact]
-    public async Task Get_employee_summary()
+    public async Task Employee_summary()
     {
         var query = @"
 query {
@@ -145,7 +145,7 @@ query {
     }
 
     [Fact]
-    public async Task Get_complex_query_result()
+    public async Task Complex_query_result()
     {
         var query = @"
 query {
@@ -163,43 +163,6 @@ query {
   }
 }";
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
-        var result = await response.Content.ReadAsStringAsync();
-        response.EnsureSuccessStatusCode();
-        await Verify(result);
-    }
-
-    [Fact]
-    public async Task Post()
-    {
-        var query = @"
-{
-  companies
-  {
-    id
-  }
-}";
-        using var response = await clientQueryExecutor.ExecutePost(client, query);
-        var result = await response.Content.ReadAsStringAsync();
-        response.EnsureSuccessStatusCode();
-        await Verify(result);
-    }
-
-    [Fact]
-    public async Task Post_variable()
-    {
-        var query = @"
-query ($id: ID!)
-{
-  companies(ids:[$id])
-  {
-    id
-  }
-}";
-        var variables = new
-        {
-            id = "1"
-        };
-        using var response = await clientQueryExecutor.ExecutePost(client, query, variables);
         var result = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
         await Verify(result);

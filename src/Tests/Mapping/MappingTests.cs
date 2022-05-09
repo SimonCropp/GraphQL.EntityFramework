@@ -45,10 +45,10 @@ public class MappingTests
         await using var provider = services.BuildServiceProvider();
         var mappingQuery = provider.GetRequiredService<MappingQuery>();
 
-        var resolve = await (Task<IEnumerable<MappingChild>>)mappingQuery.Fields
+        var resolve = await mappingQuery.Fields
             .Single(x => x.Name == "children")
             .Resolver!
-            .Resolve(new ResolveFieldContext())!;
+            .ResolveAsync(new ResolveFieldContext());
         await Verify(resolve);
     }
 

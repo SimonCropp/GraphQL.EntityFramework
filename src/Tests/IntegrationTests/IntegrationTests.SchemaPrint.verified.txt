@@ -290,12 +290,12 @@ type SkipLevelGraph {
 }
 
 enum StringComparison {
-  currentCulture
-  currentCultureIgnoreCase
-  invariantCulture
-  invariantCultureIgnoreCase
-  ordinal
-  ordinalIgnoreCase
+  CURRENT_CULTURE
+  CURRENT_CULTURE_IGNORE_CASE
+  INVARIANT_CULTURE
+  INVARIANT_CULTURE_IGNORE_CASE
+  ORDINAL
+  ORDINAL_IGNORE_CASE
 }
 
 input WhereExpression {

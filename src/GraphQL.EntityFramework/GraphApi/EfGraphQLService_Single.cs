@@ -75,7 +75,7 @@ partial class EfGraphQLService<TDbContext>
 
             Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, false),
 
-            Resolver = new AsyncFieldResolver<TSource, TReturn?>(
+            Resolver = new FuncFieldResolver<TSource, TReturn?>(
                 async context =>
                 {
                     var efFieldContext = BuildContext(context);

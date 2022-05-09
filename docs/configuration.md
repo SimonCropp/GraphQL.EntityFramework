@@ -152,7 +152,7 @@ To avoid this a custom implementation of `DocumentExecuter` but be used that use
 <a id='snippet-EfDocumentExecuter.cs'></a>
 ```cs
 using GraphQL.Execution;
-using GraphQL.Language.AST;
+using GraphQLParser.AST;
 using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
 namespace GraphQL.EntityFramework;
@@ -162,7 +162,7 @@ public class EfDocumentExecuter :
 {
     protected override IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)
     {
-        if (context.Operation.OperationType == OperationType.Query)
+        if (context.Operation.Operation == OperationType.Query)
         {
             return new SerialExecutionStrategy();
         }
@@ -244,25 +244,12 @@ public class GraphQlController :
 {
     IDocumentExecuter executer;
     ISchema schema;
-    static DocumentWriter writer = new(true);
+    static GraphQLSerializer writer = new(true);
 
     public GraphQlController(ISchema schema, IDocumentExecuter executer)
     {
         this.schema = schema;
         this.executer = executer;
-    }
-
-    [HttpPost]
-    public Task Post(
-        [BindRequired, FromBody] PostBody body,
-        CancellationToken cancellation) =>
-        Execute(body.Query, body.OperationName, body.Variables, cancellation);
-
-    public class PostBody
-    {
-        public string? OperationName;
-        public string Query = null!;
-        public JObject? Variables;
     }
 
     [HttpGet]
@@ -272,13 +259,13 @@ public class GraphQlController :
         [FromQuery] string? operationName,
         CancellationToken cancellation)
     {
-        var jObject = ParseVariables(variables);
-        return Execute(query, operationName, jObject, cancellation);
+        var inputs = variables.ToInputs();
+        return Execute(query, operationName, inputs, cancellation);
     }
 
     async Task Execute(string query,
         string? operationName,
-        JObject? variables,
+        Inputs? variables,
         CancellationToken cancellation)
     {
         var options = new ExecutionOptions
@@ -286,7 +273,7 @@ public class GraphQlController :
             Schema = schema,
             Query = query,
             OperationName = operationName,
-            Inputs = variables?.ToInputs(),
+            Variables = variables,
             CancellationToken = cancellation,
 #if (DEBUG)
             ThrowOnUnhandledException = true,
@@ -297,26 +284,9 @@ public class GraphQlController :
 
         await writer.WriteAsync(Response.Body, executeAsync, cancellation);
     }
-
-    static JObject? ParseVariables(string? variables)
-    {
-        if (variables is null)
-        {
-            return null;
-        }
-
-        try
-        {
-            return JObject.Parse(variables);
-        }
-        catch (Exception exception)
-        {
-            throw new("Could not parse variables.", exception);
-        }
-    }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L8-L87' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L6-L55' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -490,7 +460,7 @@ public class GraphQlControllerTests
     }
 
     [Fact]
-    public async Task Get_single()
+    public async Task Single()
     {
         var query = @"
 query ($id: ID!)
@@ -511,7 +481,7 @@ query ($id: ID!)
     }
 
     [Fact]
-    public async Task Get_single_not_found()
+    public async Task Single_not_found()
     {
         var query = @"
 query ($id: ID!)
@@ -532,7 +502,7 @@ query ($id: ID!)
     }
 
     [Fact]
-    public async Task Get_variable()
+    public async Task Variable()
     {
         var query = @"
 query ($id: ID!)
@@ -553,7 +523,7 @@ query ($id: ID!)
     }
 
     [Fact]
-    public async Task Get_companies_paging()
+    public async Task Companies_paging()
     {
         var after = 1;
         var query = @"
@@ -577,7 +547,7 @@ query {
     }
 
     [Fact]
-    public async Task Get_employee_summary()
+    public async Task Employee_summary()
     {
         var query = @"
 query {
@@ -592,7 +562,7 @@ query {
     }
 
     [Fact]
-    public async Task Get_complex_query_result()
+    public async Task Complex_query_result()
     {
         var query = @"
 query {
@@ -615,43 +585,6 @@ query {
         await Verify(result);
     }
 
-    [Fact]
-    public async Task Post()
-    {
-        var query = @"
-{
-  companies
-  {
-    id
-  }
-}";
-        using var response = await clientQueryExecutor.ExecutePost(client, query);
-        var result = await response.Content.ReadAsStringAsync();
-        response.EnsureSuccessStatusCode();
-        await Verify(result);
-    }
-
-    [Fact]
-    public async Task Post_variable()
-    {
-        var query = @"
-query ($id: ID!)
-{
-  companies(ids:[$id])
-  {
-    id
-  }
-}";
-        var variables = new
-        {
-            id = "1"
-        };
-        using var response = await clientQueryExecutor.ExecutePost(client, query, variables);
-        var result = await response.Content.ReadAsStringAsync();
-        response.EnsureSuccessStatusCode();
-        await Verify(result);
-    }
-
     static TestServer GetTestServer()
     {
         var builder = new WebHostBuilder();
@@ -660,7 +593,7 @@ query ($id: ID!)
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L7-L216' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L7-L179' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
