@@ -74,7 +74,7 @@ partial class EfGraphQLService<TDbContext>
             });
         }
 
-        // TODO: works around https://github.com/graphql-dotnet/graphql-dotnet/pull/2581/
+        //TODO: works around https://github.com/graphql-dotnet/graphql-dotnet/pull/2581/
         builder.FieldType.Type = typeof(NonNullGraphType<ConnectionType<TGraph, EdgeType<TGraph>>>);
         var field = graph.AddField(builder.FieldType);
 
