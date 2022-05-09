@@ -1,5 +1,4 @@
 ﻿using GraphQL.EntityFramework;
-using GraphQL.Language.AST;
 using GraphQL.Types;
 
 class ComparisonGraph :
@@ -19,25 +18,5 @@ class ComparisonGraph :
         AddValue("lessThanOrEqual", null, Comparison.LessThanOrEqual);
         AddValue("like", null, Comparison.Like);
         AddValue("startsWith", null, Comparison.StartsWith);
-    }
-
-    public override object? ParseLiteral(IValue value)
-    {
-        var literal = base.ParseLiteral(value);
-        if (literal is not null)
-        {
-            return literal;
-        }
-
-        if (value is StringValue str)
-        {
-            var strValue = str.Value;
-            if (Enum.TryParse(strValue, true, out Comparison comparison))
-            {
-                return comparison;
-            }
-        }
-
-        return null;
     }
 }
