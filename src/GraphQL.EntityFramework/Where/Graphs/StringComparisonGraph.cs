@@ -4,9 +4,11 @@ using GraphQL.Types;
 class StringComparisonGraph :
     EnumerationGraphType<StringComparison>
 {
+    public StringComparisonGraph() =>
+        Name = nameof(StringComparison);
+
     public override object? ParseLiteral(IValue value)
     {
-        Name = nameof(StringComparison);
         var literal = base.ParseLiteral(value);
         if (literal is not null)
         {
