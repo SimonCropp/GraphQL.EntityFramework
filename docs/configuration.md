@@ -635,9 +635,9 @@ query ($id: ID!)
 
     static TestServer GetTestServer()
     {
-        var hostBuilder = new WebHostBuilder();
-        hostBuilder.UseStartup<Startup>();
-        return new(hostBuilder);
+        var builder = new WebHostBuilder();
+        builder.UseStartup<Startup>();
+        return new(builder);
     }
 }
 ```
