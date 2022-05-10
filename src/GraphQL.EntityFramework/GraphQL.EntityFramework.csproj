@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
     <Description>Add EntityFramework Core IQueryable support to GraphQL</Description>
   </PropertyGroup>
   <ItemGroup>
@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="GraphQL" Version="5.2.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
     <PackageReference Include="NullabilityInfo" Version="1.0.7" PrivateAssets="all" />
     <PackageReference Include="ProjectDefaults" Version="1.0.78" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" Condition="$(Configuration) == 'Release'" />
