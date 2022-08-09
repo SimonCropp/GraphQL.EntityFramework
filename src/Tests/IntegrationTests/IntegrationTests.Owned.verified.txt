@@ -12,6 +12,7 @@
 },
   sql: [
     {
+      HasTransaction: false,
       Text:
 SELECT TOP(2) [o].[Id], [o].[Property], [o].[Child1_Property], [o].[Child2_Property]
 FROM [OwnedParents] AS [o]

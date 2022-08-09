@@ -62,6 +62,7 @@
 },
   sql: [
     {
+      HasTransaction: false,
       Text:
 SELECT [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property], [p].[Id], [p].[Property], [c0].[Id], [c0].[Nullable], [c0].[ParentId], [c0].[Property]
 FROM [ChildEntities] AS [c]

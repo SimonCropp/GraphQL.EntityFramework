@@ -11,6 +11,7 @@
 },
   sql: [
     {
+      HasTransaction: false,
       Text:
 SELECT [w].[Id], [w].[Nullable]
 FROM [WithNullableEntities] AS [w]

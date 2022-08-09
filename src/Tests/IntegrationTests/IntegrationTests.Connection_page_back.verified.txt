@@ -31,11 +31,13 @@
 },
   sql: [
     {
+      HasTransaction: false,
       Text:
 SELECT COUNT(*)
 FROM [ParentEntities] AS [p]
     },
     {
+      HasTransaction: false,
       Parameters: {
         @__p_0: 0,
         @__p_1: 2

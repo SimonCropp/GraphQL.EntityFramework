@@ -1,5 +1,4 @@
-﻿using EfLocalDb;
-using GraphQL;
+﻿using GraphQL;
 using Microsoft.EntityFrameworkCore;
 
 [UsesVerify]

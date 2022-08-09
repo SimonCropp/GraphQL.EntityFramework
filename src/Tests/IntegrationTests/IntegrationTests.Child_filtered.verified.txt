@@ -16,6 +16,7 @@
 },
   sql: [
     {
+      HasTransaction: false,
       Text:
 SELECT [f].[Id], [f].[Property], [f0].[Id], [f0].[ParentId], [f0].[Property]
 FROM [FilterParentEntities] AS [f]

@@ -1,6 +1,4 @@
-﻿using EfLocalDb;
-
-// LocalDb is used to make the sample simpler.
+﻿// LocalDb is used to make the sample simpler.
 // Replace with a real DbContext
 public class DbContextBuilder :
     IHostedService

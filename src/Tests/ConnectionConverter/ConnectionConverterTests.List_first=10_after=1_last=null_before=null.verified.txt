@@ -1,6 +1,8 @@
-{
+﻿{
   TotalCount: 10,
   PageInfo: {
+    HasNextPage: false,
+    HasPreviousPage: false,
     StartCursor: 1,
     EndCursor: 9
   },

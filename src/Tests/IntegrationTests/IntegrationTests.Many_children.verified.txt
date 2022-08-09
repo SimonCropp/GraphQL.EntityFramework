@@ -13,6 +13,7 @@
 },
   sql: [
     {
+      HasTransaction: false,
       Text:
 SELECT [w].[Id], [c].[Id], [c].[ParentId], [c0].[Id], [c0].[ParentId]
 FROM [WithManyChildrenEntities] AS [w]

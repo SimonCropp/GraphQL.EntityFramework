@@ -1,5 +1,4 @@
-﻿using EfLocalDb;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.EntityFramework;
 using Microsoft.Extensions.DependencyInjection;
 

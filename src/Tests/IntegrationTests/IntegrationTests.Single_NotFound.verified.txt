@@ -2,6 +2,7 @@
   target: Not found,
   sql: [
     {
+      HasTransaction: false,
       Text:
 SELECT TOP(2) [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
