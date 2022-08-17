@@ -10,6 +10,7 @@ public static class GraphQlExtensions
     {
         var executionResult = await executer.ExecuteAsync(options);
 
+        options.ThrowOnUnhandledException = true;
         var errors = executionResult.Errors;
         if (errors is { Count: > 0 })
         {
