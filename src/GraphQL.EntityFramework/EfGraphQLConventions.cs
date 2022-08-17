@@ -1,3 +1,4 @@
+using GraphQL.Types;
 using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -82,8 +83,14 @@ public static class EfGraphQLConventions
         throw new($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
     }
 
-    static void RegisterScalarsAndArgs(IServiceCollection services) =>
-        ArgumentGraphs.RegisterInContainer(services);
+    static void RegisterScalarsAndArgs(IServiceCollection services)
+    {
+        services.AddSingleton<EnumerationGraphType<StringComparison>>();
+        services.AddSingleton<WhereExpressionGraph>();
+        services.AddSingleton<OrderByGraph>();
+        services.AddSingleton<ComparisonGraph>();
+        services.AddSingleton<ConnectorGraph>();
+    }
 
     public static void RegisterConnectionTypesInContainer(IServiceCollection services)
     {
