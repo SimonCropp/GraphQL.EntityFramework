@@ -92,13 +92,6 @@ public static class EfGraphQLConventions
         services.AddSingleton<ConnectorGraph>();
     }
 
-    public static void RegisterConnectionTypesInContainer(IServiceCollection services)
-    {
-        services.AddTransient(typeof(ConnectionType<>));
-        services.AddTransient(typeof(EdgeType<>));
-        services.AddSingleton<PageInfoType>();
-    }
-
     static IModel ResolveModel<TDbContext>(IServiceProvider provider)
         where TDbContext : DbContext
     {

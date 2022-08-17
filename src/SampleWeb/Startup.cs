@@ -10,7 +10,6 @@ public class Startup
         EfGraphQLConventions.RegisterInContainer<SampleDbContext>(
             services,
             model: SampleDbContext.StaticModel);
-        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
 
         foreach (var type in GetGraphQlTypes())
         {
