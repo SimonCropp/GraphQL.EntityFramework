@@ -3,37 +3,37 @@ using GraphQL.Types;
 
 static class ArgumentAppender
 {
-    static QueryArgument<ListGraphType<NonNullGraphType<WhereExpressionGraph>>> whereArgument() =>
+    static QueryArgument<ListGraphType<NonNullGraphType<WhereExpressionGraph>>> WhereArgument() =>
         new()
         {
             Name = "where"
         };
 
-    static QueryArgument<ListGraphType<NonNullGraphType<OrderByGraph>>> orderByArgument() =>
+    static QueryArgument<ListGraphType<NonNullGraphType<OrderByGraph>>> OrderByArgument() =>
         new()
         {
             Name = "orderBy"
         };
 
-    static QueryArgument<ListGraphType<NonNullGraphType<IdGraphType>>> idsArgument() =>
+    static QueryArgument<ListGraphType<NonNullGraphType<IdGraphType>>> IdsArgument() =>
         new()
         {
             Name = "ids"
         };
 
-    static QueryArgument<IdGraphType> idArgument() =>
+    static QueryArgument<IdGraphType> IdArgument() =>
         new()
         {
             Name = "id"
         };
 
-    static QueryArgument<IntGraphType> skipArgument() =>
+    static QueryArgument<IntGraphType> SkipArgument() =>
         new()
         {
             Name = "skip"
         };
 
-    static QueryArgument<IntGraphType> takeArgument() =>
+    static QueryArgument<IntGraphType> TakeArgument() =>
         new()
         {
             Name = "take"
@@ -42,11 +42,11 @@ static class ArgumentAppender
     public static void AddWhereArgument(this FieldType field, bool hasId, IEnumerable<QueryArgument>? extra)
     {
         var arguments = field.Arguments!;
-        arguments.Add(whereArgument());
-        arguments.Add(orderByArgument());
+        arguments.Add(WhereArgument());
+        arguments.Add(OrderByArgument());
         if (hasId)
         {
-            arguments.Add(idsArgument());
+            arguments.Add(IdsArgument());
         }
         if (extra is not null)
         {
@@ -62,16 +62,16 @@ static class ArgumentAppender
         var arguments = new QueryArguments();
         if (hasId)
         {
-            arguments.Add(idArgument());
-            arguments.Add(idsArgument());
+            arguments.Add(IdArgument());
+            arguments.Add(IdsArgument());
         }
 
-        arguments.Add(whereArgument());
+        arguments.Add(WhereArgument());
         if (applyOrder)
         {
-            arguments.Add(orderByArgument());
-            arguments.Add(skipArgument());
-            arguments.Add(takeArgument());
+            arguments.Add(OrderByArgument());
+            arguments.Add(SkipArgument());
+            arguments.Add(TakeArgument());
         }
 
         if (extra is not null)
