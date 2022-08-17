@@ -43,7 +43,6 @@ public partial class IntegrationTests
         }
 
         EfGraphQLConventions.RegisterInContainer(services, _ => dbContext, dbContext.Model);
-        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         await using var provider = services.BuildServiceProvider();
         using var schema = new Schema(provider);
 

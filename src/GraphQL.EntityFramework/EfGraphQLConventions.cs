@@ -1,5 +1,4 @@
 using GraphQL.Types;
-using GraphQL.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;

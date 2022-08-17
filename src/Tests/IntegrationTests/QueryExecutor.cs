@@ -23,7 +23,6 @@ static class QueryExecutor
             _ => filters,
             disableTracking,
             disableAsync);
-        EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
         await using var provider = services.BuildServiceProvider();
         using var schema = new Schema(provider);
         var executer = new EfDocumentExecuter();
