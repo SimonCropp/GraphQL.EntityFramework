@@ -52,15 +52,9 @@ public class Query :
 
         #region ManuallyApplyWhere
 
-        Field<ListGraphType<EmployeeSummaryGraphType>>(
-            name: "employeeSummary",
-            arguments: new(
-                new QueryArgument<ListGraphType<WhereExpressionGraph>>
-                {
-                    Name = "where"
-                }
-            ),
-            resolve: context =>
+        Field<ListGraphType<EmployeeSummaryGraphType>>("employeeSummary")
+            .Argument<ListGraphType<WhereExpressionGraph>>("where")
+            .Resolve(context =>
             {
                 var dbContext = ResolveDbContext(context);
                 IQueryable<Employee> query = dbContext.Employees;
@@ -74,7 +68,10 @@ public class Query :
                 }
 
                 return from q in query
-                    group q by new {q.CompanyId}
+                    group q by new
+                    {
+                        q.CompanyId
+                    }
                     into g
                     select new EmployeeSummary
                     {

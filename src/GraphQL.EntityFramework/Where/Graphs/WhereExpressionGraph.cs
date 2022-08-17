@@ -9,12 +9,14 @@ public class WhereExpressionGraph :
     {
         Name = nameof(WhereExpression);
         Field(x => x.Path, true);
-        Field<ComparisonGraph>("comparison", null, null, _ => _.Source.Comparison);
+        Field<ComparisonGraph>("comparison")
+            .Resolve(_ => _.Source.Comparison);
         Field(x => x.Negate, true);
-        Field<EnumerationGraphType<StringComparison>>("case", null, null, _ => _.Source.Case);
+        Field<EnumerationGraphType<StringComparison>>("case")
+            .Resolve( _ => _.Source.Case);
         Field(x => x.Value, true);
-        Field<ConnectorGraph>("connector", null, null, _ => _.Source.Connector);
-        Field<ListGraphType<WhereExpressionGraph>>(
-            name: "GroupedExpressions");
+        Field<ConnectorGraph>("connector")
+            .Resolve(_ => _.Source.Connector);
+        Field<ListGraphType<WhereExpressionGraph>>("GroupedExpressions");
     }
 }
