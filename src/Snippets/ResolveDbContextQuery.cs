@@ -11,9 +11,8 @@ class ResolveDbContextQuery
     {
         public Query(IEfGraphQLService<MyDbContext> graphQlService) :
             base(graphQlService) =>
-            Field<ListGraphType<CompanyGraph>>(
-                name: "oldCompanies",
-                resolve: context =>
+            Field<ListGraphType<CompanyGraph>>("oldCompanies")
+                .Resolve(context =>
                 {
                     // uses the base QueryGraphType to resolve the db context
                     var dbContext = ResolveDbContext(context);

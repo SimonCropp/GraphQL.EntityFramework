@@ -308,15 +308,9 @@ In some cases, it may be necessary to use `Field` instead of `AddQueryField`/`Ad
 <!-- snippet: ManuallyApplyWhere -->
 <a id='snippet-manuallyapplywhere'></a>
 ```cs
-Field<ListGraphType<EmployeeSummaryGraphType>>(
-    name: "employeeSummary",
-    arguments: new(
-        new QueryArgument<ListGraphType<WhereExpressionGraph>>
-        {
-            Name = "where"
-        }
-    ),
-    resolve: context =>
+Field<ListGraphType<EmployeeSummaryGraphType>>("employeeSummary")
+    .Argument<ListGraphType<WhereExpressionGraph>>("where")
+    .Resolve(context =>
     {
         var dbContext = ResolveDbContext(context);
         IQueryable<Employee> query = dbContext.Employees;
@@ -330,7 +324,10 @@ Field<ListGraphType<EmployeeSummaryGraphType>>(
         }
 
         return from q in query
-            group q by new {q.CompanyId}
+            group q by new
+            {
+                q.CompanyId
+            }
             into g
             select new EmployeeSummary
             {
@@ -339,7 +336,7 @@ Field<ListGraphType<EmployeeSummaryGraphType>>(
             };
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L53-L86' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L53-L83' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -355,9 +352,8 @@ public class Query :
 {
     public Query(IEfGraphQLService<MyDbContext> graphQlService) :
         base(graphQlService) =>
-        Field<ListGraphType<CompanyGraph>>(
-            name: "oldCompanies",
-            resolve: context =>
+        Field<ListGraphType<CompanyGraph>>("oldCompanies")
+            .Resolve(context =>
             {
                 // uses the base QueryGraphType to resolve the db context
                 var dbContext = ResolveDbContext(context);
@@ -365,7 +361,7 @@ public class Query :
             });
 }
 ```
-<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L7-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L7-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
