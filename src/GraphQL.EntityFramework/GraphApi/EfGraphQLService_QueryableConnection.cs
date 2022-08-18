@@ -11,7 +11,7 @@ partial class EfGraphQLService<TDbContext>
     static MethodInfo addQueryableConnection = typeof(EfGraphQLService<TDbContext>)
         .GetMethod("AddQueryableConnection", BindingFlags.Instance| BindingFlags.NonPublic)!;
 
-    public void AddQueryConnectionField<TReturn>(
+    public ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
@@ -23,10 +23,10 @@ partial class EfGraphQLService<TDbContext>
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(object), itemGraphType, typeof(TReturn));
-        addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description });
+        return (ConnectionBuilder<object>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description })!;
     }
 
-    public void AddQueryConnectionField<TSource, TReturn>(
+    public ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
@@ -38,10 +38,10 @@ partial class EfGraphQLService<TDbContext>
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description });
+        return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description })!;
     }
 
-    void AddQueryableConnection<TSource, TGraph, TReturn>(
+    ConnectionBuilder<TSource> AddQueryableConnection<TSource, TGraph, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
@@ -92,6 +92,7 @@ partial class EfGraphQLService<TDbContext>
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
         field.AddWhereArgument(hasId, arguments);
+        return builder;
     }
 
 }

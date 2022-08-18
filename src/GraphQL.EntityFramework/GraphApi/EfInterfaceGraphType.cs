@@ -40,7 +40,7 @@ public class EfInterfaceGraphType<TDbContext, TSource> :
         where TReturn : class =>
         GraphQlService.AddNavigationListField<TSource, TReturn>(this, name, null, graphType, arguments, includeNames, description);
 
-    public void AddQueryConnectionField<TReturn>(
+    public ConnectionBuilder<TSource> AddQueryConnectionField<TReturn>(
         string name,
         Type? graphType = null,
         IEnumerable<QueryArgument>? arguments = null,

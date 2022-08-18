@@ -1,10 +1,11 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.Builders;
+using GraphQL.Types;
 
 namespace GraphQL.EntityFramework;
 
 public partial interface IEfGraphQLService<TDbContext>
 {
-    void AddQueryConnectionField<TReturn>(
+    ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
@@ -14,7 +15,7 @@ public partial interface IEfGraphQLService<TDbContext>
         string? description = null)
         where TReturn : class;
 
-    void AddQueryConnectionField<TSource, TReturn>(
+    ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
