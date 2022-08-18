@@ -35,8 +35,7 @@ partial class EfGraphQLService<TDbContext>
         where TGraph : IGraphType
         where TReturn : class
     {
-        var builder = ConnectionBuilderEx.Create<TGraph, TSource>();
-        builder.Name(name);
+        var builder = ConnectionBuilderEx<TSource>.Build<TGraph>(name);
 
         IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
