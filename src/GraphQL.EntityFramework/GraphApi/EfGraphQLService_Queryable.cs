@@ -1,3 +1,4 @@
+using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -7,38 +8,34 @@ namespace GraphQL.EntityFramework;
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
 {
-    public FieldType AddQueryField<TReturn>(
+    public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
-        Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        string? description = null)
+        Type? graphType = null)
         where TReturn : class
     {
-        var field = BuildQueryField(graphType, name, resolve, arguments, description);
-        return graph.AddField(field);
+        var field = BuildQueryField(graphType, name, resolve);
+        graph.AddField(field);
+        return new FieldBuilderEx<object, TReturn>(field);
     }
 
-    public FieldType AddQueryField<TSource, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddQueryField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        string? description = null)
+        Type? itemGraphType = null)
         where TReturn : class
     {
-        var field = BuildQueryField(itemGraphType, name, resolve, arguments, description);
-        return graph.AddField(field);
+        var field = BuildQueryField(itemGraphType, name, resolve);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
     FieldType BuildQueryField<TSource, TReturn>(
         Type? itemGraphType,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
-        IEnumerable<QueryArgument>? arguments,
-        string? description)
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -47,9 +44,8 @@ partial class EfGraphQLService<TDbContext>
         var fieldType = new FieldType
         {
             Name = name,
-            Description = description,
             Type = MakeListGraphType<TReturn>(itemGraphType),
-            Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, true),
+            Arguments = ArgumentAppender.GetQueryArguments(hasId, true),
         };
 
         if (resolve is not null)

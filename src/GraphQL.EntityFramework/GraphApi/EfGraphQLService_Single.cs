@@ -1,3 +1,4 @@
+using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -7,59 +8,54 @@ namespace GraphQL.EntityFramework;
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
 {
-    public FieldType AddSingleField<TReturn>(
+    public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         IObjectGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        bool nullable = false,
-        string? description = null)
+        bool nullable = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
-        return graph.AddField(field);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
+        graph.AddField(field);
+        return new FieldBuilderEx<object, TReturn>(field);
     }
 
-    public FieldType AddSingleField<TReturn>(
+    public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        bool nullable = false,
-        string? description = null)
+        bool nullable = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
-        return graph.AddField(field);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
+        graph.AddField(field);
+        return new FieldBuilderEx<object, TReturn>(field);
     }
 
-    public FieldType AddSingleField<TSource, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddSingleField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        bool nullable = false,
-        string? description = null)
+        bool nullable = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
-        return graph.AddField(field);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
     FieldType BuildSingleField<TSource, TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
-        IEnumerable<QueryArgument>? arguments,
         Type? graphType,
-        bool nullable,
-        string? description)
+        bool nullable)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -71,10 +67,7 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = graphType,
-            Description = description,
-
-            Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, false),
-
+            Arguments = ArgumentAppender.GetQueryArguments(hasId, false),
             Resolver = new FuncFieldResolver<TSource, TReturn?>(
                 async context =>
                 {

@@ -55,7 +55,8 @@ public class Query :
         efGraphQlService.AddQueryConnectionField<ParentGraphType, ParentEntity>(
             this,
             name: "parentEntitiesConnection",
-            resolve: context => context.DbContext.ParentEntities);
+            resolve: context => context.DbContext.ParentEntities)
+            .PageSize(10);
 
         efGraphQlService.AddQueryConnectionField<ChildGraphType, ChildEntity>(
             this,
@@ -69,7 +70,8 @@ public class Query :
         efGraphQlService.AddQueryConnectionField<FilterParentGraphType, FilterParentEntity>(
             this,
             name: "parentEntitiesConnectionFiltered",
-            resolve: context => context.DbContext.FilterParentEntities);
+            resolve: context => context.DbContext.FilterParentEntities)
+            .PageSize(10);
 
         AddSingleField(
             name: "parentEntity",

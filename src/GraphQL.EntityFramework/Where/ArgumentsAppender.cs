@@ -39,7 +39,7 @@ static class ArgumentAppender
             Name = "take"
         };
 
-    public static void AddWhereArgument(this FieldType field, bool hasId, IEnumerable<QueryArgument>? extra)
+    public static void AddWhereArgument(this FieldType field, bool hasId)
     {
         var arguments = field.Arguments!;
         arguments.Add(WhereArgument());
@@ -48,16 +48,9 @@ static class ArgumentAppender
         {
             arguments.Add(IdsArgument());
         }
-        if (extra is not null)
-        {
-            foreach (var argument in extra)
-            {
-                arguments.Add(argument);
-            }
-        }
     }
 
-    public static QueryArguments GetQueryArguments(IEnumerable<QueryArgument>? extra, bool hasId, bool applyOrder)
+    public static QueryArguments GetQueryArguments(bool hasId, bool applyOrder)
     {
         var arguments = new QueryArguments();
         if (hasId)
@@ -72,14 +65,6 @@ static class ArgumentAppender
             arguments.Add(OrderByArgument());
             arguments.Add(SkipArgument());
             arguments.Add(TakeArgument());
-        }
-
-        if (extra is not null)
-        {
-            foreach (var argument in extra)
-            {
-                arguments.Add(argument);
-            }
         }
 
         return arguments;

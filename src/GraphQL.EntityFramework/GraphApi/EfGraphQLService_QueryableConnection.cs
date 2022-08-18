@@ -11,53 +11,38 @@ partial class EfGraphQLService<TDbContext>
     static MethodInfo addQueryableConnection = typeof(EfGraphQLService<TDbContext>)
         .GetMethod("AddQueryableConnection", BindingFlags.Instance| BindingFlags.NonPublic)!;
 
-    public void AddQueryConnectionField<TReturn>(
+    public ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        int pageSize = 10,
-        string? description = null)
+        Type? itemGraphType = null)
         where TReturn : class
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(object), itemGraphType, typeof(TReturn));
-        addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description });
+        return (ConnectionBuilder<object>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve})!;
     }
 
-    public void AddQueryConnectionField<TSource, TReturn>(
+    public ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        int pageSize = 10,
-        string? description = null)
+        Type? itemGraphType = null)
         where TReturn : class
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description });
+        return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, new object?[] { graph, name, resolve })!;
     }
 
-    void AddQueryableConnection<TSource, TGraph, TReturn>(
+    ConnectionBuilder<TSource> AddQueryableConnection<TSource, TGraph, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
-        IEnumerable<QueryArgument>? arguments,
-        int pageSize,
-        string? description)
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve)
         where TGraph : IGraphType
         where TReturn : class
     {
-        var builder = ConnectionBuilder.Create<TGraph, TSource>();
-        builder.Name(name);
-        if (description is not null)
-        {
-            builder.Description(description);
-        }
-        builder.PageSize(pageSize).Bidirectional();
+        var builder = ConnectionBuilderEx<TSource>.Build<TGraph>(name);
 
         if (resolve is not null)
         {
@@ -91,7 +76,8 @@ partial class EfGraphQLService<TDbContext>
         var field = graph.AddField(builder.FieldType);
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
-        field.AddWhereArgument(hasId, arguments);
+        field.AddWhereArgument(hasId);
+        return builder;
     }
 
 }

@@ -39,12 +39,8 @@ public class Query :
             {
                 var content = context.GetArgument<string>("content");
                 return context.DbContext.Employees.Where(x => x.Content == content);
-            },
-            arguments: new QueryArguments(
-                new QueryArgument<StringGraphType>
-                {
-                    Name = "content"
-                }));
+            })
+            .Argument<StringGraphType>("content");
 
         AddQueryConnectionField(
             name: "employeesConnection",

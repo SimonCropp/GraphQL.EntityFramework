@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.Builders;
+using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework;
@@ -18,35 +19,28 @@ public class QueryGraphType<TDbContext> :
     public TDbContext ResolveDbContext(IResolveFieldContext context) =>
         GraphQlService.ResolveDbContext(context);
 
-    public void AddQueryConnectionField<TReturn>(
+    public ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-        Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        int pageSize = 10,
-        string? description = null)
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize, description);
+        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType);
 
-    public FieldType AddQueryField<TReturn>(
+    public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-        Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        string? description = null)
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddQueryField(this, name, resolve, graphType, arguments, description);
+        GraphQlService.AddQueryField(this, name, resolve, graphType);
 
-    public FieldType AddSingleField<TReturn>(
+    public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         string name = nameof(TReturn),
-        IEnumerable<QueryArgument>? arguments = null,
-        bool nullable = false,
-        string? description = null)
+        bool nullable = false)
         where TReturn : class =>
-        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable, description);
+        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable);
 
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class =>

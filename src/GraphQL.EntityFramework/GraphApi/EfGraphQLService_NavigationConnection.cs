@@ -11,45 +11,32 @@ partial class EfGraphQLService<TDbContext>
     static MethodInfo addEnumerableConnection = typeof(EfGraphQLService<TDbContext>)
         .GetMethod("AddEnumerableConnection", BindingFlags.Instance| BindingFlags.NonPublic)!;
 
-    public void AddNavigationConnectionField<TSource, TReturn>(
+    public ConnectionBuilder<TSource> AddNavigationConnectionField<TSource, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        IEnumerable<string>? includeNames = null,
-        int pageSize = 10,
-        string? description = null)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
-        Guard.AgainstNegative(nameof(pageSize), pageSize);
 
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
         var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize, description, arguments, includeNames });
+        return (ConnectionBuilder<TSource>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, includeNames })!;
     }
 
-    void AddEnumerableConnection<TSource, TGraph, TReturn>(
+    ConnectionBuilder<TSource> AddEnumerableConnection<TSource, TGraph, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
-        int pageSize,
-        string? description,
-        IEnumerable<QueryArgument>? arguments,
         IEnumerable<string>? includeNames)
         where TGraph : IGraphType
         where TReturn : class
     {
-        var builder = ConnectionBuilder.Create<TGraph, TSource>();
-        builder.Name(name);
+        var builder = ConnectionBuilderEx<TSource>.Build<TGraph>(name);
 
-        if (description is not null)
-        {
-            builder.Description(description);
-        }
-        builder.PageSize(pageSize).Bidirectional();
         IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
@@ -78,6 +65,7 @@ partial class EfGraphQLService<TDbContext>
         builder.FieldType.Type = typeof(NonNullGraphType<ConnectionType<TGraph, EdgeType<TGraph>>>);
         var field = graph.AddField(builder.FieldType);
 
-        field.AddWhereArgument(hasId, arguments);
+        field.AddWhereArgument(hasId);
+        return builder;
     }
 }

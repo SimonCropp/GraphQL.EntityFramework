@@ -1,4 +1,5 @@
-﻿using GraphQL.Resolvers;
+﻿using GraphQL.Builders;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,13 +8,12 @@ namespace GraphQL.EntityFramework;
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
 {
-    public FieldType AddNavigationField<TSource, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddNavigationField<TSource, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
         Type? graphType = null,
-        IEnumerable<string>? includeNames = null,
-        string? description = null)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -23,8 +23,7 @@ partial class EfGraphQLService<TDbContext>
         var field = new FieldType
         {
             Name = name,
-            Type = graphType,
-            Description = description
+            Type = graphType
         };
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
@@ -45,6 +44,7 @@ partial class EfGraphQLService<TDbContext>
                 });
         }
 
-        return graph.AddField(field);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, TReturn>(field);
     }
 }

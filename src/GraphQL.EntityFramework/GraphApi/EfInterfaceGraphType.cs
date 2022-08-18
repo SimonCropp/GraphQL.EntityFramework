@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.Builders;
+using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework;
@@ -12,49 +13,38 @@ public class EfInterfaceGraphType<TDbContext, TSource> :
     public EfInterfaceGraphType(IEfGraphQLService<TDbContext> graphQlService) =>
         GraphQlService = graphQlService;
 
-    public void AddNavigationConnectionField<TReturn>(
+    public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        IEnumerable<string>? includeNames = null,
-        int pageSize = 10,
-        string? description = null)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class =>
-        GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, null, graphType, arguments, includeNames, pageSize, description);
+        GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, null, graphType, includeNames);
 
-    public FieldType AddNavigationField<TReturn>(
+    public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
         string name,
         Type? graphType = null,
-        IEnumerable<string>? includeNames = null,
-        string? description = null)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class =>
-        GraphQlService.AddNavigationField<TSource, TReturn>(this, name, null, graphType, includeNames, description);
+        GraphQlService.AddNavigationField<TSource, TReturn>(this, name, null, graphType, includeNames);
 
-    public FieldType AddNavigationListField<TReturn>(
+    public FieldBuilder<TSource, TReturn> AddNavigationListField<TReturn>(
         string name,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        IEnumerable<string>? includeNames = null,
-        string? description = null)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class =>
-        GraphQlService.AddNavigationListField<TSource, TReturn>(this, name, null, graphType, arguments, includeNames, description);
+        GraphQlService.AddNavigationListField<TSource, TReturn>(this, name, null, graphType, includeNames);
 
-    public void AddQueryConnectionField<TReturn>(
+    public ConnectionBuilder<TSource> AddQueryConnectionField<TReturn>(
         string name,
-        Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        int pageSize = 10,
-        string? description = null)
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddQueryConnectionField<TSource, TReturn>(this, name, null, graphType, arguments, pageSize, description);
+        GraphQlService.AddQueryConnectionField<TSource, TReturn>(this, name, null, graphType);
 
-    public FieldType AddQueryField<TReturn>(
+    public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
         string name,
-        Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        string? description = null)
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddQueryField<TReturn>(this, name, null, graphType, arguments, description);
+        GraphQlService.AddQueryField<TReturn>(this, name, null, graphType);
 
     public TDbContext ResolveDbContext(IResolveFieldContext<TSource> context) =>
         GraphQlService.ResolveDbContext(context);
