@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.Builders;
+using GraphQL.Types;
 
 namespace GraphQL.EntityFramework;
 
@@ -13,7 +14,7 @@ public partial interface IEfGraphQLService<TDbContext>
         IEnumerable<string>? includeNames = null)
         where TReturn : class;
 
-    FieldType AddNavigationListField<TSource, TReturn>(
+    FieldBuilder<TSource, TReturn> AddNavigationListField<TSource, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,

@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.Builders;
+using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework;
@@ -39,7 +40,7 @@ public class EfObjectGraphType<TDbContext, TSource> :
         where TReturn : class =>
         GraphQlService.AddNavigationField(this, name, resolve, graphType, includeNames);
 
-    public FieldType AddNavigationListField<TReturn>(
+    public FieldBuilder<TSource, TReturn> AddNavigationListField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? graphType = null,
