@@ -99,7 +99,7 @@ public class CompanyGraph :
         AddNavigationConnectionField(
             name: "employeesConnection",
             resolve: context => context.Source.Employees,
-            includeNames: new[] {"Employees"}).Bidirectional();
+            includeNames: new[] {"Employees"});
         AutoMap();
     }
 }
