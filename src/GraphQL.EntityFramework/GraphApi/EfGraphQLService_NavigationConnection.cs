@@ -18,8 +18,7 @@ partial class EfGraphQLService<TDbContext>
         Type? itemGraphType = null,
         IEnumerable<QueryArgument>? arguments = null,
         IEnumerable<string>? includeNames = null,
-        int pageSize = 10,
-        string? description = null)
+        int pageSize = 10)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -28,7 +27,7 @@ partial class EfGraphQLService<TDbContext>
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
         var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        return (ConnectionBuilder<TSource>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize, description, arguments, includeNames })!;
+        return (ConnectionBuilder<TSource>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize, arguments, includeNames })!;
     }
 
     ConnectionBuilder<TSource> AddEnumerableConnection<TSource, TGraph, TReturn>(
@@ -36,7 +35,6 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
         int pageSize,
-        string? description,
         IEnumerable<QueryArgument>? arguments,
         IEnumerable<string>? includeNames)
         where TGraph : IGraphType
@@ -45,10 +43,6 @@ partial class EfGraphQLService<TDbContext>
         var builder = ConnectionBuilder.Create<TGraph, TSource>();
         builder.Name(name);
 
-        if (description is not null)
-        {
-            builder.Description(description);
-        }
         builder.PageSize(pageSize).Bidirectional();
         IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 

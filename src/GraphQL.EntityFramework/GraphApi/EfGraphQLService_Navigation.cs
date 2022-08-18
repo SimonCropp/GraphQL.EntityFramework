@@ -12,8 +12,7 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
         Type? graphType = null,
-        IEnumerable<string>? includeNames = null,
-        string? description = null)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -23,8 +22,7 @@ partial class EfGraphQLService<TDbContext>
         var field = new FieldType
         {
             Name = name,
-            Type = graphType,
-            Description = description
+            Type = graphType
         };
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 

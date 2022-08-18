@@ -23,19 +23,17 @@ public class QueryGraphType<TDbContext> :
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Type? graphType = null,
         IEnumerable<QueryArgument>? arguments = null,
-        int pageSize = 10,
-        string? description = null)
+        int pageSize = 10)
         where TReturn : class =>
-        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize, description);
+        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize);
 
     public FieldType AddQueryField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        string? description = null)
+        IEnumerable<QueryArgument>? arguments = null)
         where TReturn : class =>
-        GraphQlService.AddQueryField(this, name, resolve, graphType, arguments, description);
+        GraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
 
     public FieldType AddSingleField<TReturn>(
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
@@ -43,10 +41,9 @@ public class QueryGraphType<TDbContext> :
         Type? graphType = null,
         string name = nameof(TReturn),
         IEnumerable<QueryArgument>? arguments = null,
-        bool nullable = false,
-        string? description = null)
+        bool nullable = false)
         where TReturn : class =>
-        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable, description);
+        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable);
 
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class =>

@@ -10,8 +10,7 @@ public partial interface IEfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
         Type? graphType = null,
-        IEnumerable<string>? includeNames = null,
-        string? description = null)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class;
 
     FieldType AddNavigationListField<TSource, TReturn>(
@@ -20,7 +19,6 @@ public partial interface IEfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
         IEnumerable<QueryArgument>? arguments = null,
-        IEnumerable<string>? includeNames = null,
-        string? description = null)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class;
 }

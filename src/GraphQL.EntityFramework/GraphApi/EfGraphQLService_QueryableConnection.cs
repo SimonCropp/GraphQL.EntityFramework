@@ -17,13 +17,12 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
         IEnumerable<QueryArgument>? arguments = null,
-        int pageSize = 10,
-        string? description = null)
+        int pageSize = 10)
         where TReturn : class
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(object), itemGraphType, typeof(TReturn));
-        return (ConnectionBuilder<object>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description })!;
+        return (ConnectionBuilder<object>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize})!;
     }
 
     public ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
@@ -32,13 +31,12 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
         IEnumerable<QueryArgument>? arguments = null,
-        int pageSize = 10,
-        string? description = null)
+        int pageSize = 10)
         where TReturn : class
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize, description })!;
+        return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, new object?[] { graph, name, resolve, arguments, pageSize })!;
     }
 
     ConnectionBuilder<TSource> AddQueryableConnection<TSource, TGraph, TReturn>(
@@ -46,17 +44,12 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
         IEnumerable<QueryArgument>? arguments,
-        int pageSize,
-        string? description)
+        int pageSize)
         where TGraph : IGraphType
         where TReturn : class
     {
         var builder = ConnectionBuilder.Create<TGraph, TSource>();
         builder.Name(name);
-        if (description is not null)
-        {
-            builder.Description(description);
-        }
         builder.PageSize(pageSize).Bidirectional();
 
         if (resolve is not null)

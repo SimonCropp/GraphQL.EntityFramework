@@ -13,8 +13,7 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
         IEnumerable<QueryArgument>? arguments = null,
-        IEnumerable<string>? includeNames = null,
-        string? description = null)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -23,7 +22,6 @@ partial class EfGraphQLService<TDbContext>
         var field = new FieldType
         {
             Name = name,
-            Description = description,
             Type = MakeListGraphType<TReturn>(itemGraphType),
             Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, true),
         };

@@ -13,7 +13,6 @@ public partial interface IEfGraphQLService<TDbContext>
         Type? itemGraphType = null,
         IEnumerable<QueryArgument>? arguments = null,
         IEnumerable<string>? includeNames = null,
-        int pageSize = 10,
-        string? description = null)
+        int pageSize = 10)
         where TReturn : class;
 }

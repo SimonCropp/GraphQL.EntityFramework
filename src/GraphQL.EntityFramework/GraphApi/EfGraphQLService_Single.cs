@@ -14,11 +14,10 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         IEnumerable<QueryArgument>? arguments = null,
-        bool nullable = false,
-        string? description = null)
+        bool nullable = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
+        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable);
         return graph.AddField(field);
     }
 
@@ -29,11 +28,10 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         IEnumerable<QueryArgument>? arguments = null,
-        bool nullable = false,
-        string? description = null)
+        bool nullable = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
+        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable);
         return graph.AddField(field);
     }
 
@@ -44,11 +42,10 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         IEnumerable<QueryArgument>? arguments = null,
-        bool nullable = false,
-        string? description = null)
+        bool nullable = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable, description);
+        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable);
         return graph.AddField(field);
     }
 
@@ -58,8 +55,7 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
         IEnumerable<QueryArgument>? arguments,
         Type? graphType,
-        bool nullable,
-        string? description)
+        bool nullable)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -71,10 +67,7 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = graphType,
-            Description = description,
-
             Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, false),
-
             Resolver = new FuncFieldResolver<TSource, TReturn?>(
                 async context =>
                 {

@@ -9,8 +9,7 @@ public partial interface IEfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        string? description = null)
+        IEnumerable<QueryArgument>? arguments = null)
         where TReturn : class;
 
     FieldType AddQueryField<TSource, TReturn>(
@@ -18,7 +17,6 @@ public partial interface IEfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
-        string? description = null)
+        IEnumerable<QueryArgument>? arguments = null)
         where TReturn : class;
 }
