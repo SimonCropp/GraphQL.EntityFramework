@@ -16,7 +16,6 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
         IEnumerable<string>? includeNames = null,
         int pageSize = 10)
         where TReturn : class
@@ -27,7 +26,7 @@ partial class EfGraphQLService<TDbContext>
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
         var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        return (ConnectionBuilder<TSource>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize, arguments, includeNames })!;
+        return (ConnectionBuilder<TSource>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize, includeNames })!;
     }
 
     ConnectionBuilder<TSource> AddEnumerableConnection<TSource, TGraph, TReturn>(
@@ -35,7 +34,6 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
         int pageSize,
-        IEnumerable<QueryArgument>? arguments,
         IEnumerable<string>? includeNames)
         where TGraph : IGraphType
         where TReturn : class
@@ -72,7 +70,7 @@ partial class EfGraphQLService<TDbContext>
         builder.FieldType.Type = typeof(NonNullGraphType<ConnectionType<TGraph, EdgeType<TGraph>>>);
         var field = graph.AddField(builder.FieldType);
 
-        field.AddWhereArgument(hasId, arguments);
+        field.AddWhereArgument(hasId);
         return builder;
     }
 }

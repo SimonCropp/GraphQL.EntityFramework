@@ -12,7 +12,6 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
         IEnumerable<string>? includeNames = null)
         where TReturn : class
     {
@@ -23,7 +22,7 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = MakeListGraphType<TReturn>(itemGraphType),
-            Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, true),
+            Arguments = ArgumentAppender.GetQueryArguments(hasId, true),
         };
 
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);

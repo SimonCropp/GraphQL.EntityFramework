@@ -11,11 +11,10 @@ partial class EfGraphQLService<TDbContext>
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
-        Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null)
+        Type? graphType = null)
         where TReturn : class
     {
-        var field = BuildQueryField(graphType, name, resolve, arguments);
+        var field = BuildQueryField(graphType, name, resolve);
         return graph.AddField(field);
     }
 
@@ -23,19 +22,17 @@ partial class EfGraphQLService<TDbContext>
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        IEnumerable<QueryArgument>? arguments = null)
+        Type? itemGraphType = null)
         where TReturn : class
     {
-        var field = BuildQueryField(itemGraphType, name, resolve, arguments);
+        var field = BuildQueryField(itemGraphType, name, resolve);
         return graph.AddField(field);
     }
 
     FieldType BuildQueryField<TSource, TReturn>(
         Type? itemGraphType,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
-        IEnumerable<QueryArgument>? arguments)
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -45,7 +42,7 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = MakeListGraphType<TReturn>(itemGraphType),
-            Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, true),
+            Arguments = ArgumentAppender.GetQueryArguments(hasId, true),
         };
 
         if (resolve is not null)

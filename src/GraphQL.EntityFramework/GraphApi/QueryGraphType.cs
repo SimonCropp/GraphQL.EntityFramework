@@ -22,28 +22,25 @@ public class QueryGraphType<TDbContext> :
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
         int pageSize = 10)
         where TReturn : class =>
-        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, arguments, pageSize);
+        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, pageSize);
 
     public FieldType AddQueryField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-        Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null)
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddQueryField(this, name, resolve, graphType, arguments);
+        GraphQlService.AddQueryField(this, name, resolve, graphType);
 
     public FieldType AddSingleField<TReturn>(
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         string name = nameof(TReturn),
-        IEnumerable<QueryArgument>? arguments = null,
         bool nullable = false)
         where TReturn : class =>
-        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, arguments, nullable);
+        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable);
 
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class =>

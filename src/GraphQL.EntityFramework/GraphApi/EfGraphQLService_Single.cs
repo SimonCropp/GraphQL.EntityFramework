@@ -13,11 +13,10 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
         bool nullable = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
         return graph.AddField(field);
     }
 
@@ -27,11 +26,10 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
         bool nullable = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
         return graph.AddField(field);
     }
 
@@ -41,11 +39,10 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        IEnumerable<QueryArgument>? arguments = null,
         bool nullable = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, arguments, graphType, nullable);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
         return graph.AddField(field);
     }
 
@@ -53,7 +50,6 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
-        IEnumerable<QueryArgument>? arguments,
         Type? graphType,
         bool nullable)
         where TReturn : class
@@ -67,7 +63,7 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = graphType,
-            Arguments = ArgumentAppender.GetQueryArguments(arguments, hasId, false),
+            Arguments = ArgumentAppender.GetQueryArguments(hasId, false),
             Resolver = new FuncFieldResolver<TSource, TReturn?>(
                 async context =>
                 {
