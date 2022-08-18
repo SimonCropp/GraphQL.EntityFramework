@@ -23,7 +23,7 @@ public class EfObjectGraphType<TDbContext, TSource> :
     public void AutoMap(IReadOnlyList<string>? exclusions = null) =>
         Mapper<TDbContext>.AutoMap(this, GraphQlService, exclusions);
 
-    public void AddNavigationConnectionField<TReturn>(
+    public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? graphType = null,
@@ -32,7 +32,7 @@ public class EfObjectGraphType<TDbContext, TSource> :
         where TReturn : class =>
         GraphQlService.AddNavigationConnectionField(this, name, resolve, graphType, includeNames, pageSize);
 
-    public FieldType AddNavigationField<TReturn>(
+    public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
         Type? graphType = null,
@@ -48,7 +48,7 @@ public class EfObjectGraphType<TDbContext, TSource> :
         where TReturn : class =>
         GraphQlService.AddNavigationListField(this, name, resolve, graphType, includeNames);
 
-    public void AddQueryConnectionField<TReturn>(
+    public ConnectionBuilder<TSource> AddQueryConnectionField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Type? graphType = null,

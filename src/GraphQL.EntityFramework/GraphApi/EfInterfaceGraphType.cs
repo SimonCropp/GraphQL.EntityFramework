@@ -21,7 +21,7 @@ public class EfInterfaceGraphType<TDbContext, TSource> :
         where TReturn : class =>
         GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, null, graphType, includeNames, pageSize);
 
-    public FieldType AddNavigationField<TReturn>(
+    public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
         string name,
         Type? graphType = null,
         IEnumerable<string>? includeNames = null)
