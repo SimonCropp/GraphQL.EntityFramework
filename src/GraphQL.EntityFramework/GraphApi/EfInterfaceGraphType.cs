@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.Builders;
+using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework;
@@ -12,7 +13,7 @@ public class EfInterfaceGraphType<TDbContext, TSource> :
     public EfInterfaceGraphType(IEfGraphQLService<TDbContext> graphQlService) =>
         GraphQlService = graphQlService;
 
-    public void AddNavigationConnectionField<TReturn>(
+    public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,
         Type? graphType = null,
         IEnumerable<QueryArgument>? arguments = null,

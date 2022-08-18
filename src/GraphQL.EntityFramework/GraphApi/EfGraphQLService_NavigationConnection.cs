@@ -11,7 +11,7 @@ partial class EfGraphQLService<TDbContext>
     static MethodInfo addEnumerableConnection = typeof(EfGraphQLService<TDbContext>)
         .GetMethod("AddEnumerableConnection", BindingFlags.Instance| BindingFlags.NonPublic)!;
 
-    public void AddNavigationConnectionField<TSource, TReturn>(
+    public ConnectionBuilder<TSource> AddNavigationConnectionField<TSource, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
@@ -28,10 +28,10 @@ partial class EfGraphQLService<TDbContext>
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
         var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize, description, arguments, includeNames });
+        return (ConnectionBuilder<TSource>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize, description, arguments, includeNames })!;
     }
 
-    void AddEnumerableConnection<TSource, TGraph, TReturn>(
+    ConnectionBuilder<TSource> AddEnumerableConnection<TSource, TGraph, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
@@ -79,5 +79,6 @@ partial class EfGraphQLService<TDbContext>
         var field = graph.AddField(builder.FieldType);
 
         field.AddWhereArgument(hasId, arguments);
+        return builder;
     }
 }
