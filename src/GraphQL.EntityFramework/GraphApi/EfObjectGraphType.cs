@@ -56,7 +56,7 @@ public class EfObjectGraphType<TDbContext, TSource> :
         where TReturn : class =>
         GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, pageSize);
 
-    public FieldType AddQueryField<TReturn>(
+    public FieldBuilder<TSource, TReturn> AddQueryField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Type? graphType = null)
@@ -69,7 +69,7 @@ public class EfObjectGraphType<TDbContext, TSource> :
     public TDbContext ResolveDbContext(IResolveFieldContext context) =>
         GraphQlService.ResolveDbContext(context);
 
-    public FieldType AddSingleField<TReturn>(
+    public FieldBuilder<TSource, TReturn> AddSingleField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,

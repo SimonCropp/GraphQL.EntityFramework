@@ -42,7 +42,7 @@ public class EfInterfaceGraphType<TDbContext, TSource> :
         where TReturn : class =>
         GraphQlService.AddQueryConnectionField<TSource, TReturn>(this, name, null, graphType, pageSize);
 
-    public FieldType AddQueryField<TReturn>(
+    public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
         string name,
         Type? graphType = null)
         where TReturn : class =>

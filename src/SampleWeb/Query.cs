@@ -33,18 +33,14 @@ public class Query :
             name: "employees",
             resolve: context => context.DbContext.Employees);
 
-        var employeesByArgument = AddQueryField(
+        AddQueryField(
             name: "employeesByArgument",
             resolve: context =>
             {
                 var content = context.GetArgument<string>("content");
                 return context.DbContext.Employees.Where(x => x.Content == content);
-            });
-        employeesByArgument.Arguments!
-            .Add(new QueryArgument<StringGraphType>
-                {
-                    Name = "content"
-                });
+            })
+            .Argument<StringGraphType>("content");
 
         AddQueryConnectionField(
             name: "employeesConnection",

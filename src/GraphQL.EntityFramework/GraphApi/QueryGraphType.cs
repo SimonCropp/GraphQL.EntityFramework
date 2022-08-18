@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using GraphQL.Builders;
+using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework;
@@ -18,7 +19,7 @@ public class QueryGraphType<TDbContext> :
     public TDbContext ResolveDbContext(IResolveFieldContext context) =>
         GraphQlService.ResolveDbContext(context);
 
-    public void AddQueryConnectionField<TReturn>(
+    public ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Type? graphType = null,
@@ -26,14 +27,14 @@ public class QueryGraphType<TDbContext> :
         where TReturn : class =>
         GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, pageSize);
 
-    public FieldType AddQueryField<TReturn>(
+    public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Type? graphType = null)
         where TReturn : class =>
         GraphQlService.AddQueryField(this, name, resolve, graphType);
 
-    public FieldType AddSingleField<TReturn>(
+    public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,

@@ -1,3 +1,4 @@
+using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ namespace GraphQL.EntityFramework;
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
 {
-    public FieldType AddQueryField<TReturn>(
+    public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
@@ -15,10 +16,11 @@ partial class EfGraphQLService<TDbContext>
         where TReturn : class
     {
         var field = BuildQueryField(graphType, name, resolve);
-        return graph.AddField(field);
+        graph.AddField(field);
+        return new FieldBuilderEx<object, TReturn>(field);
     }
 
-    public FieldType AddQueryField<TSource, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddQueryField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
@@ -26,7 +28,8 @@ partial class EfGraphQLService<TDbContext>
         where TReturn : class
     {
         var field = BuildQueryField(itemGraphType, name, resolve);
-        return graph.AddField(field);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
     FieldType BuildQueryField<TSource, TReturn>(

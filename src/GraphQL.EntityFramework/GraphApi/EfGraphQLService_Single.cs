@@ -1,3 +1,4 @@
+using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ namespace GraphQL.EntityFramework;
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
 {
-    public FieldType AddSingleField<TReturn>(
+    public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         IObjectGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
@@ -17,10 +18,11 @@ partial class EfGraphQLService<TDbContext>
         where TReturn : class
     {
         var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
-        return graph.AddField(field);
+        graph.AddField(field);
+        return new FieldBuilderEx<object, TReturn>(field);
     }
 
-    public FieldType AddSingleField<TReturn>(
+    public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
@@ -30,10 +32,11 @@ partial class EfGraphQLService<TDbContext>
         where TReturn : class
     {
         var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
-        return graph.AddField(field);
+        graph.AddField(field);
+        return new FieldBuilderEx<object, TReturn>(field);
     }
 
-    public FieldType AddSingleField<TSource, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddSingleField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
@@ -43,7 +46,8 @@ partial class EfGraphQLService<TDbContext>
         where TReturn : class
     {
         var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
-        return graph.AddField(field);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
     FieldType BuildSingleField<TSource, TReturn>(
