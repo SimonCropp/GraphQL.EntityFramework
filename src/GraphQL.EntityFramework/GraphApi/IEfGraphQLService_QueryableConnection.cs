@@ -9,15 +9,13 @@ public partial interface IEfGraphQLService<TDbContext>
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        int pageSize = 10)
+        Type? itemGraphType = null)
         where TReturn : class;
 
     ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        int pageSize = 10)
+        Type? itemGraphType = null)
         where TReturn : class;
 }

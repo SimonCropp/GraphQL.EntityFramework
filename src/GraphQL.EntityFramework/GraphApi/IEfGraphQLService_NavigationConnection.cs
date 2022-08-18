@@ -11,7 +11,6 @@ public partial interface IEfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
-        int pageSize = 10)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class;
 }

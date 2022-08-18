@@ -22,10 +22,9 @@ public class QueryGraphType<TDbContext> :
     public ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
-        Type? graphType = null,
-        int pageSize = 10)
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, pageSize);
+        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType);
 
     public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
         string name,

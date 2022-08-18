@@ -15,39 +15,35 @@ partial class EfGraphQLService<TDbContext>
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        int pageSize = 10)
+        Type? itemGraphType = null)
         where TReturn : class
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(object), itemGraphType, typeof(TReturn));
-        return (ConnectionBuilder<object>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize})!;
+        return (ConnectionBuilder<object>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve})!;
     }
 
     public ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        int pageSize = 10)
+        Type? itemGraphType = null)
         where TReturn : class
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, new object?[] { graph, name, resolve, pageSize })!;
+        return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, new object?[] { graph, name, resolve })!;
     }
 
     ConnectionBuilder<TSource> AddQueryableConnection<TSource, TGraph, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
-        int pageSize)
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve)
         where TGraph : IGraphType
         where TReturn : class
     {
-        var builder = ConnectionBuilder.Create<TGraph, TSource>();
+        var builder = ConnectionBuilderEx.Create<TGraph, TSource>();
         builder.Name(name);
-        builder.PageSize(pageSize).Bidirectional();
 
         if (resolve is not null)
         {

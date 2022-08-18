@@ -27,10 +27,9 @@ public class EfObjectGraphType<TDbContext, TSource> :
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? graphType = null,
-        IEnumerable<string>? includeNames = null,
-        int pageSize = 10)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class =>
-        GraphQlService.AddNavigationConnectionField(this, name, resolve, graphType, includeNames, pageSize);
+        GraphQlService.AddNavigationConnectionField(this, name, resolve, graphType, includeNames);
 
     public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
         string name,
@@ -51,10 +50,9 @@ public class EfObjectGraphType<TDbContext, TSource> :
     public ConnectionBuilder<TSource> AddQueryConnectionField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
-        Type? graphType = null,
-        int pageSize = 10)
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType, pageSize);
+        GraphQlService.AddQueryConnectionField(this, name, resolve, graphType);
 
     public FieldBuilder<TSource, TReturn> AddQueryField<TReturn>(
         string name,

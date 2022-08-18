@@ -16,10 +16,9 @@ public class EfInterfaceGraphType<TDbContext, TSource> :
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,
         Type? graphType = null,
-        IEnumerable<string>? includeNames = null,
-        int pageSize = 10)
+        IEnumerable<string>? includeNames = null)
         where TReturn : class =>
-        GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, null, graphType, includeNames, pageSize);
+        GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, null, graphType, includeNames);
 
     public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
         string name,
@@ -37,10 +36,9 @@ public class EfInterfaceGraphType<TDbContext, TSource> :
 
     public ConnectionBuilder<TSource> AddQueryConnectionField<TReturn>(
         string name,
-        Type? graphType = null,
-        int pageSize = 10)
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddQueryConnectionField<TSource, TReturn>(this, name, null, graphType, pageSize);
+        GraphQlService.AddQueryConnectionField<TSource, TReturn>(this, name, null, graphType);
 
     public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
         string name,
