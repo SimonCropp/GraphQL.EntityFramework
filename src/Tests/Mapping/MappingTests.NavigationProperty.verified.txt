@@ -6,12 +6,7 @@
     Children: [
       {
         Id: Guid_2,
-        ParentId: Guid_1,
-        Parent: {
-          Id: Guid_1,
-          Property: value,
-          Children: []
-        }
+        ParentId: Guid_1
       }
     ]
   }
