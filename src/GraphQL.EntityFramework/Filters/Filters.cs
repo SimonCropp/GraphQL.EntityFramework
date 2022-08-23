@@ -42,7 +42,9 @@ public class Filters
                 }
             };
 
-    Dictionary<Type, Func<object, object, Task<bool>>> funcs = new();
+    delegate Task<bool> Filter(object userContext, object input);
+
+    Dictionary<Type, Filter> funcs = new();
 
     internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
         where TEntity : class
@@ -70,7 +72,7 @@ public class Filters
         return list;
     }
 
-    static async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item, List<Func<object, TEntity, Task<bool>>> filters)
+    static async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item, List<AsyncFilter<TEntity>> filters)
         where TEntity : class
     {
         foreach (var func in filters)
@@ -108,7 +110,7 @@ public class Filters
         return true;
     }
 
-    IEnumerable<Func<object, TEntity, Task<bool>>> FindFilters<TEntity>()
+    IEnumerable<AsyncFilter<TEntity>> FindFilters<TEntity>()
         where TEntity : class
     {
         var type = typeof(TEntity);
