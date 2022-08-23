@@ -64,7 +64,8 @@ public partial class EfGraphQLService<TDbContext> :
             Parent = context.Parent,
             Directives = context.Directives,
             InputExtensions = context.InputExtensions,
-            OutputExtensions = context.OutputExtensions
+            OutputExtensions = context.OutputExtensions,
+            User = context.User
         };
 
     public TDbContext ResolveDbContext(IResolveFieldContext context) =>
