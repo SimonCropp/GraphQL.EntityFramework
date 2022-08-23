@@ -77,7 +77,7 @@ partial class EfGraphQLService<TDbContext>
                             .ToListAsync(context.CancellationToken);
                     }
 
-                    return await fieldContext.Filters.ApplyFilter(list, context.UserContext);
+                    return await fieldContext.Filters.ApplyFilter(list, context.UserContext, context.User);
                 });
         }
 
