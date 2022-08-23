@@ -35,7 +35,7 @@ partial class EfGraphQLService<TDbContext>
                     var fieldContext = BuildContext(context);
 
                     var result = resolve(fieldContext);
-                    if (await fieldContext.Filters.ShouldInclude(context.UserContext, result))
+                    if (await fieldContext.Filters.ShouldInclude(context.UserContext, context.User, result))
                     {
                         return result;
                     }

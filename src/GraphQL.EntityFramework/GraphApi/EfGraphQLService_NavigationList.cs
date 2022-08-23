@@ -35,7 +35,7 @@ partial class EfGraphQLService<TDbContext>
                     var fieldContext = BuildContext(context);
                     var result = resolve(fieldContext);
                     result = result.ApplyGraphQlArguments(hasId, context);
-                    return await fieldContext.Filters.ApplyFilter(result, context.UserContext);
+                    return await fieldContext.Filters.ApplyFilter(result, context.UserContext, context.User);
                 });
         }
 

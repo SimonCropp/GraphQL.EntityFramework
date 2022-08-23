@@ -1,13 +1,15 @@
-﻿namespace GraphQL.EntityFramework;
+﻿using System.Security.Claims;
+
+namespace GraphQL.EntityFramework;
 
 #region FiltersSignature
 
 public class Filters
 {
-    public delegate bool Filter<in TEntity>(object userContext, TEntity input)
+    public delegate bool Filter<in TEntity>(object userContext, ClaimsPrincipal? userPrincipal, TEntity input)
         where TEntity : class;
 
-    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TEntity input)
+    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, ClaimsPrincipal? userPrincipal, TEntity input)
         where TEntity : class;
 
     #endregion
@@ -15,11 +17,11 @@ public class Filters
     public void Add<TEntity>(Filter<TEntity> filter)
         where TEntity : class =>
         funcs[typeof(TEntity)] =
-            (context, item) =>
+            (userContext, userPrincipal, item) =>
             {
                 try
                 {
-                    return Task.FromResult(filter(context, (TEntity) item));
+                    return Task.FromResult(filter(userContext, userPrincipal, (TEntity) item));
                 }
                 catch (Exception exception)
                 {
@@ -30,11 +32,11 @@ public class Filters
     public void Add<TEntity>(AsyncFilter<TEntity> filter)
         where TEntity : class =>
         funcs[typeof(TEntity)] =
-            async (context, item) =>
+            async (userContext, userPrincipal, item) =>
             {
                 try
                 {
-                    return await filter(context, (TEntity) item);
+                    return await filter(userContext, userPrincipal, (TEntity) item);
                 }
                 catch (Exception exception)
                 {
@@ -42,11 +44,11 @@ public class Filters
                 }
             };
 
-    delegate Task<bool> Filter(object userContext, object input);
+    delegate Task<bool> Filter(object userContext, ClaimsPrincipal? userPrincipal, object input);
 
     Dictionary<Type, Filter> funcs = new();
 
-    internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext)
+    internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext, ClaimsPrincipal? userPrincipal)
         where TEntity : class
     {
         if (funcs.Count == 0)
@@ -63,7 +65,7 @@ public class Filters
         var list = new List<TEntity>();
         foreach (var item in result)
         {
-            if (await ShouldInclude(userContext, item, filters))
+            if (await ShouldInclude(userContext, userPrincipal, item, filters))
             {
                 list.Add(item);
             }
@@ -72,12 +74,12 @@ public class Filters
         return list;
     }
 
-    static async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity item, List<AsyncFilter<TEntity>> filters)
+    static async Task<bool> ShouldInclude<TEntity>(object userContext, ClaimsPrincipal? userPrincipal, TEntity item, List<AsyncFilter<TEntity>> filters)
         where TEntity : class
     {
         foreach (var func in filters)
         {
-            if (!await func(userContext, item))
+            if (!await func(userContext, userPrincipal, item))
             {
                 return false;
             }
@@ -86,7 +88,7 @@ public class Filters
         return true;
     }
 
-    internal virtual async Task<bool> ShouldInclude<TEntity>(object userContext, TEntity? item)
+    internal virtual async Task<bool> ShouldInclude<TEntity>(object userContext, ClaimsPrincipal? userPrincipal, TEntity? item)
         where TEntity : class
     {
         if (item is null)
@@ -101,7 +103,7 @@ public class Filters
 
         foreach (var func in FindFilters<TEntity>())
         {
-            if (!await func(userContext, item))
+            if (!await func(userContext, userPrincipal, item))
             {
                 return false;
             }
@@ -116,7 +118,7 @@ public class Filters
         var type = typeof(TEntity);
         foreach (var pair in funcs.Where(x => x.Key.IsAssignableFrom(type)))
         {
-            yield return (context, item) => pair.Value(context, item);
+            yield return (userContext, userPrincipal, item) => pair.Value(userContext, userPrincipal, item);
         }
     }
 }
