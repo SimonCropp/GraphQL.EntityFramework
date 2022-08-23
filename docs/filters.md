@@ -28,13 +28,13 @@ Notes:
 ```cs
 public class Filters
 {
-    public delegate bool Filter<in TEntity>(object userContext, TEntity input)
+    public delegate bool Filter<in TEntity>(object userContext, ClaimsPrincipal? userPrincipal, TEntity input)
         where TEntity : class;
 
-    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TEntity input)
+    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, ClaimsPrincipal? userPrincipal, TEntity input)
         where TEntity : class;
 ```
-<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-filterssignature' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L5-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-filterssignature' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -53,7 +53,7 @@ public class MyEntity
 ```cs
 var filters = new Filters();
 filters.Add<MyEntity>(
-    (userContext, item) => item.Property != "Ignore");
+    (userContext, userPrincipal, item) => item.Property != "Ignore");
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: x => filters);
