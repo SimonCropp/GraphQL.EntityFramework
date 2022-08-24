@@ -1,4 +1,4 @@
-{
+﻿{
   parentEntitiesFiltered: [
     {
       property: Value1

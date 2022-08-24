@@ -1,4 +1,4 @@
-{
+﻿{
   skipLevel: [
     {
       level3Entity: {

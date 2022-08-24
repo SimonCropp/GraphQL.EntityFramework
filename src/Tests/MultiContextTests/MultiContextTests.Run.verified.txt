@@ -1,4 +1,4 @@
-{
+﻿{
   "data": {
     "entity1": {
       "property": "the entity1"

@@ -1,4 +1,4 @@
-{
+﻿{
   parentEntities: [
     {
       property: 'Value1',

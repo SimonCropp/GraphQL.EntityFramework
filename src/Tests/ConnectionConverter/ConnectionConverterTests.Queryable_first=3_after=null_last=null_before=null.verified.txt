@@ -1,4 +1,4 @@
-[
+﻿[
   {
     Id: Guid_1,
     Property: a

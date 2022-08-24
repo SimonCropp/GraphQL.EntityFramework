@@ -1,1 +1,1 @@
- query($id:String!){companies(ids:[$id]){id}}
+﻿ query($id:String!){companies(ids:[$id]){id}}
