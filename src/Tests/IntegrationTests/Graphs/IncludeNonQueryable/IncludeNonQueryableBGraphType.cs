@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class IncludeNonQueryableBGraphType :
+﻿public class IncludeNonQueryableBGraphType :
     EfObjectGraphType<IntegrationDbContext, IncludeNonQueryableB>
 {
     public IncludeNonQueryableBGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

@@ -1,6 +1,4 @@
-﻿using GraphQL;
-
-static class TypeConverter
+﻿static class TypeConverter
 {
     public static IList ConvertStringsToList(string?[] values, MemberInfo property)
     {

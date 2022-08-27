@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class Mutation :
+﻿public class Mutation :
     QueryGraphType<IntegrationDbContext>
 {
     public Mutation(IEfGraphQLService<IntegrationDbContext> efGraphQlService) :

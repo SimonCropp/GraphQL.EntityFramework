@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-public class DbContext1 :
+﻿public class DbContext1 :
     DbContext
 {
     public DbSet<Entity1> Entities { get; set; } = null!;

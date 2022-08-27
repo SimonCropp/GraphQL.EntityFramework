@@ -1,7 +1,4 @@
-﻿using GraphQL.Builders;
-using GraphQL.Types;
-
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 //Navigation fields will always be on a typed graph. so use ComplexGraphType not IComplexGraphType
 public partial interface IEfGraphQLService<TDbContext>

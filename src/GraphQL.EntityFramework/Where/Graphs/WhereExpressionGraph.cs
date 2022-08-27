@@ -1,6 +1,4 @@
-﻿using GraphQL.Types;
-
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 public class WhereExpressionGraph :
     InputObjectGraphType<WhereExpression>

@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class InterfaceGraphType :
+﻿public class InterfaceGraphType :
     EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
 {
     public InterfaceGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

@@ -1,8 +1,4 @@
-﻿using GraphQL.Builders;
-using GraphQL.Types;
-using GraphQL.Types.Relay;
-
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 class ConnectionBuilderEx<TSourceType> : ConnectionBuilder<TSourceType>
 {

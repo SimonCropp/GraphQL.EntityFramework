@@ -1,8 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using GraphQL.Types;
-using GraphQL.Types.Relay;
-
-static class ComplexGraphResolver
+﻿static class ComplexGraphResolver
 {
     class Resolved
     {

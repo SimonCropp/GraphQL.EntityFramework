@@ -1,9 +1,4 @@
-﻿using GraphQL;
-using GraphQL.EntityFramework;
-using GraphQL.Utilities;
-using Microsoft.Extensions.DependencyInjection;
-
-[UsesVerify]
+﻿[UsesVerify]
 public class MappingTests
 {
     static SqlInstance<MappingContext> sqlInstance;

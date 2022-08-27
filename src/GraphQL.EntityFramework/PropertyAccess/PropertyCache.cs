@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-static class PropertyCache<TInput>
+﻿static class PropertyCache<TInput>
 {
     public static ParameterExpression SourceParameter = Expression.Parameter(typeof(TInput));
     static ConcurrentDictionary<string, Property<TInput>> properties = new();

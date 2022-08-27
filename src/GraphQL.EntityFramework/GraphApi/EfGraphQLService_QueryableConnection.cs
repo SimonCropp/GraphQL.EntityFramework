@@ -1,9 +1,4 @@
-﻿using GraphQL.Builders;
-using GraphQL.Types;
-using GraphQL.Types.Relay;
-using Microsoft.EntityFrameworkCore;
-
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext

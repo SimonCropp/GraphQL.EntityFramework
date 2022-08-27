@@ -1,7 +1,4 @@
-﻿using GraphQL.EntityFramework;
-using GraphQL.Types;
-
-public class MappingQuery :
+﻿public class MappingQuery :
     ObjectGraphType
 {
     public MappingQuery(

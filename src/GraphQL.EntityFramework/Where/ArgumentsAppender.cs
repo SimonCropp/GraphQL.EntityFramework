@@ -1,7 +1,4 @@
-﻿using GraphQL.EntityFramework;
-using GraphQL.Types;
-
-static class ArgumentAppender
+﻿static class ArgumentAppender
 {
     static QueryArgument<ListGraphType<NonNullGraphType<WhereExpressionGraph>>> WhereArgument() =>
         new()

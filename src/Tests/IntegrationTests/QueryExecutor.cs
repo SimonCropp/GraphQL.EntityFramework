@@ -1,8 +1,3 @@
-using GraphQL;
-using GraphQL.EntityFramework;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-
 static class QueryExecutor
 {
     public static async Task<string> ExecuteQuery<TDbContext>(

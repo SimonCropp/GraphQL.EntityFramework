@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-public class UserContextSingleDb<TDbContext> :
+﻿public class UserContextSingleDb<TDbContext> :
     Dictionary<string, object?>
     where TDbContext : DbContext
 {

@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-static class WhereValidator
+﻿static class WhereValidator
 {
     public static void ValidateObject(Type propertyType, Comparison comparison, StringComparison? @case)
     {

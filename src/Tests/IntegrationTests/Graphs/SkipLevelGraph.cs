@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class SkipLevelGraph :
+﻿public class SkipLevelGraph :
     EfObjectGraphType<IntegrationDbContext, Level1Entity>
 {
     public SkipLevelGraph(IEfGraphQLService<IntegrationDbContext> graphQlService) :

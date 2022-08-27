@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class CustomTypeGraphType :
+﻿public class CustomTypeGraphType :
     EfObjectGraphType<IntegrationDbContext, CustomTypeEntity>
 {
     public CustomTypeGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

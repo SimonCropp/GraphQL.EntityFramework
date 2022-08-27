@@ -1,7 +1,4 @@
-﻿using GraphQL;
-using Microsoft.EntityFrameworkCore;
-
-[UsesVerify]
+﻿[UsesVerify]
 public class ConnectionConverterTests
 {
     static ConnectionConverterTests() =>

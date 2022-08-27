@@ -1,7 +1,4 @@
-﻿using GraphQL.Builders;
-using GraphQL.Types;
-
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 public partial interface IEfGraphQLService<TDbContext>
 {

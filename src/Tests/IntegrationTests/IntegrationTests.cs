@@ -1,10 +1,3 @@
-using GraphQL;
-using GraphQL.EntityFramework;
-using GraphQL.Types;
-using GraphQL.Utilities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 using Filters = GraphQL.EntityFramework.Filters;
 
 [UsesVerify]

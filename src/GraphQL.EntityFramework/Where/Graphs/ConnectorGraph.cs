@@ -1,7 +1,4 @@
-﻿using GraphQL.Types;
-using GraphQL.EntityFramework;
-
-class ConnectorGraph :
+﻿class ConnectorGraph :
     EnumerationGraphType
 {
     public ConnectorGraph()

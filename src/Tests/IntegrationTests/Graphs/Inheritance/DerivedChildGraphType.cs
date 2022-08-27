@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class DerivedChildGraphType :
+﻿public class DerivedChildGraphType :
     EfObjectGraphType<IntegrationDbContext, DerivedChildEntity>
 {
     public DerivedChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

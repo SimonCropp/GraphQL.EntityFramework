@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-public class DependencySchema :
+﻿public class DependencySchema :
     GraphQL.Types.Schema
 {
     public DependencySchema(IServiceProvider provider) :

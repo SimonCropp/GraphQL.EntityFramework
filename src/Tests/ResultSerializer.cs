@@ -1,6 +1,3 @@
-using GraphQL;
-using GraphQL.SystemTextJson;
-
 static class ResultSerializer
 {
     static GraphQLSerializer writer = new(true);

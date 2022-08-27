@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 public class ResolveEfFieldContext<TDbContext, TSource> :
     ResolveFieldContext<TSource>

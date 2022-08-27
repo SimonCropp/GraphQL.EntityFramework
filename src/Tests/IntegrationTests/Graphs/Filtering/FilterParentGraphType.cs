@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class FilterParentGraphType :
+﻿public class FilterParentGraphType :
     EfObjectGraphType<IntegrationDbContext, FilterParentEntity>
 {
     public FilterParentGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

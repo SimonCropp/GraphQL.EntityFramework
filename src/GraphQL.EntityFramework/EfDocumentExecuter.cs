@@ -1,6 +1,4 @@
-﻿using GraphQL.Execution;
-using GraphQLParser.AST;
-using ExecutionContext = GraphQL.Execution.ExecutionContext;
+﻿using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
 namespace GraphQL.EntityFramework;
 

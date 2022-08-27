@@ -1,8 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using GraphQL.EntityFramework;
-
-static class ArgumentReader
+﻿static class ArgumentReader
 {
     public static bool TryReadWhere(Func<Type, string, object?> getArgument, out IEnumerable<WhereExpression> expression)
     {
