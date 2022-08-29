@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
-
-static class ReflectionCache
+﻿static class ReflectionCache
 {
     public static MethodInfo StringAny;
     static MethodInfo guidListContains;

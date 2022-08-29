@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class DerivedWithNavigationGraphType :
+﻿public class DerivedWithNavigationGraphType :
     EfObjectGraphType<IntegrationDbContext, DerivedWithNavigationEntity>
 {
     public DerivedWithNavigationGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

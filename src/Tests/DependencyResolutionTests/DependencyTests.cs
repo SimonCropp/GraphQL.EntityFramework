@@ -1,8 +1,4 @@
-﻿using GraphQL;
-using GraphQL.EntityFramework;
-using Microsoft.Extensions.DependencyInjection;
-
-[UsesVerify]
+﻿[UsesVerify]
 public class DependencyTests
 {
     static SqlInstance<DependencyDbContext> sqlInstance;

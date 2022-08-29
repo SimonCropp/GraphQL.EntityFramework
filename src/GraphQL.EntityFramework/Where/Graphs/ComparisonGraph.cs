@@ -1,7 +1,4 @@
-﻿using GraphQL.EntityFramework;
-using GraphQL.Types;
-
-class ComparisonGraph :
+﻿class ComparisonGraph :
     EnumerationGraphType
 {
     public ComparisonGraph()

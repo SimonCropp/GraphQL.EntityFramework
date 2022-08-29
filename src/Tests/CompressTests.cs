@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-[UsesVerify]
+﻿[UsesVerify]
 public class CompressTests
 {
     [Fact]

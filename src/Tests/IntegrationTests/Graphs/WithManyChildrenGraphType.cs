@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class WithManyChildrenGraphType :
+﻿public class WithManyChildrenGraphType :
     EfObjectGraphType<IntegrationDbContext, WithManyChildrenEntity>
 {
     public WithManyChildrenGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

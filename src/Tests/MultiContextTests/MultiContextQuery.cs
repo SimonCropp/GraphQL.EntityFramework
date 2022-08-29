@@ -1,7 +1,4 @@
-﻿using GraphQL.EntityFramework;
-using GraphQL.Types;
-
-public class MultiContextQuery :
+﻿public class MultiContextQuery :
     ObjectGraphType
 {
     public MultiContextQuery(

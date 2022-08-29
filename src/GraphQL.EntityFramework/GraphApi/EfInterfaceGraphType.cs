@@ -1,8 +1,4 @@
-﻿using GraphQL.Builders;
-using GraphQL.Types;
-using Microsoft.EntityFrameworkCore;
-
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 public class EfInterfaceGraphType<TDbContext, TSource> :
     InterfaceGraphType<TSource>

@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class NamedIdGraphType :
+﻿public class NamedIdGraphType :
     EfObjectGraphType<IntegrationDbContext, NamedIdEntity>
 {
     public NamedIdGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

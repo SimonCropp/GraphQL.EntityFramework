@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class Query :
+﻿public class Query :
     QueryGraphType<IntegrationDbContext>
 {
     public Query(IEfGraphQLService<IntegrationDbContext> efGraphQlService) :

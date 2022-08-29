@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-public class IntegrationDbContext :
+﻿public class IntegrationDbContext :
     DbContext
 {
     public DbSet<ParentEntity> ParentEntities { get; set; } = null!;

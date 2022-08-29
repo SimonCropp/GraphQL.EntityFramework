@@ -1,8 +1,4 @@
-﻿using System.Linq.Expressions;
-using GraphQL.Types;
-using Microsoft.EntityFrameworkCore;
-
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 public static class Mapper<TDbContext>
     where TDbContext : DbContext
@@ -200,8 +196,8 @@ public static class Mapper<TDbContext>
     static (Func<TSource, object> resolver, Type graphType) Compile<TSource>(PropertyInfo member)
     {
         var func = PropertyCache<TSource>.GetProperty(member.Name).Func;
-        var graphTypeFromType = GraphTypeFromType(member.Name, member.PropertyType, member.IsNullable());
-        return (func, graphTypeFromType);
+        var graphType = GraphTypeFromType(member.Name, member.PropertyType, member.IsNullable());
+        return (func, graphType);
     }
 
     internal static Expression<Func<TSource, object>> PropertyToObject<TSource>(string member)

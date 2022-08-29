@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 public static class Compress
 {

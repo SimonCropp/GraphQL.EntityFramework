@@ -1,9 +1,4 @@
-﻿using GraphQL;
-using GraphQL.EntityFramework;
-using GraphQL.Types.Relay.DataObjects;
-using Microsoft.EntityFrameworkCore;
-
-static class ConnectionConverter
+﻿static class ConnectionConverter
 {
     public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, string? afterString, int? last, string? beforeString)
         where T : class

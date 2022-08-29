@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class MappingChildGraphType :
+﻿public class MappingChildGraphType :
     EfObjectGraphType<MappingContext, MappingChild>
 {
     public MappingChildGraphType(IEfGraphQLService<MappingContext> graphQlService) :

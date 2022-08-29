@@ -1,7 +1,4 @@
-﻿using GraphQL;
-using GraphQL.Resolvers;
-
-class SimpleFieldResolver<TSource> :
+﻿class SimpleFieldResolver<TSource> :
     IFieldResolver
 {
     Func<TSource, object?> func;

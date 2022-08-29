@@ -1,8 +1,3 @@
-using GraphQL.Builders;
-using GraphQL.Resolvers;
-using GraphQL.Types;
-using Microsoft.EntityFrameworkCore;
-
 namespace GraphQL.EntityFramework;
 
 partial class EfGraphQLService<TDbContext>

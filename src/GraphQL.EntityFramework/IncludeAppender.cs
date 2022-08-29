@@ -1,11 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using GraphQL;
-using GraphQL.EntityFramework;
-using GraphQL.Types;
-using GraphQLParser.AST;
-using Microsoft.EntityFrameworkCore;
-
-class IncludeAppender
+﻿class IncludeAppender
 {
     IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations;
 

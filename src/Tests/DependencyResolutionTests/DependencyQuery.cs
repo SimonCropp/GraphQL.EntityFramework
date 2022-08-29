@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class DependencyQuery :
+﻿public class DependencyQuery :
     QueryGraphType<DependencyDbContext>
 {
     public DependencyQuery(IEfGraphQLService<DependencyDbContext> efGraphQlService) :

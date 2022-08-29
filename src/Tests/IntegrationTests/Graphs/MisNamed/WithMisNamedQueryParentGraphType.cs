@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class WithMisNamedQueryParentGraphType :
+﻿public class WithMisNamedQueryParentGraphType :
     EfObjectGraphType<IntegrationDbContext, WithMisNamedQueryParentEntity>
 {
     public WithMisNamedQueryParentGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

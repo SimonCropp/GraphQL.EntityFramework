@@ -22,8 +22,7 @@ public class Startup
         services.AddScoped(_ => dbContextBuilder.BuildDbContext());
         services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
         services.AddSingleton<ISchema, Schema>();
-        var mvc = services.AddMvc(option => option.EnableEndpointRouting = false);
-        mvc.AddNewtonsoftJson();
+        services.AddMvc(option => option.EnableEndpointRouting = false);
     }
 
     static IEnumerable<Type> GetGraphQlTypes() =>

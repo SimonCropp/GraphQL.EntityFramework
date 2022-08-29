@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class ManyToManyLeftGraphType :
+﻿public class ManyToManyLeftGraphType :
     EfObjectGraphType<IntegrationDbContext, ManyToManyLeftEntity>
 {
     public ManyToManyLeftGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :

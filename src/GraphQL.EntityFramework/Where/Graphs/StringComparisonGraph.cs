@@ -1,5 +1,3 @@
-using GraphQL.Types;
-
 class StringComparisonGraph :
     EnumerationGraphType
 {

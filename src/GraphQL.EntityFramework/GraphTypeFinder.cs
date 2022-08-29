@@ -1,6 +1,4 @@
-﻿using GraphQL;
-
-static class GraphTypeFinder
+﻿static class GraphTypeFinder
 {
     public static Type FindGraphType<TReturn>(bool isNullable = false)
         where TReturn : class

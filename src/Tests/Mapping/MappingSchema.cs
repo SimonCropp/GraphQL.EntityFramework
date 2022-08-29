@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class MappingSchema :
+﻿public class MappingSchema :
     GraphQL.Types.Schema
 {
     public MappingSchema(EfGraphQLService<MappingContext> graphQlService, IServiceProvider provider) :
