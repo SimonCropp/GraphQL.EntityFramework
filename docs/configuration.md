@@ -25,7 +25,7 @@ public static void RegisterInContainer<TDbContext>(
         bool disableTracking = false,
         bool disableAsync = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L19-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L17-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-registerincontainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
@@ -70,14 +70,12 @@ A delegate that resolves the DbContext.
 <!-- snippet: ResolveDbContext.cs -->
 <a id='snippet-ResolveDbContext.cs'></a>
 ```cs
-using Microsoft.EntityFrameworkCore;
-
 namespace GraphQL.EntityFramework;
 
 public delegate TDbContext ResolveDbContext<out TDbContext>(object userContext)
     where TDbContext : DbContext;
 ```
-<sup><a href='/src/GraphQL.EntityFramework/GraphApi/ResolveDbContext.cs#L1-L6' title='Snippet source file'>snippet source</a> | <a href='#snippet-ResolveDbContext.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/GraphApi/ResolveDbContext.cs#L1-L4' title='Snippet source file'>snippet source</a> | <a href='#snippet-ResolveDbContext.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 It has access to the current GraphQL user context.
@@ -127,7 +125,7 @@ public static void RegisterInContainer<TDbContext>(
         bool disableTracking = false,
         bool disableAsync = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L19-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L17-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-registerincontainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
@@ -151,8 +149,6 @@ To avoid this a custom implementation of `DocumentExecuter` but be used that use
 <!-- snippet: EfDocumentExecuter.cs -->
 <a id='snippet-EfDocumentExecuter.cs'></a>
 ```cs
-using GraphQL.Execution;
-using GraphQLParser.AST;
 using ExecutionContext = GraphQL.Execution.ExecutionContext;
 
 namespace GraphQL.EntityFramework;
@@ -171,7 +167,7 @@ public class EfDocumentExecuter :
     }
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfDocumentExecuter.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfDocumentExecuter.cs#L1-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfDocumentExecuter.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -314,7 +310,7 @@ public class UserContext: Dictionary<string, object?>
     public readonly DbContext2 DbContext2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L83-L95' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L79-L91' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -332,7 +328,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L52-L61' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L48-L57' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -351,7 +347,7 @@ var executionOptions = new ExecutionOptions
     UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L67-L76' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L63-L72' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -362,9 +358,6 @@ Use both DbContexts in a Query:
 <!-- snippet: MultiContextQuery.cs -->
 <a id='snippet-MultiContextQuery.cs'></a>
 ```cs
-using GraphQL.EntityFramework;
-using GraphQL.Types;
-
 public class MultiContextQuery :
     ObjectGraphType
 {
@@ -391,7 +384,7 @@ public class MultiContextQuery :
     }
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextQuery.cs#L1-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiContextQuery.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextQuery.cs#L1-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiContextQuery.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -402,8 +395,6 @@ Use a DbContext in a Graph:
 <!-- snippet: Entity1GraphType.cs -->
 <a id='snippet-Entity1GraphType.cs'></a>
 ```cs
-using GraphQL.EntityFramework;
-
 public class Entity1GraphType :
     EfObjectGraphType<DbContext1, Entity1>
 {
@@ -412,7 +403,7 @@ public class Entity1GraphType :
         AutoMap();
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1GraphType.cs#L1-L9' title='Snippet source file'>snippet source</a> | <a href='#snippet-Entity1GraphType.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/Graphs/Entity1GraphType.cs#L1-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-Entity1GraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -670,8 +661,6 @@ public class DerivedEntity : InheritedEntity
 <!-- snippet: InterfaceGraphType.cs -->
 <a id='snippet-InterfaceGraphType.cs'></a>
 ```cs
-using GraphQL.EntityFramework;
-
 public class InterfaceGraphType :
     EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
 {
@@ -686,14 +675,12 @@ public class InterfaceGraphType :
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraphType.cs#L1-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-InterfaceGraphType.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraphType.cs#L1-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-InterfaceGraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 <!-- snippet: DerivedGraphType.cs -->
 <a id='snippet-DerivedGraphType.cs'></a>
 ```cs
-using GraphQL.EntityFramework;
-
 public class DerivedGraphType :
     EfObjectGraphType<IntegrationDbContext, DerivedEntity>
 {
@@ -709,7 +696,7 @@ public class DerivedGraphType :
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraphType.cs#L1-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraphType.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraphType.cs#L1-L14' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
