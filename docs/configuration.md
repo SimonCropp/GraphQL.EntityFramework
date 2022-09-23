@@ -262,7 +262,7 @@ public class GraphQlController :
     public class GraphQLQuery
     {
         public string? OperationName { get; set; }
-        public string Query { get; set; }= null!;
+        public string Query { get; set; } = null!;
         public string? Variables { get; set; }
     }
 
