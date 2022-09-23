@@ -14,6 +14,12 @@ public static partial class ArgumentProcessor
                 var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
                 items = items.Where(predicate.Compile());
             }
+
+            if (ArgumentReader.TryReadId(getArguments, out var value))
+            {
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.Equal, new[] {value});
+                items = items.Where(predicate.Compile());
+            }
         }
 
         if (ArgumentReader.TryReadWhere(getArguments, out var wheres))
