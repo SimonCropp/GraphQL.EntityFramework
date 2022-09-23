@@ -1,0 +1,27 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "property": "Value1",
+        "children": [
+          {
+            "property": "Child1"
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: [
+    {
+      HasTransaction: false,
+      Text:
+SELECT [p].[Id], [p].[Property], [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
+FROM [ParentEntities] AS [p]
+LEFT JOIN [ChildEntities] AS [c] ON [p].[Id] = [c].[ParentId]
+ORDER BY [p].[Id]
+    }
+  ]
+}

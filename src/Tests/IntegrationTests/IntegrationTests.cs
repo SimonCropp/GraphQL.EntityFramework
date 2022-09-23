@@ -1488,6 +1488,119 @@ fragment childEntityFields on Child {
     }
 
     [Fact]
+    public async Task Parent_child_with_id()
+    {
+        var parent = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var child1 = new ChildEntity
+        {
+            Property = "Child1",
+            Parent = parent
+        };
+        parent.Children.Add(child1);
+        var child2 = new ChildEntity
+        {
+            Property = "Child2",
+            Parent = parent
+        };
+        parent.Children.Add(child2);
+
+        var query = $@"
+{{
+  parentEntities
+  {{
+    property
+    children(id:'{child1.Id}' )
+    {{
+      property
+    }}
+  }}
+}}";
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { parent, child1, child2 });
+    }
+
+    [Fact(Skip = "fix order")]
+    public async Task Parent_with_id_child()
+    {
+        var parent1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var parent2 = new ParentEntity
+        {
+            Property = "Value2"
+        };
+        var child1 = new ChildEntity
+        {
+            Property = "Child1",
+            Parent = parent1
+        };
+        parent1.Children.Add(child1);
+        var child2 = new ChildEntity
+        {
+            Property = "Child2",
+            Parent = parent1
+        };
+        parent1.Children.Add(child2);
+
+        var query = $@"
+{{
+  parentEntities(id:'{parent1.Id}')
+  {{
+    property
+    children
+    {{
+      property
+    }}
+  }}
+}}";
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { parent1, parent2, child1, child2 });
+    }
+
+    [Fact]
+    public async Task Parent_with_id_child_with_id()
+    {
+        var parent1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var parent2 = new ParentEntity
+        {
+            Property = "Value2"
+        };
+        var child1 = new ChildEntity
+        {
+            Property = "Child1",
+            Parent = parent1
+        };
+        parent1.Children.Add(child1);
+        var child2 = new ChildEntity
+        {
+            Property = "Child2",
+            Parent = parent1
+        };
+        parent1.Children.Add(child2);
+
+        var query = $@"
+{{
+  parentEntities(id:'{parent1.Id}')
+  {{
+    property
+    children(id:'{child1.Id}' )
+    {{
+      property
+    }}
+  }}
+}}";
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { parent1, parent2, child1, child2 });
+    }
+
+    [Fact]
     public async Task Many_children()
     {
         var query = @"

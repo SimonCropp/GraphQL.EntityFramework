@@ -19,13 +19,6 @@ public static partial class ArgumentProcessor
                 var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
                 queryable = queryable.Where(predicate);
             }
-
-            if (ArgumentReader.TryReadId(GetArguments, out var value))
-            {
-                var keyName = GetKeyName(keyNames);
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.Equal, new[] {value});
-                queryable = queryable.Where(predicate);
-            }
         }
 
         if (ArgumentReader.TryReadWhere(GetArguments, out var wheres))

@@ -9,9 +9,9 @@ using Newtonsoft.Json;
 [UsesVerify]
 public class GraphQlControllerTests
 {
-    static HttpClient client = null!;
+    static HttpClient client;
     static ClientQueryExecutor clientQueryExecutor;
-    static WebSocketClient webSocket = null!;
+    static WebSocketClient webSocket;
 
     static GraphQlControllerTests()
     {
