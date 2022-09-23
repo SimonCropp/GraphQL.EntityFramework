@@ -259,6 +259,17 @@ public class GraphQlController :
         return Execute(query, operationName, inputs, cancellation);
     }
 
+    [HttpPost]
+    public Task Post(
+        [FromQuery] string query,
+        [FromQuery] string? variables,
+        [FromQuery] string? operationName,
+        CancellationToken cancellation)
+    {
+        var inputs = variables.ToInputs();
+        return Execute(query, operationName, inputs, cancellation);
+    }
+
     async Task Execute(string query,
         string? operationName,
         Inputs? variables,
@@ -282,7 +293,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L6-L55' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L6-L66' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -451,6 +462,21 @@ public class GraphQlControllerTests
     }
 
     [Fact]
+    public async Task Post()
+    {
+        var query = @"
+{
+  companies
+  {
+    id
+  }
+}";
+        using var response = await clientQueryExecutor.ExecutePost(client, query);
+        response.EnsureSuccessStatusCode();
+        await Verify(await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public async Task Single()
     {
         var query = @"
@@ -584,7 +610,7 @@ query {
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L7-L179' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L7-L194' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

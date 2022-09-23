@@ -30,6 +30,22 @@ public class GraphQlController :
         return Execute(query, operationName, inputs, cancellation);
     }
 
+    public class GraphQLQuery
+    {
+        public string? OperationName { get; set; }
+        public string Query { get; set; }= null!;
+        public string? Variables { get; set; }
+    }
+
+    [HttpPost]
+    public Task Post(
+        [FromBody]GraphQLQuery query,
+        CancellationToken cancellation)
+    {
+        var inputs = query.Variables.ToInputs();
+        return Execute(query.Query, query.OperationName, inputs, cancellation);
+    }
+
     async Task Execute(string query,
         string? operationName,
         Inputs? variables,

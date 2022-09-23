@@ -43,6 +43,21 @@ public class GraphQlControllerTests
     }
 
     [Fact]
+    public async Task Post()
+    {
+        var query = @"
+{
+  companies
+  {
+    id
+  }
+}";
+        using var response = await clientQueryExecutor.ExecutePost(client, query);
+        response.EnsureSuccessStatusCode();
+        await Verify(await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public async Task Single()
     {
         var query = @"
