@@ -9,48 +9,45 @@
 
     public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object?> getArgument) => getArgument.ReadList<OrderBy>("orderBy");
 
-    public static bool TryReadIds(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string[]? expression)
+    public static bool TryReadIds(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string[]? result)
     {
-        var argument = getArgument(typeof(object), "ids");
-        if (argument is null)
+        string ArgumentToExpression(object argument)
         {
-            expression = null;
+            return argument switch
+            {
+                long l => l.ToString(CultureInfo.InvariantCulture),
+                int i => i.ToString(CultureInfo.InvariantCulture),
+                string s => s,
+                _ => throw new($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is not supported.")
+            };
+        }
+
+        var idsArgument = getArgument(typeof(object), "ids");
+        var idArgument = getArgument(typeof(object), "id");
+        if (idsArgument is null && idArgument is null)
+        {
+            result = null;
             return false;
         }
 
-        if (argument is IEnumerable<object> objCollection)
+        var expressions = new List<string>();
+
+        if (idArgument is not null)
         {
-            expression = objCollection.Select(o => o.ToString()).ToArray()!;
-            return true;
+            expressions.Add( ArgumentToExpression(idArgument));
         }
 
-        throw new($"TryReadIds got an 'ids' argument of type '{argument.GetType().FullName}' which is not supported.");
-    }
-
-    public static bool TryReadId(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string? expression)
-    {
-        var argument = getArgument(typeof(object), "id");
-        if (argument is null)
+        if (idsArgument is not null)
         {
-            expression = null;
-            return false;
+            if (idsArgument is not IEnumerable<object> objCollection)
+            {
+                throw new($"TryReadIds got an 'ids' argument of type '{idsArgument.GetType().FullName}' which is not supported.");
+            }
+
+            expressions.AddRange(objCollection.Select(ArgumentToExpression));
         }
 
-        switch (argument)
-        {
-            case long l:
-                expression = l.ToString(CultureInfo.InvariantCulture);
-                break;
-            case int i:
-                expression = i.ToString(CultureInfo.InvariantCulture);
-                break;
-            case string s:
-                expression = s;
-                break;
-            default:
-                throw new($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is not supported.");
-        }
-
+        result = expressions.ToArray();
         return true;
     }
 
