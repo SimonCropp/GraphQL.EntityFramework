@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
+namespace GraphQL.EntityFramework;
 
-class NullFilters :
+public class NullFilters :
     Filters
 {
     public static NullFilters Instance = new();
