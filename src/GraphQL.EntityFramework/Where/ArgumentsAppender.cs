@@ -12,13 +12,13 @@
             Name = "orderBy"
         };
 
-    static QueryArgument<ListGraphType<NonNullGraphType<IdGraphType>>> IdsArgument() =>
+    static QueryArgument<ListGraphType<NonNullGraphType<IdGraph>>> IdsArgument() =>
         new()
         {
             Name = "ids"
         };
 
-    static QueryArgument<IdGraphType> IdArgument() =>
+    static QueryArgument<IdGraph> IdArgument() =>
         new()
         {
             Name = "id"

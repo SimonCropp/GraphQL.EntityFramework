@@ -61,7 +61,7 @@ public class GraphQlControllerTests
     public async Task Single()
     {
         var query = @"
-query ($id: ID!)
+query ($id: Id!)
 {
   company(id:$id)
   {
@@ -82,7 +82,7 @@ query ($id: ID!)
     public async Task Single_not_found()
     {
         var query = @"
-query ($id: ID!)
+query ($id: Id!)
 {
   company(id:$id)
   {
@@ -103,7 +103,7 @@ query ($id: ID!)
     public async Task Variable()
     {
         var query = @"
-query ($id: ID!)
+query ($id: Id!)
 {
   companies(ids:[$id])
   {

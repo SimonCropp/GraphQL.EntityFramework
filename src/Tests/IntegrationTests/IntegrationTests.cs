@@ -537,6 +537,19 @@ id
     }
 
     [Fact]
+    public async Task Explicit_Null()
+    {
+        var query = @"
+{
+  parentEntity(id: null) {
+    property
+  }
+}";
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { });
+    }
+
+    [Fact]
     public async Task Single_Found()
     {
         var query = @"

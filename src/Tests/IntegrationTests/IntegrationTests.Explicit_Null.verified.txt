@@ -1,0 +1,4 @@
+﻿{
+  target: Error trying to resolve field 'parentEntity'.,
+  sql: []
+}
