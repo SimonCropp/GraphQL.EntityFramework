@@ -1,4 +1,6 @@
-class IdGraph :
+namespace GraphQL.EntityFramework;
+
+public class IdGraph :
     IdGraphType
 {
     public IdGraph() =>
