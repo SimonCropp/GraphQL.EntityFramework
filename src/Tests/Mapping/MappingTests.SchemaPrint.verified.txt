@@ -25,14 +25,14 @@ scalar Id
 
 type MappingChild {
   parent: MappingParent!
-  id: ID!
-  parentId: ID!
+  id: Id!
+  parentId: Id!
   property: String
 }
 
 type MappingParent {
   children(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
-  id: ID!
+  id: Id!
   jsonProperty: [String!]!
   property: String
 }

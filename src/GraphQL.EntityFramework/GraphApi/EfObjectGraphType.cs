@@ -71,4 +71,15 @@ public class EfObjectGraphType<TDbContext, TSource> :
         bool nullable = false)
         where TReturn : class =>
         GraphQlService.AddSingleField(this, name, resolve, mutate, graphType,  nullable);
+
+    public override FieldBuilder<TSource, TProperty> Field<TProperty>(
+        string name,
+        Expression<Func<TSource, TProperty>> expression,
+        bool nullable = false,
+        Type? type = null)
+    {
+        OverrideIdAttribute.Convert<TProperty>(ref type);
+
+        return base.Field(name, expression, nullable, type);
+    }
 }

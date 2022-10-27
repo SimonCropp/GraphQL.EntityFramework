@@ -1,22 +1,22 @@
 ﻿type Child {
   parentAlias: Parent
   parent: Parent
-  id: ID!
+  id: Id!
   nullable: Int
-  parentId: ID
+  parentId: Id
   property: String
 }
 
 type Child1 {
   parent: WithManyChildren
-  id: ID!
-  parentId: ID
+  id: Id!
+  parentId: Id
 }
 
 type Child2 {
   parent: WithManyChildren
-  id: ID!
-  parentId: ID
+  id: Id!
+  parentId: Id
 }
 
 type ChildConnection {
@@ -51,22 +51,22 @@ enum Connector {
 }
 
 type CustomType {
-  id: ID!
+  id: Id!
   property: Long!
 }
 
 type Derived implements Interface {
   childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [Id!]): DerivedChildConnection!
   childrenFromBase(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
-  id: ID!
+  id: Id!
   property: String
 }
 
 type DerivedChild {
-  id: ID!
-  parentId: ID
+  id: Id!
+  parentId: Id
   property: String
-  typedParentId: ID
+  typedParentId: Id
 }
 
 type DerivedChildConnection {
@@ -86,13 +86,13 @@ type DerivedWithNavigation implements Interface {
   childrenFromDerived(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [Id!]): DerivedChildConnection!
   childrenFromBase(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   children(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
-  id: ID!
+  id: Id!
   property: String
 }
 
 type FilterChild {
   parent: FilterParent
-  id: ID!
+  id: Id!
   property: String
 }
 
@@ -111,7 +111,7 @@ type FilterChildEdge {
 type FilterParent {
   childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [Id!]): FilterChildConnection!
   children(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterChild!]!
-  id: ID!
+  id: Id!
   property: String
 }
 
@@ -131,18 +131,18 @@ scalar Id
 
 type IncludeNonQueryableA {
   includeNonQueryableB: IncludeNonQueryableB!
-  id: ID!
-  includeNonQueryableBId: ID!
+  id: Id!
+  includeNonQueryableBId: Id!
 }
 
 type IncludeNonQueryableB {
   includeNonQueryableA: IncludeNonQueryableA!
-  id: ID!
-  includeNonQueryableAId: ID!
+  id: Id!
+  includeNonQueryableAId: Id!
 }
 
 interface Interface {
-  id: ID!
+  id: Id!
   property: String
   childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [Id!]): DerivedChildConnection!
 }
@@ -161,18 +161,18 @@ type InterfaceEdge {
 
 type Level1 {
   level2Entity: Level2
-  id: ID!
+  id: Id!
   level2EntityId: Int
 }
 
 type Level2 {
   level3Entity: Level3
-  id: ID!
-  level3EntityId: ID
+  id: Id!
+  level3EntityId: Id
 }
 
 type Level3 {
-  id: ID!
+  id: Id!
   property: String
 }
 
@@ -195,7 +195,7 @@ type Mutation {
 }
 
 type NamedId {
-  namedId: ID!
+  namedId: Id!
   property: String
 }
 
@@ -211,7 +211,7 @@ type OwnedChild {
 type OwnedParent {
   child1: OwnedChild!
   child2: OwnedChild!
-  id: ID!
+  id: Id!
   property: String
 }
 
@@ -225,7 +225,7 @@ type PageInfo {
 type Parent {
   childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [Id!]): ChildConnection!
   children(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
-  id: ID!
+  id: Id!
   property: String
 }
 
@@ -287,7 +287,7 @@ type Query {
 type SkipLevelGraph {
   level3Entity: Level3
   level2Entity: Level2
-  id: ID!
+  id: Id!
   level2EntityId: Int
 }
 
@@ -313,22 +313,22 @@ input WhereExpression {
 type WithManyChildren {
   child1: Child1!
   child2: Child2!
-  id: ID!
+  id: Id!
 }
 
 type WithMisNamedQueryChild {
   parent: WithMisNamedQueryParent
-  id: ID!
-  parentId: ID
+  id: Id!
+  parentId: Id
 }
 
 type WithMisNamedQueryParent {
   misNamedChildren(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
   children(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
-  id: ID!
+  id: Id!
 }
 
 type WithNullable {
-  id: ID!
+  id: Id!
   nullable: Int
 }

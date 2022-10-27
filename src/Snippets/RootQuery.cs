@@ -1,6 +1,8 @@
 ﻿using GraphQL.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
+[assembly:OverrideId]
+
 class RootQuery
 {
     #region rootQuery

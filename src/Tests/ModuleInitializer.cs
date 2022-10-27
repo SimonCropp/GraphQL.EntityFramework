@@ -1,4 +1,6 @@
-﻿public static class ModuleInitializer
+﻿[assembly:OverrideId]
+
+public static class ModuleInitializer
 {
     [ModuleInitializer]
     public static void Init() =>

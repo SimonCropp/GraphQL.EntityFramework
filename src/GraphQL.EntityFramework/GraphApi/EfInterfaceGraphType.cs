@@ -47,4 +47,15 @@ public class EfInterfaceGraphType<TDbContext, TSource> :
 
     public TDbContext ResolveDbContext(IResolveFieldContext context) =>
         GraphQlService.ResolveDbContext(context);
+
+    public override FieldBuilder<TSource, TProperty> Field<TProperty>(
+        string name,
+        Expression<Func<TSource, TProperty>> expression,
+        bool nullable = false,
+        Type? type = null)
+    {
+        OverrideIdAttribute.Convert<TProperty>(ref type);
+
+        return base.Field(name, expression, nullable, type);
+    }
 }
