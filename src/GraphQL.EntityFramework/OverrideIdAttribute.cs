@@ -7,11 +7,12 @@ public class OverrideIdAttribute :
     /// <inheritdoc/>
     public override void Modify(TypeInformation info)
     {
-        if (TryGetIdType(info.Type, out var graphType))
+        if (info.Type == typeof(Guid?) || info.Type == typeof(Guid))
         {
-            info.GraphType = graphType;
+            info.GraphType = typeof(IdGraph);
         }
     }
+
     internal static bool TryGetIdType(Type memberType, [NotNullWhen(true)] out Type? graphType)
     {
         if (memberType == typeof(Guid))
