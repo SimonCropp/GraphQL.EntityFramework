@@ -9,7 +9,7 @@
 
     public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object?> getArgument) => getArgument.ReadList<OrderBy>("orderBy");
 
-    public static bool TryReadIds(Func<Type, string, object?> getArgument, [NotNullWhen(returnValue: true)] out string[]? result)
+    public static bool TryReadIds(Func<Type, string, object?> getArgument, [NotNullWhen(true)] out string[]? result)
     {
         string ArgumentToExpression(object argument)
         {
