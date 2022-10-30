@@ -2,7 +2,7 @@
 
 public static class ExpressionBuilder<T>
 {
-    const string LIST_PROPERTY_PATTERN = @"\[(.*)\]";
+    const string listPropertyPattern = @"\[(.*)\]";
 
     #region Conditional List
 
@@ -130,9 +130,9 @@ public static class ExpressionBuilder<T>
     static Expression ProcessList(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
     {
         // Get the path pertaining to individual list items
-        var listPath = Regex.Match(path, LIST_PROPERTY_PATTERN).Groups[1].Value;
+        var listPath = Regex.Match(path, listPropertyPattern).Groups[1].Value;
         // Remove the part of the path that leads into list item properties
-        path = Regex.Replace(path, LIST_PROPERTY_PATTERN, "");
+        path = Regex.Replace(path, listPropertyPattern, "");
 
         // Get the property on the current object up to the list member
         var property = PropertyCache<T>.GetProperty(path);
@@ -340,7 +340,7 @@ public static class ExpressionBuilder<T>
     /// Checks the path for matching list property marker
     /// </summary>
     private static bool HasListInPath(string path) =>
-        Regex.IsMatch(path, LIST_PROPERTY_PATTERN);
+        Regex.IsMatch(path, listPropertyPattern);
 
     /// <summary>
     /// Combine expressions by a specified binary operator
