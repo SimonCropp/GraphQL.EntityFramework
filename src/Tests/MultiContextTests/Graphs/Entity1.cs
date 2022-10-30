@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-[Table("entity1")]
+﻿[Table("entity1")]
 public class Entity1
 {
     public Guid Id { get; set; } = Guid.NewGuid();

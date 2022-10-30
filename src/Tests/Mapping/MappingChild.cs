@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-[Table("child")]
+﻿[Table("child")]
 public class MappingChild
 {
     public Guid Id { get; set; } = Guid.NewGuid();

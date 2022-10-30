@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace GraphQL.EntityFramework;
 
 public static class EfGraphQLConventions

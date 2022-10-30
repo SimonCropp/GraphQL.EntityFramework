@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class CompanyGraphType :
+﻿public class CompanyGraphType :
     EfObjectGraphType<SampleDbContext, Company>
 {
     public CompanyGraphType(IEfGraphQLService<SampleDbContext> graphQlService) :

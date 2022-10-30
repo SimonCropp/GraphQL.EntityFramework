@@ -1,7 +1,4 @@
-﻿using GraphQL.EntityFramework;
-using Microsoft.EntityFrameworkCore;
-
-class ConnectionRootQuery
+﻿class ConnectionRootQuery
 {
     #region ConnectionRootQuery
 

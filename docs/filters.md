@@ -48,7 +48,7 @@ public class MyEntity
     public string? Property { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L8-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L5-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-add-filter-1'></a>
 ```cs
 var filters = new Filters();
@@ -58,5 +58,5 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: x => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L19-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L16-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->

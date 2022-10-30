@@ -1,7 +1,4 @@
-﻿using GraphQL.EntityFramework;
-using Microsoft.AspNetCore;
-
-[assembly:OverrideId]
+﻿[assembly:OverrideId]
 
 public class Program
 {

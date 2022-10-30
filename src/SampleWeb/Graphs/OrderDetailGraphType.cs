@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-
-public class OrderDetailGraphType :
+﻿public class OrderDetailGraphType :
     EfObjectGraphType<SampleDbContext, OrderDetail>
 {
     public OrderDetailGraphType(IEfGraphQLService<SampleDbContext> graphQlService) :

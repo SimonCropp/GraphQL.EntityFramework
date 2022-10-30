@@ -1,5 +1,3 @@
-using GraphQL.EntityFramework;
-
 public class EmployeeSummaryGraphType :
     EfObjectGraphType<SampleDbContext, EmployeeSummary>
 {

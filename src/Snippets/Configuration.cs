@@ -1,9 +1,4 @@
-﻿using GraphQL.EntityFramework;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.DependencyInjection;
-
-class Configuration
+﻿class Configuration
 {
     #region ModelBuilder
     static class ModelBuilder

@@ -1,6 +1,4 @@
-﻿using GraphQL.EntityFramework;
-using GraphQL.Types;
-using Microsoft.EntityFrameworkCore;
+﻿using GraphQL.Types;
 
 class ResolveDbContextQuery
 {

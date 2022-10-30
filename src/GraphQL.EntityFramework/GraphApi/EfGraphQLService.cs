@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata;
-
 namespace GraphQL.EntityFramework;
 
 public partial class EfGraphQLService<TDbContext> :

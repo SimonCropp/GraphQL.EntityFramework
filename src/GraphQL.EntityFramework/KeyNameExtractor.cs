@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-
-static class KeyNameExtractor
+﻿static class KeyNameExtractor
 {
     public static IReadOnlyDictionary<Type, List<string>> GetKeyNames(this IModel model)
     {

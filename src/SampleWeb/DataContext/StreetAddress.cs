@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-[Owned]
+﻿[Owned]
 public class StreetAddress
 {
     public string AddressLine1 { get; set; } = null!;

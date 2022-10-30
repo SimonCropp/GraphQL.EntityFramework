@@ -25,14 +25,14 @@ public static void RegisterInContainer<TDbContext>(
         bool disableTracking = false,
         bool disableAsync = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L17-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L14-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-registerincontainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup><a href='/src/Snippets/Configuration.cs#L23-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/Configuration.cs#L20-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -59,7 +59,7 @@ static class ModelBuilder
     }
 }
 ```
-<sup><a href='/src/Snippets/Configuration.cs#L8-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-modelbuilder' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/Configuration.cs#L5-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-modelbuilder' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -125,14 +125,14 @@ public static void RegisterInContainer<TDbContext>(
         bool disableTracking = false,
         bool disableAsync = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L17-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L14-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-registerincontainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup><a href='/src/Snippets/Configuration.cs#L23-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/Configuration.cs#L20-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Then the `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.

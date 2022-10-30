@@ -1,6 +1,3 @@
-using System.Text.Json;
-using GraphQL;
-
 static class StringExtensions
 {
     static JsonSerializerOptions jsonOptions = new()

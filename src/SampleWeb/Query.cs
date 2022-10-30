@@ -1,6 +1,4 @@
-﻿using GraphQL;
-using GraphQL.EntityFramework;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 
 #region QueryUsedInController
 

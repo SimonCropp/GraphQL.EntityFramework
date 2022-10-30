@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-class HttpContextCapture
+﻿class HttpContextCapture
 {
     public IHttpContextAccessor HttpContextAccessor { get; }
 

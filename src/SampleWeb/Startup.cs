@@ -1,6 +1,4 @@
 ﻿using GraphiQl;
-using GraphQL.EntityFramework;
-using GraphQL;
 using GraphQL.Types;
 
 public class Startup

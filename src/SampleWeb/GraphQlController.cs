@@ -1,5 +1,4 @@
-﻿using GraphQL;
-using GraphQL.SystemTextJson;
+﻿using GraphQL.SystemTextJson;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,8 +1,3 @@
-using System.Buffers;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using GraphQL;
-
 /// <summary>
 /// A custom JsonConverter for reading a dictionary of objects of their real underlying type.
 /// Doesn't support write.

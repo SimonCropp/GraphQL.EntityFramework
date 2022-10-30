@@ -74,7 +74,7 @@ public class Query :
     }
 }
 ```
-<sup><a href='/src/Snippets/RootQuery.cs#L8-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-rootquery' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/RootQuery.cs#L5-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-rootquery' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
@@ -104,7 +104,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup><a href='/src/Snippets/TypedGraph.cs#L7-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-typedgraph' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/TypedGraph.cs#L5-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-typedgraph' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -131,7 +131,7 @@ public class Query :
             resolve: context => context.DbContext.Companies);
 }
 ```
-<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L6-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L3-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -224,7 +224,7 @@ public class CompanyGraph :
             resolve: context => context.Source.Employees);
 }
 ```
-<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L7-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L5-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -361,7 +361,7 @@ public class Query :
             });
 }
 ```
-<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L7-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ResolveDbContextQuery.cs#L5-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryresolvedbcontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

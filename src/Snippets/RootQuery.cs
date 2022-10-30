@@ -1,7 +1,4 @@
-﻿using GraphQL.EntityFramework;
-using Microsoft.EntityFrameworkCore;
-
-[assembly:OverrideId]
+﻿[assembly:OverrideId]
 
 class RootQuery
 {

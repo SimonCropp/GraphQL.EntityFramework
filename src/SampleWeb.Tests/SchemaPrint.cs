@@ -1,10 +1,4 @@
-﻿using GraphQL.Types;
-using GraphQL.Utilities;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-
-[UsesVerify]
+﻿[UsesVerify]
 public class SchemaPrint
 {
     [Fact]

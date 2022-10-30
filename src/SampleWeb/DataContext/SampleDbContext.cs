@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-
-public class SampleDbContext :
+﻿public class SampleDbContext :
     DbContext
 {
     public DbSet<Employee> Employees { get; set; } = null!;
