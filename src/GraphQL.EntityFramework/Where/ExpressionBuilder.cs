@@ -31,7 +31,7 @@ public static class ExpressionBuilder<T>
             Expression nextExpression;
 
             // If there are grouped expressions
-            if (@where.GroupedExpressions?.Length > 0)
+            if (where.GroupedExpressions?.Length > 0)
             {
                 // Recurse with new set of expression
                 nextExpression = MakePredicateBody(where.GroupedExpressions);
