@@ -76,25 +76,13 @@ public static class ExpressionBuilder<T>
     /// <summary>
     /// Create a single predicate for the single set of supplied conditional arguments
     /// </summary>
-    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values) =>
-        BuildPredicate(path, comparison, values, null);
-
-    /// <summary>
-    /// Create a single predicate for the single set of supplied conditional arguments
-    /// </summary>
-    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison) =>
+    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null) =>
         BuildPredicate(path, comparison, values, false, stringComparison);
 
     /// <summary>
     /// Create a single predicate for the single set of supplied conditional arguments
     /// </summary>
-    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate) =>
-        BuildPredicate(path, comparison, values, negate, null);
-
-    /// <summary>
-    /// Create a single predicate for the single set of supplied conditional arguments
-    /// </summary>
-    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate, StringComparison? stringComparison)
+    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate, StringComparison? stringComparison = null)
     {
         var expressionBody = MakePredicateBody(path, comparison, values, negate, stringComparison);
         var param = PropertyCache<T>.SourceParameter;
