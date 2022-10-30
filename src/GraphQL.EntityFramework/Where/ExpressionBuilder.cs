@@ -121,7 +121,7 @@ public static class ExpressionBuilder<T>
     /// <summary>
     /// Process a list based item inside the property path
     /// </summary>
-    static Expression ProcessList(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
+    static Expression ProcessList(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison)
     {
         // Get the path pertaining to individual list items
         var listPath = Regex.Match(path, listPropertyPattern).Groups[1].Value;
@@ -154,7 +154,7 @@ public static class ExpressionBuilder<T>
     /// <summary>
     /// Build an expression from provided where parameters
     /// </summary>
-    static Expression GetExpression(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison = null)
+    static Expression GetExpression(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison)
     {
         var property = PropertyCache<T>.GetProperty(path);
         Expression expressionBody;
