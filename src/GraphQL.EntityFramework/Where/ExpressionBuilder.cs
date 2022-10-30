@@ -87,7 +87,7 @@ public static class ExpressionBuilder<T>
     /// <summary>
     /// Makes the predicate body from the single set of supplied conditional arguments
     /// </summary>
-    static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate = false, StringComparison? stringComparison = null)
+    static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate, StringComparison? stringComparison)
     {
         Expression expressionBody;
 
