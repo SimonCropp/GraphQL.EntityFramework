@@ -4,8 +4,6 @@ public static class ExpressionBuilder<T>
 {
     const string listPropertyPattern = @"\[(.*)\]";
 
-    #region Conditional List
-
     /// <summary>
     /// Build a predicate for a supplied list of where's (Grouped or not)
     /// </summary>
@@ -69,10 +67,6 @@ public static class ExpressionBuilder<T>
         return mainExpression ?? Expression.Constant(false);
     }
 
-    #endregion
-
-    #region Conditional Single
-
     /// <summary>
     /// Create a single predicate for the single set of supplied conditional arguments
     /// </summary>
@@ -92,7 +86,7 @@ public static class ExpressionBuilder<T>
         Expression expressionBody;
 
         // If path includes list property access
-        if (HasListInPath(path))
+        if (HasListPropertyInPath(path))
         {
             // Handle a list path
             expressionBody = ProcessList(path, comparison, values!, stringComparison);
@@ -114,13 +108,6 @@ public static class ExpressionBuilder<T>
         return expressionBody;
     }
 
-    #endregion
-
-    #region Body Builders (Lol)
-
-    /// <summary>
-    /// Process a list based item inside the property path
-    /// </summary>
     static Expression ProcessList(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison)
     {
         // Get the path pertaining to individual list items
@@ -151,9 +138,6 @@ public static class ExpressionBuilder<T>
         return Expression.Call(anyInfo, property.Left, subPredicate);
     }
 
-    /// <summary>
-    /// Build an expression from provided where parameters
-    /// </summary>
     static Expression GetExpression(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison)
     {
         var property = PropertyCache<T>.GetProperty(path);
@@ -165,17 +149,17 @@ public static class ExpressionBuilder<T>
             {
                 case Comparison.NotIn:
                     WhereValidator.ValidateString(comparison, stringComparison);
-                    expressionBody = NegateExpression(MakeStringIn(values!, property, stringComparison));  // Ensure expression is negated
+                    expressionBody = NegateExpression(MakeStringListInComparison(values!, property, stringComparison));  // Ensure expression is negated
                     break;
                 case Comparison.In:
                     WhereValidator.ValidateString(comparison, stringComparison);
-                    expressionBody = MakeStringIn(values!, property, stringComparison);
+                    expressionBody = MakeStringListInComparison(values!, property, stringComparison);
                     break;
 
                 default:
                     WhereValidator.ValidateSingleString(comparison, stringComparison);
                     var value = values?.Single();
-                    expressionBody = MakeStringComparison(comparison, value, property, stringComparison);
+                    expressionBody = MakeSingleStringComparison(comparison, value, property, stringComparison);
                     break;
             }
         }
@@ -185,18 +169,18 @@ public static class ExpressionBuilder<T>
             {
                 case Comparison.NotIn:
                     WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
-                    expressionBody = NegateExpression(MakeObjectIn(values!, property)); // Ensure expression is negated
+                    expressionBody = NegateExpression(MakeObjectListInComparision(values!, property)); // Ensure expression is negated
                     break;
                 case Comparison.In:
                     WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
-                    expressionBody = MakeObjectIn(values!, property);
+                    expressionBody = MakeObjectListInComparision(values!, property);
                     break;
 
                 default:
                     WhereValidator.ValidateSingleObject(property.PropertyType, comparison, null);
                     var value = values?.Single();
                     var valueObject = TypeConverter.ConvertStringToType(value, property.PropertyType);
-                    expressionBody = MakeObjectComparison(comparison, valueObject, property);
+                    expressionBody = MakeSingleObjectComparison(comparison, valueObject, property);
                     break;
             }
         }
@@ -204,14 +188,7 @@ public static class ExpressionBuilder<T>
         return expressionBody;
     }
 
-    #endregion
-
-    #region Operations
-
-    /// <summary>
-    /// Make Object List In Comparision
-    /// </summary>
-    static Expression MakeObjectIn(string[] values, Property<T> property)
+    static Expression MakeObjectListInComparision(string[] values, Property<T> property)
     {
         // Attempt to convert the string values to the object type
         var objects = TypeConverter.ConvertStringsToList(values, property.Info);
@@ -221,10 +198,7 @@ public static class ExpressionBuilder<T>
         return Expression.Call(constant, property.ListContainsMethod!, property.Left);
     }
 
-    /// <summary>
-    /// Make String List In Comparison
-    /// </summary>
-    static Expression MakeStringIn(string[] values, Property<T> property, StringComparison? comparison)
+    static Expression MakeStringListInComparison(string[] values, Property<T> property, StringComparison? comparison)
     {
         MethodCallExpression equalsBody;
 
@@ -248,10 +222,7 @@ public static class ExpressionBuilder<T>
         return Expression.Call(null, ReflectionCache.StringAny, Expression.Constant(values), itemEvaluate);
     }
 
-    /// <summary>
-    /// Make String based single value comparisons
-    /// </summary>
-    static Expression MakeStringComparison(Comparison comparison, string? value, Property<T> property, StringComparison? stringComparison)
+    static Expression MakeSingleStringComparison(Comparison comparison, string? value, Property<T> property, StringComparison? stringComparison)
     {
         var left = property.Left;
 
@@ -301,10 +272,7 @@ public static class ExpressionBuilder<T>
         throw new($"Invalid comparison operator '{comparison}'.");
     }
 
-    /// <summary>
-    /// Make Object based single value comparisons
-    /// </summary>
-    static Expression MakeObjectComparison(Comparison comparison, object? value, Property<T> property)
+    static Expression MakeSingleObjectComparison(Comparison comparison, object? value, Property<T> property)
     {
         var left = property.Left;
         var constant = Expression.Constant(value, left.Type);
@@ -326,19 +294,9 @@ public static class ExpressionBuilder<T>
         throw new($"Invalid comparison operator '{comparison}'.");
     }
 
-    #endregion
-
-    #region Helpers
-
-    /// <summary>
-    /// Checks the path for matching list property marker
-    /// </summary>
-    private static bool HasListInPath(string path) =>
+    static bool HasListPropertyInPath(string path) =>
         Regex.IsMatch(path, listPropertyPattern);
 
-    /// <summary>
-    /// Combine expressions by a specified binary operator
-    /// </summary>
     static Expression CombineExpressions(Connector connector, Expression expr1, Expression expr2)
     {
         switch (connector)
@@ -352,11 +310,6 @@ public static class ExpressionBuilder<T>
         throw new($"Invalid connector operator '{connector}'.");
     }
 
-    /// <summary>
-    /// Negates a supplied expression
-    /// </summary>
     static Expression NegateExpression(Expression expression) =>
         Expression.Not(expression);
-
-    #endregion
 }
