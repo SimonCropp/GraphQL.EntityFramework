@@ -95,7 +95,6 @@ public static class ExpressionBuilder<T>
         // If the expression should be negated
         if (negate)
         {
-            // Not it
             expressionBody = NegateExpression(expressionBody);
         }
 
