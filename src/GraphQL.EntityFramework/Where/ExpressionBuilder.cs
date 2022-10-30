@@ -15,10 +15,7 @@ public static class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(expressionBody, param);
     }
 
-    /// <summary>
-    /// Makes the predicate body from the supplied parameter and list of where expressions
-    /// </summary>
-    private static Expression MakePredicateBody(IEnumerable<WhereExpression> wheres)
+    static Expression MakePredicateBody(IEnumerable<WhereExpression> wheres)
     {
         Expression? mainExpression = null;
         var previousWhere = new WhereExpression();
@@ -78,9 +75,6 @@ public static class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(expressionBody, param);
     }
 
-    /// <summary>
-    /// Makes the predicate body from the single set of supplied conditional arguments
-    /// </summary>
     static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate, StringComparison? stringComparison)
     {
         Expression expressionBody;
@@ -202,13 +196,11 @@ public static class ExpressionBuilder<T>
     {
         MethodCallExpression equalsBody;
 
-        // If string comparison not provided
         if (comparison is null)
         {
             // Do basic string compare
             equalsBody = Expression.Call(null, ReflectionCache.StringEqual, ExpressionCache.StringParam, property.Left);
         }
-        // Otherwise
         else
         {
             // String comparison with comparison type value
@@ -277,38 +269,27 @@ public static class ExpressionBuilder<T>
         var left = property.Left;
         var constant = Expression.Constant(value, left.Type);
 
-        switch (comparison)
+        return comparison switch
         {
-            case Comparison.Equal:
-                return Expression.MakeBinary(ExpressionType.Equal, left, constant);
-            case Comparison.GreaterThan:
-                return Expression.MakeBinary(ExpressionType.GreaterThan, left, constant);
-            case Comparison.GreaterThanOrEqual:
-                return Expression.MakeBinary(ExpressionType.GreaterThanOrEqual, left, constant);
-            case Comparison.LessThan:
-                return Expression.MakeBinary(ExpressionType.LessThan, left, constant);
-            case Comparison.LessThanOrEqual:
-                return Expression.MakeBinary(ExpressionType.LessThanOrEqual, left, constant);
-        }
-
-        throw new($"Invalid comparison operator '{comparison}'.");
+            Comparison.Equal => Expression.MakeBinary(ExpressionType.Equal, left, constant),
+            Comparison.GreaterThan => Expression.MakeBinary(ExpressionType.GreaterThan, left, constant),
+            Comparison.GreaterThanOrEqual => Expression.MakeBinary(ExpressionType.GreaterThanOrEqual, left, constant),
+            Comparison.LessThan => Expression.MakeBinary(ExpressionType.LessThan, left, constant),
+            Comparison.LessThanOrEqual => Expression.MakeBinary(ExpressionType.LessThanOrEqual, left, constant),
+            _ => throw new($"Invalid comparison operator '{comparison}'.")
+        };
     }
 
     static bool HasListPropertyInPath(string path) =>
         Regex.IsMatch(path, listPropertyPattern);
 
-    static Expression CombineExpressions(Connector connector, Expression expr1, Expression expr2)
-    {
-        switch (connector)
+    static Expression CombineExpressions(Connector connector, Expression expr1, Expression expr2) =>
+        connector switch
         {
-            case Connector.And:
-                return Expression.AndAlso(expr1, expr2);
-            case Connector.Or:
-                return Expression.OrElse(expr1, expr2);
-        }
-
-        throw new($"Invalid connector operator '{connector}'.");
-    }
+            Connector.And => Expression.AndAlso(expr1, expr2),
+            Connector.Or => Expression.OrElse(expr1, expr2),
+            _ => throw new($"Invalid connector operator '{connector}'.")
+        };
 
     static Expression NegateExpression(Expression expression) =>
         Expression.Not(expression);
