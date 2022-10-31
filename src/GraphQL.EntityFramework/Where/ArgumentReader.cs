@@ -1,15 +1,16 @@
 ﻿static class ArgumentReader
 {
-    public static bool TryReadWhere(Func<Type, string, object?> getArgument, out IEnumerable<WhereExpression> expression)
+    public static bool TryReadWhere(Func<Type, string, object?> getArgument, IResolveFieldContext context, out IEnumerable<WhereExpression> expression)
     {
-        expression = getArgument.ReadList<WhereExpression>("where");
+        expression = getArgument.ReadList<WhereExpression>(context, "where");
 
         return expression.Any();
     }
 
-    public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object?> getArgument) => getArgument.ReadList<OrderBy>("orderBy");
+    public static IEnumerable<OrderBy> ReadOrderBy(Func<Type, string, object?> getArgument, IResolveFieldContext context) =>
+        getArgument.ReadList<OrderBy>(context, "orderBy");
 
-    public static bool TryReadIds(Func<Type, string, object?> getArgument, [NotNullWhen(true)] out string[]? result)
+    public static bool TryReadIds(Func<Type, string, object?> getArgument, IResolveFieldContext context, [NotNullWhen(true)] out string[]? result)
     {
         string ArgumentToExpression(object argument)
         {
@@ -51,9 +52,9 @@
         return true;
     }
 
-    public static bool TryReadSkip(Func<Type, string, object?> getArgument, out int skip)
+    public static bool TryReadSkip(Func<Type, string, object?> getArgument, IResolveFieldContext context, out int skip)
     {
-        var result = getArgument.TryReadInt("skip", out skip);
+        var result = getArgument.TryReadInt("skip", context, out skip);
         if (result)
         {
             if (skip < 0)
@@ -64,9 +65,9 @@
         return result;
     }
 
-    public static bool TryReadTake(Func<Type, string, object?> getArgument, out int take)
+    public static bool TryReadTake(Func<Type, string, object?> getArgument, IResolveFieldContext context, out int take)
     {
-        var result = getArgument.TryReadInt("take", out take);
+        var result = getArgument.TryReadInt("take", context, out take);
         if (result)
         {
             if (take < 0)
@@ -77,7 +78,7 @@
         return result;
     }
 
-    static IEnumerable<T> ReadList<T>(this Func<Type, string, object?> getArgument, string name)
+    static IEnumerable<T> ReadList<T>(this Func<Type, string, object?> getArgument, IResolveFieldContext context, string name)
     {
         var argument = getArgument(typeof(T[]), name);
         if (argument is null)
@@ -88,7 +89,7 @@
         return (T[]) argument;
     }
 
-    static bool TryReadInt(this Func<Type, string, object?> getArgument, string name, out int value)
+    static bool TryReadInt(this Func<Type, string, object?> getArgument, string name, IResolveFieldContext context, out int value)
     {
         var argument = getArgument(typeof(int), name);
         if (argument is null)

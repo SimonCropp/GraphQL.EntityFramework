@@ -8,27 +8,27 @@ public static partial class ArgumentProcessor
 
         if (hasId)
         {
-            if (ArgumentReader.TryReadIds(GetArguments, out var values))
+            if (ArgumentReader.TryReadIds(GetArguments, context, out var values))
             {
                 var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
                 items = items.Where(predicate.Compile());
             }
         }
 
-        if (ArgumentReader.TryReadWhere(GetArguments, out var wheres))
+        if (ArgumentReader.TryReadWhere(GetArguments, context, out var wheres))
         {
             var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
             items = items.Where(predicate.Compile());
         }
 
-        items = Order(items, GetArguments);
+        items = Order(items, GetArguments, context);
 
-        if (ArgumentReader.TryReadSkip(GetArguments, out var skip))
+        if (ArgumentReader.TryReadSkip(GetArguments, context, out var skip))
         {
             items = items.Skip(skip);
         }
 
-        if (ArgumentReader.TryReadTake(GetArguments, out var take))
+        if (ArgumentReader.TryReadTake(GetArguments, context, out var take))
         {
             items = items.Take(take);
         }
@@ -36,10 +36,10 @@ public static partial class ArgumentProcessor
         return items;
     }
 
-    static IEnumerable<TItem> Order<TItem>(IEnumerable<TItem> queryable, Func<Type, string, object?> getArguments)
+    static IEnumerable<TItem> Order<TItem>(IEnumerable<TItem> queryable, Func<Type, string, object?> getArguments, IResolveFieldContext context)
     {
         var items = queryable.ToList();
-        var orderBys = ArgumentReader.ReadOrderBy(getArguments).ToList();
+        var orderBys = ArgumentReader.ReadOrderBy(getArguments, context).ToList();
         IOrderedEnumerable<TItem> ordered;
         if (orderBys.Count > 0)
         {
