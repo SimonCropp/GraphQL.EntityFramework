@@ -280,7 +280,7 @@ public static class ExpressionBuilder<T>
     }
 
     static bool HasListPropertyInPath(string path) =>
-        Regex.IsMatch(path, listPropertyPattern);
+        path.Contains('[');
 
     static Expression CombineExpressions(Connector connector, Expression expr1, Expression expr2) =>
         connector switch
