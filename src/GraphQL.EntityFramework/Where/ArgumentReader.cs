@@ -48,7 +48,7 @@
 
         if (id.Source != ArgumentSource.FieldDefault)
         {
-            expressions.Add( ArgumentToExpression(id.Value!));
+            expressions.Add(ArgumentToExpression(id.Value!));
         }
 
         if (ids.Source != ArgumentSource.FieldDefault)
@@ -75,6 +75,7 @@
                 throw new("Skip cannot be less than 0.");
             }
         }
+
         return result;
     }
 
@@ -88,6 +89,7 @@
                 throw new("Take cannot be less than 0.");
             }
         }
+
         return result;
     }
 
@@ -111,7 +113,7 @@
             return false;
         }
 
-        value = (int)argument;
+        value = (int) argument;
         return true;
     }
 }
