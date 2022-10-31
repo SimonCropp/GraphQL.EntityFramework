@@ -23,6 +23,12 @@
             };
         }
 
+        if (context.Arguments == null)
+        {
+            result = null;
+            return false;
+        }
+
         var idsArgument = context.GetArgument(typeof(object), "ids");
         var idArgument = context.GetArgument(typeof(object), "id");
         if (idsArgument is null && idArgument is null)
