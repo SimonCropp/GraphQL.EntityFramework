@@ -29,6 +29,9 @@
             return false;
         }
 
+        var containsIds = context.Arguments.TryGetValue("ids", out var ids);
+        var containsId = context.Arguments.TryGetValue("id", out var id);
+
         var idsArgument = context.GetArgument(typeof(object), "ids");
         var idArgument = context.GetArgument(typeof(object), "id");
         if (idsArgument is null && idArgument is null)
