@@ -2,34 +2,33 @@
 
 public static partial class ArgumentProcessor
 {
-    public static IEnumerable<TItem> ApplyGraphQlArguments<TItem, TSource>(this IEnumerable<TItem> items, bool hasId, IResolveFieldContext<TSource> context) =>
-        ApplyToAll(items, hasId, (type, x) => context.GetArgument(type, x));
-
-    static IEnumerable<TItem> ApplyToAll<TItem>(this IEnumerable<TItem> items, bool hasId, Func<Type, string, object?> getArguments)
+    public static IEnumerable<TItem> ApplyGraphQlArguments<TItem>(this IEnumerable<TItem> items, bool hasId, IResolveFieldContext context)
     {
+        object? GetArguments(Type type, string name) => context.GetArgument(type, name);
+
         if (hasId)
         {
-            if (ArgumentReader.TryReadIds(getArguments, out var values))
+            if (ArgumentReader.TryReadIds(GetArguments, out var values))
             {
                 var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
                 items = items.Where(predicate.Compile());
             }
         }
 
-        if (ArgumentReader.TryReadWhere(getArguments, out var wheres))
+        if (ArgumentReader.TryReadWhere(GetArguments, out var wheres))
         {
             var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
             items = items.Where(predicate.Compile());
         }
 
-        items = Order(items, getArguments);
+        items = Order(items, GetArguments);
 
-        if (ArgumentReader.TryReadSkip(getArguments, out var skip))
+        if (ArgumentReader.TryReadSkip(GetArguments, out var skip))
         {
             items = items.Skip(skip);
         }
 
-        if (ArgumentReader.TryReadTake(getArguments, out var take))
+        if (ArgumentReader.TryReadTake(GetArguments, out var take))
         {
             items = items.Take(take);
         }

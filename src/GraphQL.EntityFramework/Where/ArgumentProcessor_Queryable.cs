@@ -9,7 +9,7 @@ public static partial class ArgumentProcessor
         bool applyOrder)
         where TItem : class
     {
-        object? GetArguments(Type type, string x) => context.GetArgument(type, x);
+        object? GetArguments(Type type, string name) => context.GetArgument(type, name);
 
         if (keyNames is not null)
         {
