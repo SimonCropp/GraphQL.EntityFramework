@@ -4,31 +4,29 @@ public static partial class ArgumentProcessor
 {
     public static IEnumerable<TItem> ApplyGraphQlArguments<TItem>(this IEnumerable<TItem> items, bool hasId, IResolveFieldContext context)
     {
-        object? GetArguments(Type type, string name) => context.GetArgument(type, name);
-
         if (hasId)
         {
-            if (ArgumentReader.TryReadIds(GetArguments, out var values))
+            if (ArgumentReader.TryReadIds(context, out var values))
             {
                 var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
                 items = items.Where(predicate.Compile());
             }
         }
 
-        if (ArgumentReader.TryReadWhere(GetArguments, out var wheres))
+        if (ArgumentReader.TryReadWhere(context, out var wheres))
         {
             var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
             items = items.Where(predicate.Compile());
         }
 
-        items = Order(items, GetArguments);
+        items = Order(items, context);
 
-        if (ArgumentReader.TryReadSkip(GetArguments, out var skip))
+        if (ArgumentReader.TryReadSkip(context, out var skip))
         {
             items = items.Skip(skip);
         }
 
-        if (ArgumentReader.TryReadTake(GetArguments, out var take))
+        if (ArgumentReader.TryReadTake(context, out var take))
         {
             items = items.Take(take);
         }
@@ -36,10 +34,10 @@ public static partial class ArgumentProcessor
         return items;
     }
 
-    static IEnumerable<TItem> Order<TItem>(IEnumerable<TItem> queryable, Func<Type, string, object?> getArguments)
+    static IEnumerable<TItem> Order<TItem>(IEnumerable<TItem> queryable, IResolveFieldContext context)
     {
         var items = queryable.ToList();
-        var orderBys = ArgumentReader.ReadOrderBy(getArguments).ToList();
+        var orderBys = ArgumentReader.ReadOrderBy(context).ToList();
         IOrderedEnumerable<TItem> ordered;
         if (orderBys.Count > 0)
         {
