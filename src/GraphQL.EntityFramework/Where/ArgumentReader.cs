@@ -44,21 +44,18 @@
             return false;
         }
 
-        var idsArgument = context.GetArgument(typeof(object), "ids");
-        var idArgument = context.GetArgument(typeof(object), "id");
-
         var expressions = new List<string>();
 
-        if (idArgument is not null)
+        if (id.Source != ArgumentSource.FieldDefault)
         {
-            expressions.Add( ArgumentToExpression(idArgument));
+            expressions.Add( ArgumentToExpression(id.Value!));
         }
 
-        if (idsArgument is not null)
+        if (ids.Source != ArgumentSource.FieldDefault)
         {
-            if (idsArgument is not IEnumerable<object> objCollection)
+            if (ids.Value is not IEnumerable<object> objCollection)
             {
-                throw new($"TryReadIds got an 'ids' argument of type '{idsArgument.GetType().FullName}' which is not supported.");
+                throw new($"TryReadIds got an 'ids' argument of type '{ids.Value!.GetType().FullName}' which is not supported.");
             }
 
             expressions.AddRange(objCollection.Select(ArgumentToExpression));
