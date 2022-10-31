@@ -38,13 +38,14 @@
             return false;
         }
 
-        var idsArgument = context.GetArgument(typeof(object), "ids");
-        var idArgument = context.GetArgument(typeof(object), "id");
-        if (idsArgument is null && idArgument is null)
+        if (ids.Source == ArgumentSource.FieldDefault && id.Source == ArgumentSource.FieldDefault)
         {
             result = null;
             return false;
         }
+
+        var idsArgument = context.GetArgument(typeof(object), "ids");
+        var idArgument = context.GetArgument(typeof(object), "id");
 
         var expressions = new List<string>();
 
