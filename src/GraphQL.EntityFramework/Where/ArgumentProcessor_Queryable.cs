@@ -9,11 +9,9 @@ public static partial class ArgumentProcessor
         bool applyOrder)
         where TItem : class
     {
-        object? GetArguments(Type type, string name) => context.GetArgument(type, name);
-
         if (keyNames is not null)
         {
-            if (ArgumentReader.TryReadIds(GetArguments, context, out var values))
+            if (ArgumentReader.TryReadIds(context, out var values))
             {
                 var keyName = GetKeyName(keyNames);
                 var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
@@ -21,7 +19,7 @@ public static partial class ArgumentProcessor
             }
         }
 
-        if (ArgumentReader.TryReadWhere(GetArguments, context, out var wheres))
+        if (ArgumentReader.TryReadWhere(context, out var wheres))
         {
             var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
             queryable = queryable.Where(predicate);
@@ -29,14 +27,14 @@ public static partial class ArgumentProcessor
 
         if (applyOrder)
         {
-            queryable = Order(queryable, GetArguments, context);
+            queryable = Order(queryable, context);
 
-            if (ArgumentReader.TryReadSkip(GetArguments, context, out var skip))
+            if (ArgumentReader.TryReadSkip(context, out var skip))
             {
                 queryable = queryable.Skip(skip);
             }
 
-            if (ArgumentReader.TryReadTake(GetArguments, context, out var take))
+            if (ArgumentReader.TryReadTake(context, out var take))
             {
                 queryable = queryable.Take(take);
             }
@@ -55,9 +53,9 @@ public static partial class ArgumentProcessor
         return keyNames[0];
     }
 
-    static IQueryable<TItem> Order<TItem>(IQueryable<TItem> queryable, Func<Type, string, object?> getArguments, IResolveFieldContext context)
+    static IQueryable<TItem> Order<TItem>(IQueryable<TItem> queryable, IResolveFieldContext context)
     {
-        var orderBys = ArgumentReader.ReadOrderBy(getArguments, context).ToList();
+        var orderBys = ArgumentReader.ReadOrderBy(context).ToList();
         IOrderedQueryable<TItem> ordered;
         if (orderBys.Count > 0)
         {
