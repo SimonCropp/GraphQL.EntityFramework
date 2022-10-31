@@ -219,10 +219,6 @@ public static class Mapper<TDbContext>
     {
         try
         {
-            if (OverrideIdAttribute.TryGetIdType(propertyType, out var graphType))
-            {
-                return graphType;
-            }
             if (propertyType.TryGetCollectionType(out var collectionGenericType))
             {
                 if (isNullable)

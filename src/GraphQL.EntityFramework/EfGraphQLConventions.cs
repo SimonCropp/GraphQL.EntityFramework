@@ -83,7 +83,6 @@ public static class EfGraphQLConventions
         services.AddSingleton<WhereExpressionGraph>();
         services.AddSingleton<OrderByGraph>();
         services.AddSingleton<ComparisonGraph>();
-        services.AddSingleton<IdGraph>();
         services.AddSingleton<ConnectorGraph>();
     }
 

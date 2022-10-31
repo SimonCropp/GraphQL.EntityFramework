@@ -1,6 +1,4 @@
-﻿[assembly:OverrideId]
-
-class RootQuery
+﻿class RootQuery
 {
     #region rootQuery
 
