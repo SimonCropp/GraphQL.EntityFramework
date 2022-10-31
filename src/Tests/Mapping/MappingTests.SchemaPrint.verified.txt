@@ -21,27 +21,25 @@ enum Connector {
   or
 }
 
-scalar Id
-
 type MappingChild {
   parent: MappingParent!
-  id: Id!
-  parentId: Id!
+  id: ID!
+  parentId: ID!
   property: String
 }
 
 type MappingParent {
-  children(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
-  id: Id!
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
+  id: ID!
   jsonProperty: [String!]!
   property: String
 }
 
 type MappingQuery {
-  child(id: Id, ids: [Id!], where: [WhereExpression!]): MappingChild!
-  children(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
-  parent(id: Id, ids: [Id!], where: [WhereExpression!]): MappingParent!
-  parents(id: Id, ids: [Id!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingParent!]!
+  child(id: ID, ids: [ID!], where: [WhereExpression!]): MappingChild!
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
+  parent(id: ID, ids: [ID!], where: [WhereExpression!]): MappingParent!
+  parents(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingParent!]!
 }
 
 input OrderBy {

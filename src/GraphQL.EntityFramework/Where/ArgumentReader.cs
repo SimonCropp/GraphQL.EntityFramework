@@ -23,9 +23,22 @@
             };
         }
 
-        var idsArgument = context.GetArgument(typeof(object), "ids");
-        var idArgument = context.GetArgument(typeof(object), "id");
-        if (idsArgument is null && idArgument is null)
+        if (context.Arguments == null)
+        {
+            result = null;
+            return false;
+        }
+
+        var containsIds = context.Arguments.TryGetValue("ids", out var ids);
+        var containsId = context.Arguments.TryGetValue("id", out var id);
+
+        if (!containsIds && !containsId)
+        {
+            result = null;
+            return false;
+        }
+
+        if (ids.Source == ArgumentSource.FieldDefault && id.Source == ArgumentSource.FieldDefault)
         {
             result = null;
             return false;
@@ -33,16 +46,16 @@
 
         var expressions = new List<string>();
 
-        if (idArgument is not null)
+        if (id.Source != ArgumentSource.FieldDefault)
         {
-            expressions.Add( ArgumentToExpression(idArgument));
+            expressions.Add(ArgumentToExpression(id.Value!));
         }
 
-        if (idsArgument is not null)
+        if (ids.Source != ArgumentSource.FieldDefault)
         {
-            if (idsArgument is not IEnumerable<object> objCollection)
+            if (ids.Value is not IEnumerable<object> objCollection)
             {
-                throw new($"TryReadIds got an 'ids' argument of type '{idsArgument.GetType().FullName}' which is not supported.");
+                throw new($"TryReadIds got an 'ids' argument of type '{ids.Value!.GetType().FullName}' which is not supported.");
             }
 
             expressions.AddRange(objCollection.Select(ArgumentToExpression));
@@ -62,6 +75,7 @@
                 throw new("Skip cannot be less than 0.");
             }
         }
+
         return result;
     }
 
@@ -75,6 +89,7 @@
                 throw new("Take cannot be less than 0.");
             }
         }
+
         return result;
     }
 
@@ -98,7 +113,7 @@
             return false;
         }
 
-        value = (int)argument;
+        value = (int) argument;
         return true;
     }
 }

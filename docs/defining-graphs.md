@@ -74,7 +74,7 @@ public class Query :
     }
 }
 ```
-<sup><a href='/src/Snippets/RootQuery.cs#L5-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-rootquery' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/RootQuery.cs#L3-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-rootquery' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 `AddQueryField` will result in all matching being found and returned.
