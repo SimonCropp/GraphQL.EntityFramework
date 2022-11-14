@@ -32,7 +32,7 @@ WHERE EXISTS (
     SELECT 1
     FROM [ManyToManyMiddleEntities] AS [m0]
     INNER JOIN [ManyToManyRightEntities] AS [m1] ON [m0].[ManyToManyRightEntityId] = [m1].[Id]
-    WHERE ([m].[Id] = [m0].[ManyToManyLeftEntityId]) AND ([m1].[RightName] = N'Right2'))
+    WHERE [m].[Id] = [m0].[ManyToManyLeftEntityId] AND [m1].[RightName] = N'Right2')
 ORDER BY [m].[Id], [t].[ManyToManyLeftEntityId], [t].[ManyToManyRightEntityId]
     }
   ]

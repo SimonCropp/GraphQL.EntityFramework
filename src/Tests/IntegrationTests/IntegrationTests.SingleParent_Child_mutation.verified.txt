@@ -29,16 +29,17 @@ LEFT JOIN [ChildEntities] AS [c] ON [t].[Id] = [c].[ParentId]
 ORDER BY [t].[Id]
     },
     {
-      HasTransaction: true,
+      HasTransaction: false,
       Parameters: {
         @p0: Foo,
         @p1: Guid_1
       },
       Text:
+SET IMPLICIT_TRANSACTIONS OFF;
 SET NOCOUNT ON;
 UPDATE [ParentEntities] SET [Property] = @p0
+OUTPUT 1
 WHERE [Id] = @p1;
-SELECT @@ROWCOUNT;
     }
   ]
 }
