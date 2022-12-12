@@ -1,6 +1,7 @@
 ﻿type Child {
   parentAlias: Parent
   parent: Parent
+  decimal: Decimal!
   id: ID!
   nullable: Int
   parentId: ID
@@ -9,6 +10,7 @@
 
 type Child1 {
   parent: WithManyChildren
+  decimal: Decimal!
   id: ID!
   parentId: ID
 }
@@ -54,6 +56,8 @@ type CustomType {
   id: ID!
   property: Long!
 }
+
+scalar Decimal
 
 type Derived implements Interface {
   childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!

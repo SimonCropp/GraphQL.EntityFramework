@@ -1,3 +1,4 @@
+using Tests.IntegrationTests.Graphs;
 using Filters = GraphQL.EntityFramework.Filters;
 
 [UsesVerify]
@@ -349,6 +350,124 @@ public partial class IntegrationTests
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { entity2, entity1 });
+
+    }
+
+    [Fact]
+    public async Task OrderByCustom()
+    {
+        var query = @"
+{
+  parentEntities (orderBy: {path: 'childrenSum'})
+  {
+    property
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1",
+            Children = new List<ChildEntity>
+            {
+                new()
+                {
+                    Property = "Value1",
+                    Decimal = 10
+
+                },
+                new()
+                {
+                    Property = "Value2",
+                    Decimal = 2
+                }
+            }
+
+
+        };
+        var entity2 = new ParentEntity
+        {
+            Property = "Value2",
+            Children = new List<ChildEntity>
+            {
+                new()
+                {
+                    Property = "Value1",
+                    Decimal = 3
+                },
+                new()
+                {
+                    Property = "Value2",
+                    Decimal = 4
+                }
+            }
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { entity2, entity1 });
+
+    }
+
+    [Fact]
+    public async Task OrderByCustomSecondPosition()
+    {
+        var query = @"
+{
+  parentEntities (orderBy: [{path: 'Property'},{path: 'childrenSum'}])
+  {
+    id
+    property
+    children (orderBy : {path: 'Decimal'}) {
+        id
+        property
+        decimal
+    }
+  }
+}";
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value A",
+            Children = new List<ChildEntity>
+            {
+                new()
+                {
+                    Property = "Value1",
+                    Decimal = 10
+
+                },
+                new()
+                {
+                    Property = "Value2",
+                    Decimal = 2
+                }
+            }
+
+
+        };
+        var entity2 = new ParentEntity
+        {
+            Property = "Value A",
+            Children = new List<ChildEntity>
+            {
+                new()
+                {
+                    Property = "Value1",
+                    Decimal = 3
+                },
+                new()
+                {
+                    Property = "Value2",
+                    Decimal = 4
+                }
+            }
+        };
+        var entity3 = new ParentEntity
+        {
+            Property = "Value",
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { entity2, entity1, entity3 });
 
     }
 
@@ -1838,6 +1957,8 @@ fragment childEntityFields on DerivedChild {
         services.AddSingleton<Query>();
         services.AddSingleton<Mutation>();
         services.AddSingleton(database.Context);
+        services.AddScoped<ICustomSorting<ParentEntity>, CustomOrder>();
+
         foreach (var type in GetGraphQlTypes())
         {
             services.AddSingleton(type);

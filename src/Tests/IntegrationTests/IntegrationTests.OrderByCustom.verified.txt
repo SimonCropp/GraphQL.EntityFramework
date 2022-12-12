@@ -1,0 +1,30 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "property": "Value2"
+      },
+      {
+        "property": "Value1"
+      }
+    ]
+  }
+},
+  sql: [
+    {
+      HasTransaction: false,
+      Parameters: {
+        @__p_0: 1.0
+      },
+      Text:
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+ORDER BY (
+    SELECT COALESCE(SUM([c].[Decimal]), 0.0)
+    FROM [ChildEntities] AS [c]
+    WHERE [p].[Id] = [c].[ParentId]) * @__p_0
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-﻿namespace GraphQL.EntityFramework;
+namespace GraphQL.EntityFramework;
 
 public static partial class ArgumentProcessor
 {
@@ -57,17 +57,15 @@ public static partial class ArgumentProcessor
     {
         var orderBys = ArgumentReader.ReadOrderBy(context).ToList();
         IOrderedQueryable<TItem> ordered;
+        var customSorting = context.RequestServices?.GetService<ICustomSorting<TItem>>();
+
         if (orderBys.Count > 0)
         {
             var orderBy = orderBys.First();
-            var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
-            if (orderBy.Descending)
+            if (!(customSorting?.ApplySort(queryable, orderBy, true, out ordered) ?? false))
             {
-                ordered = queryable.OrderByDescending(property);
-            }
-            else
-            {
-                ordered = queryable.OrderBy(property);
+                var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
+                ordered = orderBy.Descending ? queryable.OrderByDescending(property) : queryable.OrderBy(property);
             }
         }
         else
@@ -77,15 +75,10 @@ public static partial class ArgumentProcessor
 
         foreach (var orderBy in orderBys.Skip(1))
         {
+            if (customSorting?.ApplySort(ordered, orderBy, false, out ordered) ?? false)
+                continue;
             var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
-            if (orderBy.Descending)
-            {
-                ordered = ordered.ThenByDescending(property);
-            }
-            else
-            {
-                ordered = ordered.ThenBy(property);
-            }
+            ordered = orderBy.Descending ? ordered.ThenByDescending(property) : ordered.ThenBy(property);
         }
 
         return ordered;

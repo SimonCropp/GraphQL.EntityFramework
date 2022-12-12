@@ -28,6 +28,7 @@ static class QueryExecutor
             Query = query,
             UserContext = new UserContextSingleDb<TDbContext>(data),
             Variables = inputs,
+            RequestServices = provider
         };
 
         var result = await executer.ExecuteWithErrorCheck(options);

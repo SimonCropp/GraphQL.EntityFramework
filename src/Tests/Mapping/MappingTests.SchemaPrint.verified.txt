@@ -21,8 +21,11 @@ enum Connector {
   or
 }
 
+scalar Decimal
+
 type MappingChild {
   parent: MappingParent!
+  decimal: Decimal!
   id: ID!
   parentId: ID!
   property: String

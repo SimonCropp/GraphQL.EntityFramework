@@ -1,0 +1,62 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "id": "Guid_1",
+        "property": "Value",
+        "children": []
+      },
+      {
+        "id": "Guid_2",
+        "property": "Value A",
+        "children": [
+          {
+            "id": "Guid_3",
+            "property": "Value1",
+            "decimal": 3.00
+          },
+          {
+            "id": "Guid_4",
+            "property": "Value2",
+            "decimal": 4.00
+          }
+        ]
+      },
+      {
+        "id": "Guid_5",
+        "property": "Value A",
+        "children": [
+          {
+            "id": "Guid_6",
+            "property": "Value2",
+            "decimal": 2.00
+          },
+          {
+            "id": "Guid_7",
+            "property": "Value1",
+            "decimal": 10.00
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: [
+    {
+      HasTransaction: false,
+      Parameters: {
+        @__p_0: 1.0
+      },
+      Text:
+SELECT [p].[Id], [p].[Property], [c0].[Id], [c0].[Decimal], [c0].[Nullable], [c0].[ParentId], [c0].[Property]
+FROM [ParentEntities] AS [p]
+LEFT JOIN [ChildEntities] AS [c0] ON [p].[Id] = [c0].[ParentId]
+ORDER BY [p].[Property], (
+    SELECT COALESCE(SUM([c].[Decimal]), 0.0)
+    FROM [ChildEntities] AS [c]
+    WHERE [p].[Id] = [c].[ParentId]) * @__p_0, [p].[Id]
+    }
+  ]
+}

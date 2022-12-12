@@ -1,4 +1,4 @@
-﻿namespace GraphQL.EntityFramework;
+namespace GraphQL.EntityFramework;
 
 public static partial class ArgumentProcessor
 {
@@ -36,38 +36,32 @@ public static partial class ArgumentProcessor
 
     static IEnumerable<TItem> Order<TItem>(IEnumerable<TItem> queryable, IResolveFieldContext context)
     {
+        var customSorting = context.RequestServices?.GetService<ICustomSorting<TItem>>();
+
         var items = queryable.ToList();
         var orderBys = ArgumentReader.ReadOrderBy(context).ToList();
         IOrderedEnumerable<TItem> ordered;
-        if (orderBys.Count > 0)
+        if (orderBys is { Count: > 0 })
         {
             var orderBy = orderBys.First();
-            var propertyFunc = PropertyCache<TItem>.GetProperty(orderBy.Path).Func;
-            if (orderBy.Descending)
+            if (!(customSorting?.ApplySort(items, orderBy, true, out ordered) ?? false))
             {
-                ordered = items.OrderByDescending(propertyFunc);
-            }
-            else
-            {
-                ordered = items.OrderBy(propertyFunc);
+                var propertyFunc = PropertyCache<TItem>.GetProperty(orderBy.Path).Func;
+                ordered = orderBy.Descending ? items.OrderByDescending(propertyFunc) : items.OrderBy(propertyFunc);
             }
         }
         else
         {
             return items;
         }
-
+        
         foreach (var orderBy in orderBys.Skip(1))
         {
+            if (customSorting?.ApplySort(ordered, orderBy, false, out ordered) ?? false)
+                continue;
+
             var propertyFunc = PropertyCache<TItem>.GetProperty(orderBy.Path).Func;
-            if (orderBy.Descending)
-            {
-                ordered = ordered.ThenByDescending(propertyFunc);
-            }
-            else
-            {
-                ordered = ordered.ThenBy(propertyFunc);
-            }
+            ordered = orderBy.Descending ? ordered.ThenByDescending(propertyFunc) : ordered.ThenBy(propertyFunc);
         }
 
         return ordered;
