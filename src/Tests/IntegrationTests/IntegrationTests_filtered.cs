@@ -5,17 +5,18 @@ public partial class IntegrationTests
     [Fact]
     public async Task Child_filtered()
     {
-        var query = @"
-{
-  parentEntitiesFiltered
-  {
-    property
-    children
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              parentEntitiesFiltered
+              {
+                property
+                children
+                {
+                  property
+                }
+              }
+            }
+            """;
 
         var entity1 = new FilterParentEntity
         {
@@ -48,13 +49,14 @@ public partial class IntegrationTests
     [Fact]
     public async Task RootList_filtered()
     {
-        var query = @"
-{
-  parentEntitiesFiltered
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntitiesFiltered
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new FilterParentEntity
         {
@@ -72,22 +74,22 @@ public partial class IntegrationTests
     [Fact]
     public async Task Root_connectionFiltered()
     {
-        var query = @"
-{
-  parentEntitiesConnectionFiltered {
-    totalCount
-    edges {
-      cursor
-      node {
-        property
-      }
-    }
-    items {
-      property
-    }
-  }
-}
-";
+        var query = """
+            {
+              parentEntitiesConnectionFiltered {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    property
+                  }
+                }
+                items {
+                  property
+                }
+              }
+            }
+            """;
         var entity1 = new FilterParentEntity
         {
             Property = "Value1"
@@ -104,30 +106,30 @@ public partial class IntegrationTests
     [Fact(Skip = "Work out why include is not used")]
     public async Task Connection_parent_child_Filtered()
     {
-        var query = @"
-{
-  parentEntitiesConnectionFiltered {
-    totalCount
-    edges {
-      cursor
-      node {
-        property
-        children
-        {
-          property
-        }
-      }
-    }
-    items {
-      property
-      children
-      {
-        property
-      }
-    }
-  }
-}
-";
+        var query = """
+            {
+              parentEntitiesConnectionFiltered {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    property
+                    children
+                    {
+                      property
+                    }
+                  }
+                }
+                items {
+                  property
+                  children
+                  {
+                    property
+                  }
+                }
+              }
+            }
+            """;
         var entity1 = new FilterParentEntity
         {
             Property = "Value1"

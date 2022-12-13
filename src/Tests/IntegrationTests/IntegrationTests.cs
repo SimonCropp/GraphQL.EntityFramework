@@ -10,10 +10,11 @@ public partial class IntegrationTests
             buildTemplate: async data =>
             {
                 await data.Database.EnsureCreatedAsync();
-                await data.Database.ExecuteSqlRawAsync(
-                    @"create view ParentEntityView as
-        select Property
-        from ParentEntities");
+                await data.Database.ExecuteSqlRawAsync("""
+                    create view ParentEntityView as
+                            select Property
+                            from ParentEntities
+                    """);
             },
             constructInstance: builder =>
             {
@@ -49,19 +50,20 @@ public partial class IntegrationTests
     {
         string? queryText = null;
         QueryLogger.Enable(s => queryText = s);
-        var query = @"
-{
-  parentEntities
-  (where:
-    [
-      {path: 'Property', comparison: startsWith, value: 'Valu'}
-      {path: 'Property', comparison: endsWith, value: 'ue3'}
-    ]
-  )
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities
+              (where:
+                [
+                  {path: 'Property', comparison: startsWith, value: 'Valu'}
+                  {path: 'Property', comparison: endsWith, value: 'ue3'}
+                ]
+              )
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -84,19 +86,20 @@ public partial class IntegrationTests
     [Fact]
     public async Task Where_multiple()
     {
-        var query = @"
-{
-  parentEntities
-  (where:
-    [
-      {path: 'Property', comparison: startsWith, value: 'Valu'}
-      {path: 'Property', comparison: endsWith, value: 'ue3'}
-    ]
-  )
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities
+              (where:
+                [
+                  {path: 'Property', comparison: startsWith, value: 'Valu'}
+                  {path: 'Property', comparison: endsWith, value: 'ue3'}
+                ]
+              )
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -166,13 +169,14 @@ public partial class IntegrationTests
     [Fact]
     public async Task Take()
     {
-        var query = @"
-{
-  parentEntities (take: 1, orderBy: {path: ""property""})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (take: 1, orderBy: {path: "property"})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -190,13 +194,14 @@ public partial class IntegrationTests
     [Fact]
     public async Task Skip()
     {
-        var query = @"
-{
-  parentEntities (skip: 1, orderBy: {path: ""property""})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (skip: 1, orderBy: {path: "property"})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -214,22 +219,22 @@ public partial class IntegrationTests
     [Fact]
     public async Task Connection_first_page()
     {
-        var query = @"
-{
-  parentEntitiesConnection(first:2, after: '0') {
-    totalCount
-    edges {
-      cursor
-      node {
-        property
-      }
-    }
-    items {
-      property
-    }
-  }
-}
-";
+        var query = """
+            {
+              parentEntitiesConnection(first:2, after: '0') {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    property
+                  }
+                }
+                items {
+                  property
+                }
+              }
+            }
+            """;
         var entities = BuildEntities(8);
 
         await using var database = await sqlInstance.Build();
@@ -239,22 +244,22 @@ public partial class IntegrationTests
     [Fact]
     public async Task Connection_page_back()
     {
-        var query = @"
-{
-  parentEntitiesConnection(last:2, before: '2') {
-    totalCount
-    edges {
-      cursor
-      node {
-        property
-      }
-    }
-    items {
-      property
-    }
-  }
-}
-";
+        var query = """
+            {
+              parentEntitiesConnection(last:2, before: '2') {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    property
+                  }
+                }
+                items {
+                  property
+                }
+              }
+            }
+            """;
 
         var entities = BuildEntities(8);
 
@@ -266,25 +271,25 @@ public partial class IntegrationTests
     [Fact]
     public async Task Connection_nested()
     {
-        var query = @"
-{
-  parentEntities {
-    id
-    childrenConnection(first:2, after:""2"") {
-      edges {
-        cursor
-        node {
-          id
-        }
-      }
-	  pageInfo {
-		  endCursor
-		  hasNextPage
-		}
-    }
-  }
-}
-";
+        var query = """
+            {
+              parentEntities {
+                id
+                childrenConnection(first:2, after:"2") {
+                  edges {
+                    cursor
+                    node {
+                      id
+                    }
+                  }
+                  pageInfo {
+                      endCursor
+                      hasNextPage
+                    }
+                }
+              }
+            }
+            """;
         var entities = BuildEntities(8);
 
         await using var database = await sqlInstance.Build();
@@ -306,13 +311,14 @@ public partial class IntegrationTests
     [Fact(Skip = "Work out how to eval server side")]
     public async Task Where_case_sensitive()
     {
-        var query = @"
-{
-  parentEntities (where: {path: 'Property', comparison: equal, value: 'Value2', case: 'Ordinal' })
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (where: {path: 'Property', comparison: equal, value: 'Value2', case: 'Ordinal' })
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -330,13 +336,14 @@ public partial class IntegrationTests
     [Fact]
     public async Task OrderBy()
     {
-        var query = @"
-{
-  parentEntities (orderBy: {path: 'Property'})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (orderBy: {path: 'Property'})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -349,19 +356,19 @@ public partial class IntegrationTests
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { entity2, entity1 });
-
     }
 
     [Fact]
     public async Task OrderByDescending()
     {
-        var query = @"
-{
-  parentEntities (orderBy: {path: 'Property', descending: true})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (orderBy: {path: 'Property', descending: true})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -379,13 +386,14 @@ public partial class IntegrationTests
     [Fact]
     public async Task Like()
     {
-        var query = @"
-{
-  parentEntities (where: {path: 'Property', comparison: like, value: 'value2'})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (where: {path: 'Property', comparison: like, value: 'value2'})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -403,15 +411,15 @@ public partial class IntegrationTests
     [Fact]
     public async Task Where_with_variable()
     {
-        var query = @"
-query ($value: String!)
-{
-  parentEntities (where: {path: 'Property', comparison: equal, value: [$value]})
-  {
-    property
-  }
-}
-";
+        var query = """
+            query ($value: String!)
+            {
+              parentEntities (where: {path: 'Property', comparison: equal, value: [$value]})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -430,13 +438,14 @@ query ($value: String!)
     [Fact]
     public async Task CustomType()
     {
-        var query = @"
-{
-  customType (orderBy: {path: ""property""})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              customType (orderBy: {path: "property"})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new CustomTypeEntity
         {
@@ -454,12 +463,13 @@ query ($value: String!)
     [Fact]
     public async Task Single_NotFound()
     {
-        var query = @"
-{
-  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntity(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { });
     }
@@ -467,12 +477,13 @@ query ($value: String!)
     [Fact]
     public async Task Single_Found_NoTracking()
     {
-        var query = @"
-{
-  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntity(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
         var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
@@ -491,12 +502,13 @@ query ($value: String!)
     [Fact]
     public async Task Single_Found_Large_Text_NoAsync()
     {
-        var query = @"
-{
-  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
-id
-  }
-}";
+        var query = """
+            {
+              parentEntity(id: "00000000-0000-0000-0000-000000000001") {
+                id
+              }
+            }
+            """;
         var largeString = new StringBuilder().Append('a', 3 * 1024 * 1024);
         var entity1 = new ParentEntity
         {
@@ -516,15 +528,16 @@ id
     [Fact]
     public async Task Owned()
     {
-        var query = @"
-{
-  ownedParent(id: ""00000000-0000-0000-0000-000000000001"") {
-    property
-    child1 {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              ownedParent(id: "00000000-0000-0000-0000-000000000001") {
+                property
+                child1 {
+                  property
+                }
+              }
+            }
+            """;
         var entity1 = new OwnedParent
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
@@ -539,12 +552,13 @@ id
     [Fact]
     public async Task Explicit_Null()
     {
-        var query = @"
-{
-  parentEntity(id: null) {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntity(id: null) {
+                property
+              }
+            }
+            """;
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { });
     }
@@ -552,12 +566,13 @@ id
     [Fact]
     public async Task Single_Found()
     {
-        var query = @"
-{
-  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntity(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
         var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
@@ -575,12 +590,13 @@ id
     [Fact]
     public async Task SingleNullable_NotFound()
     {
-        var query = @"
-{
-  parentEntityNullable(id: ""00000000-0000-0000-0000-000000000001"") {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntityNullable(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { });
     }
@@ -588,12 +604,13 @@ id
     [Fact]
     public async Task SingleNullable_Found()
     {
-        var query = @"
-{
-  parentEntityNullable(id: ""00000000-0000-0000-0000-000000000001"") {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntityNullable(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
         var entity1 = new ParentEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
@@ -611,16 +628,17 @@ id
     [Fact]
     public async Task SingleParent_Child_mutation()
     {
-        var query = @"
-mutation {
-  parentEntityMutation(id: ""00000000-0000-0000-0000-000000000001"") {
-    property
-    children(orderBy: {path: ""property""})
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            mutation {
+              parentEntityMutation(id: "00000000-0000-0000-0000-000000000001") {
+                property
+                children(orderBy: {path: "property"})
+                {
+                  property
+                }
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -657,16 +675,17 @@ mutation {
     [Fact]
     public async Task SingleParent_Child()
     {
-        var query = @"
-{
-  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
-    property
-    children(orderBy: {path: ""property""})
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              parentEntity(id: "00000000-0000-0000-0000-000000000001") {
+                property
+                children(orderBy: {path: "property"})
+                {
+                  property
+                }
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -703,22 +722,23 @@ mutation {
     [Fact]
     public async Task SingleParent_Child_WithFragment()
     {
-        var query = @"
-{
-  parentEntity(id: ""00000000-0000-0000-0000-000000000001"") {
-    ...parentEntityFields
-  }
-}
-fragment parentEntityFields on Parent {
-  property
-  children(orderBy: {path: ""property""})
-  {
-    ...childEntityFields
-  }
-}
-fragment childEntityFields on Child {
-  property
-}";
+        var query = """
+            {
+              parentEntity(id: "00000000-0000-0000-0000-000000000001") {
+                ...parentEntityFields
+              }
+            }
+            fragment parentEntityFields on Parent {
+              property
+              children(orderBy: {path: "property"})
+              {
+                ...childEntityFields
+              }
+            }
+            fragment childEntityFields on Child {
+              property
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -755,13 +775,14 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Where()
     {
-        var query = @"
-{
-  parentEntities (where: {path: 'Property', comparison: equal, value: 'value2'})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (where: {path: 'Property', comparison: equal, value: 'value2'})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -779,13 +800,14 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Where_default_comparison()
     {
-        var query = @"
-{
-  parentEntities (where: {path: 'Property', value: 'value2'})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (where: {path: 'Property', value: 'value2'})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -803,13 +825,14 @@ fragment childEntityFields on Child {
     [Fact(Skip = "Work out how to eval server side")]
     public async Task In_case_sensitive()
     {
-        var query = @"
-{
-  parentEntities (where: {path: 'Property', comparison: in, value: 'Value2', case: 'Ordinal' })
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (where: {path: 'Property', comparison: in, value: 'Value2', case: 'Ordinal' })
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -827,13 +850,14 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Id()
     {
-        var query = @"
-{
-  parentEntities (ids: '00000000-0000-0000-0000-000000000001')
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (ids: '00000000-0000-0000-0000-000000000001')
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -852,13 +876,14 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task NamedId()
     {
-        var query = @"
-{
-  namedEntities (ids: '00000000-0000-0000-0000-000000000001')
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              namedEntities (ids: '00000000-0000-0000-0000-000000000001')
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new NamedIdEntity
         {
@@ -877,14 +902,15 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Id_multiple()
     {
-        var query = @"
-{
-  parentEntities
-  (ids: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities
+              (ids: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -909,13 +935,14 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task In()
     {
-        var query = @"
-{
-  parentEntities (where: {path: 'Property', comparison: in, value: 'value2'})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities (where: {path: 'Property', comparison: in, value: 'value2'})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -933,14 +960,15 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task In_multiple()
     {
-        var query = @"
-{
-  parentEntities
-  (where: {path: 'Property', comparison: in, value: ['Value1', 'Value2']}, orderBy: {path: ""property""})
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              parentEntities
+              (where: {path: 'Property', comparison: in, value: ['Value1', 'Value2']}, orderBy: {path: "property"})
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -958,30 +986,30 @@ fragment childEntityFields on Child {
     [Fact(Skip = "Work out why include is not used")]
     public async Task Connection_parent_child()
     {
-        var query = @"
-{
-  parentEntitiesConnection(first:2, after: '0') {
-    totalCount
-    edges {
-      cursor
-      node {
-        property
-        children
-        {
-          property
-        }
-      }
-    }
-    items {
-      property
-      children
-      {
-        property
-      }
-    }
-  }
-}
-";
+        var query = """
+            {
+              parentEntitiesConnection(first:2, after: '0') {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    property
+                    children
+                    {
+                      property
+                    }
+                  }
+                }
+                items {
+                  property
+                  children
+                  {
+                    property
+                  }
+                }
+              }
+            }
+            """;
         var entity1 = new ParentEntity
         {
             Property = "Value1"
@@ -1013,16 +1041,17 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Child_parent_with_alias()
     {
-        var query = @"
-{
-  childEntities (orderBy: {path: ""property""})
-  {
-    parentAlias
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              childEntities (orderBy: {path: "property"})
+              {
+                parentAlias
+                {
+                  property
+                }
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -1058,16 +1087,17 @@ fragment childEntityFields on Child {
     [Fact(Skip = "TODO")]
     public async Task Multiple_nested_AddQueryField()
     {
-        var query = @"
-{
-  queryFieldWithInclude
-  {
-    includeNonQueryableB
-    {
-      id
-    }
-  }
-}";
+        var query = """
+            {
+              queryFieldWithInclude
+              {
+                includeNonQueryableB
+                {
+                  id
+                }
+              }
+            }
+            """;
         var level2 = new IncludeNonQueryableA();
         var level1 = new IncludeNonQueryableB
         {
@@ -1082,16 +1112,17 @@ fragment childEntityFields on Child {
     [Fact(Skip = "fix order")]
     public async Task Skip_level()
     {
-        var query = @"
-{
-  skipLevel
-  {
-    level3Entity
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              skipLevel
+              {
+                level3Entity
+                {
+                  property
+                }
+              }
+            }
+            """;
 
         var level3 = new Level3Entity
         {
@@ -1113,19 +1144,20 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Multiple_nested()
     {
-        var query = @"
-{
-  level1Entities
-  {
-    level2Entity
-    {
-      level3Entity
-      {
-        property
-      }
-    }
-  }
-}";
+        var query = """
+            {
+              level1Entities
+              {
+                level2Entity
+                {
+                  level3Entity
+                  {
+                    property
+                  }
+                }
+              }
+            }
+            """;
 
         var level3 = new Level3Entity
         {
@@ -1147,19 +1179,20 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Null_on_nested()
     {
-        var query = @"
-{
-  level1Entities(where: {path: 'Level2Entity.Level3EntityId', comparison: equal, value: '00000000-0000-0000-0000-000000000003'})
-  {
-    level2Entity
-    {
-      level3Entity
-      {
-        property
-      }
-    }
-  }
-}";
+        var query = """
+            {
+              level1Entities(where: {path: 'Level2Entity.Level3EntityId', comparison: equal, value: '00000000-0000-0000-0000-000000000003'})
+              {
+                level2Entity
+                {
+                  level3Entity
+                  {
+                    property
+                  }
+                }
+              }
+            }
+            """;
 
         var level3a = new Level3Entity
         {
@@ -1188,25 +1221,26 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Query_Cyclic()
     {
-        var query = @"
-{
-  childEntities (orderBy: {path: ""property""})
-  {
-    property
-    parent
-    {
-      property
-      children
-      {
-        property
-        parent
-        {
-          property
-        }
-      }
-    }
-  }
-}";
+        var query = """
+            {
+              childEntities (orderBy: {path: "property"})
+              {
+                property
+                parent
+                {
+                  property
+                  children
+                  {
+                    property
+                    parent
+                    {
+                      property
+                    }
+                  }
+                }
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -1242,17 +1276,18 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Query_NoTracking()
     {
-        var query = @"
-{
-  childEntities (orderBy: {path: ""property""})
-  {
-    property
-    parent
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              childEntities (orderBy: {path: "property"})
+              {
+                property
+                parent
+                {
+                  property
+                }
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -1289,16 +1324,17 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Query_Large_Text_NoAsync()
     {
-        var query = @"
-{
-  childEntities (orderBy: {path: ""property""})
-  {
-    parent
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              childEntities (orderBy: {path: "property"})
+              {
+                parent
+                {
+                  property
+                }
+              }
+            }
+            """;
         var largeString = new StringBuilder().Append('a', 3 * 1024 * 1024);
         var entity1 = new ParentEntity
         {
@@ -1334,17 +1370,18 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Child_parent()
     {
-        var query = @"
-{
-  childEntities (orderBy: {path: ""property""})
-  {
-    property
-    parent
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              childEntities (orderBy: {path: "property"})
+              {
+                property
+                parent
+                {
+                  property
+                }
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -1380,17 +1417,18 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task With_null_navigation_property()
     {
-        var query = @"
-{
-  childEntities(where: {path: 'ParentId', comparison: equal, value: '00000000-0000-0000-0000-000000000001'}, orderBy: {path: ""property""})
-  {
-    property
-    parent
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              childEntities(where: {path: 'ParentId', comparison: equal, value: '00000000-0000-0000-0000-000000000001'}, orderBy: {path: "property"})
+              {
+                property
+                parent
+                {
+                  property
+                }
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -1421,16 +1459,17 @@ fragment childEntityFields on Child {
     [Fact(Skip = "fix order")]
     public async Task MisNamedQuery()
     {
-        var query = @"
-{
-  misNamed
-  {
-    misNamedChildren
-    {
-      id
-    }
-  }
-}";
+        var query = """
+            {
+              misNamed
+              {
+                misNamedChildren
+                {
+                  id
+                }
+              }
+            }
+            """;
 
         var entity1 = new WithMisNamedQueryParentEntity();
         var entity2 = new WithMisNamedQueryChildEntity
@@ -1457,17 +1496,18 @@ fragment childEntityFields on Child {
     [Fact(Skip = "fix order")]
     public async Task Parent_child()
     {
-        var query = @"
-{
-  parentEntities
-  {
-    property
-    children
-    {
-      property
-    }
-  }
-}";
+        var query = """
+            {
+              parentEntities
+              {
+                property
+                children
+                {
+                  property
+                }
+              }
+            }
+            """;
 
         var entity1 = new ParentEntity
         {
@@ -1520,17 +1560,18 @@ fragment childEntityFields on Child {
         };
         parent.Children.Add(child2);
 
-        var query = $@"
-{{
-  parentEntities
-  {{
-    property
-    children(id:'{child1.Id}' )
-    {{
-      property
-    }}
-  }}
-}}";
+        var query = $$"""
+            {
+              parentEntities
+              {
+                property
+                children(id:'{{child1.Id}}' )
+                {
+                  property
+                }
+              }
+            }
+            """;
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { parent, child1, child2 });
     }
@@ -1559,17 +1600,18 @@ fragment childEntityFields on Child {
         };
         parent1.Children.Add(child2);
 
-        var query = $@"
-{{
-  parentEntities(id:'{parent1.Id}')
-  {{
-    property
-    children
-    {{
-      property
-    }}
-  }}
-}}";
+        var query = $$"""
+            {
+              parentEntities(id:'{{parent1.Id}}')
+              {
+                property
+                children
+                {
+                  property
+                }
+              }
+            }
+            """;
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { parent1, parent2, child1, child2 });
     }
@@ -1598,17 +1640,18 @@ fragment childEntityFields on Child {
         };
         parent1.Children.Add(child2);
 
-        var query = $@"
-{{
-  parentEntities(id:'{parent1.Id}')
-  {{
-    property
-    children(id:'{child1.Id}' )
-    {{
-      property
-    }}
-  }}
-}}";
+        var query = $$"""
+            {
+              parentEntities(id:'{{parent1.Id}}')
+              {
+                property
+                children(id:'{{child1.Id}}' )
+                {
+                  property
+                }
+              }
+            }
+            """;
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { parent1, parent2, child1, child2 });
     }
@@ -1616,16 +1659,17 @@ fragment childEntityFields on Child {
     [Fact]
     public async Task Many_children()
     {
-        var query = @"
-{
-  manyChildren
-  {
-    child1
-    {
-      id
-    }
-  }
-}";
+        var query = """
+            {
+              manyChildren
+              {
+                child1
+                {
+                  id
+                }
+              }
+            }
+            """;
 
         var parent = new WithManyChildrenEntity();
         var child1 = new Child1Entity
@@ -1646,34 +1690,35 @@ fragment childEntityFields on Child {
     [Fact(Skip = "Broke with gql 4")]
     public async Task InheritedEntityInterface()
     {
-        var query = @"
-{
-  interfaceGraphConnection {
-    items {
-      ...inheritedEntityFields
-    }
-  }
-}
-fragment inheritedEntityFields on Interface {
-  property
-  childrenFromInterface(orderBy: {path: ""property""})
-  {
-    items {
-      ...childEntityFields
-    }
-  }
-  ... on DerivedWithNavigation {
-    childrenFromDerived(orderBy: {path: ""property""})
-    {
-      items {
-        ...childEntityFields
-      }
-    }
-  }
-}
-fragment childEntityFields on DerivedChild {
-  property
-}";
+        var query = """
+            {
+              interfaceGraphConnection {
+                items {
+                  ...inheritedEntityFields
+                }
+              }
+            }
+            fragment inheritedEntityFields on Interface {
+              property
+              childrenFromInterface(orderBy: {path: "property"})
+              {
+                items {
+                  ...childEntityFields
+                }
+              }
+              ... on DerivedWithNavigation {
+                childrenFromDerived(orderBy: {path: "property"})
+                {
+                  items {
+                    ...childEntityFields
+                  }
+                }
+              }
+            }
+            fragment childEntityFields on DerivedChild {
+              property
+            }
+            """;
 
         var derivedEntity1 = new DerivedEntity
         {
@@ -1718,17 +1763,18 @@ fragment childEntityFields on DerivedChild {
     [Fact]
     public async Task ManyToManyRightWhereAndInclude()
     {
-        var query = @"
-{
-  manyToManyLeftEntities (where: {path: 'rights[rightName]', comparison: equal, value: ""Right2""})
-  {
-    leftName
-    rights
-    {
-      rightName
-    }
-  }
-}";
+        var query = """
+            {
+              manyToManyLeftEntities (where: {path: 'rights[rightName]', comparison: equal, value: "Right2"})
+              {
+                leftName
+                rights
+                {
+                  rightName
+                }
+              }
+            }
+            """;
 
         var middle11 = new ManyToManyMiddleEntity
         {
@@ -1771,17 +1817,18 @@ fragment childEntityFields on DerivedChild {
     [Fact]
     public async Task ManyToManyLeftWhereAndInclude()
     {
-        var query = @"
-{
-  manyToManyRightEntities (where: {path: 'lefts[leftName]', comparison: equal, value: ""Left2""})
-  {
-    rightName
-    lefts
-    {
-      leftName
-    }
-  }
-}";
+        var query = """
+            {
+              manyToManyRightEntities (where: {path: 'lefts[leftName]', comparison: equal, value: "Left2"})
+              {
+                rightName
+                lefts
+                {
+                  leftName
+                }
+              }
+            }
+            """;
 
         var middle11 = new ManyToManyMiddleEntity
         {
