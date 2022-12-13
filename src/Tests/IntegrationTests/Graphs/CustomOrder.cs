@@ -1,7 +1,7 @@
 namespace Tests.IntegrationTests.Graphs;
 class CustomOrder : ICustomSorting<ParentEntity>
 {
-    public bool ApplySort(IEnumerable<ParentEntity> query, OrderBy orderBy, bool isFirst, out IOrderedEnumerable<ParentEntity> ordered) =>
+    public bool ApplySort(IEnumerable<ParentEntity> query, OrderBy orderBy, IResolveFieldContext context, bool isFirst, out IOrderedEnumerable<ParentEntity> ordered) =>
         throw new NotImplementedException();
 
     /// <summary>
@@ -9,11 +9,12 @@ class CustomOrder : ICustomSorting<ParentEntity>
     /// </summary>
     /// <param name="query"></param>
     /// <param name="orderBy"></param>
+    /// <param name="context"></param>
     /// <param name="isFirst"></param>
     /// <param name="ordered"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public bool ApplySort(IQueryable<ParentEntity> query, OrderBy orderBy, bool isFirst, out IOrderedQueryable<ParentEntity> ordered)
+    public bool ApplySort(IQueryable<ParentEntity> query, OrderBy orderBy, IResolveFieldContext context, bool isFirst, out IOrderedQueryable<ParentEntity> ordered)
     {
         if (orderBy.Path.ToLower() != "childrensum")
         {

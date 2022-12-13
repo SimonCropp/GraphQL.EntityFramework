@@ -62,7 +62,7 @@ public static partial class ArgumentProcessor
         if (orderBys.Count > 0)
         {
             var orderBy = orderBys.First();
-            if (!(customSorting?.ApplySort(queryable, orderBy, true, out ordered) ?? false))
+            if (!(customSorting?.ApplySort(queryable, orderBy, context, true, out ordered) ?? false))
             {
                 var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
                 ordered = orderBy.Descending ? queryable.OrderByDescending(property) : queryable.OrderBy(property);
@@ -75,7 +75,7 @@ public static partial class ArgumentProcessor
 
         foreach (var orderBy in orderBys.Skip(1))
         {
-            if (customSorting?.ApplySort(ordered, orderBy, false, out ordered) ?? false)
+            if (customSorting?.ApplySort(ordered, orderBy, context, false, out ordered) ?? false)
                 continue;
             var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
             ordered = orderBy.Descending ? ordered.ThenByDescending(property) : ordered.ThenBy(property);

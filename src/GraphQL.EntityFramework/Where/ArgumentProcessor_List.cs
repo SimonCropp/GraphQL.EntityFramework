@@ -44,7 +44,7 @@ public static partial class ArgumentProcessor
         if (orderBys is { Count: > 0 })
         {
             var orderBy = orderBys.First();
-            if (!(customSorting?.ApplySort(items, orderBy, true, out ordered) ?? false))
+            if (!(customSorting?.ApplySort(items, orderBy, context, true, out ordered) ?? false))
             {
                 var propertyFunc = PropertyCache<TItem>.GetProperty(orderBy.Path).Func;
                 ordered = orderBy.Descending ? items.OrderByDescending(propertyFunc) : items.OrderBy(propertyFunc);
@@ -54,10 +54,10 @@ public static partial class ArgumentProcessor
         {
             return items;
         }
-        
+
         foreach (var orderBy in orderBys.Skip(1))
         {
-            if (customSorting?.ApplySort(ordered, orderBy, false, out ordered) ?? false)
+            if (customSorting?.ApplySort(ordered, orderBy, context, false, out ordered) ?? false)
                 continue;
 
             var propertyFunc = PropertyCache<TItem>.GetProperty(orderBy.Path).Func;
