@@ -174,6 +174,11 @@
             return ValueConverter.ConvertTo<Date>(value);
         }
 
+        if (type == typeof(Time))
+        {
+            return ValueConverter.ConvertTo<Time>(value);
+        }
+
         if (type == typeof(DateTimeOffset))
         {
             return ValueConverter.ConvertTo<DateTimeOffset>(value);
