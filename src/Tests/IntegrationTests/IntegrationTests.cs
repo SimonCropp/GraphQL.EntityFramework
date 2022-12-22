@@ -1943,7 +1943,13 @@ public partial class IntegrationTests
         }
         catch (ExecutionError executionError)
         {
-            await Verify(executionError.Message, sourceFile: sourceFile);
+            await Verify(executionError.Message, sourceFile: sourceFile)
+                .IgnoreStackTrace();
+        }
+        catch (Exception exception)
+        {
+            await Verify(exception, sourceFile: sourceFile)
+                .IgnoreStackTrace();
         }
     }
 

@@ -1,4 +1,7 @@
 ﻿{
-  target: Error trying to resolve field 'parentEntity'.,
+  target: {
+    Type: Exception,
+    Message: Null 'id' is not supported.
+  },
   sql: []
 }

@@ -23,14 +23,15 @@
             };
         }
 
-        if (context.Arguments == null)
+        var arguments = context.Arguments;
+        if (arguments == null)
         {
             result = null;
             return false;
         }
 
-        var containsIds = context.Arguments.TryGetValue("ids", out var ids);
-        var containsId = context.Arguments.TryGetValue("id", out var id);
+        var containsIds = arguments.TryGetValue("ids", out var ids);
+        var containsId = arguments.TryGetValue("id", out var id);
 
         if (!containsIds && !containsId)
         {
@@ -38,7 +39,8 @@
             return false;
         }
 
-        if (ids.Source == ArgumentSource.FieldDefault && id.Source == ArgumentSource.FieldDefault)
+        if (ids.Source == ArgumentSource.FieldDefault &&
+            id.Source == ArgumentSource.FieldDefault)
         {
             result = null;
             return false;
@@ -48,7 +50,13 @@
 
         if (id.Source != ArgumentSource.FieldDefault)
         {
-            expressions.Add(ArgumentToExpression(id.Value!));
+            var idValue = id.Value;
+            if (idValue == null)
+            {
+                throw new("Null 'id' is not supported.");
+            }
+
+            expressions.Add(ArgumentToExpression(idValue));
         }
 
         if (ids.Source != ArgumentSource.FieldDefault)
