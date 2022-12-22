@@ -121,7 +121,14 @@ public partial class IntegrationTests
     [Fact]
     public async Task Where_date()
     {
-        var query = "{ dateEntities (where: {path: 'Property', comparison: equal, value: '2020-10-1'}){ id } }";
+        var query = """
+            {
+              dateEntities (where: {path: 'Property', comparison: equal, value: '2020-10-1'})
+              {
+                id
+              }
+            }
+            """;
 
         var entity1 = new DateEntity();
         var entity2 = new DateEntity
@@ -136,7 +143,14 @@ public partial class IntegrationTests
     [Fact]
     public async Task Where_time()
     {
-        var query = "{ timeEntities (where: {path: 'Property', comparison: equal, value: '10:11 AM'}){ id } }";
+        var query = """
+            {
+              timeEntities (where: {path: 'Property', comparison: equal, value: '10:11 AM'})
+              {
+                id
+              }
+            }
+            """;
 
         var entity1 = new TimeEntity();
         var entity2 = new TimeEntity
