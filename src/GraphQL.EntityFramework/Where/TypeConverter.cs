@@ -130,7 +130,7 @@
         }
         if (type == typeof(Date?))
         {
-            return values.Select(s => (Date?)Date.ParseExact(_, "yyyy-MM-dd")).ToList();
+            return values.Select(_ => (Date?)Date.ParseExact(_, "yyyy-MM-dd")).ToList();
         }
 
         if (type == typeof(DateTimeOffset))
