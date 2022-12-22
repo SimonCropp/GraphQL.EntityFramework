@@ -158,11 +158,9 @@ public partial class IntegrationTests
             Property = new Time(10, 11)
         };
 
-        var s = new Time(10, 11).ToString();
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
     }
-
 
     [Fact]
     public async Task Where_with_nullable_properties1()
