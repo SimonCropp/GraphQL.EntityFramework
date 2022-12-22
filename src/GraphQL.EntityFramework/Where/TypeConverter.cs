@@ -40,7 +40,7 @@
         }
         if (type == typeof(Guid?))
         {
-            return values.Select(s => new Guid?(Guid.Parse(s))).ToList();
+            return values.Select(_ => (Guid?)Guid.Parse(_)).ToList();
         }
 
         if (type == typeof(bool))
@@ -49,7 +49,7 @@
         }
         if (type == typeof(bool?))
         {
-            return values.Select(s => new bool?(ParseBoolean(s))).ToList();
+            return values.Select(_ => (bool?)ParseBoolean(_)).ToList();
         }
 
         if (type == typeof(int))
@@ -58,7 +58,7 @@
         }
         if (type == typeof(int?))
         {
-            return values.Select(s => new int?(int.Parse(s))).ToList();
+            return values.Select(_ => (int?)int.Parse(_)).ToList();
         }
 
         if (type == typeof(short))
@@ -67,7 +67,7 @@
         }
         if (type == typeof(short?))
         {
-            return values.Select(s => new short?(short.Parse(s))).ToList();
+            return values.Select(_ => (short?)short.Parse(_)).ToList();
         }
 
         if (type == typeof(long))
@@ -76,7 +76,7 @@
         }
         if (type == typeof(long?))
         {
-            return values.Select(s => new long?(long.Parse(s))).ToList();
+            return values.Select(_ => (long?)long.Parse(_)).ToList();
         }
 
         if (type == typeof(uint))
@@ -85,7 +85,7 @@
         }
         if (type == typeof(uint?))
         {
-            return values.Select(s => new uint?(uint.Parse(s))).ToList();
+            return values.Select(_ => (uint?)uint.Parse(_)).ToList();
         }
 
         if (type == typeof(ushort))
@@ -94,7 +94,7 @@
         }
         if (type == typeof(ushort?))
         {
-            return values.Select(s => new ushort?(ushort.Parse(s))).ToList();
+            return values.Select(_ => (ushort?)ushort.Parse(_)).ToList();
         }
 
         if (type == typeof(ulong))
@@ -103,7 +103,7 @@
         }
         if (type == typeof(ulong?))
         {
-            return values.Select(s => new ulong?(ulong.Parse(s))).ToList();
+            return values.Select(_ => (ulong?)ulong.Parse(_)).ToList();
         }
 
         if (type == typeof(DateTime))
@@ -112,7 +112,7 @@
         }
         if (type == typeof(DateTime?))
         {
-            return values.Select(s => new DateTime?(DateTime.Parse(s))).ToList();
+            return values.Select(_ => (DateTime?)DateTime.Parse(_)).ToList();
         }
 
         if (type == typeof(Time))
@@ -139,12 +139,12 @@
         }
         if (type == typeof(DateTimeOffset?))
         {
-            return values.Select(s => new DateTimeOffset?(DateTimeOffset.Parse(s))).ToList();
+            return values.Select(_ => (DateTimeOffset?)DateTimeOffset.Parse(_)).ToList();
         }
 
         if (type.TryGetEnumType(out var enumType))
         {
-            return values.Select(s => Enum.Parse(enumType, s, true))
+            return values.Select(_ => Enum.Parse(enumType, _, true))
                 .ToList();
         }
 
