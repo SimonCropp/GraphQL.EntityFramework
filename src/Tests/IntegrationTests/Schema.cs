@@ -12,6 +12,9 @@
         RegisterTypeMapping(typeof(Child2Entity), typeof(Child2GraphType));
         RegisterTypeMapping(typeof(ChildEntity), typeof(ChildGraphType));
         RegisterTypeMapping(typeof(ParentEntity), typeof(ParentGraphType));
+        RegisterTypeMapping(typeof(DateEntity), typeof(DateEntityGraphType));
+        RegisterTypeMapping(typeof(TimeEntity), typeof(TimeEntityGraphType));
+        RegisterTypeMapping(typeof(TimeEntity), typeof(TimeEntityGraphType));
         RegisterTypeMapping(typeof(Level1Entity), typeof(Level1GraphType));
         RegisterTypeMapping(typeof(Level2Entity), typeof(Level2GraphType));
         RegisterTypeMapping(typeof(Level3Entity), typeof(Level3GraphType));
