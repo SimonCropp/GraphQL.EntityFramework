@@ -115,6 +115,24 @@
             return values.Select(_ => (DateTime?)DateTime.Parse(_)).ToList();
         }
 
+        if (type == typeof(Time))
+        {
+            return values.Select(Time.Parse).ToList();
+        }
+        if (type == typeof(Time?))
+        {
+            return values.Select(_ => (Time?)Time.Parse(_)).ToList();
+        }
+
+        if (type == typeof(Date))
+        {
+            return values.Select(_ => Date.ParseExact(_, "yyyy-MM-dd")).ToList();
+        }
+        if (type == typeof(Date?))
+        {
+            return values.Select(_ => (Date?)Date.ParseExact(_, "yyyy-MM-dd")).ToList();
+        }
+
         if (type == typeof(DateTimeOffset))
         {
             return values.Select(DateTimeOffset.Parse).ToList();
@@ -149,6 +167,16 @@
         if (type == typeof(DateTime))
         {
             return ValueConverter.ConvertTo<DateTime>(value);
+        }
+
+        if (type == typeof(Date))
+        {
+            return ValueConverter.ConvertTo<Date>(value);
+        }
+
+        if (type == typeof(Time))
+        {
+            return ValueConverter.ConvertTo<Time>(value);
         }
 
         if (type == typeof(DateTimeOffset))

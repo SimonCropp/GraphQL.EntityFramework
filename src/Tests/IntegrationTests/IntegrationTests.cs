@@ -119,6 +119,50 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Where_date()
+    {
+        var query = """
+            {
+              dateEntities (where: {path: 'Property', comparison: equal, value: '2020-10-1'})
+              {
+                id
+              }
+            }
+            """;
+
+        var entity1 = new DateEntity();
+        var entity2 = new DateEntity
+        {
+            Property = new Date(2020, 10, 1)
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+    }
+
+    [Fact]
+    public async Task Where_time()
+    {
+        var query = """
+            {
+              timeEntities (where: {path: 'Property', comparison: equal, value: '10:11 AM'})
+              {
+                id
+              }
+            }
+            """;
+
+        var entity1 = new TimeEntity();
+        var entity2 = new TimeEntity
+        {
+            Property = new Time(10, 11)
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+    }
+
+    [Fact]
     public async Task Where_with_nullable_properties1()
     {
         var query = "{ withNullableEntities (where: {path: 'Nullable', comparison: equal}){ id } }";

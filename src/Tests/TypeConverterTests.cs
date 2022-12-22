@@ -28,6 +28,22 @@
     }
 
     [Fact]
+    public void ConvertStringToDate()
+    {
+        var date = new Date(2020,10,1);
+        var result = TypeConverter.ConvertStringToType(date.ToString("yyyy-MM-dd"), typeof(Date));
+        Assert.Equal(date, result);
+    }
+
+    [Fact]
+    public void ConvertStringToTime()
+    {
+        var time = new Time(10,1);
+        var result = TypeConverter.ConvertStringToType(time.ToString(), typeof(Time));
+        Assert.Equal(time, result);
+    }
+
+    [Fact]
     public void ConvertStringToEnum()
     {
         var day = DayOfWeek.Thursday;

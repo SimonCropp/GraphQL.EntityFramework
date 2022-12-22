@@ -2,6 +2,8 @@
     DbContext
 {
     public DbSet<ParentEntity> ParentEntities { get; set; } = null!;
+    public DbSet<DateEntity> DateEntities { get; set; } = null!;
+    public DbSet<TimeEntity> TimeEntities { get; set; } = null!;
     public DbSet<FilterParentEntity> FilterParentEntities { get; set; } = null!;
     public DbSet<FilterChildEntity> FilterChildEntities { get; set; } = null!;
     public DbSet<ChildEntity> ChildEntities { get; set; } = null!;
@@ -70,4 +72,23 @@
                 x => x.HasOne(xs => xs.ManyToManyLeftEntity).WithMany(),
                 x => x.HasOne(xs => xs.ManyToManyRightEntity).WithMany());
     }
+    protected override void ConfigureConventions(ModelConfigurationBuilder builder)
+    {
+        builder.Properties<Date>()
+            .HaveConversion<DateConverter>()
+            .HaveColumnType("date");
+
+        builder.Properties<Date?>()
+            .HaveConversion<NullableDateConverter>()
+            .HaveColumnType("date");
+
+        builder.Properties<Time>()
+            .HaveConversion<TimeConverter>()
+            .HaveColumnType("time");
+
+        builder.Properties<Time?>()
+            .HaveConversion<NullableTimeConverter>()
+            .HaveColumnType("time");
+    }
+
 }
