@@ -59,6 +59,13 @@ type CustomType {
 
 scalar Decimal
 
+type DateEntity {
+  id: ID!
+  property: DateOnly
+}
+
+scalar DateOnly
+
 type Derived implements Interface {
   childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
   childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
@@ -270,6 +277,8 @@ type Query {
   misNamed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryParent!]!
   parentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
   childEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
+  dateEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DateEntity!]!
+  timeEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TimeEntity!]!
   parentEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ParentConnection!
   childEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ChildConnection!
   parentEntitiesFiltered(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterParent!]!
@@ -301,6 +310,13 @@ enum StringComparison {
   ORDINAL
   ORDINAL_IGNORE_CASE
 }
+
+type TimeEntity {
+  id: ID!
+  property: TimeOnly
+}
+
+scalar TimeOnly
 
 input WhereExpression {
   path: String

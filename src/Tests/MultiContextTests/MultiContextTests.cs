@@ -8,17 +8,18 @@ public class MultiContextTests
 
         var sqlInstance2 = new SqlInstance<DbContext2>(constructInstance: builder => new(builder.Options));
 
-        var query = @"
-{
-  entity1
-  {
-    property
-  },
-  entity2
-  {
-    property
-  }
-}";
+        var query = """
+            {
+              entity1
+              {
+                property
+              },
+              entity2
+              {
+                property
+              }
+            }
+            """;
 
         var entity1 = new Entity1
         {

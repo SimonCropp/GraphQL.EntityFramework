@@ -6,13 +6,14 @@ public class DependencyTests
     static DependencyTests() =>
         sqlInstance = new(builder => new(builder.Options));
 
-    static string query = @"
-{
-  entities
-  {
-    property
-  }
-}";
+    static string query = """
+        {
+          entities
+          {
+            property
+          }
+        }
+        """;
 
     [Fact]
     public async Task ExplicitModel()

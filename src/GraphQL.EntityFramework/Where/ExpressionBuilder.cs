@@ -119,7 +119,14 @@ public static class ExpressionBuilder<T>
             .MakeGenericType(listItemType)
             .GetMethods(BindingFlags.Public | BindingFlags.Static)
             .Single(m => m.Name == "BuildPredicate" && m.GetParameters().Length == 5)
-            .Invoke(new(), new object[] { listPath, comparison, values!, false, stringComparison! })!;
+            .Invoke(new(), new object[]
+            {
+                listPath,
+                comparison,
+                values!,
+                false,
+                stringComparison!
+            })!;
 
         // Generate a method info for the Any Enumerable Static Method
         var anyInfo = typeof(Enumerable)
@@ -142,7 +149,7 @@ public static class ExpressionBuilder<T>
             {
                 case Comparison.NotIn:
                     WhereValidator.ValidateString(comparison, stringComparison);
-                    expressionBody = NegateExpression(MakeStringListInComparison(values!, property, stringComparison));  // Ensure expression is negated
+                    expressionBody = NegateExpression(MakeStringListInComparison(values!, property, stringComparison)); // Ensure expression is negated
                     break;
                 case Comparison.In:
                     WhereValidator.ValidateString(comparison, stringComparison);
@@ -162,7 +169,7 @@ public static class ExpressionBuilder<T>
             {
                 case Comparison.NotIn:
                     WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);
-                    expressionBody = NegateExpression(MakeObjectListInComparision(values!, property)); // Ensure expression is negated
+                    expressionBody = NegateExpression(MakeObjectListInComparision(values!, property));
                     break;
                 case Comparison.In:
                     WhereValidator.ValidateObject(property.PropertyType, comparison, stringComparison);

@@ -50,6 +50,14 @@
             name: "childEntities",
             resolve: context => context.DbContext.ChildEntities);
 
+        AddQueryField(
+            name: "dateEntities",
+            resolve: context => context.DbContext.DateEntities);
+
+        AddQueryField(
+            name: "timeEntities",
+            resolve: context => context.DbContext.TimeEntities);
+
         efGraphQlService.AddQueryConnectionField<ParentGraphType, ParentEntity>(
             this,
             name: "parentEntitiesConnection",

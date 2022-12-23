@@ -27,13 +27,14 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Get()
     {
-        var query = @"
-{
-  companies
-  {
-    id
-  }
-}";
+        var query = """
+            {
+              companies
+              {
+                id
+              }
+            }
+            """;
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
         await Verify(await response.Content.ReadAsStringAsync());
@@ -42,13 +43,14 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Post()
     {
-        var query = @"
-{
-  companies
-  {
-    id
-  }
-}";
+        var query = """
+            {
+              companies
+              {
+                id
+              }
+            }
+            """;
         using var response = await clientQueryExecutor.ExecutePost(client, query);
         response.EnsureSuccessStatusCode();
         await Verify(await response.Content.ReadAsStringAsync());
@@ -57,14 +59,15 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Single()
     {
-        var query = @"
-query ($id: ID!)
-{
-  company(id:$id)
-  {
-    id
-  }
-}";
+        var query = """
+            query ($id: ID!)
+            {
+              company(id:$id)
+              {
+                id
+              }
+            }
+            """;
         var variables = new
         {
             id = "1"
@@ -78,14 +81,15 @@ query ($id: ID!)
     [Fact]
     public async Task Single_not_found()
     {
-        var query = @"
-query ($id: ID!)
-{
-  company(id:$id)
-  {
-    id
-  }
-}";
+        var query = """
+            query ($id: ID!)
+            {
+              company(id:$id)
+              {
+                id
+              }
+            }
+            """;
         var variables = new
         {
             id = "99"
@@ -99,14 +103,15 @@ query ($id: ID!)
     [Fact]
     public async Task Variable()
     {
-        var query = @"
-query ($id: ID!)
-{
-  companies(ids:[$id])
-  {
-    id
-  }
-}";
+        var query = """
+            query ($id: ID!)
+            {
+              companies(ids:[$id])
+              {
+                id
+              }
+            }
+            """;
         var variables = new
         {
             id = "1"
@@ -121,21 +126,22 @@ query ($id: ID!)
     public async Task Companies_paging()
     {
         var after = 1;
-        var query = @"
-query {
-  companiesConnection(first:2, after:""" + after + @""") {
-    edges {
-      cursor
-      node {
-        id
-      }
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-}";
+        var query = $$"""
+            query {
+              companiesConnection(first:2, after:"{{after}}") {
+                edges {
+                  cursor
+                  node {
+                    id
+                  }
+                }
+                pageInfo {
+                  endCursor
+                  hasNextPage
+                }
+              }
+            }
+            """;
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
         await Verify(await response.Content.ReadAsStringAsync());
@@ -144,13 +150,14 @@ query {
     [Fact]
     public async Task Employee_summary()
     {
-        var query = @"
-query {
-  employeeSummary {
-    companyId
-    averageAge
-  }
-}";
+        var query = """
+            query {
+              employeeSummary {
+                companyId
+                averageAge
+              }
+            }
+            """;
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         response.EnsureSuccessStatusCode();
         await Verify(await response.Content.ReadAsStringAsync());
@@ -159,21 +166,22 @@ query {
     [Fact]
     public async Task Complex_query_result()
     {
-        var query = @"
-query {
-  employees (
-    where: [
-      {groupedExpressions: [
-        {path: ""content"", comparison: contains, value: ""4"", connector: or},
-
-          { path: ""content"", comparison: contains, value: ""2""}
-      ], connector: and},
-      {path: ""age"", comparison: greaterThanOrEqual, value: ""31""}
-  	]
-  ) {
-    id
-  }
-}";
+        var query = """
+            query {
+              employees (
+                where: [
+                  {groupedExpressions: [
+                    {path: "content", comparison: contains, value: "4", connector: or},
+            
+                      { path: "content", comparison: contains, value: "2"}
+                  ], connector: and},
+                  {path: "age", comparison: greaterThanOrEqual, value: "31"}
+                ]
+              ) {
+                id
+              }
+            }
+            """;
         using var response = await clientQueryExecutor.ExecuteGet(client, query);
         var result = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
