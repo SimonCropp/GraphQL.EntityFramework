@@ -4,8 +4,8 @@
     <NoWarn>EF1000</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GraphQL" Version="7.2.1" />
-    <PackageReference Include="GraphQL.SystemTextJson" Version="7.2.1" />
+    <PackageReference Include="GraphQL" Version="7.2.2" />
+    <PackageReference Include="GraphQL.SystemTextJson" Version="7.2.2" />
     <PackageReference Include="EfLocalDb" Version="14.2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.1" />
     <PackageReference Include="Verify.SqlServer" Version="5.0.1" />
