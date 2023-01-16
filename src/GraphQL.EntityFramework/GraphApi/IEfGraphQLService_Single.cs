@@ -8,7 +8,8 @@ public partial interface IEfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        bool nullable = false)
+        bool nullable = false,
+        bool omitQueryArguments = false)
         where TReturn : class;
 
     FieldBuilder<TSource, TReturn> AddSingleField<TSource, TReturn>(
@@ -17,6 +18,7 @@ public partial interface IEfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        bool nullable = false)
+        bool nullable = false,
+        bool omitQueryArguments = false)
         where TReturn : class;
 }

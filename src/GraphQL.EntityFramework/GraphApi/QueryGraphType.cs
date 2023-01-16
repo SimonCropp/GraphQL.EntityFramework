@@ -34,9 +34,10 @@ public class QueryGraphType<TDbContext> :
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         string name = nameof(TReturn),
-        bool nullable = false)
+        bool nullable = false,
+        bool omitQueryArguments = false)
         where TReturn : class =>
-        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable);
+        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments);
 
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class =>
