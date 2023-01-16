@@ -9,10 +9,11 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        bool nullable = false)
+        bool nullable = false,
+        bool omitQueryArguments = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<object, TReturn>(field);
     }
@@ -23,10 +24,11 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        bool nullable = false)
+        bool nullable = false,
+        bool omitQueryArguments = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<object, TReturn>(field);
     }
@@ -37,10 +39,11 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
-        bool nullable = false)
+        bool nullable = false,
+        bool omitQueryArguments = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, graphType, nullable);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
@@ -50,7 +53,8 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
         Type? graphType,
-        bool nullable)
+        bool nullable,
+        bool omitQueryArguments)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -58,11 +62,10 @@ partial class EfGraphQLService<TDbContext>
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
-        return new()
+        var type = new FieldType
         {
             Name = name,
             Type = graphType,
-            Arguments = ArgumentAppender.GetQueryArguments(hasId, false),
             Resolver = new FuncFieldResolver<TSource, TReturn?>(
                 async context =>
                 {
@@ -77,7 +80,10 @@ partial class EfGraphQLService<TDbContext>
                     }
 
                     query = includeAppender.AddIncludes(query, context);
-                    query = query.ApplyGraphQlArguments(context, names, false);
+                    if (!omitQueryArguments)
+                    {
+                        query = query.ApplyGraphQlArguments(context, names, false);
+                    }
 
                     QueryLogger.Write(query);
 
@@ -112,5 +118,10 @@ partial class EfGraphQLService<TDbContext>
                     throw new ExecutionError("Not found");
                 })
         };
+        if (!omitQueryArguments)
+        {
+            type.Arguments = ArgumentAppender.GetQueryArguments(hasId, false);
+        }
+        return type;
     }
 }

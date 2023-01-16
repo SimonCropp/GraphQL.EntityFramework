@@ -632,6 +632,25 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Single_NoArgs()
+    {
+        var query = """
+            {
+              parentEntityWithNoArgs {
+                property
+              }
+            }
+            """;
+        var entity1 = new ParentEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { entity1 });
+    }
+
+    [Fact]
     public async Task SingleNullable_NotFound()
     {
         var query = """

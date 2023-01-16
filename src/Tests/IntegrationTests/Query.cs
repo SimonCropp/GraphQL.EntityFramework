@@ -84,6 +84,11 @@
             resolve: context => context.DbContext.ParentEntities);
 
         AddSingleField(
+            name: "parentEntityWithNoArgs",
+            resolve: context => context.DbContext.ParentEntities.Where(_ => _.Id == new Guid("00000000-0000-0000-0000-000000000001")),
+            omitQueryArguments: true);
+
+        AddSingleField(
             name: "parentEntityNullable",
             resolve: context => context.DbContext.ParentEntities,
             nullable: true);
