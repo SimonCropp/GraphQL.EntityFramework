@@ -638,6 +638,10 @@ public partial class IntegrationTests
             {
               parentEntityWithNoArgs {
                 property
+                children
+                {
+                  property
+                }
               }
             }
             """;
@@ -646,8 +650,18 @@ public partial class IntegrationTests
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1 });
+        await RunQuery(database, query, null, null, false, new object[]
+        {
+            entity1,
+            entity2
+        });
     }
 
     [Fact]
@@ -1955,10 +1969,10 @@ public partial class IntegrationTests
 
         await using var context = database.NewDbContext();
         SqlRecording.StartRecording();
+        string result = "";
         try
         {
-            var result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking, disableAsync);
-            await Verify(result, sourceFile: sourceFile).ScrubInlineGuids();
+            result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking, disableAsync);
         }
         catch (ExecutionError executionError)
         {
@@ -1970,6 +1984,8 @@ public partial class IntegrationTests
             await Verify(exception, sourceFile: sourceFile)
                 .IgnoreStackTrace();
         }
+
+        await Verify(result, sourceFile: sourceFile).ScrubInlineGuids();
     }
 
     static IEnumerable<Type> GetGraphQlTypes() =>
