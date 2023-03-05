@@ -17,7 +17,7 @@
                 continue;
             }
 
-            var names = primaryKey.Properties.Select(x => x.Name).ToList();
+            var names = primaryKey.Properties.Select(_ => _.Name).ToList();
             keyNames.Add(entityType.ClrType, names);
         }
 

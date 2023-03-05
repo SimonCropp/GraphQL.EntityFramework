@@ -14,7 +14,7 @@ class ResolveDbContextQuery
                 {
                     // uses the base QueryGraphType to resolve the db context
                     var dbContext = ResolveDbContext(context);
-                    return dbContext.Companies.Where(x => x.Age > 10);
+                    return dbContext.Companies.Where(_ => _.Age > 10);
                 });
     }
 

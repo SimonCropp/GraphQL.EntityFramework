@@ -56,7 +56,7 @@ filters.Add<MyEntity>(
     (userContext, userPrincipal, item) => item.Property != "Ignore");
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
-    resolveFilters: x => filters);
+    resolveFilters: _ => filters);
 ```
 <sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L16-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->

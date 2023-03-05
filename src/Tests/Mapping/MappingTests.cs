@@ -40,7 +40,7 @@ public class MappingTests
         var mappingQuery = provider.GetRequiredService<MappingQuery>();
 
         var resolve = await mappingQuery.Fields
-            .Single(x => x.Name == "children")
+            .Single(_ => _.Name == "children")
             .Resolver!
             .ResolveAsync(new ResolveFieldContext());
         await Verify(resolve);

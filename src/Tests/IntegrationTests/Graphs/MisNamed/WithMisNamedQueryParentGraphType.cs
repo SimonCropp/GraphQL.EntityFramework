@@ -10,7 +10,7 @@
             {
                 var parentId = context.Source.Id;
                 return context.DbContext.WithMisNamedQueryChildEntities
-                    .Where(x => x.ParentId == parentId);
+                    .Where(_ => _.ParentId == parentId);
             });
         AutoMap();
     }

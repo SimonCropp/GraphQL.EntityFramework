@@ -69,8 +69,8 @@
             .HasMany(r => r.Lefts)
             .WithMany(l => l.Rights)
             .UsingEntity<ManyToManyMiddleEntity>(
-                x => x.HasOne(xs => xs.ManyToManyLeftEntity).WithMany(),
-                x => x.HasOne(xs => xs.ManyToManyRightEntity).WithMany());
+                _ => _.HasOne(xs => xs.ManyToManyLeftEntity).WithMany(),
+                _ => _.HasOne(xs => xs.ManyToManyRightEntity).WithMany());
     }
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {

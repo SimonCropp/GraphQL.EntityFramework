@@ -116,9 +116,9 @@ public class Filters
         where TEntity : class
     {
         var type = typeof(TEntity);
-        foreach (var pair in funcs.Where(x => x.Key.IsAssignableFrom(type)))
+        foreach (var pair in funcs.Where(_ => _.Key.IsAssignableFrom(type)))
         {
-            yield return (userContext, userPrincipal, item) => pair.Value(userContext, userPrincipal, item);
+            yield return (context, user, item) => pair.Value(context, user, item);
         }
     }
 }

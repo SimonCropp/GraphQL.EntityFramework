@@ -117,7 +117,7 @@
     {
         foreach (var subField in subFields)
         {
-            var single = graph.Fields.SingleOrDefault(x => x.Name == subField.Name);
+            var single = graph.Fields.SingleOrDefault(_ => _.Name == subField.Name);
             if (single is not null)
             {
                 AddField(list, subField, subField.SelectionSet!, parentPath, single, navigationProperties, context);

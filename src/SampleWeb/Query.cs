@@ -36,7 +36,7 @@ public class Query :
             resolve: context =>
             {
                 var content = context.GetArgument<string>("content");
-                return context.DbContext.Employees.Where(x => x.Content == content);
+                return context.DbContext.Employees.Where(_ => _.Content == content);
             })
             .Argument<StringGraphType>("content");
 
@@ -70,7 +70,7 @@ public class Query :
                     select new EmployeeSummary
                     {
                         CompanyId = g.Key.CompanyId,
-                        AverageAge = g.Average(x => x.Age),
+                        AverageAge = g.Average(_ => _.Age),
                     };
             });
 

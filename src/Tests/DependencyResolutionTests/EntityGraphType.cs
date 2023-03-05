@@ -4,7 +4,7 @@
     public EntityGraphType(IEfGraphQLService<DependencyDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(x => x.Id);
-        Field(x => x.Property);
+        Field(_ => _.Id);
+        Field(_ => _.Property);
     }
 }

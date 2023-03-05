@@ -202,8 +202,8 @@
         else
         {
             collectionType = type.GetInterfaces()
-                .SingleOrDefault(x => x.IsGenericType &&
-                                      x.GetGenericTypeDefinition() == typeof(ICollection<>));
+                .SingleOrDefault(_ => _.IsGenericType &&
+                                      _.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
 
         if (collectionType is null)
@@ -248,7 +248,7 @@
             var typeProperties = subType.GetProperties(flags);
 
             var newPropertyInfos = typeProperties
-                .Where(x => !propertyInfos.Contains(x));
+                .Where(_ => !propertyInfos.Contains(_));
 
             propertyInfos.InsertRange(0, newPropertyInfos);
         }

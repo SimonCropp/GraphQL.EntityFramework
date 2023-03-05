@@ -15,7 +15,7 @@
             throw new($"Null passed to In expression for non nullable type '{type.FullName}'.");
         }
 
-        var list = ConvertStringsToListInternal(values.Where(x => x is not null).Select(x => x!), type);
+        var list = ConvertStringsToListInternal(values.Where(_ => _ is not null).Select(_ => _!), type);
         if (hasNull)
         {
             list.Add(null);

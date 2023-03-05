@@ -4,7 +4,7 @@
     public OrderByGraph()
     {
         Name = nameof(OrderBy);
-        Field(x => x.Path);
-        Field(x => x.Descending, true);
+        Field(_ => _.Path);
+        Field(_ => _.Descending, true);
     }
 }

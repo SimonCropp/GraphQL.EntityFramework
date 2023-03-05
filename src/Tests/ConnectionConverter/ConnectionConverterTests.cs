@@ -6,7 +6,7 @@ public class ConnectionConverterTests
             buildTemplate: async dbContext =>
             {
                 await dbContext.Database.EnsureCreatedAsync();
-                dbContext.AddRange(list.Select(x => new Entity {Property = x}));
+                dbContext.AddRange(list.Select(_ => new Entity {Property = _}));
                 await dbContext.SaveChangesAsync();
             },
             constructInstance: builder => new(builder.Options));
@@ -47,7 +47,7 @@ public class ConnectionConverterTests
         await using var database = await sqlInstance.Build(databaseSuffix: $"{first.GetValueOrDefault(0)}{after.GetValueOrDefault(0)}{last.GetValueOrDefault(0)}{before.GetValueOrDefault(0)}");
         var entities = database.Context.Entities;
         var connection = await ConnectionConverter.ApplyConnectionContext<string, Entity>(entities.OrderBy(x=>x.Property), first, after, last, before, fieldContext, new());
-        await Verify(connection.Items!.OrderBy(x => x!.Property))
+        await Verify(connection.Items!.OrderBy(_ => _!.Property))
             .UseParameters(first, after, last, before);
     }
 

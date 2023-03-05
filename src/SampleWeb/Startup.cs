@@ -26,9 +26,9 @@ public class Startup
     static IEnumerable<Type> GetGraphQlTypes() =>
         typeof(Startup).Assembly
             .GetTypes()
-            .Where(x => !x.IsAbstract &&
-                        (typeof(IObjectGraphType).IsAssignableFrom(x) ||
-                         typeof(IInputObjectGraphType).IsAssignableFrom(x)));
+            .Where(_ => !_.IsAbstract &&
+                        (typeof(IObjectGraphType).IsAssignableFrom(_) ||
+                         typeof(IInputObjectGraphType).IsAssignableFrom(_)));
 
     public void Configure(IApplicationBuilder builder)
     {

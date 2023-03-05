@@ -42,7 +42,7 @@ public static class Mapper<TDbContext>
 
             if (navigations is not null)
             {
-                list.AddRange(navigations.Select(x => x.Name));
+                list.AddRange(navigations.Select(_ => _.Name));
             }
 
             MapProperties(graph, type, list);
@@ -56,7 +56,7 @@ public static class Mapper<TDbContext>
     static void MapProperties<TSource>(ComplexGraphType<TSource> graph, Type type, IReadOnlyList<string>? exclusions)
     {
         var publicProperties = type.GetPublicProperties()
-            .OrderBy(x => x.Name);
+            .OrderBy(_ => _.Name);
         foreach (var property in publicProperties)
         {
             if (ShouldIgnore(graph, property.Name, property.PropertyType, exclusions))
@@ -141,7 +141,7 @@ public static class Mapper<TDbContext>
 
         return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>)navigationFuncs.GetOrAdd(
             key,
-            x => NavigationExpression<TSource, TReturn>(x.Name).Compile());
+            _ => NavigationExpression<TSource, TReturn>(_.Name).Compile());
     }
 
     internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>> NavigationExpression<TSource, TReturn>(string name)
@@ -239,5 +239,5 @@ public static class Mapper<TDbContext>
     }
 
     static bool FieldExists(IComplexGraphType graphType, string name) =>
-        graphType.Fields.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+        graphType.Fields.Any(_ => string.Equals(_.Name, name, StringComparison.OrdinalIgnoreCase));
 }

@@ -18,7 +18,7 @@ public partial class IntegrationTests
             },
             constructInstance: builder =>
             {
-                builder.ConfigureWarnings(x => x.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
+                builder.ConfigureWarnings(_ => _.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
                 return new(builder.Options);
             });
 
@@ -1993,5 +1993,5 @@ public partial class IntegrationTests
     static IEnumerable<Type> GetGraphQlTypes() =>
         typeof(IntegrationTests).Assembly
             .GetTypes()
-            .Where(x => !x.IsAbstract && typeof(GraphType).IsAssignableFrom(x));
+            .Where(_ => !_.IsAbstract && typeof(GraphType).IsAssignableFrom(_));
 }

@@ -332,7 +332,7 @@ Field<ListGraphType<EmployeeSummaryGraphType>>("employeeSummary")
             select new EmployeeSummary
             {
                 CompanyId = g.Key.CompanyId,
-                AverageAge = g.Average(x => x.Age),
+                AverageAge = g.Average(_ => _.Age),
             };
     });
 ```
@@ -357,7 +357,7 @@ public class Query :
             {
                 // uses the base QueryGraphType to resolve the db context
                 var dbContext = ResolveDbContext(context);
-                return dbContext.Companies.Where(x => x.Age > 10);
+                return dbContext.Companies.Where(_ => _.Age > 10);
             });
 }
 ```
