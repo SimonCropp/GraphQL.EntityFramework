@@ -179,14 +179,7 @@
         var list = new List<T?>();
         foreach (var value in values)
         {
-            if (value == null)
-            {
-                list.Add(null);
-            }
-            else
-            {
-                list.Add(Enum.Parse<T>(value, true));
-            }
+            list.Add(Enum.Parse<T>(value, true));
         }
 
         return list;
