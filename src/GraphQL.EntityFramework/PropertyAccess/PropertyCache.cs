@@ -13,7 +13,7 @@
                 var converted = Expression.Convert(left, typeof(object));
                 var lambda = Expression.Lambda<Func<TInput, object>>(converted, SourceParameter);
                 var compile = lambda.Compile();
-                var listContainsMethod = ReflectionCache.GetListContains(left.Type);
+                var listContains = ReflectionCache.GetListContains(left.Type);
 
                 var body = (MemberExpression)left;
                 return new(
@@ -23,7 +23,7 @@
                     Func: compile,
                     PropertyType: left.Type,
                     Info: body.Member,
-                    ListContainsMethod: listContainsMethod
+                    ListContains: listContains
                 );
             });
 
