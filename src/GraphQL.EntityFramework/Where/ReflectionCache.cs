@@ -60,6 +60,11 @@
 
     public static MethodInfo? GetListContains(Type type)
     {
+        if (type == typeof(string))
+        {
+            return null;
+        }
+
         if (type == typeof(Guid))
         {
             return guidListContains;
