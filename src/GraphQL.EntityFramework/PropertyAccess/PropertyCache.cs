@@ -6,9 +6,9 @@
     public static Property<TInput> GetProperty(string path) =>
         properties.GetOrAdd(
             path,
-            x =>
+            _ =>
             {
-                var left = AggregatePath(x, SourceParameter);
+                var left = AggregatePath(_, SourceParameter);
 
                 var converted = Expression.Convert(left, typeof(object));
                 var lambda = Expression.Lambda<Func<TInput, object>>(converted, SourceParameter);
