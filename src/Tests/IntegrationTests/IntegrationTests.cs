@@ -163,6 +163,28 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Where_enum_in()
+    {
+        var query = """
+            {
+              enumEntities (where: {path: "Property", comparison: in, value: ["Thursday"]})
+              {
+                id
+              }
+            }
+            """;
+
+        var entity1 = new EnumEntity();
+        var entity2 = new EnumEntity
+        {
+            Property = DayOfWeek.Thursday
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+    }
+
+    [Fact]
     public async Task Where_time()
     {
         var query = """

@@ -165,6 +165,11 @@
             return dateTimeOffsetNullableListContains;
         }
 
+        if (IsEnumType(type))
+        {
+            return typeof(List<>).MakeGenericType(type).GetMethod("Contains");
+        }
+
         return null;
     }
 
@@ -193,6 +198,27 @@
         }
 
         enumType = null;
+        return false;
+    }
+
+    public static bool IsEnumType(this Type type)
+    {
+        if (type.IsEnum)
+        {
+            return true;
+        }
+
+        var underlying = Nullable.GetUnderlyingType(type);
+        if (underlying is null)
+        {
+            return false;
+        }
+
+        if (underlying.IsEnum)
+        {
+            return true;
+        }
+
         return false;
     }
 

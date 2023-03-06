@@ -142,13 +142,54 @@
             return values.Select(_ => (DateTimeOffset?)DateTimeOffset.Parse(_)).ToList();
         }
 
+        if (type.IsEnum)
+        {
+            var getList = enumListMethod.MakeGenericMethod(type);
+            return (IList)getList.Invoke(null, new []{values})!;
+        }
+
         if (type.TryGetEnumType(out var enumType))
         {
-            return values.Select(_ => Enum.Parse(enumType, _, true))
-                .ToList();
+            var getList = nullableEnumListMethod.MakeGenericMethod(enumType);
+            return (IList)getList.Invoke(null, new []{values})!;
         }
 
         throw new($"Could not convert strings to {type.FullName}.");
+    }
+
+    static MethodInfo enumListMethod = typeof(TypeConverter)
+        .GetMethod("GetEnumList", BindingFlags.Static | BindingFlags.NonPublic)!;
+    static List<T> GetEnumList<T>(IEnumerable<string> values)
+        where T : struct
+    {
+        var list = new List<T>();
+        foreach (var value in values)
+        {
+            list.Add(Enum.Parse<T>(value, true));
+        }
+
+        return list;
+    }
+
+    static MethodInfo nullableEnumListMethod = typeof(TypeConverter)
+        .GetMethod("GetNullableEnumList", BindingFlags.Static | BindingFlags.NonPublic)!;
+    static List<T?> GetNullableEnumList<T>(IEnumerable<string> values)
+        where T : struct
+    {
+        var list = new List<T?>();
+        foreach (var value in values)
+        {
+            if (value == null)
+            {
+                list.Add(null);
+            }
+            else
+            {
+                list.Add(Enum.Parse<T>(value, true));
+            }
+        }
+
+        return list;
     }
 
     public static object? ConvertStringToType(string? value, Type type)
