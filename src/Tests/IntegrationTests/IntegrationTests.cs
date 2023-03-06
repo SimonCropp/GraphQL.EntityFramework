@@ -55,8 +55,8 @@ public partial class IntegrationTests
               parentEntities
               (where:
                 [
-                  {path: 'Property', comparison: startsWith, value: 'Valu'}
-                  {path: 'Property', comparison: endsWith, value: 'ue3'}
+                  {path: "Property", comparison: startsWith, value: "Valu"}
+                  {path: "Property", comparison: endsWith, value: "ue3"}
                 ]
               )
               {
@@ -91,8 +91,8 @@ public partial class IntegrationTests
               parentEntities
               (where:
                 [
-                  {path: 'Property', comparison: startsWith, value: 'Valu'}
-                  {path: 'Property', comparison: endsWith, value: 'ue3'}
+                  {path: "Property", comparison: startsWith, value: "Valu"}
+                  {path: "Property", comparison: endsWith, value: "ue3"}
                 ]
               )
               {
@@ -123,7 +123,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              dateEntities (where: {path: 'Property', comparison: equal, value: '2020-10-1'})
+              dateEntities (where: {path: "Property", comparison: equal, value: "2020-10-1"})
               {
                 id
               }
@@ -145,7 +145,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              enumEntities (where: {path: 'Property', comparison: equal, value: 'Thursday'})
+              enumEntities (where: {path: "Property", comparison: equal, value: "Thursday"})
               {
                 id
               }
@@ -167,7 +167,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              timeEntities (where: {path: 'Property', comparison: equal, value: '10:11 AM'})
+              timeEntities (where: {path: "Property", comparison: equal, value: "10:11 AM"})
               {
                 id
               }
@@ -187,7 +187,7 @@ public partial class IntegrationTests
     [Fact]
     public async Task Where_with_nullable_properties1()
     {
-        var query = "{ withNullableEntities (where: {path: 'Nullable', comparison: equal}){ id } }";
+        var query = """{ withNullableEntities (where: {path: "Nullable", comparison: equal}){ id } }""";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -202,7 +202,7 @@ public partial class IntegrationTests
     [Fact]
     public async Task Where_with_nullable_properties2()
     {
-        var query = "{ withNullableEntities (where: {path: 'Nullable', comparison: equal, value: '10'}){ id } }";
+        var query = """{ withNullableEntities (where: {path: "Nullable", comparison: equal, value: "10"}){ id } }""";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -217,7 +217,7 @@ public partial class IntegrationTests
     [Fact]
     public async Task Where_null_comparison_value()
     {
-        var query = "{ parentEntities (where: {path: 'Property', comparison: equal}){ id } }";
+        var query = """{ parentEntities (where: {path: "Property", comparison: equal}){ id } }""";
 
         var entity1 = new ParentEntity
         {
@@ -287,7 +287,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntitiesConnection(first:2, after: '0') {
+              parentEntitiesConnection(first:2, after: "0") {
                 totalCount
                 edges {
                   cursor
@@ -312,7 +312,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntitiesConnection(last:2, before: '2') {
+              parentEntitiesConnection(last:2, before: "2") {
                 totalCount
                 edges {
                   cursor
@@ -379,7 +379,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntities (where: {path: 'Property', comparison: equal, value: 'Value2', case: 'Ordinal' })
+              parentEntities (where: {path: "Property", comparison: equal, value: "Value2", case: "Ordinal" })
               {
                 property
               }
@@ -404,7 +404,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntities (orderBy: {path: 'Property'})
+              parentEntities (orderBy: {path: "Property"})
               {
                 property
               }
@@ -429,7 +429,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntities (orderBy: {path: 'Property', descending: true})
+              parentEntities (orderBy: {path: "Property", descending: true})
               {
                 property
               }
@@ -454,7 +454,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntities (where: {path: 'Property', comparison: like, value: 'value2'})
+              parentEntities (where: {path: "Property", comparison: like, value: "value2"})
               {
                 property
               }
@@ -480,7 +480,7 @@ public partial class IntegrationTests
         var query = """
             query ($value: String!)
             {
-              parentEntities (where: {path: 'Property', comparison: equal, value: [$value]})
+              parentEntities (where: {path: "Property", comparison: equal, value: [$value]})
               {
                 property
               }
@@ -876,7 +876,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntities (where: {path: 'Property', comparison: equal, value: 'value2'})
+              parentEntities (where: {path: "Property", comparison: equal, value: "value2"})
               {
                 property
               }
@@ -901,7 +901,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntities (where: {path: 'Property', value: 'value2'})
+              parentEntities (where: {path: "Property", value: "value2"})
               {
                 property
               }
@@ -926,7 +926,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntities (where: {path: 'Property', comparison: in, value: 'Value2', case: 'Ordinal' })
+              parentEntities (where: {path: "Property", comparison: in, value: "Value2", case: "Ordinal" })
               {
                 property
               }
@@ -951,7 +951,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntities (ids: '00000000-0000-0000-0000-000000000001')
+              parentEntities (ids: "00000000-0000-0000-0000-000000000001")
               {
                 property
               }
@@ -977,7 +977,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              namedEntities (ids: '00000000-0000-0000-0000-000000000001')
+              namedEntities (ids: "00000000-0000-0000-0000-000000000001")
               {
                 property
               }
@@ -1004,7 +1004,7 @@ public partial class IntegrationTests
         var query = """
             {
               parentEntities
-              (ids: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
+              (ids: ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"])
               {
                 property
               }
@@ -1036,7 +1036,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntities (where: {path: 'Property', comparison: in, value: 'value2'})
+              parentEntities (where: {path: "Property", comparison: in, value: "value2"})
               {
                 property
               }
@@ -1062,7 +1062,7 @@ public partial class IntegrationTests
         var query = """
             {
               parentEntities
-              (where: {path: 'Property', comparison: in, value: ['Value1', 'Value2']}, orderBy: {path: "property"})
+              (where: {path: "Property", comparison: in, value: ["Value1", "Value2"]}, orderBy: {path: "property"})
               {
                 property
               }
@@ -1087,7 +1087,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              parentEntitiesConnection(first:2, after: '0') {
+              parentEntitiesConnection(first:2, after: "0") {
                 totalCount
                 edges {
                   cursor
@@ -1280,7 +1280,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              level1Entities(where: {path: 'Level2Entity.Level3EntityId', comparison: equal, value: '00000000-0000-0000-0000-000000000003'})
+              level1Entities(where: {path: "Level2Entity.Level3EntityId", comparison: equal, value: "00000000-0000-0000-0000-000000000003"})
               {
                 level2Entity
                 {
@@ -1518,7 +1518,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              childEntities(where: {path: 'ParentId', comparison: equal, value: '00000000-0000-0000-0000-000000000001'}, orderBy: {path: "property"})
+              childEntities(where: {path: "ParentId", comparison: equal, value: "00000000-0000-0000-0000-000000000001"}, orderBy: {path: "property"})
               {
                 property
                 parent
@@ -1664,7 +1664,7 @@ public partial class IntegrationTests
               parentEntities
               {
                 property
-                children(id:'{{child1.Id}}' )
+                children(id:"{{child1.Id}}" )
                 {
                   property
                 }
@@ -1741,10 +1741,10 @@ public partial class IntegrationTests
 
         var query = $$"""
             {
-              parentEntities(id:'{{parent1.Id}}')
+              parentEntities(id:"{{parent1.Id}}")
               {
                 property
-                children(id:'{{child1.Id}}' )
+                children(id:"{{child1.Id}}" )
                 {
                   property
                 }
@@ -1864,7 +1864,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              manyToManyLeftEntities (where: {path: 'rights[rightName]', comparison: equal, value: "Right2"})
+              manyToManyLeftEntities (where: {path: "rights[rightName]", comparison: equal, value: "Right2"})
               {
                 leftName
                 rights
@@ -1918,7 +1918,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              manyToManyRightEntities (where: {path: 'lefts[leftName]', comparison: equal, value: "Left2"})
+              manyToManyRightEntities (where: {path: "lefts[leftName]", comparison: equal, value: "Left2"})
               {
                 rightName
                 lefts

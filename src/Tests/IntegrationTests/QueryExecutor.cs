@@ -10,7 +10,6 @@ static class QueryExecutor
         bool disableAsync)
         where TDbContext : DbContext
     {
-        query = query.Replace("'", "\"");
         EfGraphQLConventions.RegisterInContainer(
             services,
             _ => data,
