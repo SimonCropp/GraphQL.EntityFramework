@@ -13,6 +13,7 @@
         RegisterTypeMapping(typeof(ChildEntity), typeof(ChildGraphType));
         RegisterTypeMapping(typeof(ParentEntity), typeof(ParentGraphType));
         RegisterTypeMapping(typeof(DateEntity), typeof(DateEntityGraphType));
+        RegisterTypeMapping(typeof(EnumEntity), typeof(EnumEntityGraphType));
         RegisterTypeMapping(typeof(TimeEntity), typeof(TimeEntityGraphType));
         RegisterTypeMapping(typeof(TimeEntity), typeof(TimeEntityGraphType));
         RegisterTypeMapping(typeof(Level1Entity), typeof(Level1GraphType));

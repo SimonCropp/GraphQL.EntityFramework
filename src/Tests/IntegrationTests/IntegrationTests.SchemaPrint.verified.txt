@@ -62,6 +62,16 @@ type DateEntity {
 
 scalar DateOnly
 
+enum DayOfWeek {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
 type Derived implements Interface {
   childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
   childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
@@ -95,6 +105,11 @@ type DerivedWithNavigation implements Interface {
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   id: ID!
   property: String
+}
+
+type EnumEntity {
+  id: ID!
+  property: DayOfWeek
 }
 
 type FilterChild {
@@ -274,6 +289,7 @@ type Query {
   parentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
   childEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   dateEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DateEntity!]!
+  enumEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [EnumEntity!]!
   timeEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TimeEntity!]!
   parentEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ParentConnection!
   childEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ChildConnection!

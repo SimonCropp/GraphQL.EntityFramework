@@ -3,6 +3,7 @@
 {
     public DbSet<ParentEntity> ParentEntities { get; set; } = null!;
     public DbSet<DateEntity> DateEntities { get; set; } = null!;
+    public DbSet<EnumEntity> EnumEntities { get; set; } = null!;
     public DbSet<TimeEntity> TimeEntities { get; set; } = null!;
     public DbSet<FilterParentEntity> FilterParentEntities { get; set; } = null!;
     public DbSet<FilterChildEntity> FilterChildEntities { get; set; } = null!;

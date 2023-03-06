@@ -55,6 +55,10 @@
             resolve: context => context.DbContext.DateEntities);
 
         AddQueryField(
+            name: "enumEntities",
+            resolve: context => context.DbContext.EnumEntities);
+
+        AddQueryField(
             name: "timeEntities",
             resolve: context => context.DbContext.TimeEntities);
 

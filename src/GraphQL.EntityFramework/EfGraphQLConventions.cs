@@ -80,6 +80,7 @@ public static class EfGraphQLConventions
     static void RegisterScalarsAndArgs(IServiceCollection services)
     {
         services.AddSingleton<EnumerationGraphType<StringComparison>>();
+        services.AddSingleton<EnumerationGraphType<DayOfWeek>>();
         services.AddSingleton<WhereExpressionGraph>();
         services.AddSingleton<OrderByGraph>();
         services.AddSingleton<ComparisonGraph>();
