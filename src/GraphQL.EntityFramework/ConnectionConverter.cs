@@ -75,7 +75,7 @@
         int? last,
         string beforeString,
         IResolveFieldContext<TSource> context,
-        CancellationToken cancellation,
+        Cancellation cancellation,
         Filters filters)
         where TItem : class
     {
@@ -91,7 +91,7 @@
         int? before,
         IResolveFieldContext<TSource> context,
         Filters filters,
-        CancellationToken cancellation = default)
+        Cancellation cancellation = default)
         where TItem : class
     {
         var count = await list.CountAsync(cancellation);
@@ -112,7 +112,7 @@
         int count,
         IResolveFieldContext<TSource> context,
         Filters filters,
-        CancellationToken cancellation)
+        Cancellation cancellation)
         where TItem : class
     {
         int skip;
@@ -136,7 +136,7 @@
         int count,
         IResolveFieldContext<TSource> context,
         Filters filters,
-        CancellationToken cancellation)
+        Cancellation cancellation)
         where TItem : class
     {
         int skip;
@@ -161,7 +161,7 @@
         int count,
         IResolveFieldContext<TSource> context,
         Filters filters,
-        CancellationToken cancellation)
+        Cancellation cancellation)
         where TItem : class
     {
         var page = list.Skip(skip).Take(take);

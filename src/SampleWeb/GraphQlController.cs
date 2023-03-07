@@ -23,7 +23,7 @@ public class GraphQlController :
         [FromQuery] string query,
         [FromQuery] string? variables,
         [FromQuery] string? operationName,
-        CancellationToken cancellation)
+        Cancellation cancellation)
     {
         var inputs = variables.ToInputs();
         return Execute(query, operationName, inputs, cancellation);
@@ -39,7 +39,7 @@ public class GraphQlController :
     [HttpPost]
     public Task Post(
         [FromBody]GraphQLQuery query,
-        CancellationToken cancellation)
+        Cancellation cancellation)
     {
         var inputs = query.Variables.ToInputs();
         return Execute(query.Query, query.OperationName, inputs, cancellation);
@@ -48,7 +48,7 @@ public class GraphQlController :
     async Task Execute(string query,
         string? operationName,
         Inputs? variables,
-        CancellationToken cancellation)
+        Cancellation cancellation)
     {
         var options = new ExecutionOptions
         {
