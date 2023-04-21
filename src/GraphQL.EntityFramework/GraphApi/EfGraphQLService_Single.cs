@@ -110,6 +110,7 @@ partial class EfGraphQLService<TDbContext>
                             DisableAsync: {disableAsync}
                             OmitQueryArguments: {omitQueryArguments}
                             Nullable: {nullable}
+                            KeyNames: {JoinKeys(names)}
                             Query: {query.ToQueryString()}
                             """,
                             exception);
@@ -136,10 +137,12 @@ partial class EfGraphQLService<TDbContext>
                     throw new ExecutionError("Not found");
                 })
         };
+
         if (!omitQueryArguments)
         {
             type.Arguments = ArgumentAppender.GetQueryArguments(hasId, false);
         }
+
         return type;
     }
 }

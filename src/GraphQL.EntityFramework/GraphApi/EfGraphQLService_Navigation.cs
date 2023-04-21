@@ -29,7 +29,23 @@ partial class EfGraphQLService<TDbContext>
                 {
                     var fieldContext = BuildContext(context);
 
-                    var result = resolve(fieldContext);
+                    TReturn? result;
+                    try
+                    {
+                        result = resolve(fieldContext);
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new(
+                            $"""
+                            Failed to execute navigation resolve for field `{name}`
+                            GraphType: {graphType.FullName}
+                            TSource: {typeof(TSource).FullName}
+                            TReturn: {typeof(TReturn).FullName}
+                            """,
+                            exception);
+                    }
+
                     if (await fieldContext.Filters.ShouldInclude(context.UserContext, context.User, result))
                     {
                         return result;

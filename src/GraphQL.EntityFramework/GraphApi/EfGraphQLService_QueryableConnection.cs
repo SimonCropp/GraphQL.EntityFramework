@@ -15,7 +15,28 @@ partial class EfGraphQLService<TDbContext>
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(object), itemGraphType, typeof(TReturn));
-        return (ConnectionBuilder<object>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve})!;
+        try
+        {
+            return (ConnectionBuilder<object>) addConnectionT.Invoke(
+                this,
+                new object?[]
+                {
+                    graph,
+                    name,
+                    resolve
+                })!;
+        }
+        catch (Exception exception)
+        {
+            throw new(
+                $"""
+                Failed to execute query for field `{name}`
+                ItemGraphType: {itemGraphType.FullName}
+                TReturn: {typeof(TReturn).FullName}
+                DisableAsync: {disableAsync}
+                """,
+                exception);
+        }
     }
 
     public ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
@@ -27,7 +48,30 @@ partial class EfGraphQLService<TDbContext>
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
         var addConnectionT = addQueryableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, new object?[] { graph, name, resolve })!;
+
+        try
+        {
+            return (ConnectionBuilder<TSource>) addConnectionT.Invoke(
+                this,
+                new object?[]
+                {
+                    graph,
+                    name,
+                    resolve
+                })!;
+        }
+        catch (Exception exception)
+        {
+            throw new(
+                $"""
+                Failed to execute query for field `{name}`
+                ItemGraphType: {itemGraphType.FullName}
+                TSource: {typeof(TSource).FullName}
+                TReturn: {typeof(TReturn).FullName}
+                DisableAsync: {disableAsync}
+                """,
+                exception);
+        }
     }
 
     ConnectionBuilder<TSource> AddQueryableConnection<TSource, TGraph, TReturn>(
@@ -54,15 +98,33 @@ partial class EfGraphQLService<TDbContext>
                     query = includeAppender.AddIncludes(query, context);
                     var names = GetKeyNames<TReturn>();
                     query = query.ApplyGraphQlArguments(context, names, true);
-                    return await query
-                        .ApplyConnectionContext(
-                            context.First,
-                            context.After!,
-                            context.Last,
-                            context.Before!,
-                            context,
-                            context.CancellationToken,
-                            efFieldContext.Filters);
+
+                    try
+                    {
+                        return await query
+                            .ApplyConnectionContext(
+                                context.First,
+                                context.After!,
+                                context.Last,
+                                context.Before!,
+                                context,
+                                context.CancellationToken,
+                                efFieldContext.Filters);
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new(
+                            $"""
+                            Failed to execute query for field `{name}`
+                            TGraph: {typeof(TGraph).FullName}
+                            TSource: {typeof(TSource).FullName}
+                            TReturn: {typeof(TReturn).FullName}
+                            DisableAsync: {disableAsync}
+                            KeyNames: {JoinKeys(names)}
+                            Query: {query.ToQueryString()}
+                            """,
+                            exception);
+                    }
                 });
         }
 
@@ -74,5 +136,4 @@ partial class EfGraphQLService<TDbContext>
         field.AddWhereArgument(hasId);
         return builder;
     }
-
 }

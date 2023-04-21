@@ -77,4 +77,14 @@ public partial class EfGraphQLService<TDbContext> :
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class =>
         includeAppender.AddIncludes(query, context);
+
+    static string JoinKeys(IReadOnlyCollection<string>? names)
+    {
+        if (names == null)
+        {
+            return "";
+        }
+
+        return string.Join(", ", names);
+    }
 }

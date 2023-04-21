@@ -62,14 +62,34 @@ partial class EfGraphQLService<TDbContext>
                     QueryLogger.Write(query);
 
                     List<TReturn> list;
-                    if (disableAsync)
+
+                    try
                     {
-                        list = query.ToList();
+                        if (disableAsync)
+                        {
+                            list = query.ToList();
+                        }
+                        else
+                        {
+                            list = await query
+                                .ToListAsync(context.CancellationToken);
+                        }
                     }
-                    else
+                    catch (Exception exception)
                     {
-                        list = await query
-                            .ToListAsync(context.CancellationToken);
+                        throw new(
+                            $"""
+                            Failed to execute query for field `{name}`
+                            GraphType: {fieldType.Type.FullName}
+                            TSource: {typeof(TSource).FullName}
+                            TReturn: {typeof(TReturn).FullName}
+                            DisableTracking: {disableTracking}
+                            HasId: {hasId}
+                            DisableAsync: {disableAsync}
+                            KeyNames: {JoinKeys(names)}
+                            Query: {query.ToQueryString()}
+                            """,
+                            exception);
                     }
 
                     return await fieldContext.Filters.ApplyFilter(list, context.UserContext, context.User);

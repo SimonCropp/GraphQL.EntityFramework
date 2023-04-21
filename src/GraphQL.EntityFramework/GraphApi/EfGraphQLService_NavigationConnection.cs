@@ -19,7 +19,31 @@ partial class EfGraphQLService<TDbContext>
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
         var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-        return (ConnectionBuilder<TSource>)addConnectionT.Invoke(this, new object?[] { graph, name, resolve, includeNames })!;
+
+        try
+        {
+            return (ConnectionBuilder<TSource>) addConnectionT.Invoke(
+                this,
+                new object?[]
+                {
+                    graph,
+                    name,
+                    resolve,
+                    includeNames
+                })!;
+        }
+        catch (Exception exception)
+        {
+            throw new(
+                $"""
+                Failed to execute navigation connection for field `{name}`
+                ItemGraphType: {itemGraphType.FullName}
+                TSource: {typeof(TSource).FullName}
+                TReturn: {typeof(TReturn).FullName}
+                DisableAsync: {disableAsync}
+                """,
+                exception);
+        }
     }
 
     ConnectionBuilder<TSource> AddEnumerableConnection<TSource, TGraph, TReturn>(
@@ -41,7 +65,23 @@ partial class EfGraphQLService<TDbContext>
             {
                 var efFieldContext = BuildContext(context);
 
-                var enumerable = resolve(efFieldContext);
+                IEnumerable<TReturn> enumerable;
+                try
+                {
+                    enumerable = resolve(efFieldContext);
+                }
+                catch (Exception exception)
+                {
+                    throw new(
+                        $"""
+                            Failed to execute query for field `{name}`
+                            TGraph: {typeof(TGraph).FullName}
+                            TSource: {typeof(TSource).FullName}
+                            TReturn: {typeof(TReturn).FullName}
+                            DisableAsync: {disableAsync}
+                            """,
+                        exception);
+                }
 
                 enumerable = enumerable.ApplyGraphQlArguments(hasId, context);
                 enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext, context.User);
