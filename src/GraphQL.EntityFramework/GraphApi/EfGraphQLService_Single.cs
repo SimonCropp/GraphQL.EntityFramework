@@ -88,13 +88,31 @@ partial class EfGraphQLService<TDbContext>
                     QueryLogger.Write(query);
 
                     TReturn? single;
-                    if (disableAsync)
+                    try
                     {
-                        single = query.SingleOrDefault();
+                        if (disableAsync)
+                        {
+                            single = query.SingleOrDefault();
+                        }
+                        else
+                        {
+                            single = await query.SingleOrDefaultAsync(context.CancellationToken);
+                        }
                     }
-                    else
+                    catch (Exception exception)
                     {
-                        single = await query.SingleOrDefaultAsync(context.CancellationToken);
+                        throw new(
+                            $"""
+                            Failed to execute query for field `{name}`
+                            GraphType: {graphType.FullName}
+                            TSource: {typeof(TSource).FullName}
+                            TReturn: {typeof(TReturn).FullName}
+                            DisableAsync: {disableAsync}
+                            OmitQueryArguments: {omitQueryArguments}
+                            Nullable: {nullable}
+                            Query: {query.ToQueryString()}
+                            """,
+                            exception);
                     }
 
                     if (single is not null)
