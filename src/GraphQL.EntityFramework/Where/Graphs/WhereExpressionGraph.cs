@@ -7,14 +7,11 @@ public class WhereExpressionGraph :
     {
         Name = nameof(WhereExpression);
         Field(_ => _.Path, true);
-        Field<ComparisonGraph>("comparison")
-            .Resolve(_ => _.Source.Comparison);
+        Field<ComparisonGraph>("comparison");
         Field(_ => _.Negate, true);
-        Field<EnumerationGraphType<StringComparison>>("case")
-            .Resolve( _ => _.Source.Case);
+        Field<EnumerationGraphType<StringComparison>>("case");
         Field(_ => _.Value, true);
-        Field<ConnectorGraph>("connector")
-            .Resolve(_ => _.Source.Connector);
+        Field<ConnectorGraph>("connector");
         Field<ListGraphType<WhereExpressionGraph>>("GroupedExpressions");
     }
 }
