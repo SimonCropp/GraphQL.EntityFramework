@@ -505,23 +505,27 @@ public partial class IntegrationTests
             }
             """;
 
-        var parent = new ParentEntity
+        var parent1 = new ParentEntity
         {
             Property = "Value1"
         };
         var entity1 = new ChildEntity
         {
-            Property = "Value1",
-            Parent = parent
+            Property = "Value2",
+            Parent = parent1
+        };
+        var parent2 = new ParentEntity
+        {
+            Property = "Value3"
         };
         var entity2 = new ChildEntity
         {
-            Property = "Value2",
-            Parent = parent
+            Property = "Value4",
+            Parent = parent2
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { parent, entity1, entity2 });
+        await RunQuery(database, query, null, null, false, new object[] { parent1, parent2, entity1, entity2 });
     }
 
     [Fact]
@@ -542,13 +546,12 @@ public partial class IntegrationTests
         };
         var entity1 = new ChildEntity
         {
-            Property = "Value1",
+            Property = "Value2",
             Parent = parent
         };
         var entity2 = new ChildEntity
         {
-            Property = "Value2",
-            Parent = parent
+            Property = "Value3"
         };
 
         await using var database = await sqlInstance.Build();

@@ -4,10 +4,10 @@
   "data": {
     "childEntities": [
       {
-        "property": "Value2"
+        "property": "Value3"
       },
       {
-        "property": "Value1"
+        "property": "Value2"
       }
     ]
   }
