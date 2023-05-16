@@ -472,6 +472,90 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task OrderByNullable()
+    {
+        var query = """
+            {
+              parentEntities (orderBy: {path: "Property"})
+              {
+                property
+              }
+            }
+            """;
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity();
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+    }
+
+    [Fact]
+    public async Task OrderByNested()
+    {
+        var query = """
+            {
+              childEntities (orderBy: {path: "Parent.Property"})
+              {
+                property
+              }
+            }
+            """;
+
+        var parent = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity1 = new ChildEntity
+        {
+            Property = "Value1",
+            Parent = parent
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = parent
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { parent, entity1, entity2 });
+    }
+
+    [Fact]
+    public async Task OrderByNestedNullable()
+    {
+        var query = """
+            {
+              childEntities (orderBy: {path: "Parent.Property"})
+              {
+                property
+              }
+            }
+            """;
+
+        var parent = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity1 = new ChildEntity
+        {
+            Property = "Value1",
+            Parent = parent
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = parent
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, new object[] { parent, entity1, entity2 });
+    }
+
+    [Fact]
     public async Task Like()
     {
         var query = """
