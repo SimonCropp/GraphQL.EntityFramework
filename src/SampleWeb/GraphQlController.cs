@@ -23,10 +23,10 @@ public class GraphQlController :
         [FromQuery] string query,
         [FromQuery] string? variables,
         [FromQuery] string? operationName,
-        Cancellation cancellation)
+        Cancel cancel)
     {
         var inputs = variables.ToInputs();
-        return Execute(query, operationName, inputs, cancellation);
+        return Execute(query, operationName, inputs, cancel);
     }
 
     public class GraphQLQuery
@@ -39,16 +39,16 @@ public class GraphQlController :
     [HttpPost]
     public Task Post(
         [FromBody]GraphQLQuery query,
-        Cancellation cancellation)
+        Cancel cancel)
     {
         var inputs = query.Variables.ToInputs();
-        return Execute(query.Query, query.OperationName, inputs, cancellation);
+        return Execute(query.Query, query.OperationName, inputs, cancel);
     }
 
     async Task Execute(string query,
         string? operationName,
         Inputs? variables,
-        Cancellation cancellation)
+        Cancel cancel)
     {
         var options = new ExecutionOptions
         {
@@ -56,7 +56,7 @@ public class GraphQlController :
             Query = query,
             OperationName = operationName,
             Variables = variables,
-            CancellationToken = cancellation,
+            CancellationToken = cancel,
 #if (DEBUG)
             ThrowOnUnhandledException = true,
             EnableMetrics = true,
@@ -64,7 +64,7 @@ public class GraphQlController :
         };
         var executeAsync = await executer.ExecuteAsync(options);
 
-        await writer.WriteAsync(Response.Body, executeAsync, cancellation);
+        await writer.WriteAsync(Response.Body, executeAsync, cancel);
     }
 }
 #endregion

@@ -84,13 +84,13 @@ public class DbContextBuilder :
     public SampleDbContext BuildDbContext() =>
         database.NewDbContext();
 
-    public async Task StartAsync(Cancellation cancellation)
+    public async Task StartAsync(Cancel cancel)
     {
         var sqlInstance = new SqlInstance<SampleDbContext>(buildTemplate: CreateDb, constructInstance: builder => new(builder.Options));
 
         database = await sqlInstance.Build("GraphQLEntityFrameworkSample");
     }
 
-    public Task StopAsync(Cancellation cancellation) =>
+    public Task StopAsync(Cancel cancel) =>
         Task.CompletedTask;
 }
