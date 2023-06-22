@@ -7,7 +7,7 @@
     <PackageReference Include="GraphQL" Version="7.5.0" />
     <PackageReference Include="GraphQL.SystemTextJson" Version="7.5.0" />
     <PackageReference Include="EfLocalDb" Version="15.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
     <PackageReference Include="Verify.SqlServer" Version="5.1.1" />
     <PackageReference Include="Xunit" Version="2.4.2" />
     <PackageReference Include="Verify.Xunit" Version="20.4.0" />
