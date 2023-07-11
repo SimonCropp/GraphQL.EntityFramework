@@ -29,7 +29,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void Nullable_requiring_parse()
     {
-        var guid = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var guid = new Guid("00000000-0000-0000-0000-000000000001");
         var list = new List<TargetWithNullableRequiringParse>
         {
             new()
@@ -58,7 +58,7 @@ public class ExpressionBuilderTests
     [Fact]
     public void Nullable_requiring_parse_In()
     {
-        var guid = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var guid = new Guid("00000000-0000-0000-0000-000000000001");
         var list = new List<TargetWithNullableRequiringParse>
         {
             new()
@@ -232,11 +232,11 @@ public class ExpressionBuilderTests
         {
             new()
             {
-                Member = Guid.Parse("00000000-0000-0000-0000-000000000001")
+                Member = new("00000000-0000-0000-0000-000000000001")
             },
             new()
             {
-                Member = Guid.Parse("00000000-0000-0000-0000-000000000002")
+                Member = new("00000000-0000-0000-0000-000000000002")
             }
         };
 
@@ -253,11 +253,11 @@ public class ExpressionBuilderTests
         {
             new()
             {
-                Member = Guid.Parse("00000000-0000-0000-0000-000000000001")
+                Member = new("00000000-0000-0000-0000-000000000001")
             },
             new()
             {
-                Member = Guid.Parse("00000000-0000-0000-0000-000000000002")
+                Member = new("00000000-0000-0000-0000-000000000002")
             }
         };
 

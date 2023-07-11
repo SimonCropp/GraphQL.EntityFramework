@@ -390,7 +390,7 @@ public partial class IntegrationTests
         {
             yield return new()
             {
-                Id = Guid.Parse("00000000-0000-0000-0000-00000000000" + index),
+                Id = new("00000000-0000-0000-0000-00000000000" + index),
                 Property = "Value" + index
             };
         }
@@ -661,12 +661,12 @@ public partial class IntegrationTests
             """;
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Id = new("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
         await using var database = await sqlInstance.Build();
@@ -687,12 +687,12 @@ public partial class IntegrationTests
         var largeString = new StringBuilder().Append('a', 3 * 1024 * 1024);
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = largeString.ToString()
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Id = new("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
 
@@ -715,7 +715,7 @@ public partial class IntegrationTests
             """;
         var entity1 = new OwnedParent
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Parent value",
             Child1 = new() { Property = "Value1" },
             Child2 = new() { Property = "Value2" }
@@ -750,12 +750,12 @@ public partial class IntegrationTests
             """;
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Id = new("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
         await using var database = await sqlInstance.Build();
@@ -778,7 +778,7 @@ public partial class IntegrationTests
             """;
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ChildEntity
@@ -821,12 +821,12 @@ public partial class IntegrationTests
             """;
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Id = new("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
         await using var database = await sqlInstance.Build();
@@ -850,7 +850,7 @@ public partial class IntegrationTests
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ChildEntity
@@ -897,7 +897,7 @@ public partial class IntegrationTests
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ChildEntity
@@ -950,7 +950,7 @@ public partial class IntegrationTests
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ChildEntity
@@ -1069,7 +1069,7 @@ public partial class IntegrationTests
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
@@ -1095,7 +1095,7 @@ public partial class IntegrationTests
 
         var entity1 = new NamedIdEntity
         {
-            NamedId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            NamedId = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new NamedIdEntity
@@ -1122,17 +1122,17 @@ public partial class IntegrationTests
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Id = new("00000000-0000-0000-0000-000000000002"),
             Property = "Value2"
         };
         var entity3 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Id = new("00000000-0000-0000-0000-000000000003"),
             Property = "Value3"
         };
 
@@ -1404,7 +1404,7 @@ public partial class IntegrationTests
 
         var level3a = new Level3Entity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+            Id = new("00000000-0000-0000-0000-000000000003"),
             Property = "Valuea"
         };
         var level2a = new Level2Entity
@@ -1640,7 +1640,7 @@ public partial class IntegrationTests
 
         var entity1 = new ParentEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var entity2 = new ChildEntity
@@ -1930,7 +1930,7 @@ public partial class IntegrationTests
 
         var derivedEntity1 = new DerivedEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Property = "Value1"
         };
         var childEntity1 = new DerivedChildEntity
@@ -1948,7 +1948,7 @@ public partial class IntegrationTests
 
         var derivedEntity2 = new DerivedWithNavigationEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Id = new("00000000-0000-0000-0000-000000000002"),
             Property = "Value4"
         };
         var childEntity3 = new DerivedChildEntity
