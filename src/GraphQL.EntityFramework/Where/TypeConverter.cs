@@ -40,7 +40,7 @@
         }
         if (type == typeof(Guid?))
         {
-            return values.Select(_ => (Guid?)Guid.Parse(_)).ToList();
+            return values.Select(_ => (Guid?)new Guid(_)).ToList();
         }
 
         if (type == typeof(bool))
@@ -220,7 +220,7 @@
 
         if (type == typeof(Guid))
         {
-            return Guid.Parse(value!);
+            return new Guid(value!);
         }
 
         if (type.IsEnum)
