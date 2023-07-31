@@ -4,7 +4,7 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GraphQL" Version="7.5.0" />
+    <PackageReference Include="GraphQL" Version="7.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.9" />
     <PackageReference Include="Xunit" Version="2.5.0" />
     <PackageReference Include="Verify.Xunit" Version="20.6.0" />
