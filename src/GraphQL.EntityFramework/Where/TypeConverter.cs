@@ -2,9 +2,14 @@
 {
     public static IList ConvertStringsToList(string?[] values, MemberInfo property)
     {
-        if (values.Length != values.Distinct().Count())
+        var hash = new HashSet<string?>();
+        var duplicates = values.Where(_ => !hash.Add(_)).ToArray();
+        if (duplicates.Any())
         {
-            throw new("Duplicates detected for In expression.");
+            throw new($"""
+                       Duplicates detected for In expression. Duplicates:
+                       {string.Join(" * ", duplicates)}
+                       """);
         }
 
         var hasNull = values.Contains(null);
