@@ -38,7 +38,7 @@
         modelBuilder.Entity<ParentEntityView>()
             .ToView("ParentEntityView")
             .HasNoKey()
-            .Property(v => v.Property).HasColumnName("Property");
+            .Property(_ => _.Property).HasColumnName("Property");
         modelBuilder.Entity<CustomTypeEntity>();
         modelBuilder.Entity<WithNullableEntity>();
         modelBuilder.Entity<FilterParentEntity>();
@@ -49,9 +49,9 @@
         modelBuilder.Entity<WithMisNamedQueryChildEntity>();
         modelBuilder.Entity<IncludeNonQueryableB>();
         modelBuilder.Entity<IncludeNonQueryableA>()
-            .HasOne(p => p.IncludeNonQueryableB)
-            .WithOne(i => i.IncludeNonQueryableA)
-            .HasForeignKey<IncludeNonQueryableB>(b => b.IncludeNonQueryableAId);
+            .HasOne(_ => _.IncludeNonQueryableB)
+            .WithOne(_ => _.IncludeNonQueryableA)
+            .HasForeignKey<IncludeNonQueryableB>(_ => _.IncludeNonQueryableAId);
         modelBuilder.Entity<Level1Entity>();
         modelBuilder.Entity<Level2Entity>();
         modelBuilder.Entity<Level3Entity>();
@@ -63,15 +63,15 @@
         modelBuilder.Entity<DerivedEntity>().HasBaseType<InheritedEntity>();
         modelBuilder.Entity<DerivedWithNavigationEntity>()
             .HasBaseType<InheritedEntity>()
-            .HasMany(e => e.Children)
-            .WithOne(e => e.TypedParent!)
-            .HasForeignKey(e => e.TypedParentId);
+            .HasMany(_ => _.Children)
+            .WithOne(_ => _.TypedParent!)
+            .HasForeignKey(_ => _.TypedParentId);
         modelBuilder.Entity<ManyToManyRightEntity>()
-            .HasMany(r => r.Lefts)
+            .HasMany(_ => _.Lefts)
             .WithMany(l => l.Rights)
             .UsingEntity<ManyToManyMiddleEntity>(
-                _ => _.HasOne(xs => xs.ManyToManyLeftEntity).WithMany(),
-                _ => _.HasOne(xs => xs.ManyToManyRightEntity).WithMany());
+                _ => _.HasOne(_ => _.ManyToManyLeftEntity).WithMany(),
+                _ => _.HasOne(_ => _.ManyToManyRightEntity).WithMany());
     }
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {
