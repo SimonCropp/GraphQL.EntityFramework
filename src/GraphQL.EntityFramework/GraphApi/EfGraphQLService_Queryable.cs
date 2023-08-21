@@ -7,10 +7,11 @@ partial class EfGraphQLService<TDbContext>
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
-        Type? graphType = null)
+        Type? graphType = null,
+        bool omitQueryArguments = false)
         where TReturn : class
     {
-        var field = BuildQueryField(graphType, name, resolve);
+        var field = BuildQueryField(graphType, name, resolve, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<object, TReturn>(field);
     }
@@ -19,10 +20,11 @@ partial class EfGraphQLService<TDbContext>
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null)
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
         where TReturn : class
     {
-        var field = BuildQueryField(itemGraphType, name, resolve);
+        var field = BuildQueryField(itemGraphType, name, resolve, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
@@ -30,7 +32,8 @@ partial class EfGraphQLService<TDbContext>
     FieldType BuildQueryField<TSource, TReturn>(
         Type? itemGraphType,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve)
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
+        bool omitQueryArguments)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -57,7 +60,10 @@ partial class EfGraphQLService<TDbContext>
                     }
 
                     query = includeAppender.AddIncludes(query, context);
-                    query = query.ApplyGraphQlArguments(context, names, true);
+                    if (!omitQueryArguments)
+                    {
+                        query = query.ApplyGraphQlArguments(context, names, true);
+                    }
 
                     QueryLogger.Write(query);
 

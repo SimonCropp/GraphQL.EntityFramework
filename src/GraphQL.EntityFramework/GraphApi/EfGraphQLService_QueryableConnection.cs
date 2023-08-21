@@ -10,7 +10,8 @@ partial class EfGraphQLService<TDbContext>
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null)
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
         where TReturn : class
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
@@ -23,7 +24,8 @@ partial class EfGraphQLService<TDbContext>
                 {
                     graph,
                     name,
-                    resolve
+                    resolve,
+                    omitQueryArguments
                 })!;
         }
         catch (Exception exception)
@@ -43,7 +45,8 @@ partial class EfGraphQLService<TDbContext>
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
-        Type? itemGraphType = null)
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
         where TReturn : class
     {
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
@@ -57,7 +60,8 @@ partial class EfGraphQLService<TDbContext>
                 {
                     graph,
                     name,
-                    resolve
+                    resolve,
+                    omitQueryArguments
                 })!;
         }
         catch (Exception exception)
@@ -77,7 +81,8 @@ partial class EfGraphQLService<TDbContext>
     ConnectionBuilder<TSource> AddQueryableConnection<TSource, TGraph, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve)
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
+        bool omitQueryArguments)
         where TGraph : IGraphType
         where TReturn : class
     {
@@ -97,7 +102,10 @@ partial class EfGraphQLService<TDbContext>
 
                     query = includeAppender.AddIncludes(query, context);
                     var names = GetKeyNames<TReturn>();
-                    query = query.ApplyGraphQlArguments(context, names, true);
+                    if (!omitQueryArguments)
+                    {
+                        query = query.ApplyGraphQlArguments(context, names, true);
+                    }
 
                     try
                     {
