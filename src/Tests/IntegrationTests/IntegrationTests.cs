@@ -673,7 +673,6 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, true, new object[] { entity1, entity2 });
     }
 
-
     [Fact]
     public async Task Single_Found_Large_Text_NoAsync()
     {
@@ -1527,7 +1526,6 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, true, new object[] { entity1, entity2, entity3, entity4, entity5 });
     }
-
 
     [Fact]
     public async Task Query_Large_Text_NoAsync()
