@@ -706,8 +706,8 @@ public class InterfaceGraphType :
     public InterfaceGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
-        Field(e => e.Id);
-        Field(e => e.Property, nullable: true);
+        Field(_ => _.Id);
+        Field(_ => _.Property, nullable: true);
         AddNavigationConnectionField<DerivedChildEntity>(
             name: "childrenFromInterface",
             includeNames: new[] { "ChildrenFromBase" });
@@ -728,7 +728,7 @@ public class DerivedGraphType :
     {
         AddNavigationConnectionField(
             name: "childrenFromInterface",
-            e => e.Source.ChildrenFromBase);
+            _ => _.Source.ChildrenFromBase);
         AutoMap();
         Interface<InterfaceGraphType>();
         IsTypeOf = obj => obj is DerivedEntity;
