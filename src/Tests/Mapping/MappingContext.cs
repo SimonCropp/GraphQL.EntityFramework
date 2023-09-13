@@ -14,7 +14,7 @@ public class MappingContext :
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var parentBuilder = modelBuilder.Entity<MappingParent>();
-        parentBuilder.Property(e => e.JsonProperty)
+        parentBuilder.Property(_ => _.JsonProperty)
             .HasConversion(
                 v => JsonConvert.SerializeObject(v),
                 v => JsonConvert.DeserializeObject<IList<string>>(v)!);

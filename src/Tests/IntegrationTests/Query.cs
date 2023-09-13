@@ -19,7 +19,7 @@
             {
                 var dataContext = context.DbContext;
                 return dataContext.IncludeNonQueryableBs.AsQueryable()
-                    .Select(p => p.IncludeNonQueryableA);
+                    .Select(_ => _.IncludeNonQueryableA);
             });
 
         AddQueryField(

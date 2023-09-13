@@ -23,13 +23,13 @@
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Company>()
-            .HasMany(c => c.Employees)
-            .WithOne(e => e.Company)
+            .HasMany(_ => _.Employees)
+            .WithOne(_ => _.Company)
             .IsRequired();
         modelBuilder.Entity<Employee>();
 
         var order = modelBuilder.Entity<OrderDetail>();
-        order.OwnsOne(p => p.BillingAddress);
-        order.OwnsOne(p => p.ShippingAddress);
+        order.OwnsOne(_ => _.BillingAddress);
+        order.OwnsOne(_ => _.ShippingAddress);
     }
 }

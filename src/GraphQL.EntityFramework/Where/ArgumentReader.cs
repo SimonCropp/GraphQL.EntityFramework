@@ -17,7 +17,7 @@
             return argument switch
             {
                 long l => l.ToString(CultureInfo.InvariantCulture),
-                int i => i.ToString(CultureInfo.InvariantCulture),
+                int _ => _.ToString(CultureInfo.InvariantCulture),
                 string s => s,
                 _ => throw new($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is not supported.")
             };
