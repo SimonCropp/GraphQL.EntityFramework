@@ -34,7 +34,8 @@
     static ReflectionCache()
     {
         StringAny = typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
-            .Single(_ => _.Name == "Any" && m.GetParameters().Length == 2)
+            .Single(_ => _.Name == "Any" &&
+                         _.GetParameters().Length == 2)
             .MakeGenericMethod(typeof(string));
         guidListContains = GetContains<Guid>();
         guidNullableListContains = GetContains<Guid?>();

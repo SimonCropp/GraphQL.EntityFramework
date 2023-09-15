@@ -118,7 +118,8 @@ public static class ExpressionBuilder<T>
         var subPredicate = (Expression) typeof(ExpressionBuilder<>)
             .MakeGenericType(listItemType)
             .GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Single(_ => _.Name == "BuildPredicate" && m.GetParameters().Length == 5)
+            .Single(_ => _.Name == "BuildPredicate" &&
+                         _.GetParameters().Length == 5)
             .Invoke(new(), new object[]
             {
                 listPath,
@@ -131,7 +132,8 @@ public static class ExpressionBuilder<T>
         // Generate a method info for the Any Enumerable Static Method
         var anyInfo = typeof(Enumerable)
             .GetMethods(BindingFlags.Static | BindingFlags.Public)
-            .First(_ => _.Name == "Any" && m.GetParameters().Length == 2)
+            .First(_ => _.Name == "Any" &&
+                        _.GetParameters().Length == 2)
             .MakeGenericMethod(listItemType);
 
         // Create Any Expression Call
