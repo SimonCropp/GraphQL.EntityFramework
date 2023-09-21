@@ -6,6 +6,8 @@
 Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1.system-linq-iqueryable-provider) support to [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet)
 
 
+**See [Milestones](../../milestones?state=closed) for release notes.**
+
 ## NuGet package
 
 https://nuget.org/packages/GraphQL.EntityFramework/
