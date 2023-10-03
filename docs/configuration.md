@@ -687,11 +687,10 @@ public abstract class InheritedEntity
 <!-- snippet: DerivedEntity.cs -->
 <a id='snippet-DerivedEntity.cs'></a>
 ```cs
-public class DerivedEntity : InheritedEntity
-{
-}
+public class DerivedEntity :
+    InheritedEntity;
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedEntity.cs#L1-L4' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedEntity.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedEntity.cs#L1-L3' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedEntity.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
