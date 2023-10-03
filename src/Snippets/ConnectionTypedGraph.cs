@@ -17,21 +17,15 @@ class ConnectionTypedGraph
     #endregion
 
     internal class MyDbContext :
-        DbContext
-    {
-    }
+        DbContext;
 
     public class Company
     {
         public List<Employee> Employees { get; set; } = null!;
     }
 
-    public class Employee
-    {
-    }
+    public class Employee;
 
     public class EmployeeGraph :
-        ObjectGraphType<Employee>
-    {
-    }
+        ObjectGraphType<Employee>;
 }

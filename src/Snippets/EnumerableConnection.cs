@@ -42,12 +42,8 @@ public class EnumerableConnection
         public List<Employee> Employees { get; set; } = null!;
     }
 
-    public class Employee
-    {
-    }
+    public class Employee;
 
     public class EmployeeGraph :
-        ObjectGraphType<Employee>
-    {
-    }
+        ObjectGraphType<Employee>;
 }

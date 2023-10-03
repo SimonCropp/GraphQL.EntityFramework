@@ -35,9 +35,7 @@ public class GlobalFiltersTests
     }
 
     public class ChildTarget :
-        BaseTarget
-    {
-    }
+        BaseTarget;
 
     public class BaseTarget
     {

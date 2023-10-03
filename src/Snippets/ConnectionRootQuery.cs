@@ -14,18 +14,10 @@
 
     #endregion
 
-    public class Company
-    {
-    }
+    public class Company;
 
-    class CompanyGraph :
-        EfObjectGraphType<MyDbContext, Company>
-    {
-        public CompanyGraph(IEfGraphQLService<MyDbContext> efGraphQlService) :
-            base(efGraphQlService)
-        {
-        }
-    }
+    class CompanyGraph(IEfGraphQLService<MyDbContext> efGraphQlService) :
+        EfObjectGraphType<MyDbContext, Company>(efGraphQlService);
 
     public class MyDbContext :
         DbContext

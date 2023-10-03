@@ -12,16 +12,14 @@
 
     public static bool TryReadIds(IResolveFieldContext context, [NotNullWhen(true)] out string[]? result)
     {
-        string ArgumentToExpression(object argument)
-        {
-            return argument switch
+        static string ArgumentToExpression(object argument) =>
+            argument switch
             {
                 long l => l.ToString(CultureInfo.InvariantCulture),
                 int i => i.ToString(CultureInfo.InvariantCulture),
                 string s => s,
                 _ => throw new($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is not supported.")
             };
-        }
 
         var arguments = context.Arguments;
         if (arguments == null)

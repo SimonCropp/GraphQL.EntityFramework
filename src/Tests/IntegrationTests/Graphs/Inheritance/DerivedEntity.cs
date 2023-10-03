@@ -1,4 +1,3 @@
 ﻿
-public class DerivedEntity : InheritedEntity
-{
-}
+public class DerivedEntity :
+    InheritedEntity;

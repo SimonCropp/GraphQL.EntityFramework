@@ -26,7 +26,5 @@ public class GlobalFilterSnippets
     }
 
     public class MyDbContext :
-        DbContext
-    {
-    }
+        DbContext;
 }
