@@ -1,7 +1,4 @@
-﻿class HttpContextCapture
+﻿class HttpContextCapture(IHttpContextAccessor httpContextAccessor)
 {
-    public IHttpContextAccessor HttpContextAccessor { get; }
-
-    public HttpContextCapture(IHttpContextAccessor httpContextAccessor) =>
-        HttpContextAccessor = httpContextAccessor;
+    public IHttpContextAccessor HttpContextAccessor { get; } = httpContextAccessor;
 }

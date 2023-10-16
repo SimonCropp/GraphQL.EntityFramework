@@ -1,9 +1,2 @@
-﻿class GetGraphException :
-    Exception
-{
-    public GetGraphException(string message):
-        base(message)
-    {
-
-    }
-}
+﻿class GetGraphException(string message) :
+    Exception(message);

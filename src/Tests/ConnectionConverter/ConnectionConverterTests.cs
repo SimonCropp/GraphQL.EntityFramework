@@ -88,15 +88,10 @@ public class ConnectionConverterTests
         public string? Property { get; set; }
     }
 
-    public class MyContext :
-        DbContext
+    public class MyContext(DbContextOptions options) :
+        DbContext(options)
     {
         public DbSet<Entity> Entities { get; set; } = null!;
-
-        public MyContext(DbContextOptions options) :
-            base(options)
-        {
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) =>
             modelBuilder.Entity<Entity>();

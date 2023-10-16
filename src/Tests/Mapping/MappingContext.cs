@@ -1,15 +1,10 @@
 ﻿using Newtonsoft.Json;
 
-public class MappingContext :
-    DbContext
+public class MappingContext(DbContextOptions options) :
+    DbContext(options)
 {
     public DbSet<MappingParent> Parents { get; set; } = null!;
     public DbSet<MappingChild> Children { get; set; } = null!;
-
-    public MappingContext(DbContextOptions options) :
-        base(options)
-    {
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

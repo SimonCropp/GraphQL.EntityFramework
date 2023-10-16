@@ -1,12 +1,10 @@
 namespace GraphQL.EntityFramework;
 
-public class EfObjectGraphType<TDbContext, TSource> :
+public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext> graphQlService) :
     ObjectGraphType<TSource>
     where TDbContext : DbContext
 {
-    public IEfGraphQLService<TDbContext> GraphQlService { get; }
-
-    public EfObjectGraphType(IEfGraphQLService<TDbContext> graphQlService) => GraphQlService = graphQlService;
+    public IEfGraphQLService<TDbContext> GraphQlService { get; } = graphQlService;
 
     /// <summary>
     /// Map all un-mapped properties. Underlying behaviour is:

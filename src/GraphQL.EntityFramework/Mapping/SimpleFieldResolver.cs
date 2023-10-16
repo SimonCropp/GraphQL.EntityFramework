@@ -1,11 +1,6 @@
-﻿class SimpleFieldResolver<TSource> :
+﻿class SimpleFieldResolver<TSource>(Func<TSource, object?> func) :
     IFieldResolver
 {
-    Func<TSource, object?> func;
-
-    public SimpleFieldResolver(Func<TSource, object?> func) =>
-        this.func = func;
-
     public ValueTask<object?> ResolveAsync(IResolveFieldContext context)
     {
         var source = (TSource) context.Source!;

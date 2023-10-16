@@ -5,18 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 #region GraphQlController
 [Route("[controller]")]
 [ApiController]
-public class GraphQlController :
+public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
     Controller
 {
-    IDocumentExecuter executer;
-    ISchema schema;
     static GraphQLSerializer writer = new(true);
-
-    public GraphQlController(ISchema schema, IDocumentExecuter executer)
-    {
-        this.schema = schema;
-        this.executer = executer;
-    }
 
     [HttpGet]
     public Task Get(

@@ -22,12 +22,6 @@
         #endregion
     }
 
-    public class MyDbContext :
-        DbContext
-    {
-        public MyDbContext(DbContextOptions options) :
-            base(options)
-        {
-        }
-    }
+    public class MyDbContext(DbContextOptions options) :
+        DbContext(options);
 }

@@ -1,12 +1,7 @@
-﻿public class DependencyDbContext :
-    DbContext
+﻿public class DependencyDbContext(DbContextOptions options) :
+    DbContext(options)
 {
     public DbSet<Entity> Entities { get; set; } = null!;
-
-    public DependencyDbContext(DbContextOptions options) :
-        base(options)
-    {
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.Entity<Entity>();
 }

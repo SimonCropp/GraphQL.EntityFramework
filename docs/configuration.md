@@ -235,18 +235,10 @@ With the DbContext existing in the container, it can be resolved in the controll
 ```cs
 [Route("[controller]")]
 [ApiController]
-public class GraphQlController :
+public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
     Controller
 {
-    IDocumentExecuter executer;
-    ISchema schema;
     static GraphQLSerializer writer = new(true);
-
-    public GraphQlController(ISchema schema, IDocumentExecuter executer)
-    {
-        this.schema = schema;
-        this.executer = executer;
-    }
 
     [HttpGet]
     public Task Get(
@@ -298,7 +290,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L5-L70' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L5-L62' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
