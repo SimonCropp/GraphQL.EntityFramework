@@ -39,6 +39,14 @@
             resolve: _ => _.DbContext.NamedEntities);
 
         AddQueryField(
+            name: "nullChildEntities",
+            resolve: _ => _.DbContext.NonNullChildEntities);
+
+        AddQueryField(
+            name: "nonNullParentEntities",
+            resolve: _ => _.DbContext.NonNullParentEntities);
+
+        AddQueryField(
             name: "misNamed",
             resolve: _ => _.DbContext.WithMisNamedQueryParentEntities);
 
