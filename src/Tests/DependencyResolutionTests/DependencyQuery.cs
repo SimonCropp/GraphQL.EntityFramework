@@ -5,5 +5,5 @@
         base(efGraphQlService) =>
         AddQueryField(
             name: "entities",
-            resolve: context => context.DbContext.Entities);
+            resolve: _ => _.DbContext.Entities);
 }

@@ -5,7 +5,7 @@
         base(efGraphQlService) =>
         AddSingleField(
             name: "parentEntityMutation",
-            resolve: context => context.DbContext.ParentEntities,
+            resolve: _ => _.DbContext.ParentEntities,
             mutate: (context, entity) =>
             {
                 entity.Property = "Foo";

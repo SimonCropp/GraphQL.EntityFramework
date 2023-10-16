@@ -9,11 +9,11 @@
             base(graphQlService)
         {
             AddSingleField(
-                resolve: context => context.DbContext.Companies,
+                resolve: _ => _.DbContext.Companies,
                 name: "company");
             AddQueryField(
                 name: "companies",
-                resolve: context => context.DbContext.Companies);
+                resolve: _ => _.DbContext.Companies);
         }
     }
 
