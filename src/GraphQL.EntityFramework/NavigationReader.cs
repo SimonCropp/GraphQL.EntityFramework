@@ -19,11 +19,12 @@
         var navigations = entity.GetNavigations()
             .Cast<INavigationBase>().Concat(entity.GetSkipNavigations());
         return navigations
-            .Select(_ =>
-            {
-                var (itemType, isCollection) = GetNavigationType(_);
-                return new Navigation(_.Name, itemType, _.PropertyInfo!.IsNullable(), isCollection);
-            })
+            .Select(
+                _ =>
+                {
+                    var (itemType, isCollection) = GetNavigationType(_);
+                    return new Navigation(_.Name, itemType, _.PropertyInfo!.IsNullable(), isCollection);
+                })
             .ToList();
     }
 
