@@ -314,19 +314,13 @@ A user context that exposes both types.
 <!-- snippet: MultiUserContext -->
 <a id='snippet-multiusercontext'></a>
 ```cs
-public class UserContext: Dictionary<string, object?>
+public class UserContext(DbContext1 context1, DbContext2 context2) : Dictionary<string, object?>
 {
-    public UserContext(DbContext1 context1, DbContext2 context2)
-    {
-        DbContext1 = context1;
-        DbContext2 = context2;
-    }
-
-    public readonly DbContext1 DbContext1;
-    public readonly DbContext2 DbContext2;
+    public readonly DbContext1 DbContext1 = context1;
+    public readonly DbContext2 DbContext2 = context2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L80-L92' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L80-L86' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

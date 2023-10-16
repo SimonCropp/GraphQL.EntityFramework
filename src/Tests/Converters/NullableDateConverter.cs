@@ -1,12 +1,8 @@
-public class NullableDateConverter : Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<Date?, DateTime?>
-{
-    public NullableDateConverter() : base(
-        d => d == null
+public class NullableDateConverter() :
+    ValueConversion.ValueConverter<Date?, DateTime?>(
+        _ => _ == null
             ? null
-            : new DateTime?(d.Value.ToDateTime(Time.MinValue)),
-        d => d == null
+            : new DateTime?(_.Value.ToDateTime(Time.MinValue)),
+        _ => _ == null
             ? null
-            : new Date?(Date.FromDateTime(d.Value)))
-    {
-    }
-}
+            : new Date?(Date.FromDateTime(_.Value)));

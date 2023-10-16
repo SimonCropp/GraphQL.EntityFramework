@@ -1,8 +1,4 @@
-public class TimeConverter : Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<Time, TimeSpan>
-{
-    public TimeConverter() : base(
-        t => t.ToTimeSpan(),
-        t => Time.FromTimeSpan(t))
-    {
-    }
-}
+public class TimeConverter() :
+    ValueConversion.ValueConverter<Time, TimeSpan>(
+        _ => _.ToTimeSpan(),
+        _ => Time.FromTimeSpan(_));

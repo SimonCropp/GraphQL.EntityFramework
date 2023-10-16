@@ -2098,7 +2098,7 @@ public partial class IntegrationTests
 
         await using var context = database.NewDbContext();
         SqlRecording.StartRecording();
-        var result = "";
+        string result;
         try
         {
             result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking, disableAsync);

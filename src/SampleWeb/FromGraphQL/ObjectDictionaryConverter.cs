@@ -104,7 +104,9 @@ class ObjectDictionaryConverter : JsonConverter<Dictionary<string, object?>>
             return dm;
         }
 
-        var span = reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan;
+        var span = reader.HasValueSequence ?
+            reader.ValueSequence.ToArray() :
+            reader.ValueSpan;
         throw new NotImplementedException($"Unexpected Number value. Raw text was: {Encoding.UTF8.GetString(span)}");
     }
 }
