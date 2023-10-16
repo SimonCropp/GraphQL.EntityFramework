@@ -16,12 +16,13 @@
 
     static IReadOnlyList<Navigation> GetNavigations(IEntityType entity)
     {
-        var navigations = [..entity.GetNavigations(), ..entity.GetSkipNavigations()];
+        List<INavigationBase> navigations = [..entity.GetNavigations(), ..entity.GetSkipNavigations()];
         var idProperties = entity.GetProperties()
-            .Where(_ => _.Name.EndsWith("Id"))
+            .Where(_ => _.Name.EndsWith("Id") &&
+                        _.PropertyInfo!=null)
             .ToDictionary(
                 _ => _.Name,
-                _.PropertyInfo!.IsNullable());
+                _ => _.PropertyInfo!.IsNullable());
         return navigations
             .Select(
                 _ =>
