@@ -1,10 +1,5 @@
-﻿class IncludeAppender
+﻿class IncludeAppender(IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations)
 {
-    IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations;
-
-    public IncludeAppender(IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations) =>
-        this.navigations = navigations;
-
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class
     {

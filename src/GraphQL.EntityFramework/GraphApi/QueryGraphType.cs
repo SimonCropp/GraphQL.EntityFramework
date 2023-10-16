@@ -1,13 +1,10 @@
 ﻿namespace GraphQL.EntityFramework;
 
-public class QueryGraphType<TDbContext> :
+public class QueryGraphType<TDbContext>(IEfGraphQLService<TDbContext> graphQlService) :
     ObjectGraphType
     where TDbContext : DbContext
 {
-    public QueryGraphType(IEfGraphQLService<TDbContext> graphQlService) =>
-        GraphQlService = graphQlService;
-
-    public IEfGraphQLService<TDbContext> GraphQlService { get; }
+    public IEfGraphQLService<TDbContext> GraphQlService { get; } = graphQlService;
 
     public TDbContext ResolveDbContext<TSource>(IResolveFieldContext<TSource> context) =>
         GraphQlService.ResolveDbContext(context);

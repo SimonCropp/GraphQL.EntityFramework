@@ -2,17 +2,8 @@
 
 namespace GraphQL.EntityFramework.Testing;
 
-public class ClientQueryExecutor
+public class ClientQueryExecutor(Func<object, string> json, string uri = "graphql")
 {
-    string uri = "graphql";
-    Func<object, string> toJson;
-
-    public ClientQueryExecutor(Func<object, string> toJson, string uri = "graphql")
-    {
-        this.uri = uri;
-        this.toJson = toJson;
-    }
-
     public Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
     {
         Guard.AgainstWhiteSpace(nameof(query), query);
@@ -48,7 +39,7 @@ public class ClientQueryExecutor
             return string.Empty;
         }
 
-        return toJson(target);
+        return json(target);
     }
 
     static string CompressQuery(string query) =>

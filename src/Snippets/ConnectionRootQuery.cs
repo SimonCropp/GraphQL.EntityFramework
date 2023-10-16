@@ -9,7 +9,7 @@
             base(graphQlService) =>
             AddQueryConnectionField(
                 name: "companies",
-                resolve: context => context.DbContext.Companies);
+                resolve: _ => _.DbContext.Companies);
     }
 
     #endregion

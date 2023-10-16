@@ -1,7 +1,5 @@
-public class UserContext : Dictionary<string, object>
+public class UserContext(SampleDbContext context) :
+    Dictionary<string, object>
 {
-    public UserContext(SampleDbContext context) =>
-        DbContext = context;
-
-    public readonly SampleDbContext DbContext;
+    public readonly SampleDbContext DbContext = context;
 }

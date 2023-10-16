@@ -66,11 +66,11 @@ public class Query :
         base(graphQlService)
     {
         AddSingleField(
-            resolve: context => context.DbContext.Companies,
+            resolve: _ => _.DbContext.Companies,
             name: "company");
         AddQueryField(
             name: "companies",
-            resolve: context => context.DbContext.Companies);
+            resolve: _ => _.DbContext.Companies);
     }
 }
 ```
@@ -95,10 +95,10 @@ public class CompanyGraph :
     {
         AddNavigationListField(
             name: "employees",
-            resolve: context => context.Source.Employees);
+            resolve: _ => _.Source.Employees);
         AddNavigationConnectionField(
             name: "employeesConnection",
-            resolve: context => context.Source.Employees,
+            resolve: _ => _.Source.Employees,
             includeNames: new[] {"Employees"});
         AutoMap();
     }
@@ -128,7 +128,7 @@ public class Query :
         base(graphQlService) =>
         AddQueryConnectionField(
             name: "companies",
-            resolve: context => context.DbContext.Companies);
+            resolve: _ => _.DbContext.Companies);
 }
 ```
 <sup><a href='/src/Snippets/ConnectionRootQuery.cs#L3-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
@@ -221,7 +221,7 @@ public class CompanyGraph :
         base(graphQlService) =>
         AddNavigationConnectionField(
             name: "employees",
-            resolve: context => context.Source.Employees);
+            resolve: _ => _.Source.Employees);
 }
 ```
 <sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L5-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectiontypedgraph' title='Start of snippet'>anchor</a></sup>

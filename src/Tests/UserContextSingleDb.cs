@@ -1,9 +1,6 @@
-﻿public class UserContextSingleDb<TDbContext> :
+﻿public class UserContextSingleDb<TDbContext>(TDbContext context) :
     Dictionary<string, object?>
     where TDbContext : DbContext
 {
-    public UserContextSingleDb(TDbContext context) =>
-        DbContext = context;
-
-    public readonly TDbContext DbContext;
+    public readonly TDbContext DbContext = context;
 }

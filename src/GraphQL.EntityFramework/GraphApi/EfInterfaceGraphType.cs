@@ -1,13 +1,10 @@
 ﻿namespace GraphQL.EntityFramework;
 
-public class EfInterfaceGraphType<TDbContext, TSource> :
+public class EfInterfaceGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext> graphQlService) :
     InterfaceGraphType<TSource>
     where TDbContext : DbContext
 {
-    public IEfGraphQLService<TDbContext> GraphQlService { get; }
-
-    public EfInterfaceGraphType(IEfGraphQLService<TDbContext> graphQlService) =>
-        GraphQlService = graphQlService;
+    public IEfGraphQLService<TDbContext> GraphQlService { get; } = graphQlService;
 
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,

@@ -235,18 +235,10 @@ With the DbContext existing in the container, it can be resolved in the controll
 ```cs
 [Route("[controller]")]
 [ApiController]
-public class GraphQlController :
+public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
     Controller
 {
-    IDocumentExecuter executer;
-    ISchema schema;
     static GraphQLSerializer writer = new(true);
-
-    public GraphQlController(ISchema schema, IDocumentExecuter executer)
-    {
-        this.schema = schema;
-        this.executer = executer;
-    }
 
     [HttpGet]
     public Task Get(
@@ -298,7 +290,7 @@ public class GraphQlController :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L5-L70' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L5-L62' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -314,19 +306,13 @@ A user context that exposes both types.
 <!-- snippet: MultiUserContext -->
 <a id='snippet-multiusercontext'></a>
 ```cs
-public class UserContext: Dictionary<string, object?>
+public class UserContext(DbContext1 context1, DbContext2 context2) : Dictionary<string, object?>
 {
-    public UserContext(DbContext1 context1, DbContext2 context2)
-    {
-        DbContext1 = context1;
-        DbContext2 = context2;
-    }
-
-    public readonly DbContext1 DbContext1;
-    public readonly DbContext2 DbContext2;
+    public readonly DbContext1 DbContext1 = context1;
+    public readonly DbContext2 DbContext2 = context2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L80-L92' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L80-L86' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

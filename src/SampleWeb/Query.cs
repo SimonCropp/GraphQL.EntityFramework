@@ -10,26 +10,26 @@ public class Query :
     {
         AddQueryField(
             name: "companies",
-            resolve: context => context.DbContext.Companies);
+            resolve: _ => _.DbContext.Companies);
 
         #endregion
 
         AddSingleField(
-            resolve: context => context.DbContext.Companies,
+            resolve: _ => _.DbContext.Companies,
             name: "company");
 
         AddSingleField(
-            resolve: context => context.DbContext.Companies,
+            resolve: _ => _.DbContext.Companies,
             name: "companyOrNull",
             nullable: true);
 
         AddQueryConnectionField(
             name: "companiesConnection",
-            resolve: context => context.DbContext.Companies);
+            resolve: _ => _.DbContext.Companies);
 
         AddQueryField(
             name: "employees",
-            resolve: context => context.DbContext.Employees);
+            resolve: _ => _.DbContext.Employees);
 
         AddQueryField(
             name: "employeesByArgument",
@@ -42,7 +42,7 @@ public class Query :
 
         AddQueryConnectionField(
             name: "employeesConnection",
-            resolve: context => context.DbContext.Employees);
+            resolve: _ => _.DbContext.Employees);
 
         #region ManuallyApplyWhere
 

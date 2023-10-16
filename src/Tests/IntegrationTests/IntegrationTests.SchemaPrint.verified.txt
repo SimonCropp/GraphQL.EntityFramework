@@ -219,6 +219,20 @@ type NamedId {
   property: String
 }
 
+type NonNullChild {
+  nonNullParentEntity: NonNullParent!
+  id: ID!
+  nonNullParentEntityId: ID!
+  property: String
+}
+
+type NonNullParent {
+  nonNullChildEntity: NonNullChild!
+  id: ID!
+  nonNullChildEntityId: Int!
+  property: String
+}
+
 input OrderBy {
   path: String!
   descending: Boolean
@@ -285,6 +299,8 @@ type Query {
   level1Entities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Level1!]!
   withNullableEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithNullable!]!
   namedEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [NamedId!]!
+  nullChildEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [NonNullChild!]!
+  nonNullParentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [NonNullParent!]!
   misNamed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryParent!]!
   parentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
   childEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!

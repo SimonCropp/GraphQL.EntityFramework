@@ -6,11 +6,11 @@
     {
         AddQueryField(
             name: "customType",
-            resolve: context => context.DbContext.CustomTypeEntities);
+            resolve: _ => _.DbContext.CustomTypeEntities);
 
         AddQueryField(
             name: "skipLevel",
-            resolve: context => context.DbContext.Level1Entities,
+            resolve: _ => _.DbContext.Level1Entities,
             graphType: typeof(SkipLevelGraph));
 
         AddQueryField(
@@ -24,114 +24,122 @@
 
         AddQueryField(
             name: "manyChildren",
-            resolve: context => context.DbContext.WithManyChildrenEntities);
+            resolve: _ => _.DbContext.WithManyChildrenEntities);
 
         AddQueryField(
             name: "level1Entities",
-            resolve: context => context.DbContext.Level1Entities);
+            resolve: _ => _.DbContext.Level1Entities);
 
         AddQueryField(
             name: "withNullableEntities",
-            resolve: context => context.DbContext.WithNullableEntities);
+            resolve: _ => _.DbContext.WithNullableEntities);
 
         AddQueryField(
             name: "namedEntities",
-            resolve: context => context.DbContext.NamedEntities);
+            resolve: _ => _.DbContext.NamedEntities);
+
+        AddQueryField(
+            name: "nullChildEntities",
+            resolve: _ => _.DbContext.NonNullChildEntities);
+
+        AddQueryField(
+            name: "nonNullParentEntities",
+            resolve: _ => _.DbContext.NonNullParentEntities);
 
         AddQueryField(
             name: "misNamed",
-            resolve: context => context.DbContext.WithMisNamedQueryParentEntities);
+            resolve: _ => _.DbContext.WithMisNamedQueryParentEntities);
 
         AddQueryField(
             name: "parentEntities",
-            resolve: context => context.DbContext.ParentEntities);
+            resolve: _ => _.DbContext.ParentEntities);
 
         AddQueryField(
             name: "childEntities",
-            resolve: context => context.DbContext.ChildEntities);
+            resolve: _ => _.DbContext.ChildEntities);
 
         AddQueryField(
             name: "dateEntities",
-            resolve: context => context.DbContext.DateEntities);
+            resolve: _ => _.DbContext.DateEntities);
 
         AddQueryField(
             name: "enumEntities",
-            resolve: context => context.DbContext.EnumEntities);
+            resolve: _ => _.DbContext.EnumEntities);
 
         AddQueryField(
             name: "timeEntities",
-            resolve: context => context.DbContext.TimeEntities);
+            resolve: _ => _.DbContext.TimeEntities);
 
         efGraphQlService.AddQueryConnectionField<ParentGraphType, ParentEntity>(
             this,
             name: "parentEntitiesConnection",
-            resolve: context => context.DbContext.ParentEntities)
+            resolve: _ => _.DbContext.ParentEntities)
             .PageSize(10);
 
         efGraphQlService.AddQueryConnectionField<ChildGraphType, ChildEntity>(
             this,
             name: "childEntitiesConnection",
-            resolve: context => context.DbContext.ChildEntities);
+            resolve: _ => _.DbContext.ChildEntities);
 
         AddQueryField(
             name: "parentEntitiesFiltered",
-            resolve: context => context.DbContext.FilterParentEntities);
+            resolve: _ => _.DbContext.FilterParentEntities);
 
         efGraphQlService.AddQueryConnectionField<FilterParentGraphType, FilterParentEntity>(
             this,
             name: "parentEntitiesConnectionFiltered",
-            resolve: context => context.DbContext.FilterParentEntities)
+            resolve: _ => _.DbContext.FilterParentEntities)
             .PageSize(10);
 
         AddSingleField(
             name: "parentEntity",
-            resolve: context => context.DbContext.ParentEntities);
+            resolve: _ => _.DbContext.ParentEntities);
 
         AddSingleField(
             name: "parentEntityWithNoArgs",
-            resolve: context => context.DbContext.ParentEntities.Where(_ => _.Id == new Guid("00000000-0000-0000-0000-000000000001")),
+            resolve: _ => _.DbContext.ParentEntities.Where(_ => _.Id == new Guid("00000000-0000-0000-0000-000000000001")),
             omitQueryArguments: true);
 
         AddSingleField(
             name: "parentEntityNullable",
-            resolve: context => context.DbContext.ParentEntities,
+            resolve: _ => _.DbContext.ParentEntities,
             nullable: true);
 
         efGraphQlService.AddQueryConnectionField(
             this,
             itemGraphType: typeof(InterfaceGraphType),
             name: "interfaceGraphConnection",
-            resolve: context => context.DbContext.InheritedEntities);
+            resolve: _ => _.DbContext.InheritedEntities);
 
         AddQueryField(
             name: "manyToManyLeftEntities",
-            resolve: context => context.DbContext.ManyToManyLeftEntities);
+            resolve: _ => _.DbContext.ManyToManyLeftEntities);
 
         AddQueryField(
             name: "manyToManyRightEntities",
-            resolve: context => context.DbContext.ManyToManyRightEntities);
+            resolve: _ => _.DbContext.ManyToManyRightEntities);
 
         AddQueryField(
             name: "parentEntityViews",
-            resolve: context => context.DbContext.ParentEntityView);
+            resolve: _ => _.DbContext.ParentEntityView);
 
         efGraphQlService.AddQueryConnectionField<ParentEntityViewGraphType, ParentEntityView>(
             this,
             name: "parentEntitiesViewConnection",
-            resolve: context => context.DbContext.ParentEntityView);
+            resolve: _ => _.DbContext.ParentEntityView);
 
         AddSingleField(
             name: "parentEntityView",
-            resolve: context => context.DbContext.ParentEntityView);
+            resolve: _ => _.DbContext.ParentEntityView);
 
         AddSingleField(
             name: "parentEntityViewNullable",
-            resolve: context => context.DbContext.ParentEntityView,
+            resolve: _ => _.DbContext.ParentEntityView,
             nullable: true);
 
         AddSingleField(
             name: "ownedParent",
-            resolve: context => context.DbContext.OwnedParents,
+            resolve: _ => _.DbContext.OwnedParents,
             nullable: true);
     }
 }

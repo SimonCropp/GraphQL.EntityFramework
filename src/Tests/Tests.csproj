@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <NoWarn>EF1000</NoWarn>
+    <NoWarn>$(NoWarn);EF1000</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" Version="7.6.1" />

@@ -1,8 +1,8 @@
-public class NullableTimeConverter : Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<Time?, TimeSpan?>
-{
-    public NullableTimeConverter() : base(
-        t => t == null ? null : new TimeSpan?(t.Value.ToTimeSpan()),
-        t => t == null ? null : new Time?(Time.FromTimeSpan(t.Value)))
-    {
-    }
-}
+public class NullableTimeConverter() :
+    ValueConversion.ValueConverter<Time?, TimeSpan?>(
+        _ => _ == null ?
+            null :
+            new TimeSpan?(_.Value.ToTimeSpan()),
+        _ => _ == null ?
+            null :
+            new Time?(Time.FromTimeSpan(_.Value)));

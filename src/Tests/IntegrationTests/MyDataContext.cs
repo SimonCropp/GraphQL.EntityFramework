@@ -1,5 +1,5 @@
-﻿public class IntegrationDbContext :
-    DbContext
+﻿public class IntegrationDbContext(DbContextOptions options) :
+    DbContext(options)
 {
     public DbSet<ParentEntity> ParentEntities { get; set; } = null!;
     public DbSet<DateEntity> DateEntities { get; set; } = null!;
@@ -27,11 +27,8 @@
     public DbSet<ManyToManyRightEntity> ManyToManyRightEntities { get; set; } = null!;
     public DbSet<ManyToManyMiddleEntity> ManyToManyMiddleEntities { get; set; } = null!;
     public DbSet<OwnedParent> OwnedParents { get; set; } = null!;
-
-    public IntegrationDbContext(DbContextOptions options) :
-        base(options)
-    {
-    }
+    public DbSet<NonNullChildEntity> NonNullChildEntities { get; set; } = null!;
+    public DbSet<NonNullParentEntity> NonNullParentEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +36,8 @@
             .ToView("ParentEntityView")
             .HasNoKey()
             .Property(_ => _.Property).HasColumnName("Property");
+        modelBuilder.Entity<NonNullChildEntity>();
+        modelBuilder.Entity<NonNullParentEntity>();
         modelBuilder.Entity<CustomTypeEntity>();
         modelBuilder.Entity<WithNullableEntity>();
         modelBuilder.Entity<FilterParentEntity>();
