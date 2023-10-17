@@ -16,28 +16,14 @@
 
     static IReadOnlyList<Navigation> GetNavigations(IEntityType entity)
     {
-        List<INavigationBase> navigations = [..entity.GetNavigations(), ..entity.GetSkipNavigations()];
-        var idProperties = entity.GetProperties()
-            .Where(_ => _.Name.EndsWith("Id") &&
-                        _.PropertyInfo!=null)
-            .ToDictionary(
-                _ => _.Name,
-                _ => _.PropertyInfo!.IsNullable());
+        var navigations = entity.GetNavigations()
+            .Cast<INavigationBase>().Concat(entity.GetSkipNavigations());
         return navigations
             .Select(
                 _ =>
                 {
                     var (itemType, isCollection) = GetNavigationType(_);
-                    var isNullable = _.PropertyInfo!.IsNullable();
-                    if (isNullable)
-                    {
-                        if (idProperties.TryGetValue(_.Name + "Id", out var isIdNullable))
-                        {
-                            isNullable = isIdNullable;
-                        }
-                    }
-
-                    return new Navigation(_.Name, itemType, isNullable, isCollection);
+                    return new Navigation(_.Name, itemType, _.PropertyInfo!.IsNullable(), isCollection);
                 })
             .ToList();
     }

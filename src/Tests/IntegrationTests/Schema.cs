@@ -33,8 +33,6 @@
         RegisterTypeMapping(typeof(ParentEntityView), typeof(ParentEntityViewGraphType));
         RegisterTypeMapping(typeof(OwnedParent), typeof(OwnedParentGraphType));
         RegisterTypeMapping(typeof(OwnedChild), typeof(OwnedChildGraphType));
-        RegisterTypeMapping(typeof(NonNullChildEntity), typeof(NonNullChildGraphType));
-        RegisterTypeMapping(typeof(NonNullParentEntity), typeof(NonNullParentGraphType));
         Query = (Query)resolver.GetService(typeof(Query))!;
         Mutation = (Mutation)resolver.GetService(typeof(Mutation))!;
         RegisterType(typeof(DerivedGraphType));
