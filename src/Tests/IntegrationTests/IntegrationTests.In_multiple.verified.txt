@@ -12,14 +12,12 @@
     ]
   }
 },
-  sql: [
-    {
-      HasTransaction: false,
-      Text:
+  sql: {
+    HasTransaction: false,
+    Text:
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
 WHERE [p].[Property] IN (N'Value1', N'Value2')
 ORDER BY [p].[Property]
-    }
-  ]
+  }
 }

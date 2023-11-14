@@ -9,13 +9,11 @@
     ]
   }
 },
-  sql: [
-    {
-      HasTransaction: false,
-      Text:
+  sql: {
+    HasTransaction: false,
+    Text:
 SELECT [e].[Id], [e].[Property]
 FROM [EnumEntities] AS [e]
 WHERE [e].[Property] = 4
-    }
-  ]
+  }
 }

@@ -2097,7 +2097,7 @@ public partial class IntegrationTests
         }
 
         await using var context = database.NewDbContext();
-        SqlRecording.StartRecording();
+        Recording.Start();
         string result;
         try
         {
