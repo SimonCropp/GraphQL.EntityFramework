@@ -7,7 +7,7 @@
     <PackageReference Include="GraphQL" Version="7.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.13" />
     <PackageReference Include="Xunit" Version="2.6.1" />
-    <PackageReference Include="Verify.Xunit" Version="22.3.0" />
+    <PackageReference Include="Verify.Xunit" Version="22.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <ProjectReference Include="..\SampleWeb\SampleWeb.csproj" />
