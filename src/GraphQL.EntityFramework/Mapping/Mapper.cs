@@ -95,12 +95,12 @@ public static class Mapper<TDbContext>
             if (navigation.IsCollection)
             {
                 var genericMethod = addNavigationListMethod.MakeGenericMethod(typeof(TSource), navigation.Type);
-                genericMethod.Invoke(null, new object[] { graph, graphService, navigation });
+                genericMethod.Invoke(null, [ graph, graphService, navigation ]);
             }
             else
             {
                 var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TSource), navigation.Type);
-                genericMethod.Invoke(null, new object[] { graph, graphService, navigation });
+                genericMethod.Invoke(null, [ graph, graphService, navigation ]);
             }
         }
         catch (TargetInvocationException exception)

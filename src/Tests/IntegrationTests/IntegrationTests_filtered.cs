@@ -35,7 +35,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, BuildFilters(), false, new object[] {entity1, entity2, entity3});
+        await RunQuery(database, query, null, BuildFilters(), false, [entity1, entity2, entity3]);
     }
 
     static Filters BuildFilters()

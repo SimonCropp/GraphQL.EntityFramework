@@ -8,6 +8,6 @@
         Field(_ => _.Property, nullable: true);
         AddNavigationConnectionField<DerivedChildEntity>(
             name: "childrenFromInterface",
-            includeNames: new[] { "ChildrenFromBase" });
+            includeNames: [ "ChildrenFromBase" ]);
     }
 }

@@ -8,7 +8,7 @@
             name: "parentAlias",
             resolve: _ => _.Source.Parent,
             graphType: typeof(ParentGraphType),
-            includeNames: new[] {"Parent"});
+            includeNames: ["Parent"]);
         AutoMap();
     }
 }

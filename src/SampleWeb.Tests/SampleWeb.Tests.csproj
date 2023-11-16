@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
@@ -11,6 +11,6 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <ProjectReference Include="..\SampleWeb\SampleWeb.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.101" PrivateAssets="all" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.102" PrivateAssets="all" />
   </ItemGroup>
 </Project>

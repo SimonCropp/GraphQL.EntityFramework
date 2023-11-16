@@ -12,7 +12,7 @@
                 Assert.NotNull(context.Source.Child1);
                 return context.Source.Child1;
             },
-            includeNames: new []{ "Child2", "Child1" });
+            includeNames: [ "Child2", "Child1" ]);
         AutoMap();
     }
 }

@@ -21,7 +21,7 @@
     static MethodInfo dateTimeNullableListContains;
     static MethodInfo dateTimeOffsetListContains;
     static MethodInfo dateTimeOffsetNullableListContains;
-    public static MethodInfo StringLike = typeof(DbFunctionsExtensions).GetMethod("Like", new[] {typeof(DbFunctions), typeof(string), typeof(string)})!;
+    public static MethodInfo StringLike = typeof(DbFunctionsExtensions).GetMethod("Like", [typeof(DbFunctions), typeof(string), typeof(string)])!;
     public static MethodInfo StringEqualComparison = typeof(string).GetMethod("Equals", new[] {typeof(string), typeof(string), typeof(StringComparison)})!;
     public static MethodInfo StringEqual = typeof(string).GetMethod("Equals", new[] {typeof(string), typeof(string)})!;
     public static MethodInfo StringStartsWithComparison = typeof(string).GetMethod("StartsWith", new[] {typeof(string), typeof(StringComparison)})!;

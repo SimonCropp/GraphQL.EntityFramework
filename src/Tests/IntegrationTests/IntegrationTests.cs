@@ -79,7 +79,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3 ]);
         Assert.NotNull(queryText);
     }
 
@@ -115,7 +115,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3 ]);
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -181,7 +181,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -213,12 +213,13 @@ public partial class IntegrationTests
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
+
         {
             Nullable = 10
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -233,7 +234,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -251,7 +252,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -276,7 +277,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -301,7 +302,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -418,7 +419,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -443,7 +444,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity2, entity1 });
+        await RunQuery(database, query, null, null, false, [ entity2, entity1 ]);
     }
 
     [Fact]
@@ -468,7 +469,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -490,7 +491,7 @@ public partial class IntegrationTests
         var entity2 = new ParentEntity();
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -525,7 +526,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { parent1, parent2, entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ parent1, parent2, entity1, entity2 ]);
     }
 
     [Fact]
@@ -555,7 +556,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { parent, entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ parent, entity1, entity2 ]);
     }
 
     [Fact]
@@ -580,7 +581,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -607,7 +608,7 @@ public partial class IntegrationTests
 
         var inputs = new Inputs(new Dictionary<string, object?> { { "value", "value2" } });
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, inputs, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, inputs, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -632,7 +633,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -646,7 +647,7 @@ public partial class IntegrationTests
             }
             """;
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { });
+        await RunQuery(database, query, null, null, false, []);
     }
 
     [Fact]
@@ -670,7 +671,7 @@ public partial class IntegrationTests
             Property = "Value2"
         };
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, true, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, true, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -696,7 +697,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 }, true);
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ], true);
     }
 
     [Fact]
@@ -720,7 +721,7 @@ public partial class IntegrationTests
             Child2 = new() { Property = "Value2" }
         };
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1 });
+        await RunQuery(database, query, null, null, false, [ entity1 ]);
     }
 
     [Fact]
@@ -734,7 +735,7 @@ public partial class IntegrationTests
             }
             """;
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { });
+        await RunQuery(database, query, null, null, false, []);
     }
 
     [Fact]
@@ -758,7 +759,7 @@ public partial class IntegrationTests
             Property = "Value2"
         };
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -787,11 +788,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[]
-        {
-            entity1,
-            entity2
-        });
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
     [Fact]
@@ -805,7 +802,7 @@ public partial class IntegrationTests
             }
             """;
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { });
+        await RunQuery(database, query, null, null, false, []);
     }
 
     [Fact]
@@ -829,7 +826,7 @@ public partial class IntegrationTests
             Property = "Value2"
         };
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -876,7 +873,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact]
@@ -923,7 +920,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact]
@@ -976,7 +973,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact]
@@ -1001,7 +998,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -1026,7 +1023,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact(Skip = "Work out how to eval server side")]
@@ -1051,7 +1048,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -1077,7 +1074,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -1103,7 +1100,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -1136,7 +1133,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3 ]);
     }
 
     [Fact]
@@ -1161,7 +1158,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact]
@@ -1187,7 +1184,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2 ]);
     }
 
     [Fact(Skip = "Work out why include is not used")]
@@ -1242,7 +1239,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact]
@@ -1288,7 +1285,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact(Skip = "TODO")]
@@ -1313,7 +1310,7 @@ public partial class IntegrationTests
         level1.IncludeNonQueryableA = level2;
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { level1, level2 });
+        await RunQuery(database, query, null, null, false, [ level1, level2 ]);
     }
 
     [Fact(Skip = "fix order")]
@@ -1345,7 +1342,7 @@ public partial class IntegrationTests
         };
 
         var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { level1, level2, level3 });
+        await RunQuery(database, query, null, null, false, [ level1, level2, level3 ]);
     }
 
     [Fact]
@@ -1380,7 +1377,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { level1, level2, level3 });
+        await RunQuery(database, query, null, null, false, [ level1, level2, level3 ]);
     }
 
     [Fact]
@@ -1422,7 +1419,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { level1b, level2b, level1a, level2a, level3a });
+        await RunQuery(database, query, null, null, false, [ level1b, level2b, level1a, level2a, level3a ]);
     }
 
     [Fact]
@@ -1477,7 +1474,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact]
@@ -1524,7 +1521,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, true, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, true, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact]
@@ -1570,7 +1567,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 }, true);
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ], true);
     }
 
     [Fact]
@@ -1617,7 +1614,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact]
@@ -1659,7 +1656,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity5 ]);
     }
 
     [Fact(Skip = "fix order")]
@@ -1696,7 +1693,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact(Skip = "fix order")]
@@ -1743,7 +1740,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { entity1, entity2, entity3, entity4, entity5 });
+        await RunQuery(database, query, null, null, false, [ entity1, entity2, entity3, entity4, entity5 ]);
     }
 
     [Fact]
@@ -1779,7 +1776,7 @@ public partial class IntegrationTests
             }
             """;
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { parent, child1, child2 });
+        await RunQuery(database, query, null, null, false, [ parent, child1, child2 ]);
     }
 
     [Fact(Skip = "fix order")]
@@ -1819,7 +1816,7 @@ public partial class IntegrationTests
             }
             """;
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { parent1, parent2, child1, child2 });
+        await RunQuery(database, query, null, null, false, [ parent1, parent2, child1, child2 ]);
     }
 
     [Fact]
@@ -1859,7 +1856,7 @@ public partial class IntegrationTests
             }
             """;
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { parent1, parent2, child1, child2 });
+        await RunQuery(database, query, null, null, false, [ parent1, parent2, child1, child2 ]);
     }
 
     [Fact]
@@ -1890,7 +1887,7 @@ public partial class IntegrationTests
         parent.Child2 = child2;
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { parent, child1, child2 });
+        await RunQuery(database, query, null, null, false, [ parent, child1, child2 ]);
     }
 
     [Fact(Skip = "Broke with gql 4")]
@@ -1963,7 +1960,7 @@ public partial class IntegrationTests
         derivedEntity2.Children.Add(childEntity4);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { derivedEntity1, childEntity1, childEntity2, derivedEntity2, childEntity3, childEntity4 });
+        await RunQuery(database, query, null, null, false, [ derivedEntity1, childEntity1, childEntity2, derivedEntity2, childEntity3, childEntity4 ]);
     }
 
     [Fact]
@@ -2017,7 +2014,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { middle11, middle12, middle21 });
+        await RunQuery(database, query, null, null, false, [ middle11, middle12, middle21 ]);
     }
 
     [Fact]
@@ -2071,7 +2068,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, new object[] { middle11, middle12, middle21 });
+        await RunQuery(database, query, null, null, false, [ middle11, middle12, middle21 ]);
     }
 
     static async Task RunQuery(
