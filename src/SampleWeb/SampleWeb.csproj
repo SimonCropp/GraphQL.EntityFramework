@@ -10,7 +10,7 @@
     <PackageReference Include="GraphQL.SystemTextJson" Version="7.6.1" />
     <PackageReference Include="GraphQL" Version="7.6.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.13" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
     <PackageReference Include="ProjectDefaults" Version="1.0.102" PrivateAssets="all" />
   </ItemGroup>
