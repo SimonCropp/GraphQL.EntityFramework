@@ -68,23 +68,4 @@
                 _ => _.HasOne(_ => _.ManyToManyLeftEntity).WithMany(),
                 _ => _.HasOne(_ => _.ManyToManyRightEntity).WithMany());
     }
-    protected override void ConfigureConventions(ModelConfigurationBuilder builder)
-    {
-        builder.Properties<Date>()
-            .HaveConversion<DateConverter>()
-            .HaveColumnType("date");
-
-        builder.Properties<Date?>()
-            .HaveConversion<NullableDateConverter>()
-            .HaveColumnType("date");
-
-        builder.Properties<Time>()
-            .HaveConversion<TimeConverter>()
-            .HaveColumnType("time");
-
-        builder.Properties<Time?>()
-            .HaveConversion<NullableTimeConverter>()
-            .HaveColumnType("time");
-    }
-
 }
