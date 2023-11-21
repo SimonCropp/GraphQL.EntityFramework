@@ -20,13 +20,12 @@ partial class EfGraphQLService<TDbContext>
         {
             return (ConnectionBuilder<object>) addConnectionT.Invoke(
                 this,
-                new object?[]
-                {
+                [
                     graph,
                     name,
                     resolve,
                     omitQueryArguments
-                })!;
+                ])!;
         }
         catch (Exception exception)
         {
@@ -56,13 +55,12 @@ partial class EfGraphQLService<TDbContext>
         {
             return (ConnectionBuilder<TSource>) addConnectionT.Invoke(
                 this,
-                new object?[]
-                {
+                [
                     graph,
                     name,
                     resolve,
                     omitQueryArguments
-                })!;
+                ])!;
         }
         catch (Exception exception)
         {
