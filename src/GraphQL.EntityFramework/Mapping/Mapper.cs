@@ -133,7 +133,7 @@ public static class Mapper<TDbContext>
 
     public record NavigationKey(Type Type, string Name);
 
-    static ConcurrentDictionary<NavigationKey, object> navigationFuncs = new();
+    static ConcurrentDictionary<NavigationKey, object> navigationFuncs = [];
 
     internal static Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> NavigationFunc<TSource, TReturn>(string name)
     {

@@ -6,7 +6,7 @@
         public readonly Type? EntityType = entityType;
     }
 
-    static ConcurrentDictionary<IGraphType, Resolved> cache = new();
+    static ConcurrentDictionary<IGraphType, Resolved> cache = [];
 
     public static bool TryGetComplexGraph(this FieldType fieldType, [NotNullWhen(true)] out IComplexGraphType? graph)
     {

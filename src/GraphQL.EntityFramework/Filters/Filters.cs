@@ -46,7 +46,7 @@ public class Filters
 
     delegate Task<bool> Filter(object userContext, ClaimsPrincipal? userPrincipal, object input);
 
-    Dictionary<Type, Filter> funcs = new();
+    Dictionary<Type, Filter> funcs = [];
 
     internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext, ClaimsPrincipal? userPrincipal)
         where TEntity : class
