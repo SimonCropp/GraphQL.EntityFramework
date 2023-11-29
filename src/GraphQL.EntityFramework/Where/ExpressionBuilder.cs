@@ -120,14 +120,15 @@ public static class ExpressionBuilder<T>
             .GetMethods(BindingFlags.Public | BindingFlags.Static)
             .Single(_ => _.Name == "BuildPredicate" &&
                          _.GetParameters().Length == 5)
-            .Invoke(new(), new object[]
-            {
-                listPath,
-                comparison,
-                values!,
-                false,
-                stringComparison!
-            })!;
+            .Invoke(
+                new(),
+                [
+                    listPath,
+                    comparison,
+                    values!,
+                    false,
+                    stringComparison!
+                ])!;
 
         // Generate a method info for the Any Enumerable Static Method
         var anyInfo = typeof(Enumerable)

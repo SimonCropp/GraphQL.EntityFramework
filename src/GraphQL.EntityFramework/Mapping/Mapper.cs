@@ -95,12 +95,12 @@ public static class Mapper<TDbContext>
             if (navigation.IsCollection)
             {
                 var genericMethod = addNavigationListMethod.MakeGenericMethod(typeof(TSource), navigation.Type);
-                genericMethod.Invoke(null, new object[] { graph, graphService, navigation });
+                genericMethod.Invoke(null, [ graph, graphService, navigation ]);
             }
             else
             {
                 var genericMethod = addNavigationMethod.MakeGenericMethod(typeof(TSource), navigation.Type);
-                genericMethod.Invoke(null, new object[] { graph, graphService, navigation });
+                genericMethod.Invoke(null, [ graph, graphService, navigation ]);
             }
         }
         catch (TargetInvocationException exception)
@@ -133,7 +133,7 @@ public static class Mapper<TDbContext>
 
     public record NavigationKey(Type Type, string Name);
 
-    static ConcurrentDictionary<NavigationKey, object> navigationFuncs = new();
+    static ConcurrentDictionary<NavigationKey, object> navigationFuncs = [];
 
     internal static Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> NavigationFunc<TSource, TReturn>(string name)
     {

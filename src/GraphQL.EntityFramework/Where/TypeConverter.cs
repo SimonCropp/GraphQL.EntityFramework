@@ -150,13 +150,13 @@
         if (type.IsEnum)
         {
             var getList = enumListMethod.MakeGenericMethod(type);
-            return (IList)getList.Invoke(null, new []{values})!;
+            return (IList)getList.Invoke(null, [values])!;
         }
 
         if (type.TryGetEnumType(out var enumType))
         {
             var getList = nullableEnumListMethod.MakeGenericMethod(enumType);
-            return (IList)getList.Invoke(null, new []{values})!;
+            return (IList)getList.Invoke(null, [values])!;
         }
 
         throw new($"Could not convert strings to {type.FullName}.");

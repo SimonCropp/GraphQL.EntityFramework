@@ -1,7 +1,4 @@
 ﻿{
-  target: {
-    Type: Exception,
-    Message: Null 'id' is not supported.
-  },
-  sql: []
+  Type: Exception,
+  Message: Null 'id' is not supported.
 }

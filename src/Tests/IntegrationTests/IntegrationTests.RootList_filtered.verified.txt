@@ -9,12 +9,10 @@
     ]
   }
 },
-  sql: [
-    {
-      HasTransaction: false,
-      Text:
+  sql: {
+    HasTransaction: false,
+    Text:
 SELECT [f].[Id], [f].[Property]
 FROM [FilterParentEntities] AS [f]
-    }
-  ]
+  }
 }

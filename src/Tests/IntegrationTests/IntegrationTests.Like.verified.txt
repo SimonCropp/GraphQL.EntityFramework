@@ -9,13 +9,11 @@
     ]
   }
 },
-  sql: [
-    {
-      HasTransaction: false,
-      Text:
+  sql: {
+    HasTransaction: false,
+    Text:
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
 WHERE [p].[Property] LIKE N'value2'
-    }
-  ]
+  }
 }

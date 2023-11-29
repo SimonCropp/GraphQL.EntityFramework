@@ -10,7 +10,7 @@
         AddNavigationConnectionField(
             name: "employeesConnection",
             resolve: _ => _.Source.Employees,
-            includeNames: new[] {"Employees"});
+            includeNames: ["Employees"]);
         AutoMap();
     }
 }

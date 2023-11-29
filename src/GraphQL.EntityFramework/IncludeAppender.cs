@@ -142,7 +142,7 @@
     }
 
     static string[] FieldNameToArray(string fieldName) =>
-        new[] { char.ToUpperInvariant(fieldName[0]) + fieldName.Substring(1) };
+        [ char.ToUpperInvariant(fieldName[0]) + fieldName[1..] ];
 
     static bool TryGetIncludeMetadata(FieldType fieldType, [NotNullWhen(true)] out string[]? value)
     {

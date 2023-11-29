@@ -21,15 +21,15 @@
     static MethodInfo dateTimeNullableListContains;
     static MethodInfo dateTimeOffsetListContains;
     static MethodInfo dateTimeOffsetNullableListContains;
-    public static MethodInfo StringLike = typeof(DbFunctionsExtensions).GetMethod("Like", new[] {typeof(DbFunctions), typeof(string), typeof(string)})!;
-    public static MethodInfo StringEqualComparison = typeof(string).GetMethod("Equals", new[] {typeof(string), typeof(string), typeof(StringComparison)})!;
-    public static MethodInfo StringEqual = typeof(string).GetMethod("Equals", new[] {typeof(string), typeof(string)})!;
-    public static MethodInfo StringStartsWithComparison = typeof(string).GetMethod("StartsWith", new[] {typeof(string), typeof(StringComparison)})!;
+    public static MethodInfo StringLike = typeof(DbFunctionsExtensions).GetMethod("Like", [typeof(DbFunctions), typeof(string), typeof(string)])!;
+    public static MethodInfo StringEqualComparison = typeof(string).GetMethod("Equals", [typeof(string), typeof(string), typeof(StringComparison)])!;
+    public static MethodInfo StringEqual = typeof(string).GetMethod("Equals", [typeof(string), typeof(string)])!;
+    public static MethodInfo StringStartsWithComparison = typeof(string).GetMethod("StartsWith", [typeof(string), typeof(StringComparison)])!;
     public static MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", new[] {typeof(string)})!;
-    public static MethodInfo StringIndexOfComparison = typeof(string).GetMethod("IndexOf", new[] {typeof(string), typeof(StringComparison)})!;
-    public static MethodInfo StringIndexOf = typeof(string).GetMethod("IndexOf", new[] {typeof(string)})!;
-    public static MethodInfo StringEndsWithComparison = typeof(string).GetMethod("EndsWith", new[] {typeof(string), typeof(StringComparison)})!;
-    public static MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", new[] {typeof(string)})!;
+    public static MethodInfo StringIndexOfComparison = typeof(string).GetMethod("IndexOf", [typeof(string), typeof(StringComparison)])!;
+    public static MethodInfo StringIndexOf = typeof(string).GetMethod("IndexOf", [typeof(string)])!;
+    public static MethodInfo StringEndsWithComparison = typeof(string).GetMethod("EndsWith", [typeof(string), typeof(StringComparison)])!;
+    public static MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", [typeof(string)])!;
 
     static ReflectionCache()
     {
