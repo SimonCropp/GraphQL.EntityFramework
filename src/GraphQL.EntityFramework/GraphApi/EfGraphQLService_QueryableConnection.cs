@@ -88,6 +88,7 @@ partial class EfGraphQLService<TDbContext>
 
         if (resolve is not null)
         {
+            var names = GetKeyNames<TReturn>();
             builder.ResolveAsync(
                 async context =>
                 {
@@ -99,7 +100,6 @@ partial class EfGraphQLService<TDbContext>
                     }
 
                     query = includeAppender.AddIncludes(query, context);
-                    var names = GetKeyNames<TReturn>();
                     if (!omitQueryArguments)
                     {
                         query = query.ApplyGraphQlArguments(context, names, true);
@@ -121,14 +121,14 @@ partial class EfGraphQLService<TDbContext>
                     {
                         throw new(
                             $"""
-                            Failed to execute query for field `{name}`
-                            TGraph: {typeof(TGraph).FullName}
-                            TSource: {typeof(TSource).FullName}
-                            TReturn: {typeof(TReturn).FullName}
-                            DisableAsync: {disableAsync}
-                            KeyNames: {JoinKeys(names)}
-                            Query: {query.ToQueryString()}
-                            """,
+                             Failed to execute query for field `{name}`
+                             TGraph: {typeof(TGraph).FullName}
+                             TSource: {typeof(TSource).FullName}
+                             TReturn: {typeof(TReturn).FullName}
+                             DisableAsync: {disableAsync}
+                             KeyNames: {JoinKeys(names)}
+                             Query: {query.ToQueryString()}
+                             """,
                             exception);
                     }
                 });

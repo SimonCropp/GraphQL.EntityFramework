@@ -61,6 +61,7 @@ partial class EfGraphQLService<TDbContext>
 
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
+        var names = GetKeyNames<TReturn>();
         var hasId = keyNames.ContainsKey(typeof(TReturn));
         var type = new FieldType
         {
@@ -70,8 +71,6 @@ partial class EfGraphQLService<TDbContext>
                 async context =>
                 {
                     var efFieldContext = BuildContext(context);
-
-                    var names = GetKeyNames<TReturn>();
 
                     var query = resolve(efFieldContext);
                     if (disableTracking)
@@ -103,16 +102,16 @@ partial class EfGraphQLService<TDbContext>
                     {
                         throw new(
                             $"""
-                            Failed to execute query for field `{name}`
-                            GraphType: {graphType.FullName}
-                            TSource: {typeof(TSource).FullName}
-                            TReturn: {typeof(TReturn).FullName}
-                            DisableAsync: {disableAsync}
-                            OmitQueryArguments: {omitQueryArguments}
-                            Nullable: {nullable}
-                            KeyNames: {JoinKeys(names)}
-                            Query: {query.ToQueryString()}
-                            """,
+                             Failed to execute query for field `{name}`
+                             GraphType: {graphType.FullName}
+                             TSource: {typeof(TSource).FullName}
+                             TReturn: {typeof(TReturn).FullName}
+                             DisableAsync: {disableAsync}
+                             OmitQueryArguments: {omitQueryArguments}
+                             Nullable: {nullable}
+                             KeyNames: {JoinKeys(names)}
+                             Query: {query.ToQueryString()}
+                             """,
                             exception);
                     }
 

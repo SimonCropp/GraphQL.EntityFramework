@@ -46,13 +46,13 @@ partial class EfGraphQLService<TDbContext>
             Arguments = ArgumentAppender.GetQueryArguments(hasId, true),
         };
 
+        var names = GetKeyNames<TReturn>();
         if (resolve is not null)
         {
             fieldType.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
                 async context =>
                 {
                     var fieldContext = BuildContext(context);
-                    var names = GetKeyNames<TReturn>();
                     var query = resolve(fieldContext);
                     if (disableTracking)
                     {
@@ -85,16 +85,16 @@ partial class EfGraphQLService<TDbContext>
                     {
                         throw new(
                             $"""
-                            Failed to execute query for field `{name}`
-                            GraphType: {fieldType.Type.FullName}
-                            TSource: {typeof(TSource).FullName}
-                            TReturn: {typeof(TReturn).FullName}
-                            DisableTracking: {disableTracking}
-                            HasId: {hasId}
-                            DisableAsync: {disableAsync}
-                            KeyNames: {JoinKeys(names)}
-                            Query: {query.ToQueryString()}
-                            """,
+                             Failed to execute query for field `{name}`
+                             GraphType: {fieldType.Type.FullName}
+                             TSource: {typeof(TSource).FullName}
+                             TReturn: {typeof(TReturn).FullName}
+                             DisableTracking: {disableTracking}
+                             HasId: {hasId}
+                             DisableAsync: {disableAsync}
+                             KeyNames: {JoinKeys(names)}
+                             Query: {query.ToQueryString()}
+                             """,
                             exception);
                     }
 
