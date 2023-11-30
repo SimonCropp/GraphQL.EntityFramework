@@ -67,7 +67,8 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments = false,
+        bool idOnly = false)
         where TReturn : class =>
-        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments);
+        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
 }
