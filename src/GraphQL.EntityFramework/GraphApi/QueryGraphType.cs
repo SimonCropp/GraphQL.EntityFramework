@@ -32,9 +32,10 @@ public class QueryGraphType<TDbContext>(IEfGraphQLService<TDbContext> graphQlSer
         Type? graphType = null,
         string name = nameof(TReturn),
         bool nullable = false,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments = false,
+        bool idOnly = false)
         where TReturn : class =>
-        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments);
+        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
 
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class =>

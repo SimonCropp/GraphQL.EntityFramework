@@ -10,10 +10,11 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments = false,
+        bool idOnly = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
         graph.AddField(field);
         return new FieldBuilderEx<object, TReturn>(field);
     }
@@ -25,10 +26,11 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments = false,
+        bool idOnly = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
         graph.AddField(field);
         return new FieldBuilderEx<object, TReturn>(field);
     }
@@ -40,10 +42,11 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments = false,
+        bool idOnly = false)
         where TReturn : class
     {
-        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments);
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
@@ -54,10 +57,16 @@ partial class EfGraphQLService<TDbContext>
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
         Type? graphType,
         bool nullable,
-        bool omitQueryArguments)
+        bool omitQueryArguments,
+        bool idOnly)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
+
+        if (omitQueryArguments && idOnly)
+        {
+            throw new("omitQueryArguments and idOnly are mutually exclusive");
+        }
 
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
@@ -139,7 +148,7 @@ partial class EfGraphQLService<TDbContext>
 
         if (!omitQueryArguments)
         {
-            type.Arguments = ArgumentAppender.GetQueryArguments(hasId, false);
+            type.Arguments = ArgumentAppender.GetQueryArguments(hasId, false, idOnly);
         }
 
         return type;

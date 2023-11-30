@@ -336,7 +336,7 @@ Field<ListGraphType<EmployeeSummaryGraphType>>("employeeSummary")
             };
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L47-L77' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L52-L82' title='Snippet source file'>snippet source</a> | <a href='#snippet-manuallyapplywhere' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

@@ -76,6 +76,7 @@ type PageInfo {
 type Query {
   companies(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Company!]!
   company(id: ID, ids: [ID!], where: [WhereExpression!]): Company!
+  companyById(id: ID!): Company!
   companyOrNull(id: ID, ids: [ID!], where: [WhereExpression!]): Company
   companiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): CompanyConnection!
   employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!

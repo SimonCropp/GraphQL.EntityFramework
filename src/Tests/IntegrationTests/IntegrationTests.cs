@@ -792,6 +792,35 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Single_IdOnly()
+    {
+        var query = """
+            {
+              parentEntityIdOnly(id: "00000000-0000-0000-0000-000000000001") {
+                property
+                children
+                {
+                  property
+                }
+              }
+            }
+            """;
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    [Fact]
     public async Task SingleNullable_NotFound()
     {
         var query = """

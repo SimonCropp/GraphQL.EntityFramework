@@ -18,7 +18,13 @@
             Name = "ids"
         };
 
-    static QueryArgument<IdGraphType> IdArgument() =>
+    static QueryArgument<IdGraphType> IdArgumentNullable() =>
+        new()
+        {
+            Name = "id"
+        };
+
+    static QueryArgument<NonNullGraphType<IdGraphType>> IdArgumentNotNullable() =>
         new()
         {
             Name = "id"
@@ -47,12 +53,17 @@
         }
     }
 
-    public static QueryArguments GetQueryArguments(bool hasId, bool applyOrder)
+    public static QueryArguments GetQueryArguments(bool hasId, bool applyOrder, bool idOnly)
     {
+        if (idOnly)
+        {
+            return [IdArgumentNotNullable()];
+        }
+
         var arguments = new QueryArguments();
         if (hasId)
         {
-            arguments.Add(IdArgument());
+            arguments.Add(IdArgumentNullable());
             arguments.Add(IdsArgument());
         }
 

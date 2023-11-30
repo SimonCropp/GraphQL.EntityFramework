@@ -93,6 +93,11 @@
             omitQueryArguments: true);
 
         AddSingleField(
+            name: "parentEntityIdOnly",
+            resolve: _ => _.DbContext.ParentEntities,
+            idOnly: true);
+
+        AddSingleField(
             name: "parentEntityNullable",
             resolve: _ => _.DbContext.ParentEntities,
             nullable: true);

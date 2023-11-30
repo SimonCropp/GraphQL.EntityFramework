@@ -20,6 +20,11 @@ public class Query :
 
         AddSingleField(
             resolve: _ => _.DbContext.Companies,
+            name: "companyById",
+            idOnly: true);
+
+        AddSingleField(
+            resolve: _ => _.DbContext.Companies,
             name: "companyOrNull",
             nullable: true);
 

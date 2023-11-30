@@ -297,6 +297,7 @@ type Query {
   parentEntitiesConnectionFiltered(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): FilterParentConnection!
   parentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
   parentEntityWithNoArgs: Parent!
+  parentEntityIdOnly(id: ID!): Parent!
   parentEntityNullable(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
   interfaceGraphConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): InterfaceConnection!
   manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
