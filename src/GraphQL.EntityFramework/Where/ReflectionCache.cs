@@ -25,7 +25,7 @@
     public static MethodInfo StringEqualComparison = typeof(string).GetMethod("Equals", [typeof(string), typeof(string), typeof(StringComparison)])!;
     public static MethodInfo StringEqual = typeof(string).GetMethod("Equals", [typeof(string), typeof(string)])!;
     public static MethodInfo StringStartsWithComparison = typeof(string).GetMethod("StartsWith", [typeof(string), typeof(StringComparison)])!;
-    public static MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", new[] {typeof(string)})!;
+    public static MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", [typeof(string)])!;
     public static MethodInfo StringIndexOfComparison = typeof(string).GetMethod("IndexOf", [typeof(string), typeof(StringComparison)])!;
     public static MethodInfo StringIndexOf = typeof(string).GetMethod("IndexOf", [typeof(string)])!;
     public static MethodInfo StringEndsWithComparison = typeof(string).GetMethod("EndsWith", [typeof(string), typeof(StringComparison)])!;
