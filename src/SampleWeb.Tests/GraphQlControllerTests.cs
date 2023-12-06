@@ -172,7 +172,7 @@ public class GraphQlControllerTests
                 where: [
                   {groupedExpressions: [
                     {path: "content", comparison: contains, value: "4", connector: or},
-            
+
                       { path: "content", comparison: contains, value: "2"}
                   ], connector: and},
                   {path: "age", comparison: greaterThanOrEqual, value: "31"}

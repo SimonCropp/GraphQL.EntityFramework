@@ -7,22 +7,22 @@ public class GlobalFiltersTests
     {
         var filters= new Filters();
         filters.Add<Target>((_, _, target) => target.Property != "Ignore");
-        True(await filters.ShouldInclude(new(), null, new Target()));
+        Assert.True(await filters.ShouldInclude(new(), null, new Target()));
         Assert.False(await filters.ShouldInclude<object>(new(), null, null));
-        True(await filters.ShouldInclude(new(), null, new Target {Property = "Include"}));
+        Assert.True(await filters.ShouldInclude(new(), null, new Target {Property = "Include"}));
         Assert.False(await filters.ShouldInclude(new(), null, new Target {Property = "Ignore"}));
 
         filters.Add<BaseTarget>((_, _, target) => target.Property != "Ignore");
-        True(await filters.ShouldInclude(new(), null, new ChildTarget()));
-        True(await filters.ShouldInclude(new(), null, new ChildTarget {Property = "Include"}));
+        Assert.True(await filters.ShouldInclude(new(), null, new ChildTarget()));
+        Assert.True(await filters.ShouldInclude(new(), null, new ChildTarget {Property = "Include"}));
         Assert.False(await filters.ShouldInclude(new(), null, new ChildTarget {Property = "Ignore"}));
 
         filters.Add<ITarget>((_, _, target) => target.Property != "Ignore");
-        True(await filters.ShouldInclude(new(), null, new ImplementationTarget()));
-        True(await filters.ShouldInclude(new(), null, new ImplementationTarget { Property = "Include"}));
+        Assert.True(await filters.ShouldInclude(new(), null, new ImplementationTarget()));
+        Assert.True(await filters.ShouldInclude(new(), null, new ImplementationTarget { Property = "Include"}));
         Assert.False(await filters.ShouldInclude(new(), null, new ImplementationTarget { Property = "Ignore" }));
 
-        True(await filters.ShouldInclude(new(), null, new NonTarget { Property = "Foo" }));
+        Assert.True(await filters.ShouldInclude(new(), null, new NonTarget { Property = "Foo" }));
     }
 
     public class NonTarget
