@@ -387,8 +387,8 @@ public class ExpressionBuilderTests
             new()
             {
                 Name = "Company 1",
-                Employees = new List<Person>
-                {
+                Employees =
+                [
                     new()
                     {
                         Name = "Person 1",
@@ -407,14 +407,14 @@ public class ExpressionBuilderTests
                         Age = 11,
                         DateOfBirth = new(2000, 10, 10, 10, 10, 10, DateTimeKind.Utc)
                     }
-                }
+                ]
             },
 
             new()
             {
                 Name = "Company 2",
-                Employees = new List<Person>
-                {
+                Employees =
+                [
                     new()
                     {
                         Name = "Person 3",
@@ -427,7 +427,7 @@ public class ExpressionBuilderTests
                         Age = 31,
                         DateOfBirth = new(1980, 10, 11, 10, 10, 10, DateTimeKind.Utc)
                     },
-                }
+                ]
             }
         };
 
