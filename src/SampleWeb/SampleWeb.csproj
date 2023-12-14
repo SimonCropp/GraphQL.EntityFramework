@@ -7,11 +7,11 @@
     <Folder Include="wwwroot\" />
     <PackageReference Include="EfLocalDb" Version="16.1.0" />
     <PackageReference Include="graphiql" Version="2.0.0" />
-    <PackageReference Include="GraphQL.SystemTextJson" Version="7.7.0" />
-    <PackageReference Include="GraphQL" Version="7.7.0" />
+    <PackageReference Include="GraphQL.SystemTextJson" Version="7.7.1" />
+    <PackageReference Include="GraphQL" Version="7.7.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.106" PrivateAssets="all" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.107" PrivateAssets="all" />
   </ItemGroup>
 </Project>
