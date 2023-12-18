@@ -4,7 +4,7 @@ partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
 {
     static MethodInfo addEnumerableConnection = typeof(EfGraphQLService<TDbContext>)
-        .GetMethod("AddEnumerableConnection", BindingFlags.Instance| BindingFlags.NonPublic)!;
+        .GetMethod("AddEnumerableConnection", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TSource, TReturn>(
         ComplexGraphType<TSource> graph,
@@ -22,26 +22,25 @@ partial class EfGraphQLService<TDbContext>
 
         try
         {
-            return (ConnectionBuilder<TSource>) addConnectionT.Invoke(
-                this,
-                new object?[]
-                {
-                    graph,
-                    name,
-                    resolve,
-                    includeNames
-                })!;
+            var arguments = new object?[]
+            {
+                graph,
+                name,
+                resolve,
+                includeNames
+            };
+            return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, arguments)!;
         }
         catch (Exception exception)
         {
             throw new(
                 $"""
-                Failed to execute navigation connection for field `{name}`
-                ItemGraphType: {itemGraphType.FullName}
-                TSource: {typeof(TSource).FullName}
-                TReturn: {typeof(TReturn).FullName}
-                DisableAsync: {disableAsync}
-                """,
+                 Failed to execute navigation connection for field `{name}`
+                 ItemGraphType: {itemGraphType.FullName}
+                 TSource: {typeof(TSource).FullName}
+                 TReturn: {typeof(TReturn).FullName}
+                 DisableAsync: {disableAsync}
+                 """,
                 exception);
         }
     }
@@ -74,12 +73,12 @@ partial class EfGraphQLService<TDbContext>
                 {
                     throw new(
                         $"""
-                            Failed to execute query for field `{name}`
-                            TGraph: {typeof(TGraph).FullName}
-                            TSource: {typeof(TSource).FullName}
-                            TReturn: {typeof(TReturn).FullName}
-                            DisableAsync: {disableAsync}
-                            """,
+                         Failed to execute query for field `{name}`
+                         TGraph: {typeof(TGraph).FullName}
+                         TSource: {typeof(TSource).FullName}
+                         TReturn: {typeof(TReturn).FullName}
+                         DisableAsync: {disableAsync}
+                         """,
                         exception);
                 }
 

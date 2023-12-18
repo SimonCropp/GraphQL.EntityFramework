@@ -8,7 +8,7 @@
     <PackageReference Include="Fody" Version="6.8.0" PrivateAssets="all" />
     <PackageReference Include="Virtuosity.Fody" Version="3.1.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-    <PackageReference Include="GraphQL" Version="7.7.1" />
+    <PackageReference Include="GraphQL" Version="7.7.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Nullability" Version="2.3.0" />
     <PackageReference Include="ProjectDefaults" Version="1.0.108" PrivateAssets="all" />

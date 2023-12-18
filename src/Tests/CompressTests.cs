@@ -4,7 +4,8 @@ public class CompressTests
     [Fact]
     public Task Simple()
     {
-        var query = """
+        var query =
+            """
             query ($id: String!)
             {
               companies(ids:[$id])

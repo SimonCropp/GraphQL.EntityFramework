@@ -8,7 +8,8 @@ public class MultiContextTests
 
         var sqlInstance2 = new SqlInstance<DbContext2>(constructInstance: builder => new(builder.Options));
 
-        var query = """
+        var query =
+            """
             {
               entity1
               {

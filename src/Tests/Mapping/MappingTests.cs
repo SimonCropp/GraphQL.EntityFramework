@@ -4,7 +4,16 @@ public class MappingTests
     static SqlInstance<MappingContext> sqlInstance;
 
     static MappingTests() =>
-        sqlInstance = new(builder => new(builder.Options));
+        sqlInstance = new(builder =>
+        {
+            builder.ConfigureWarnings(_ =>
+                _.Ignore(
+                    CoreEventId.NavigationBaseIncludeIgnored,
+                    CoreEventId.ShadowForeignKeyPropertyCreated,
+                    CoreEventId.RowLimitingOperationWithoutOrderByWarning,
+                    CoreEventId.CollectionWithoutComparer));
+            return new(builder.Options);
+        });
 
     [Fact]
     public async Task SchemaPrint()

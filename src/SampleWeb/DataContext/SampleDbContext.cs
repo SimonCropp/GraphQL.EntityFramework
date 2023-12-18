@@ -1,4 +1,6 @@
-﻿public class SampleDbContext(DbContextOptions options) :
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+
+public class SampleDbContext(DbContextOptions options) :
     DbContext(options)
 {
     public DbSet<Employee> Employees { get; set; } = null!;
@@ -15,15 +17,17 @@
         return dbContext.Model;
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnConfiguring(DbContextOptionsBuilder builder) =>
+        builder.ConfigureWarnings(_ => _.Ignore(CoreEventId.RowLimitingOperationWithoutOrderByWarning));
+
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        modelBuilder.Entity<Company>()
+        builder.Entity<Company>()
             .HasMany(_ => _.Employees)
             .WithOne(_ => _.Company)
             .IsRequired();
-        modelBuilder.Entity<Employee>();
-
-        var order = modelBuilder.Entity<OrderDetail>();
+        builder.Entity<Employee>();
+        var order = builder.Entity<OrderDetail>();
         order.OwnsOne(_ => _.BillingAddress);
         order.OwnsOne(_ => _.ShippingAddress);
     }

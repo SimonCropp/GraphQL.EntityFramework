@@ -27,7 +27,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Get()
     {
-        var query = """
+        var query =
+            """
             {
               companies
               {
@@ -43,7 +44,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Post()
     {
-        var query = """
+        var query =
+            """
             {
               companies
               {
@@ -59,7 +61,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Single()
     {
-        var query = """
+        var query =
+            """
             query ($id: ID!)
             {
               company(id:$id)
@@ -81,7 +84,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Single_not_found()
     {
-        var query = """
+        var query =
+            """
             query ($id: ID!)
             {
               company(id:$id)
@@ -103,7 +107,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Variable()
     {
-        var query = """
+        var query =
+            """
             query ($id: ID!)
             {
               companies(ids:[$id])
@@ -150,7 +155,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Employee_summary()
     {
-        var query = """
+        var query =
+            """
             query {
               employeeSummary {
                 companyId
@@ -166,7 +172,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Complex_query_result()
     {
-        var query = """
+        var query =
+            """
             query {
               employees (
                 where: [

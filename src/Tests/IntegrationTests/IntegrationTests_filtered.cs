@@ -5,7 +5,8 @@ public partial class IntegrationTests
     [Fact]
     public async Task Child_filtered()
     {
-        var query = """
+        var query =
+            """
             {
               parentEntitiesFiltered
               {
@@ -49,7 +50,8 @@ public partial class IntegrationTests
     [Fact]
     public async Task RootList_filtered()
     {
-        var query = """
+        var query =
+            """
             {
               parentEntitiesFiltered
               {
@@ -74,7 +76,8 @@ public partial class IntegrationTests
     [Fact]
     public async Task Root_connectionFiltered()
     {
-        var query = """
+        var query =
+            """
             {
               parentEntitiesConnectionFiltered {
                 totalCount
@@ -106,7 +109,8 @@ public partial class IntegrationTests
     [Fact(Skip = "Work out why include is not used")]
     public async Task Connection_parent_child_Filtered()
     {
-        var query = """
+        var query =
+            """
             {
               parentEntitiesConnectionFiltered {
                 totalCount
