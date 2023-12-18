@@ -312,7 +312,7 @@ public class UserContext(DbContext1 context1, DbContext2 context2) : Dictionary<
     public readonly DbContext2 DbContext2 = context2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L80-L86' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L81-L87' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -330,7 +330,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L49-L58' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L50-L59' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -349,7 +349,7 @@ var executionOptions = new ExecutionOptions
     UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L73' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L65-L74' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -440,7 +440,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Get()
     {
-        var query = """
+        var query =
+            """
             {
               companies
               {
@@ -456,7 +457,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Post()
     {
-        var query = """
+        var query =
+            """
             {
               companies
               {
@@ -472,7 +474,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Single()
     {
-        var query = """
+        var query =
+            """
             query ($id: ID!)
             {
               company(id:$id)
@@ -494,7 +497,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Single_not_found()
     {
-        var query = """
+        var query =
+            """
             query ($id: ID!)
             {
               company(id:$id)
@@ -516,7 +520,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Variable()
     {
-        var query = """
+        var query =
+            """
             query ($id: ID!)
             {
               companies(ids:[$id])
@@ -563,7 +568,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Employee_summary()
     {
-        var query = """
+        var query =
+            """
             query {
               employeeSummary {
                 companyId
@@ -579,7 +585,8 @@ public class GraphQlControllerTests
     [Fact]
     public async Task Complex_query_result()
     {
-        var query = """
+        var query =
+            """
             query {
               employees (
                 where: [
@@ -609,7 +616,7 @@ public class GraphQlControllerTests
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L4-L199' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L4-L206' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
