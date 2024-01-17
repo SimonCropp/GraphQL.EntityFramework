@@ -1,6 +1,5 @@
 using Filters = GraphQL.EntityFramework.Filters;
 
-[UsesVerify]
 public partial class IntegrationTests
 {
     static SqlInstance<IntegrationDbContext> sqlInstance;

@@ -3,7 +3,6 @@
 
 #region GraphQlControllerTests
 
-[UsesVerify]
 public class GraphQlControllerTests
 {
     static HttpClient client;

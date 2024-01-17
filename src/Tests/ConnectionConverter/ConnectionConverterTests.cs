@@ -1,5 +1,4 @@
-﻿[UsesVerify]
-public class ConnectionConverterTests
+﻿public class ConnectionConverterTests
 {
     static ConnectionConverterTests() =>
         sqlInstance = new(

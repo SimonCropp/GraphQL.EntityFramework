@@ -1,5 +1,4 @@
-﻿[UsesVerify]
-public class SchemaPrint
+﻿public class SchemaPrint
 {
     [Fact]
     public async Task Print()

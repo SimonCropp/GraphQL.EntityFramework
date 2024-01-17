@@ -1,5 +1,4 @@
-﻿[UsesVerify]
-public class CompressTests
+﻿public class CompressTests
 {
     [Fact]
     public Task Simple()

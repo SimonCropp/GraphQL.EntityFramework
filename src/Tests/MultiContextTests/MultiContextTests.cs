@@ -1,5 +1,4 @@
-﻿[UsesVerify]
-public class MultiContextTests
+﻿public class MultiContextTests
 {
     [Fact]
     public async Task Run()

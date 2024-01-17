@@ -1,5 +1,4 @@
-﻿[UsesVerify]
-public class DependencyTests
+﻿public class DependencyTests
 {
     static SqlInstance<DependencyDbContext> sqlInstance;
 

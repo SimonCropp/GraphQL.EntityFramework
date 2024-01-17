@@ -1,5 +1,4 @@
-﻿[UsesVerify]
-public class MappingTests
+﻿public class MappingTests
 {
     static SqlInstance<MappingContext> sqlInstance;
 
