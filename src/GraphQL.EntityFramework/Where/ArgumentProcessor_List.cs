@@ -36,37 +36,39 @@ public static partial class ArgumentProcessor
 
     static IEnumerable<TItem> Order<TItem>(IEnumerable<TItem> queryable, IResolveFieldContext context)
     {
-        var items = queryable.ToList();
-        var orderBys = ArgumentReader.ReadOrderBy(context).ToList();
-        IOrderedEnumerable<TItem> ordered;
-        if (orderBys.Count > 0)
+        var orderBys = ArgumentReader
+            .ReadOrderBy(context)
+            .ToList();
+        if (orderBys.Count == 0)
         {
-            var orderBy = orderBys.First();
-            var propertyFunc = PropertyCache<TItem>.GetProperty(orderBy.Path).Func;
-            if (orderBy.Descending)
-            {
-                ordered = items.OrderByDescending(propertyFunc);
-            }
-            else
-            {
-                ordered = items.OrderBy(propertyFunc);
-            }
+            return queryable;
+        }
+
+        var items = queryable.ToList();
+        IOrderedEnumerable<TItem> ordered;
+        var orderBy = orderBys.First();
+        var propertyFunc = PropertyCache<TItem>.GetProperty(orderBy.Path)
+            .Func;
+        if (orderBy.Descending)
+        {
+            ordered = items.OrderByDescending(propertyFunc);
         }
         else
         {
-            return items;
+            ordered = items.OrderBy(propertyFunc);
         }
 
-        foreach (var orderBy in orderBys.Skip(1))
+        foreach (var subsequentOrderBy in orderBys.Skip(1))
         {
-            var propertyFunc = PropertyCache<TItem>.GetProperty(orderBy.Path).Func;
-            if (orderBy.Descending)
+            var subsequentPropertyFunc = PropertyCache<TItem>.GetProperty(subsequentOrderBy.Path)
+                .Func;
+            if (subsequentOrderBy.Descending)
             {
-                ordered = ordered.ThenByDescending(propertyFunc);
+                ordered = ordered.ThenByDescending(subsequentPropertyFunc);
             }
             else
             {
-                ordered = ordered.ThenBy(propertyFunc);
+                ordered = ordered.ThenBy(subsequentPropertyFunc);
             }
         }
 
