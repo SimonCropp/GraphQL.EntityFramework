@@ -7,7 +7,7 @@ public static class ExpressionBuilder<T>
     /// <summary>
     /// Build a predicate for a supplied list of where's (Grouped or not)
     /// </summary>
-    public static Expression<Func<T, bool>> BuildPredicate(IEnumerable<WhereExpression> wheres)
+    public static Expression<Func<T, bool>> BuildPredicate(IReadOnlyCollection<WhereExpression> wheres)
     {
         var expressionBody = MakePredicateBody(wheres);
         var param = PropertyCache<T>.SourceParameter;
@@ -15,7 +15,7 @@ public static class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(expressionBody, param);
     }
 
-    static Expression MakePredicateBody(IEnumerable<WhereExpression> wheres)
+    static Expression MakePredicateBody(IReadOnlyCollection<WhereExpression> wheres)
     {
         Expression? mainExpression = null;
         var previousWhere = new WhereExpression();
