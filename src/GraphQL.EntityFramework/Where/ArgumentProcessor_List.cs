@@ -43,18 +43,17 @@ public static partial class ArgumentProcessor
             return queryable;
         }
 
-        var items = queryable.ToList();
         IOrderedEnumerable<TItem> ordered;
         var orderBy = orderBys.First();
         var propertyFunc = PropertyCache<TItem>.GetProperty(orderBy.Path)
             .Func;
         if (orderBy.Descending)
         {
-            ordered = items.OrderByDescending(propertyFunc);
+            ordered = queryable.OrderByDescending(propertyFunc);
         }
         else
         {
-            ordered = items.OrderBy(propertyFunc);
+            ordered = queryable.OrderBy(propertyFunc);
         }
 
         foreach (var subsequentOrderBy in orderBys.Skip(1))
