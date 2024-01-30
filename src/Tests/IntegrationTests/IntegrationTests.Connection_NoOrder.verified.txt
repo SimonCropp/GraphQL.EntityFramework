@@ -1,0 +1,23 @@
+﻿{
+  target: Connections require ordering. Either order the IQueryable being passed to AddQueryConnectionField, or use an orderBy in the query. Field: parentEntitiesConnectionNoOrder,
+  sql: [
+    {
+      HasTransaction: false,
+      Text:
+SELECT COUNT(*)
+FROM [ParentEntities] AS [p]
+    },
+    {
+      HasTransaction: false,
+      Parameters: {
+        @__p_0: 1,
+        @__p_1: 2
+      },
+      Text:
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+    }
+  ]
+}
