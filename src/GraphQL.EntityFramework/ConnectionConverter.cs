@@ -69,7 +69,7 @@
     }
 
     public static Task<Connection<TItem>> ApplyConnectionContext<TSource, TItem>(
-        this IQueryable<TItem> list,
+        this IQueryable<TItem> queryable,
         int? first,
         string afterString,
         int? last,
@@ -80,11 +80,11 @@
         where TItem : class
     {
         Parse(afterString, beforeString, out var after, out var before);
-        return ApplyConnectionContext(list, first, after, last, before, context, filters, cancel);
+        return ApplyConnectionContext(queryable, first, after, last, before, context, filters, cancel);
     }
 
     public static async Task<Connection<TItem>> ApplyConnectionContext<TSource, TItem>(
-        IQueryable<TItem> list,
+        IQueryable<TItem> queryable,
         int? first,
         int? after,
         int? last,
@@ -94,18 +94,18 @@
         Cancel cancel = default)
         where TItem : class
     {
-        var count = await list.CountAsync(cancel);
+        var count = await queryable.CountAsync(cancel);
         cancel.ThrowIfCancellationRequested();
         if (last is null)
         {
-            return await First(list, first.GetValueOrDefault(0), after, before, count, context, filters, cancel);
+            return await First(queryable, first.GetValueOrDefault(0), after, before, count, context, filters, cancel);
         }
 
-        return await Last(list, last.Value, after, before, count, context, filters, cancel);
+        return await Last(queryable, last.Value, after, before, count, context, filters, cancel);
     }
 
     static Task<Connection<TItem>> First<TSource, TItem>(
-        IQueryable<TItem> list,
+        IQueryable<TItem> queryable,
         int first,
         int? after,
         int? before,
@@ -125,11 +125,11 @@
             skip = Math.Max(before.Value - first, 0);
         }
 
-        return Range(list, skip, first, count, context, filters, cancel);
+        return Range(queryable, skip, first, count, context, filters, cancel);
     }
 
     static Task<Connection<TItem>> Last<TSource, TItem>(
-        IQueryable<TItem> list,
+        IQueryable<TItem> queryable,
         int last,
         int? after,
         int? before,
@@ -151,11 +151,11 @@
             skip = after.Value + 1;
         }
 
-        return Range(list, skip, take: last, count, context, filters, cancel);
+        return Range(queryable, skip, take: last, count, context, filters, cancel);
     }
 
     static async Task<Connection<TItem>> Range<TSource, TItem>(
-        IQueryable<TItem> list,
+        IQueryable<TItem> queryable,
         int skip,
         int take,
         int count,
@@ -164,7 +164,7 @@
         Cancel cancel)
         where TItem : class
     {
-        var page = list.Skip(skip).Take(take);
+        var page = queryable.Skip(skip).Take(take);
         QueryLogger.Write(page);
         IEnumerable<TItem> result = await page.ToListAsync(cancel);
         result = await filters.ApplyFilter(result, context.UserContext, context.User);
