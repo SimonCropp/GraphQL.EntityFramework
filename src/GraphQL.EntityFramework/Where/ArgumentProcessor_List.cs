@@ -4,6 +4,8 @@ public static partial class ArgumentProcessor
 {
     public static IEnumerable<TItem> ApplyGraphQlArguments<TItem>(this IEnumerable<TItem> items, bool hasId, IResolveFieldContext context)
     {
+        var alreadyOrdered = items is ICollection<TItem>;
+
         if (hasId)
         {
             if (ArgumentReader.TryReadIds(context, out var values))
@@ -24,14 +26,14 @@ public static partial class ArgumentProcessor
 
         if (ArgumentReader.TryReadSkip(context, out var skip))
         {
-            EnsureOrderForSkip(order, context);
+            EnsureOrderForSkip(order|| alreadyOrdered, context);
 
             items = items.Skip(skip);
         }
 
         if (ArgumentReader.TryReadTake(context, out var take))
         {
-            EnsureOrderForTake(order, context);
+            EnsureOrderForTake(order|| alreadyOrdered, context);
 
             items = items.Take(take);
         }
