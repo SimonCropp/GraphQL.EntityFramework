@@ -1,13 +1,13 @@
 ﻿static class ArgumentReader
 {
-    public static bool TryReadWhere(IResolveFieldContext context, out IEnumerable<WhereExpression> expression)
+    public static bool TryReadWhere(IResolveFieldContext context, out IReadOnlyCollection<WhereExpression> expression)
     {
         expression = ReadList<WhereExpression>(context, "where");
 
         return expression.Any();
     }
 
-    public static IEnumerable<OrderBy> ReadOrderBy(IResolveFieldContext context) =>
+    public static IReadOnlyCollection<OrderBy> ReadOrderBy(IResolveFieldContext context) =>
         ReadList<OrderBy>(context, "orderBy");
 
     public static bool TryReadIds(IResolveFieldContext context, [NotNullWhen(true)] out string[]? result)
@@ -99,12 +99,12 @@
         return result;
     }
 
-    static IEnumerable<T> ReadList<T>(IResolveFieldContext context, string name)
+    static IReadOnlyCollection<T> ReadList<T>(IResolveFieldContext context, string name)
     {
         var argument = context.GetArgument(typeof(T[]), name);
         if (argument is null)
         {
-            return Enumerable.Empty<T>();
+            return [];
         }
 
         return (T[]) argument;

@@ -55,7 +55,7 @@ public static partial class ArgumentProcessor
 
     static IQueryable<TItem> Order<TItem>(IQueryable<TItem> queryable, IResolveFieldContext context)
     {
-        var orderBys = ArgumentReader.ReadOrderBy(context).ToList();
+        var orderBys = ArgumentReader.ReadOrderBy(context);
         IOrderedQueryable<TItem> ordered;
         if (orderBys.Count > 0)
         {
