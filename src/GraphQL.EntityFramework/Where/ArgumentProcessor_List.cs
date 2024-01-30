@@ -19,28 +19,33 @@ public static partial class ArgumentProcessor
             items = items.Where(predicate.Compile());
         }
 
-        items = Order(items, context);
+        var (orderedItems, order) = Order(items, context);
+        items = orderedItems;
 
         if (ArgumentReader.TryReadSkip(context, out var skip))
         {
+            EnsureOrderForSkip(order, context);
+
             items = items.Skip(skip);
         }
 
         if (ArgumentReader.TryReadTake(context, out var take))
         {
+            EnsureOrderForTake(order, context);
+
             items = items.Take(take);
         }
 
         return items;
     }
 
-    static IEnumerable<TItem> Order<TItem>(IEnumerable<TItem> queryable, IResolveFieldContext context)
+    static (IEnumerable<TItem> items, bool order) Order<TItem>(IEnumerable<TItem> queryable, IResolveFieldContext context)
     {
         var orderBys = ArgumentReader
             .ReadOrderBy(context);
         if (orderBys.Count == 0)
         {
-            return queryable;
+            return (queryable, false);
         }
 
         IOrderedEnumerable<TItem> ordered;
@@ -70,6 +75,6 @@ public static partial class ArgumentProcessor
             }
         }
 
-        return ordered;
+        return (ordered, true);
     }
 }

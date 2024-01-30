@@ -27,15 +27,20 @@ public static partial class ArgumentProcessor
 
         if (applyOrder)
         {
-            queryable = Order(queryable, context);
+            var (orderedItems, order) = Order(queryable, context);
+            queryable = orderedItems;
 
             if (ArgumentReader.TryReadSkip(context, out var skip))
             {
+                EnsureOrderForSkip(order, context);
+
                 queryable = queryable.Skip(skip);
             }
 
             if (ArgumentReader.TryReadTake(context, out var take))
             {
+                EnsureOrderForTake(order, context);
+
                 queryable = queryable.Take(take);
             }
         }
@@ -43,51 +48,40 @@ public static partial class ArgumentProcessor
         return queryable;
     }
 
-    static string GetKeyName(List<string> keyNames)
-    {
-        if (keyNames.Count > 1)
-        {
-            throw new("Only one id field is currently supported");
-        }
-
-        return keyNames[0];
-    }
-
-    static IQueryable<TItem> Order<TItem>(IQueryable<TItem> queryable, IResolveFieldContext context)
+    static (IQueryable<TItem> items, bool order) Order<TItem>(IQueryable<TItem> queryable, IResolveFieldContext context)
     {
         var orderBys = ArgumentReader.ReadOrderBy(context);
         IOrderedQueryable<TItem> ordered;
-        if (orderBys.Count > 0)
+        if (orderBys.Count == 0)
         {
-            var orderBy = orderBys.First();
-            var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
-            if (orderBy.Descending)
-            {
-                ordered = queryable.OrderByDescending(property);
-            }
-            else
-            {
-                ordered = queryable.OrderBy(property);
-            }
+            return (queryable, false);
+        }
+
+        var orderBy = orderBys.First();
+        var property = PropertyCache<TItem>.GetProperty(orderBy.Path)
+            .Lambda;
+        if (orderBy.Descending)
+        {
+            ordered = queryable.OrderByDescending(property);
         }
         else
         {
-            return queryable;
+            ordered = queryable.OrderBy(property);
         }
 
-        foreach (var orderBy in orderBys.Skip(1))
+        foreach (var subsequentOrderBy in orderBys.Skip(1))
         {
-            var property = PropertyCache<TItem>.GetProperty(orderBy.Path).Lambda;
-            if (orderBy.Descending)
+            var subsequentPropertyFunc = PropertyCache<TItem>.GetProperty(subsequentOrderBy.Path).Lambda;
+            if (subsequentOrderBy.Descending)
             {
-                ordered = ordered.ThenByDescending(property);
+                ordered = ordered.ThenByDescending(subsequentPropertyFunc);
             }
             else
             {
-                ordered = ordered.ThenBy(property);
+                ordered = ordered.ThenBy(subsequentPropertyFunc);
             }
         }
 
-        return ordered;
+        return (ordered, true);
     }
 }

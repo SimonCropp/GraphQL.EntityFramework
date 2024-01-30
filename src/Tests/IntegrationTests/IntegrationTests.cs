@@ -295,6 +295,31 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
+    [Fact]
+    public async Task TakeNoOrder()
+    {
+        var query =
+            """
+            {
+              parentEntities (take: 1)
+              {
+                property
+              }
+            }
+            """;
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Property = "Value2"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
 
     [Fact]
     public async Task Skip()
@@ -303,6 +328,31 @@ public partial class IntegrationTests
             """
             {
               parentEntities (skip: 1, orderBy: {path: "property"})
+              {
+                property
+              }
+            }
+            """;
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Property = "Value2"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+    [Fact]
+    public async Task SkipNoOrder()
+    {
+        var query =
+            """
+            {
+              parentEntities (skip: 1)
               {
                 property
               }
