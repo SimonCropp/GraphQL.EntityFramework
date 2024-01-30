@@ -65,6 +65,12 @@
         efGraphQlService.AddQueryConnectionField<ParentGraphType, ParentEntity>(
             this,
             name: "parentEntitiesConnection",
+            resolve: _ => _.DbContext.ParentEntities.OrderBy(_ => _.Id))
+            .PageSize(10);
+
+        efGraphQlService.AddQueryConnectionField<ParentGraphType, ParentEntity>(
+            this,
+            name: "parentEntitiesConnectionNoOrder",
             resolve: _ => _.DbContext.ParentEntities)
             .PageSize(10);
 
@@ -80,7 +86,7 @@
         efGraphQlService.AddQueryConnectionField<FilterParentGraphType, FilterParentEntity>(
             this,
             name: "parentEntitiesConnectionFiltered",
-            resolve: _ => _.DbContext.FilterParentEntities)
+            resolve: _ => _.DbContext.FilterParentEntities.OrderBy(_=>_.Id))
             .PageSize(10);
 
         AddSingleField(

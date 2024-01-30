@@ -45,7 +45,7 @@ FROM [ParentEntities] AS [p]
       Text:
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-ORDER BY (SELECT 1)
+ORDER BY [p].[Id]
 OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
     }
   ]
