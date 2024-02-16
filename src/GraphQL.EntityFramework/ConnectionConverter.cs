@@ -96,7 +96,7 @@
     {
         if (queryable is not IOrderedQueryable<TItem>)
         {
-            context.Errors.Add(new($"Connections require ordering. Either order the IQueryable being passed to AddQueryConnectionField, or use an orderBy in the query. Field: {context.FieldDefinition.Name}"));
+            throw new($"Connections require ordering. Either order the IQueryable being passed to AddQueryConnectionField, or use an orderBy in the query. Field: {context.FieldDefinition.Name}");
         }
         var count = await queryable.CountAsync(cancel);
         cancel.ThrowIfCancellationRequested();

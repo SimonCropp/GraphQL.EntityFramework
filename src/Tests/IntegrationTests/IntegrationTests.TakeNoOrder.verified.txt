@@ -1,12 +1,4 @@
 ﻿{
-  target: If `take` is used an `orderBy` must be specified. Field: parentEntities,
-  sql: {
-    HasTransaction: false,
-    Parameters: {
-      @__p_0: 1
-    },
-    Text:
-SELECT TOP(@__p_0) [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-  }
+  Type: Exception,
+  Message: If `take` is used an `orderBy` must be specified. Field: parentEntities
 }
