@@ -1,0 +1,19 @@
+﻿{
+  target:
+{
+  "data": {
+    "withNullableEntities": [
+      {
+        "id": "Guid_1"
+      }
+    ]
+  }
+},
+  sql: {
+    HasTransaction: false,
+    Text:
+SELECT [w].[Id], [w].[Nullable]
+FROM [WithNullableEntities] AS [w]
+WHERE [w].[Nullable] IS NULL
+  }
+}

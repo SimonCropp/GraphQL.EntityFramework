@@ -124,14 +124,15 @@ Creating a page-able field is supported through [GraphQL Connections](https://gr
 public class Query :
     QueryGraphType<MyDbContext>
 {
-    public Query(IEfGraphQLService<MyDbContext> graphQlService) :
+    public Query(IEfGraphQLService<MyDbContext> graphQlService)
+        :
         base(graphQlService) =>
-        AddQueryConnectionField(
+        AddQueryConnectionField<Company>(
             name: "companies",
-            resolve: _ => _.DbContext.Companies);
+            resolve: _ => _.DbContext.Companies.OrderBy(_ => _.Name));
 }
 ```
-<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L3-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionRootQuery.cs#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-connectionrootquery' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

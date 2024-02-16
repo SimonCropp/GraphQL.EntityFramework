@@ -1,0 +1,23 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "property": "Value2"
+      }
+    ]
+  }
+},
+  sql: {
+    HasTransaction: false,
+    Parameters: {
+      @__p_0: 1
+    },
+    Text:
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+ORDER BY [p].[Property]
+OFFSET @__p_0 ROWS
+  }
+}

@@ -1,0 +1,22 @@
+﻿{
+  target:
+{
+  "data": {
+    "customType": [
+      {
+        "property": 3
+      },
+      {
+        "property": 9223372036854775807
+      }
+    ]
+  }
+},
+  sql: {
+    HasTransaction: false,
+    Text:
+SELECT [c].[Id], [c].[Property]
+FROM [CustomTypeEntities] AS [c]
+ORDER BY [c].[Property]
+  }
+}

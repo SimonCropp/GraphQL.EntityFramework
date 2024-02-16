@@ -1,0 +1,52 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntitiesConnection": {
+      "totalCount": 8,
+      "edges": [
+        {
+          "cursor": "0",
+          "node": {
+            "property": "Value1"
+          }
+        },
+        {
+          "cursor": "1",
+          "node": {
+            "property": "Value2"
+          }
+        }
+      ],
+      "items": [
+        {
+          "property": "Value1"
+        },
+        {
+          "property": "Value2"
+        }
+      ]
+    }
+  }
+},
+  sql: [
+    {
+      HasTransaction: false,
+      Text:
+SELECT COUNT(*)
+FROM [ParentEntities] AS [p]
+    },
+    {
+      HasTransaction: false,
+      Parameters: {
+        @__p_0: 0,
+        @__p_1: 2
+      },
+      Text:
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+ORDER BY [p].[Id]
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+    }
+  ]
+}

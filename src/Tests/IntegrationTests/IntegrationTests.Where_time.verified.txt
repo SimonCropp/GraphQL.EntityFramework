@@ -1,0 +1,19 @@
+﻿{
+  target:
+{
+  "data": {
+    "timeEntities": [
+      {
+        "id": "Guid_1"
+      }
+    ]
+  }
+},
+  sql: {
+    HasTransaction: false,
+    Text:
+SELECT [t].[Id], [t].[Property]
+FROM [TimeEntities] AS [t]
+WHERE [t].[Property] = '10:11:00'
+  }
+}
