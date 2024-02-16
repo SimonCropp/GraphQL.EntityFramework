@@ -5,7 +5,7 @@ public partial interface IEfGraphQLService<TDbContext>
     ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
+        Func<ResolveEfFieldContext<TDbContext, object>, IOrderedQueryable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
         bool omitQueryArguments = false)
         where TReturn : class;
@@ -13,7 +13,7 @@ public partial interface IEfGraphQLService<TDbContext>
     ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IOrderedQueryable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
         bool omitQueryArguments = false)
         where TReturn : class;

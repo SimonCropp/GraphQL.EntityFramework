@@ -47,7 +47,7 @@ public class Query :
 
         AddQueryConnectionField(
             name: "employeesConnection",
-            resolve: _ => _.DbContext.Employees);
+            resolve: _ => _.DbContext.Employees.OrderBy(_ => _.Content));
 
         #region ManuallyApplyWhere
 
