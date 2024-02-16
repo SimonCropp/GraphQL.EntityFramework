@@ -1,4 +1,0 @@
-﻿{
-  Type: Exception,
-  Message: Null 'id' is not supported.
-}

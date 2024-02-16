@@ -68,16 +68,10 @@
             resolve: _ => _.DbContext.ParentEntities.OrderBy(_ => _.Id))
             .PageSize(10);
 
-        efGraphQlService.AddQueryConnectionField<ParentGraphType, ParentEntity>(
-            this,
-            name: "parentEntitiesConnectionNoOrder",
-            resolve: _ => _.DbContext.ParentEntities)
-            .PageSize(10);
-
-        efGraphQlService.AddQueryConnectionField<ChildGraphType, ChildEntity>(
+       efGraphQlService.AddQueryConnectionField<ChildGraphType, ChildEntity>(
             this,
             name: "childEntitiesConnection",
-            resolve: _ => _.DbContext.ChildEntities);
+            resolve: _ => _.DbContext.ChildEntities.OrderBy(_ => _.Parent));
 
         AddQueryField(
             name: "parentEntitiesFiltered",
@@ -108,11 +102,11 @@
             resolve: _ => _.DbContext.ParentEntities,
             nullable: true);
 
-        efGraphQlService.AddQueryConnectionField(
+        efGraphQlService.AddQueryConnectionField<InheritedEntity>(
             this,
             itemGraphType: typeof(InterfaceGraphType),
             name: "interfaceGraphConnection",
-            resolve: _ => _.DbContext.InheritedEntities);
+            resolve: _ => _.DbContext.InheritedEntities.OrderBy(_ => _.Property));
 
         AddQueryField(
             name: "manyToManyLeftEntities",
@@ -129,7 +123,7 @@
         efGraphQlService.AddQueryConnectionField<ParentEntityViewGraphType, ParentEntityView>(
             this,
             name: "parentEntitiesViewConnection",
-            resolve: _ => _.DbContext.ParentEntityView);
+            resolve: _ => _.DbContext.ParentEntityView.OrderBy(_ => _.Property));
 
         AddSingleField(
             name: "parentEntityView",

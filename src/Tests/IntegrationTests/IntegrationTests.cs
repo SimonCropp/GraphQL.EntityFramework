@@ -397,48 +397,6 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
-    public async Task Connection_NoOrder()
-    {
-        var query =
-            """
-            {
-              parentEntitiesConnectionNoOrder(first:2, after: "0") {
-                totalCount
-                edges {
-                  cursor
-                  node {
-                    property
-                  }
-                }
-                items {
-                  property
-                }
-              }
-            }
-            """;
-        var entities = BuildEntities(8);
-
-        await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, entities.ToArray());
-    }
-
-    [Fact]
-    public async Task Connection_Only_Count()
-    {
-        var query =
-            """
-            {
-              parentEntitiesConnectionNoOrder {
-                totalCount
-              }
-            }
-            """;
-        var entities = BuildEntities(8);
-
-        await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, entities.ToArray());
-    }
 
     [Fact]
     public async Task Connection_page_back()

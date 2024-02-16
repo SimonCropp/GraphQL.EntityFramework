@@ -14,7 +14,7 @@ public class QueryGraphType<TDbContext>(IEfGraphQLService<TDbContext> graphQlSer
 
     public ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, IOrderedQueryable<TReturn>> resolve,
         Type? graphType = null)
         where TReturn : class =>
         GraphQlService.AddQueryConnectionField(this, name, resolve, graphType);

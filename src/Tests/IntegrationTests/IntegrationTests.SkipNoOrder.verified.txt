@@ -1,4 +1,0 @@
-﻿{
-  Type: Exception,
-  Message: If `skip` is used an `orderBy` must be specified. Field: parentEntities
-}
