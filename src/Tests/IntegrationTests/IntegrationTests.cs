@@ -23,7 +23,6 @@ public partial class IntegrationTests
                     _.Ignore(
                         CoreEventId.NavigationBaseIncludeIgnored,
                         CoreEventId.ShadowForeignKeyPropertyCreated,
-                        CoreEventId.RowLimitingOperationWithoutOrderByWarning,
                         CoreEventId.CollectionWithoutComparer));
                 return new(builder.Options);
             });
@@ -415,6 +414,23 @@ public partial class IntegrationTests
                 items {
                   property
                 }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
+    [Fact]
+    public async Task Connection_Only_Count()
+    {
+        var query =
+            """
+            {
+              parentEntitiesConnectionNoOrder {
+                totalCount
               }
             }
             """;
