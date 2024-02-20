@@ -34,7 +34,7 @@ public class Filters
     public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, ClaimsPrincipal? userPrincipal, TEntity input)
         where TEntity : class;
 ```
-<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L5-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-filterssignature' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-filterssignature' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
