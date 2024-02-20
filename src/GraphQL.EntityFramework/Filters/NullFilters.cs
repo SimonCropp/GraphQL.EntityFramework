@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 public class NullFilters :
     Filters
