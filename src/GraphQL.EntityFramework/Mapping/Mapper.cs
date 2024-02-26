@@ -161,8 +161,10 @@ public static class Mapper<TDbContext>
     {
         var (compile, propertyGraphType) = Compile<TSource>(property);
         var resolver = new SimpleFieldResolver<TSource>(compile);
+#pragma warning disable GQL005
         graph.Field(type: propertyGraphType, name: property.Name)
             .Resolve(resolver);
+#pragma warning restore GQL005
     }
 
     static bool ShouldIgnore(IComplexGraphType graphType, string name, Type propertyType, IReadOnlyList<string>? localIgnores = null)

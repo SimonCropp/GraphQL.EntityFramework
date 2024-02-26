@@ -3,7 +3,7 @@
     [Theory]
     [InlineData(typeof(int), "12", 12)]
     [InlineData(typeof(int?), null, null)]
-    public void ConvertStringToType(Type type, string value, object expected)
+    public void ConvertStringToType(Type type, string? value, object? expected)
     {
         var result = TypeConverter.ConvertStringToType(value, type);
         Assert.Equal(expected, result);
