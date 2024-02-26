@@ -25,6 +25,26 @@ public class ExpressionBuilderTests
             .Single();
         Assert.Equal("bb", result.Member);
     }
+    [Fact]
+    public void Nested_notEqual()
+    {
+        var list = new List<Target>
+        {
+            new()
+            {
+                Member = "a"
+            },
+            new()
+            {
+                Member = "bb"
+            }
+        };
+
+        var result = list.AsQueryable()
+            .Where(ExpressionBuilder<Target>.BuildPredicate("Member.Length", Comparison.NotEqual, ["2"]))
+            .Single();
+        Assert.Equal("bb", result.Member);
+    }
 
     [Fact]
     public void Nullable_requiring_parse()
@@ -50,6 +70,34 @@ public class ExpressionBuilderTests
 
         var nullResult = list.AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, null))
+            .Single();
+
+        Assert.Null(nullResult.Field);
+    }
+    [Fact]
+    public void Nullable_requiring_parse_notEqual()
+    {
+        var guid = new Guid("00000000-0000-0000-0000-000000000001");
+        var list = new List<TargetWithNullableRequiringParse>
+        {
+            new()
+            {
+                Field = null
+            },
+            new()
+            {
+                Field = guid
+            }
+        };
+
+        var resultFromString = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.NotEqual, [guid.ToString()]))
+            .Single();
+
+        Assert.Equal(guid, resultFromString.Field);
+
+        var nullResult = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.NotEqual, null))
             .Single();
 
         Assert.Null(nullResult.Field);
@@ -117,6 +165,30 @@ public class ExpressionBuilderTests
         Assert.Equal(10, resultFromString.Field);
         var nullResult = list.AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, null))
+            .Single();
+        Assert.Null(nullResult.Field);
+    }
+    [Fact]
+    public void Nullable_notEqual()
+    {
+        var list = new List<TargetWithNullable>
+        {
+            new()
+            {
+                Field = null
+            },
+            new()
+            {
+                Field = 10
+            }
+        };
+
+        var resultFromString = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.NotEqual, ["10"]))
+            .Single();
+        Assert.Equal(10, resultFromString.Field);
+        var nullResult = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.NotEqual, null))
             .Single();
         Assert.Null(nullResult.Field);
     }
@@ -289,6 +361,26 @@ public class ExpressionBuilderTests
 
         var result = list.AsQueryable()
             .Where(ExpressionBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Equal, ["Target2"]))
+            .Single();
+        Assert.Equal("Target2", result.Field);
+    }
+    [Fact]
+    public void Field_notEqual()
+    {
+        var list = new List<TargetWithField>
+        {
+            new()
+            {
+                Field = "Target1"
+            },
+            new()
+            {
+                Field = "Target2"
+            }
+        };
+
+        var result = list.AsQueryable()
+            .Where(ExpressionBuilder<TargetWithField>.BuildPredicate("Field", Comparison.NotEqual, ["Target2"]))
             .Single();
         Assert.Equal("Target2", result.Field);
     }

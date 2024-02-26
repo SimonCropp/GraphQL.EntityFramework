@@ -241,6 +241,8 @@ public static class ExpressionBuilder<T>
             {
                 case Comparison.Equal:
                     return Expression.Call(ReflectionCache.StringEqual, left, valueConstant);
+                case Comparison.NotEqual:
+                    return Expression.Call(ReflectionCache.StringNotEqual, left, valueConstant);
                 case Comparison.Like:
                     return Expression.Call(null, ReflectionCache.StringLike, ExpressionCache.EfFunction, left, valueConstant);
                 case Comparison.StartsWith:
@@ -262,6 +264,8 @@ public static class ExpressionBuilder<T>
             {
                 case Comparison.Equal:
                     return Expression.Call(ReflectionCache.StringEqualComparison, left, valueConstant, comparisonConstant);
+                case Comparison.NotEqual:
+                    return Expression.Call(ReflectionCache.StringNotEqualComparison, left, valueConstant, comparisonConstant);
                 case Comparison.StartsWith:
                     var startsWithExpression = Expression.Call(left, ReflectionCache.StringStartsWithComparison, valueConstant, comparisonConstant);
                     return Expression.AndAlso(nullCheck, startsWithExpression);
@@ -286,6 +290,7 @@ public static class ExpressionBuilder<T>
         return comparison switch
         {
             Comparison.Equal => Expression.MakeBinary(ExpressionType.Equal, left, constant),
+            Comparison.NotEqual => Expression.MakeBinary(ExpressionType.NotEqual, left, constant),
             Comparison.GreaterThan => Expression.MakeBinary(ExpressionType.GreaterThan, left, constant),
             Comparison.GreaterThanOrEqual => Expression.MakeBinary(ExpressionType.GreaterThanOrEqual, left, constant),
             Comparison.LessThan => Expression.MakeBinary(ExpressionType.LessThan, left, constant),
