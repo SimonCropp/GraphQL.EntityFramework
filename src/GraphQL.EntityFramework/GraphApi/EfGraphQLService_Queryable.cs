@@ -81,6 +81,14 @@ partial class EfGraphQLService<TDbContext>
                                 .ToListAsync(context.CancellationToken);
                         }
                     }
+                    catch (TaskCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
                     catch (Exception exception)
                     {
                         throw new(

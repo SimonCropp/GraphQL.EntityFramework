@@ -27,6 +27,14 @@ partial class EfGraphQLService<TDbContext>
                     omitQueryArguments
                 ])!;
         }
+        catch (TaskCanceledException)
+        {
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception exception)
         {
             throw new(
@@ -61,6 +69,14 @@ partial class EfGraphQLService<TDbContext>
                     resolve,
                     omitQueryArguments
                 ])!;
+        }
+        catch (TaskCanceledException)
+        {
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception exception)
         {
@@ -116,6 +132,14 @@ partial class EfGraphQLService<TDbContext>
                                 context,
                                 context.CancellationToken,
                                 efFieldContext.Filters);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
                     }
                     catch (Exception exception)
                     {

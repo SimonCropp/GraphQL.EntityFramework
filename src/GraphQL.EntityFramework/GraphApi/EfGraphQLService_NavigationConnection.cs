@@ -69,6 +69,14 @@ partial class EfGraphQLService<TDbContext>
                 {
                     enumerable = resolve(efFieldContext);
                 }
+                catch (TaskCanceledException)
+                {
+                    throw;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
                 catch (Exception exception)
                 {
                     throw new(

@@ -107,6 +107,14 @@ partial class EfGraphQLService<TDbContext>
                             single = await query.SingleOrDefaultAsync(context.CancellationToken);
                         }
                     }
+                    catch (TaskCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
                     catch (Exception exception)
                     {
                         throw new(
