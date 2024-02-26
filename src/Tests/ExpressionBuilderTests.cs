@@ -20,11 +20,13 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<Target>.BuildPredicate("Member.Length", Comparison.Equal, ["2"]))
             .Single();
         Assert.Equal("bb", result.Member);
     }
+
     [Fact]
     public void Nested_notEqual()
     {
@@ -40,10 +42,11 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<Target>.BuildPredicate("Member.Length", Comparison.NotEqual, ["2"]))
             .Single();
-        Assert.Equal("bb", result.Member);
+        Assert.Equal("a", result.Member);
     }
 
     [Fact]
@@ -62,18 +65,21 @@ public class ExpressionBuilderTests
             }
         };
 
-        var resultFromString = list.AsQueryable()
+        var resultFromString = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, [guid.ToString()]))
             .Single();
 
         Assert.Equal(guid, resultFromString.Field);
 
-        var nullResult = list.AsQueryable()
+        var nullResult = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.Equal, null))
             .Single();
 
         Assert.Null(nullResult.Field);
     }
+
     [Fact]
     public void Nullable_requiring_parse_notEqual()
     {
@@ -90,17 +96,19 @@ public class ExpressionBuilderTests
             }
         };
 
-        var resultFromString = list.AsQueryable()
+        var resultFromString = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.NotEqual, [guid.ToString()]))
             .Single();
 
-        Assert.Equal(guid, resultFromString.Field);
+        Assert.Null(resultFromString.Field);
 
-        var nullResult = list.AsQueryable()
+        var nullResult = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.NotEqual, null))
             .Single();
 
-        Assert.Null(nullResult.Field);
+        Assert.Equal(guid, nullResult.Field);
     }
 
     [Fact]
@@ -119,19 +127,22 @@ public class ExpressionBuilderTests
             }
         };
 
-        var resultFromNull = list.AsQueryable()
+        var resultFromNull = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, [null]))
             .Single();
 
         Assert.Null(resultFromNull.Field);
 
-        var resultWithGuid = list.AsQueryable()
+        var resultWithGuid = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, [guid.ToString()]))
             .Single();
 
         Assert.Equal(guid, resultWithGuid.Field);
 
-        var resultGuidAndNull = list.AsQueryable()
+        var resultGuidAndNull = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullableRequiringParse>.BuildPredicate("Field", Comparison.In, [guid.ToString(), null]))
             .Select(parse => parse.Field)
             .ToList();
@@ -159,15 +170,18 @@ public class ExpressionBuilderTests
             }
         };
 
-        var resultFromString = list.AsQueryable()
+        var resultFromString = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, ["10"]))
             .Single();
         Assert.Equal(10, resultFromString.Field);
-        var nullResult = list.AsQueryable()
+        var nullResult = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.Equal, null))
             .Single();
         Assert.Null(nullResult.Field);
     }
+
     [Fact]
     public void Nullable_notEqual()
     {
@@ -183,14 +197,16 @@ public class ExpressionBuilderTests
             }
         };
 
-        var resultFromString = list.AsQueryable()
+        var resultFromString = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.NotEqual, ["10"]))
             .Single();
-        Assert.Equal(10, resultFromString.Field);
-        var nullResult = list.AsQueryable()
+        Assert.Null(resultFromString.Field);
+        var nullResult = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithNullable>.BuildPredicate("Field", Comparison.NotEqual, null))
             .Single();
-        Assert.Null(nullResult.Field);
+        Assert.Equal(10, nullResult.Field);
     }
 
     public class TargetWithNullable
@@ -218,7 +234,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetForIn>.BuildPredicate("Member", Comparison.In, ["Value2"]))
             .Single();
         Assert.Equal("Value2", result.Member);
@@ -239,7 +256,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetForIn>.BuildPredicate("Member", Comparison.NotIn, ["Value2"]))
             .Single();
         Assert.Equal("Value1", result.Member);
@@ -265,7 +283,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.In, ["2"]))
             .Single();
         Assert.Equal(2, result.Member);
@@ -286,7 +305,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetForInInt>.BuildPredicate("Member", Comparison.NotIn, ["2"]))
             .Single();
         Assert.Equal(1, result.Member);
@@ -312,7 +332,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.In, ["00000000-0000-0000-0000-000000000002"]))
             .Single();
         Assert.Same(list[1], result);
@@ -333,7 +354,8 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetForInGuid>.BuildPredicate("Member", Comparison.NotIn, ["00000000-0000-0000-0000-000000000002"]))
             .Single();
         Assert.Same(list[0], result);
@@ -359,11 +381,13 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Equal, ["Target2"]))
             .Single();
         Assert.Equal("Target2", result.Field);
     }
+
     [Fact]
     public void Field_notEqual()
     {
@@ -379,10 +403,11 @@ public class ExpressionBuilderTests
             }
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithField>.BuildPredicate("Field", Comparison.NotEqual, ["Target2"]))
             .Single();
-        Assert.Equal("Target2", result.Field);
+        Assert.Equal("Target1", result.Field);
     }
 
     [Fact]
@@ -401,7 +426,8 @@ public class ExpressionBuilderTests
             new()
         };
 
-        var result = list.AsQueryable()
+        var result = list
+            .AsQueryable()
             .Where(ExpressionBuilder<TargetWithField>.BuildPredicate("Field", Comparison.Contains, ["Target2"]))
             .Single();
         Assert.Equal("Target2", result.Field);
@@ -445,7 +471,8 @@ public class ExpressionBuilderTests
             },
         };
 
-        var result = people.AsQueryable()
+        var result = people
+            .AsQueryable()
             .Where(ExpressionBuilder<Person>.BuildPredicate(name, expression, [value], negate, stringComparison))
             .Single();
         Assert.Equal(expectedName, result.Name);
@@ -531,7 +558,8 @@ public class ExpressionBuilderTests
             }
         }
 
-        var result = companies.AsQueryable()
+        var result = companies
+            .AsQueryable()
             .Where(ExpressionBuilder<Company>.BuildPredicate(name, expression, [value], negate, stringComparison))
             .Single();
         Assert.Equal(expectedName, result.Name);

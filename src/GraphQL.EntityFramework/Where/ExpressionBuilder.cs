@@ -242,7 +242,7 @@ public static class ExpressionBuilder<T>
                 case Comparison.Equal:
                     return Expression.Call(ReflectionCache.StringEqual, left, valueConstant);
                 case Comparison.NotEqual:
-                    return Expression.Call(ReflectionCache.StringNotEqual, left, valueConstant);
+                    return Expression.Not(Expression.Call(ReflectionCache.StringEqual, left, valueConstant));
                 case Comparison.Like:
                     return Expression.Call(null, ReflectionCache.StringLike, ExpressionCache.EfFunction, left, valueConstant);
                 case Comparison.StartsWith:
@@ -265,7 +265,7 @@ public static class ExpressionBuilder<T>
                 case Comparison.Equal:
                     return Expression.Call(ReflectionCache.StringEqualComparison, left, valueConstant, comparisonConstant);
                 case Comparison.NotEqual:
-                    return Expression.Call(ReflectionCache.StringNotEqualComparison, left, valueConstant, comparisonConstant);
+                    return  Expression.Not(Expression.Call(ReflectionCache.StringEqualComparison, left, valueConstant, comparisonConstant));
                 case Comparison.StartsWith:
                     var startsWithExpression = Expression.Call(left, ReflectionCache.StringStartsWithComparison, valueConstant, comparisonConstant);
                     return Expression.AndAlso(nullCheck, startsWithExpression);

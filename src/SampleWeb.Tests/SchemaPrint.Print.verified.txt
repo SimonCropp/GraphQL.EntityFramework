@@ -21,6 +21,7 @@ enum Comparison {
   contains
   endsWith
   equal
+  notEqual
   greaterThan
   greaterThanOrEqual
   notIn

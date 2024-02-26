@@ -324,7 +324,7 @@ public partial class IntegrationTests
     public async Task Where_with_nullable_properties2()
     {
         var query =
-            """{ withNullableEntities (where: {path: "Nullable", comparison: notEqual, value: "10"}){ id } }""";
+            """{ withNullableEntities (where: {path: "Nullable", comparison: equal, value: "10"}){ id } }""";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity

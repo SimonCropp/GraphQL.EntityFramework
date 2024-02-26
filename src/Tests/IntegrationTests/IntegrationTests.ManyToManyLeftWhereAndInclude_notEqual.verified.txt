@@ -1,0 +1,45 @@
+﻿{
+  target:
+{
+  "data": {
+    "manyToManyRightEntities": [
+      {
+        "rightName": "Right1",
+        "lefts": [
+          {
+            "leftName": "Left1"
+          },
+          {
+            "leftName": "Left2"
+          }
+        ]
+      },
+      {
+        "rightName": "Right2",
+        "lefts": [
+          {
+            "leftName": "Left1"
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: {
+    HasTransaction: false,
+    Text:
+SELECT [m].[Id], [m].[RightName], [t].[ManyToManyLeftEntityId], [t].[ManyToManyRightEntityId], [t].[Id], [t].[LeftName]
+FROM [ManyToManyRightEntities] AS [m]
+LEFT JOIN (
+    SELECT [m2].[ManyToManyLeftEntityId], [m2].[ManyToManyRightEntityId], [m3].[Id], [m3].[LeftName]
+    FROM [ManyToManyMiddleEntities] AS [m2]
+    INNER JOIN [ManyToManyLeftEntities] AS [m3] ON [m2].[ManyToManyLeftEntityId] = [m3].[Id]
+) AS [t] ON [m].[Id] = [t].[ManyToManyRightEntityId]
+WHERE EXISTS (
+    SELECT 1
+    FROM [ManyToManyMiddleEntities] AS [m0]
+    INNER JOIN [ManyToManyLeftEntities] AS [m1] ON [m0].[ManyToManyLeftEntityId] = [m1].[Id]
+    WHERE [m].[Id] = [m0].[ManyToManyRightEntityId] AND ([m1].[LeftName] <> N'Left2' OR [m1].[LeftName] IS NULL))
+ORDER BY [m].[Id], [t].[ManyToManyLeftEntityId], [t].[ManyToManyRightEntityId]
+  }
+}
