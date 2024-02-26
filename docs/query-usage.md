@@ -91,6 +91,7 @@ All where statements require a `path`. This is a full path to a, possible nested
 #### Supported Comparisons
 
  * `equal`: (the default value if `comparison` is omitted)
+ * `notEqual`: (the default value if `comparison` is omitted)
  * `greaterThan`
  * `greaterThanOrEqual`
  * `lessThan`
