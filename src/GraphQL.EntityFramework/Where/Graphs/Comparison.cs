@@ -4,6 +4,7 @@ public enum Comparison
 {
     // Both
     Equal,
+    NotEqual,
     In,
     NotIn,
 

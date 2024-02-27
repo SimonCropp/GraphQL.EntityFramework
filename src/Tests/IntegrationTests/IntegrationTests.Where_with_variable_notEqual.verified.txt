@@ -1,0 +1,19 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "property": "Value1"
+      }
+    ]
+  }
+},
+  sql: {
+    HasTransaction: false,
+    Text:
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+WHERE [p].[Property] <> N'value2' OR [p].[Property] IS NULL
+  }
+}
