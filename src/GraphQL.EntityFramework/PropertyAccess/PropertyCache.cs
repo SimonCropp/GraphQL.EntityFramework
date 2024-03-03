@@ -53,9 +53,8 @@
         const BindingFlags bindingFlagsNonPublic = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
 
         // Attempt to get the public property
-        var propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsPublic) ?? (MemberInfo?)type.GetField(propertyOrFieldName, bindingFlagsPublic);
-
-        // If not found
+        var propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsPublic) ??
+                              (MemberInfo?)type.GetField(propertyOrFieldName, bindingFlagsPublic);
 
         // If not found
         propertyOrField ??= type.GetProperty(propertyOrFieldName, bindingFlagsNonPublic);
