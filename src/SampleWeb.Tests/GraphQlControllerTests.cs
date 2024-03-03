@@ -18,7 +18,7 @@ public class GraphQlControllerTests
             request =>
             {
                 var headers = request.Headers;
-                headers["Sec-WebSocket-Protocol"] = "graphql-ws";
+                headers.SecWebSocketProtocol = "graphql-ws";
             };
         clientQueryExecutor = new(JsonConvert.SerializeObject);
     }
