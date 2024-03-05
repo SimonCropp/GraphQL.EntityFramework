@@ -11,7 +11,7 @@ public class GlobalFilterSnippets
 
     #endregion
 
-    public void Add(ServiceCollection services)
+    public static void Add(ServiceCollection services)
     {
         #region add-filter
 

@@ -4,7 +4,7 @@
     {
         var hash = new HashSet<string?>();
         var duplicates = values.Where(_ => !hash.Add(_)).ToArray();
-        if (duplicates.Any())
+        if (duplicates.Length != 0)
         {
             throw new($"""
                        Duplicates detected for In expression. Duplicates:

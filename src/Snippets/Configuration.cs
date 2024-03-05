@@ -13,7 +13,7 @@
     }
     #endregion
 
-    void RegisterInContainerExplicit(IServiceCollection serviceCollection)
+    static void RegisterInContainerExplicit(IServiceCollection serviceCollection)
     {
         #region RegisterInContainer
         EfGraphQLConventions.RegisterInContainer<MyDbContext>(

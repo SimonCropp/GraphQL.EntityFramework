@@ -3,8 +3,7 @@
     public static bool TryReadWhere(IResolveFieldContext context, out IReadOnlyCollection<WhereExpression> expression)
     {
         expression = ReadList<WhereExpression>(context, "where");
-
-        return expression.Any();
+        return expression.Count != 0;
     }
 
     public static IReadOnlyCollection<OrderBy> ReadOrderBy(IResolveFieldContext context) =>
