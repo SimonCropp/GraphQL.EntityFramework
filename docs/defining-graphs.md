@@ -58,7 +58,7 @@ Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet
 
 <!-- snippet: rootQuery -->
 <a id='snippet-rootquery'></a>
-```cs
+```csharp
 public class Query :
     QueryGraphType<MyDbContext>
 {
