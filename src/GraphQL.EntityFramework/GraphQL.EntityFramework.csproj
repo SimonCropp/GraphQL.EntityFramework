@@ -22,10 +22,10 @@
     <Using Include="GraphQLParser.AST" />
     <Using Include="GraphQL.EntityFramework" />
     <Using Include="GraphQL.Resolvers" />
-    <Using Include="GraphQL.Types.Relay" />    
+    <Using Include="GraphQL.Types.Relay" />
     <Using Include="System.Globalization" />
     <Using Include="GraphQL.Execution" />
     <Using Include="GraphQL.Builders" />
-    <Using Include="System.Text.RegularExpressions" />    
+    <Using Include="System.Text.RegularExpressions" />
   </ItemGroup>
 </Project>
