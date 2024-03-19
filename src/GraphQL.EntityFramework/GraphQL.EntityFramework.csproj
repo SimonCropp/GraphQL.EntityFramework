@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Description>Add EntityFramework Core IQueryable support to GraphQL</Description>
+    <PolyNullability>true</PolyNullability>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="All" />
@@ -9,13 +10,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="GraphQL" Version="7.8.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
-    <PackageReference Include="Nullability" Version="2.3.0" />
+    <PackageReference Include="Polyfill" Version="4.0.0" PrivateAssets="all" />
     <PackageReference Include="ProjectDefaults" Version="1.0.125" PrivateAssets="all" />
     <Using Include="System.Linq.Expressions" />
     <Using Include="GraphQL.Types" />
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
-    <Using Include="Nullability" />
     <Using Include="GraphQL" />
     <Using Include="GraphQL.Types.Relay.DataObjects" />
     <Using Include="GraphQLParser.AST" />
