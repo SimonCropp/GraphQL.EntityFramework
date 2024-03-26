@@ -15,7 +15,7 @@ Enabling is done via registering in a container.
 The container registration can be done via adding to a [IServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection):
 
 <!-- snippet: RegisterInContainer -->
-<a id='snippet-registerincontainer'></a>
+<a id='snippet-RegisterInContainer'></a>
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
@@ -25,14 +25,14 @@ public static void RegisterInContainer<TDbContext>(
         bool disableTracking = false,
         bool disableAsync = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L14-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
-<a id='snippet-registerincontainer-1'></a>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L14-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup><a href='/src/Snippets/Configuration.cs#L18-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/Configuration.cs#L18-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -46,7 +46,7 @@ Configuration requires an instance of `Microsoft.EntityFrameworkCore.Metadata.IM
 To build an instance of an `IModel` at configuration time it can be helpful to have a class specifically for that purpose:
 
 <!-- snippet: ModelBuilder -->
-<a id='snippet-modelbuilder'></a>
+<a id='snippet-ModelBuilder'></a>
 ```cs
 static class ModelBuilder
 {
@@ -59,7 +59,7 @@ static class ModelBuilder
     }
 }
 ```
-<sup><a href='/src/Snippets/Configuration.cs#L3-L14' title='Snippet source file'>snippet source</a> | <a href='#snippet-modelbuilder' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/Configuration.cs#L3-L14' title='Snippet source file'>snippet source</a> | <a href='#snippet-ModelBuilder' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -115,7 +115,7 @@ Cycles are not allowed in no-tracking queries; either use a tracking query or re
 ### Usage
 
 <!-- snippet: RegisterInContainer -->
-<a id='snippet-registerincontainer'></a>
+<a id='snippet-RegisterInContainer'></a>
 ```cs
 public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
@@ -125,14 +125,14 @@ public static void RegisterInContainer<TDbContext>(
         bool disableTracking = false,
         bool disableAsync = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L14-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer' title='Start of snippet'>anchor</a></sup>
-<a id='snippet-registerincontainer-1'></a>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L14-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup><a href='/src/Snippets/Configuration.cs#L18-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-registerincontainer-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/Configuration.cs#L18-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Then the `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
@@ -231,7 +231,7 @@ See also [EntityFrameworkServiceCollectionExtensions](https://docs.microsoft.com
 With the DbContext existing in the container, it can be resolved in the controller that handles the GraphQL query:
 
 <!-- snippet: GraphQlController -->
-<a id='snippet-graphqlcontroller'></a>
+<a id='snippet-GraphQlController'></a>
 ```cs
 [Route("[controller]")]
 [ApiController]
@@ -290,7 +290,7 @@ public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L5-L62' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontroller' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L5-L62' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlController' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -304,7 +304,7 @@ Multiple different DbContext types can be registered and used.
 A user context that exposes both types.
 
 <!-- snippet: MultiUserContext -->
-<a id='snippet-multiusercontext'></a>
+<a id='snippet-MultiUserContext'></a>
 ```cs
 public class UserContext(DbContext1 context1, DbContext2 context2) : Dictionary<string, object?>
 {
@@ -312,7 +312,7 @@ public class UserContext(DbContext1 context1, DbContext2 context2) : Dictionary<
     public readonly DbContext2 DbContext2 = context2;
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L80-L86' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiusercontext' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L80-L86' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiUserContext' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -321,7 +321,7 @@ public class UserContext(DbContext1 context1, DbContext2 context2) : Dictionary<
 Register both DbContext types in the container and include how those instance can be extracted from the GraphQL context:
 
 <!-- snippet: RegisterMultipleInContainer -->
-<a id='snippet-registermultipleincontainer'></a>
+<a id='snippet-RegisterMultipleInContainer'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer(
     services,
@@ -330,7 +330,7 @@ EfGraphQLConventions.RegisterInContainer(
     services,
     userContext => ((UserContext) userContext).DbContext2);
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L49-L58' title='Snippet source file'>snippet source</a> | <a href='#snippet-registermultipleincontainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L49-L58' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterMultipleInContainer' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -340,7 +340,7 @@ Use the user type to pass in both DbContext instances.
 
 
 <!-- snippet: MultiExecutionOptions -->
-<a id='snippet-multiexecutionoptions'></a>
+<a id='snippet-MultiExecutionOptions'></a>
 ```cs
 var executionOptions = new ExecutionOptions
 {
@@ -349,7 +349,7 @@ var executionOptions = new ExecutionOptions
     UserContext = new UserContext(dbContext1, dbContext2)
 };
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L73' title='Snippet source file'>snippet source</a> | <a href='#snippet-multiexecutionoptions' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L73' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiExecutionOptions' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -414,7 +414,7 @@ public class Entity1GraphType :
 The `GraphQlController` can be tested using the [ASP.NET Integration tests](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests) via the [Microsoft.AspNetCore.Mvc.Testing NuGet package](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Testing).
 
 <!-- snippet: GraphQlControllerTests -->
-<a id='snippet-graphqlcontrollertests'></a>
+<a id='snippet-GraphQlControllerTests'></a>
 ```cs
 public class GraphQlControllerTests
 {
@@ -615,7 +615,7 @@ public class GraphQlControllerTests
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L4-L205' title='Snippet source file'>snippet source</a> | <a href='#snippet-graphqlcontrollertests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L4-L205' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -629,7 +629,7 @@ The `GraphQlExtensions` class exposes some helper methods:
 Wraps the `DocumentExecuter.ExecuteAsync` to throw if there are any errors.
 
 <!-- snippet: ExecuteWithErrorCheck -->
-<a id='snippet-executewitherrorcheck'></a>
+<a id='snippet-ExecuteWithErrorCheck'></a>
 ```cs
 public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     this IDocumentExecuter executer,
@@ -652,7 +652,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     return executionResult;
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L5-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-executewitherrorcheck' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L5-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-ExecuteWithErrorCheck' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
