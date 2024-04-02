@@ -1,6 +1,4 @@
-﻿// Global using directives
-
-global using System.Buffers;
+﻿global using System.Buffers;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;

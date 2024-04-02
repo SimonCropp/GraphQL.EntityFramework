@@ -1,6 +1,4 @@
-﻿// Global using directives
-
-global using GraphQL.EntityFramework;
+﻿global using GraphQL.EntityFramework;
 global using GraphQL.Types.Relay.DataObjects;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata;
