@@ -150,7 +150,7 @@ partial class EfGraphQLService<TDbContext>
                         return null;
                     }
 
-                    throw new ExecutionError("Not found");
+                    throw new SingleEntityNotFoundException();
                 })
         };
 

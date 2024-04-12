@@ -1,5 +1,8 @@
 ﻿{
-  target: Not found,
+  target: {
+    Type: SingleEntityNotFoundException,
+    Message: Not found
+  },
   sql: {
     HasTransaction: false,
     Text:
