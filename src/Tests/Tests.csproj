@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
     <PackageReference Include="Verify.SqlServer" Version="8.0.3" />
     <PackageReference Include="Xunit" Version="2.7.1" />
-    <PackageReference Include="Verify.Xunit" Version="23.7.2" />
+    <PackageReference Include="Verify.Xunit" Version="24.0.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.8" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
