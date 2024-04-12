@@ -49,10 +49,8 @@ public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
             OperationName = operationName,
             Variables = variables,
             CancellationToken = cancel,
-#if (DEBUG)
             ThrowOnUnhandledException = true,
             EnableMetrics = true,
-#endif
         };
         var executeAsync = await executer.ExecuteAsync(options);
 
