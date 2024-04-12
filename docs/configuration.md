@@ -279,10 +279,8 @@ public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
             OperationName = operationName,
             Variables = variables,
             CancellationToken = cancel,
-#if (DEBUG)
             ThrowOnUnhandledException = true,
             EnableMetrics = true,
-#endif
         };
         var executeAsync = await executer.ExecuteAsync(options);
 
@@ -290,7 +288,7 @@ public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
     }
 }
 ```
-<sup><a href='/src/SampleWeb/GraphQlController.cs#L5-L62' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlController' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/GraphQlController.cs#L5-L60' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlController' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
