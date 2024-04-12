@@ -1,0 +1,4 @@
+﻿{
+  Type: SingleEntityNotFoundException,
+  Message: Not found
+}

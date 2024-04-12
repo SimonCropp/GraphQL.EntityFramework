@@ -98,9 +98,8 @@ public class GraphQlControllerTests
             id = "99"
         };
 
-        using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Not found", result);
+        await ThrowsTask(() => clientQueryExecutor.ExecuteGet(client, query, variables))
+            .IgnoreStackTrace();
     }
 
     [Fact]
