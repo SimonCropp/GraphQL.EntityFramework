@@ -5,6 +5,8 @@
     <PolyNullability>true</PolyNullability>
   </PropertyGroup>
   <ItemGroup>
+    <!-- explicit to avoid a CVE -->
+    <PackageReference Include="Azure.Identity" Version="1.11.0" />
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="All" />
     <PackageReference Include="Fody" Version="6.8.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
