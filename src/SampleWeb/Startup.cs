@@ -27,8 +27,8 @@ public class Startup
         typeof(Startup).Assembly
             .GetTypes()
             .Where(_ => !_.IsAbstract &&
-                        (typeof(IObjectGraphType).IsAssignableFrom(_) ||
-                         typeof(IInputObjectGraphType).IsAssignableFrom(_)));
+                        (_.IsAssignableTo<IObjectGraphType>() ||
+                         _.IsAssignableTo<IInputObjectGraphType>()));
 
     public void Configure(IApplicationBuilder builder)
     {

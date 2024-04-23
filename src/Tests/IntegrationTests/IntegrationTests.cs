@@ -2683,5 +2683,5 @@ public partial class IntegrationTests
         typeof(IntegrationTests)
             .Assembly
             .GetTypes()
-            .Where(_ => !_.IsAbstract && typeof(GraphType).IsAssignableFrom(_));
+            .Where(_ => !_.IsAbstract && _.IsAssignableTo<GraphType>());
 }
