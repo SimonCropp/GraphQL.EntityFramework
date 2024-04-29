@@ -13,7 +13,7 @@
     <PackageReference Include="GraphQL" Version="7.8.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="Polyfill" Version="5.0.0" PrivateAssets="all" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.126" PrivateAssets="all" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.127" PrivateAssets="all" />
     <!-- explicit to avoid a CVE -->
     <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
     <Using Include="System.Linq.Expressions" />
