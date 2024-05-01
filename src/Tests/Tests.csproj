@@ -24,6 +24,5 @@
     <Using Include="Microsoft.EntityFrameworkCore.Diagnostics" />
     <Using Include="Microsoft.Extensions.DependencyInjection" />
     <Using Include="GraphQL.SystemTextJson" />
-    
   </ItemGroup>
 </Project>
