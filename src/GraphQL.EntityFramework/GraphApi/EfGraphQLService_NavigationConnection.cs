@@ -11,7 +11,8 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null)
+        IEnumerable<string>? includeNames = null,
+        bool omitQueryArguments = false)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -27,7 +28,8 @@ partial class EfGraphQLService<TDbContext>
                 graph,
                 name,
                 resolve,
-                includeNames
+                includeNames,
+                omitQueryArguments
             };
             return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, arguments)!;
         }
@@ -49,7 +51,8 @@ partial class EfGraphQLService<TDbContext>
         ComplexGraphType<TSource> graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve,
-        IEnumerable<string>? includeNames)
+        IEnumerable<string>? includeNames,
+        bool omitQueryArguments)
         where TGraph : IGraphType
         where TReturn : class
     {
@@ -90,7 +93,7 @@ partial class EfGraphQLService<TDbContext>
                         exception);
                 }
 
-                enumerable = enumerable.ApplyGraphQlArguments(hasId, context);
+                enumerable = enumerable.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
                 enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext, context.User);
                 var page = enumerable.ToList();
 

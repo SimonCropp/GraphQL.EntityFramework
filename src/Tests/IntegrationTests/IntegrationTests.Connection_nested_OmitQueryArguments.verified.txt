@@ -1,0 +1,95 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "id": "Guid_1",
+        "childrenConnectionOmitQueryArguments": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
+          }
+        }
+      },
+      {
+        "id": "Guid_2",
+        "childrenConnectionOmitQueryArguments": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
+          }
+        }
+      },
+      {
+        "id": "Guid_3",
+        "childrenConnectionOmitQueryArguments": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
+          }
+        }
+      },
+      {
+        "id": "Guid_4",
+        "childrenConnectionOmitQueryArguments": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
+          }
+        }
+      },
+      {
+        "id": "Guid_5",
+        "childrenConnectionOmitQueryArguments": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
+          }
+        }
+      },
+      {
+        "id": "Guid_6",
+        "childrenConnectionOmitQueryArguments": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
+          }
+        }
+      },
+      {
+        "id": "Guid_7",
+        "childrenConnectionOmitQueryArguments": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
+          }
+        }
+      },
+      {
+        "id": "Guid_8",
+        "childrenConnectionOmitQueryArguments": {
+          "edges": [],
+          "pageInfo": {
+            "endCursor": "-1",
+            "hasNextPage": false
+          }
+        }
+      }
+    ]
+  }
+},
+  sql: {
+    HasTransaction: false,
+    Text:
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+  }
+}

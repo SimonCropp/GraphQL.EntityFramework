@@ -6,7 +6,7 @@ public static partial class ArgumentProcessor
         this IEnumerable<TItem> items,
         bool hasId,
         IResolveFieldContext context,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments)
     {
         if (omitQueryArguments)
         {
