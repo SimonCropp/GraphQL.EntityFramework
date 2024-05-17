@@ -43,7 +43,7 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = MakeListGraphType<TReturn>(itemGraphType),
-            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false),
+            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false, omitQueryArguments),
         };
 
         var names = GetKeyNames<TReturn>();
@@ -62,7 +62,7 @@ partial class EfGraphQLService<TDbContext>
                     query = includeAppender.AddIncludes(query, context);
                     if (!omitQueryArguments)
                     {
-                        query = query.ApplyGraphQlArguments(context, names, true);
+                        query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
                     }
 
                     QueryLogger.Write(query);

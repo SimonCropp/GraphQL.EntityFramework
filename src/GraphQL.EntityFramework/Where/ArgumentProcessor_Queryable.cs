@@ -6,9 +6,15 @@ public static partial class ArgumentProcessor
         this IQueryable<TItem> queryable,
         IResolveFieldContext context,
         List<string>? keyNames,
-        bool applyOrder)
+        bool applyOrder,
+        bool omitQueryArguments)
         where TItem : class
     {
+        if (omitQueryArguments)
+        {
+            return queryable;
+        }
+
         if (keyNames is not null)
         {
             if (ArgumentReader.TryReadIds(context, out var values))
