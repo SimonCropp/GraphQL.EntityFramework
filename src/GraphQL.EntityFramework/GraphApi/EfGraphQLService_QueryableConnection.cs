@@ -116,10 +116,7 @@ partial class EfGraphQLService<TDbContext>
                     }
 
                     query = includeAppender.AddIncludes(query, context);
-                    if (!omitQueryArguments)
-                    {
-                        query = query.ApplyGraphQlArguments(context, names, true);
-                    }
+                    query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
 
                     try
                     {

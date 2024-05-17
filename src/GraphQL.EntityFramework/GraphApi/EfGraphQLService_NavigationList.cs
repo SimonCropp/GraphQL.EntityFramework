@@ -8,7 +8,8 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null)
+        IEnumerable<string>? includeNames = null,
+        bool omitQueryArguments = false)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -29,7 +30,7 @@ partial class EfGraphQLService<TDbContext>
                 {
                     var fieldContext = BuildContext(context);
                     var result = resolve(fieldContext);
-                    result = result.ApplyGraphQlArguments(hasId, context);
+                    result = result.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
                     return await fieldContext.Filters.ApplyFilter(result, context.UserContext, context.User);
                 });
         }

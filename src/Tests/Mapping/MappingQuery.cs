@@ -12,6 +12,11 @@
             graph: this,
             name: "children",
             resolve: _ => _.DbContext.Children);
+        graphQlService.AddQueryField(
+            graph: this,
+            name: "childrenOmitQueryArguments",
+            resolve: _ => _.DbContext.Children,
+            omitQueryArguments: true);
         graphQlService.AddSingleField(
             graph: this,
             name: "parent",

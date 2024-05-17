@@ -9,9 +9,10 @@ public class EfInterfaceGraphType<TDbContext, TSource>(IEfGraphQLService<TDbCont
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,
         Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
+        IEnumerable<string>? includeNames = null,
+        bool omitQueryArguments = false)
         where TReturn : class =>
-        GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, null, graphType, includeNames);
+        GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, null, graphType, includeNames, omitQueryArguments);
 
     public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
         string name,
@@ -23,9 +24,10 @@ public class EfInterfaceGraphType<TDbContext, TSource>(IEfGraphQLService<TDbCont
     public FieldBuilder<TSource, TReturn> AddNavigationListField<TReturn>(
         string name,
         Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
+        IEnumerable<string>? includeNames = null,
+        bool omitQueryArguments = false)
         where TReturn : class =>
-        GraphQlService.AddNavigationListField<TSource, TReturn>(this, name, null, graphType, includeNames);
+        GraphQlService.AddNavigationListField<TSource, TReturn>(this, name, null, graphType, includeNames, omitQueryArguments);
 
     public ConnectionBuilder<TSource> AddQueryConnectionField<TReturn>(
         string name,
@@ -35,9 +37,10 @@ public class EfInterfaceGraphType<TDbContext, TSource>(IEfGraphQLService<TDbCont
 
     public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
         string name,
-        Type? graphType = null)
+        Type? graphType = null,
+        bool omitQueryArguments = false)
         where TReturn : class =>
-        GraphQlService.AddQueryField<TReturn>(this, name, null, graphType);
+        GraphQlService.AddQueryField<TReturn>(this, name, null, graphType, omitQueryArguments);
 
     public TDbContext ResolveDbContext(IResolveFieldContext<TSource> context) =>
         GraphQlService.ResolveDbContext(context);

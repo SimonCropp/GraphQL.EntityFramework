@@ -53,11 +53,21 @@
         }
     }
 
-    public static QueryArguments GetQueryArguments(bool hasId, bool applyOrder, bool idOnly)
+    public static QueryArguments? GetQueryArguments(bool hasId, bool applyOrder, bool idOnly, bool omitQueryArguments = false)
     {
+        if (omitQueryArguments && idOnly)
+        {
+            throw new("omitQueryArguments and idOnly are mutually exclusive");
+        }
+
         if (idOnly)
         {
             return [IdArgumentNotNullable()];
+        }
+
+        if (omitQueryArguments)
+        {
+            return null;
         }
 
         var arguments = new QueryArguments();
