@@ -63,10 +63,6 @@ partial class EfGraphQLService<TDbContext>
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
 
-        if (omitQueryArguments && idOnly)
-        {
-            throw new("omitQueryArguments and idOnly are mutually exclusive");
-        }
 
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
@@ -88,10 +84,7 @@ partial class EfGraphQLService<TDbContext>
                     }
 
                     query = includeAppender.AddIncludes(query, context);
-                    if (!omitQueryArguments)
-                    {
-                        query = query.ApplyGraphQlArguments(context, names, false);
-                    }
+                    query = query.ApplyGraphQlArguments(context, names, false, omitQueryArguments);
 
                     QueryLogger.Write(query);
 
@@ -156,7 +149,7 @@ partial class EfGraphQLService<TDbContext>
 
         if (!omitQueryArguments)
         {
-            type.Arguments = ArgumentAppender.GetQueryArguments(hasId, false, idOnly);
+            type.Arguments = ArgumentAppender.GetQueryArguments(hasId, false, idOnly, omitQueryArguments);
         }
 
         return type;

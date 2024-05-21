@@ -2,8 +2,17 @@
 
 public static partial class ArgumentProcessor
 {
-    public static IEnumerable<TItem> ApplyGraphQlArguments<TItem>(this IEnumerable<TItem> items, bool hasId, IResolveFieldContext context)
+    public static IEnumerable<TItem> ApplyGraphQlArguments<TItem>(
+        this IEnumerable<TItem> items,
+        bool hasId,
+        IResolveFieldContext context,
+        bool omitQueryArguments)
     {
+        if (omitQueryArguments)
+        {
+            return items;
+        }
+
         var alreadyOrdered = items is ICollection<TItem>;
 
         if (hasId)

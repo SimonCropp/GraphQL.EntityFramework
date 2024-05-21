@@ -578,6 +578,35 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
+    [Fact]
+    public async Task Connection_nested_OmitQueryArguments()
+    {
+        var query =
+            """
+            {
+              parentEntities {
+                id
+                childrenConnectionOmitQueryArguments {
+                  edges {
+                    cursor
+                    node {
+                      id
+                    }
+                  }
+                  pageInfo {
+                      endCursor
+                      hasNextPage
+                    }
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
     static IEnumerable<ParentEntity> BuildEntities(uint length)
     {
         for (var index = 0; index < length; index++)
