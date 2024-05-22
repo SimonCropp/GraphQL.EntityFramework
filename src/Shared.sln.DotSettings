@@ -40,7 +40,6 @@
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SeparateLocalFunctionsWithJumpStatement/@EntryIndexedValue">DO_NOT_SHOW</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SimplifyConditionalTernaryExpression/@EntryIndexedValue">DO_NOT_SHOW</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=StringLiteralAsInterpolationArgument/@EntryIndexedValue">ERROR</s:String>
-	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault/@EntryIndexedValue">ERROR</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=TryStatementsCanBeMerged/@EntryIndexedValue">ERROR</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=UnusedParameter_002EGlobal/@EntryIndexedValue">ERROR</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=UnusedParameter_002ELocal/@EntryIndexedValue">ERROR</s:String>
