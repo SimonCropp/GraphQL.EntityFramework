@@ -1,6 +1,6 @@
 * text=auto
 .editorconfig -text
-*.sln.DotSettings -text
+*.sln.DotSettings -text eol=crlf
 *.snk binary
 
 *.verified.txt text eol=lf working-tree-encoding=UTF-8
