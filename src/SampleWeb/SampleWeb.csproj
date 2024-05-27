@@ -5,13 +5,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />
-    <PackageReference Include="EfLocalDb" Version="18.0.0" />
-    <PackageReference Include="graphiql" Version="2.0.0" />
-    <PackageReference Include="GraphQL.SystemTextJson" Version="7.8.0" />
-    <PackageReference Include="GraphQL" Version="7.8.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.5" />
+    <PackageReference Include="EfLocalDb" />
+    <PackageReference Include="graphiql" />
+    <PackageReference Include="GraphQL.SystemTextJson" />
+    <PackageReference Include="GraphQL" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.127" PrivateAssets="all" />
+    <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
   </ItemGroup>
 </Project>
