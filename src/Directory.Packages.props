@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="ConfigureAwait.Fody" Version="3.3.2" />
-    <PackageVersion Include="EfLocalDb" Version="18.0.0" />
+    <PackageVersion Include="EfLocalDb" Version="18.0.1" />
     <PackageVersion Include="Fody" Version="6.8.1" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
     <PackageVersion Include="GraphQL" Version="7.8.0" />
@@ -20,7 +20,7 @@
     <PackageVersion Include="Polyfill" Version="5.3.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.127" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="8.0.0" />
-    <PackageVersion Include="Verify.SqlServer" Version="8.0.4" />
+    <PackageVersion Include="Verify.SqlServer" Version="8.0.5" />
     <PackageVersion Include="Verify.Xunit" Version="25.0.1" />
     <PackageVersion Include="Xunit" Version="2.8.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
