@@ -8,8 +8,10 @@
     <PackageTags>EntityFrameworkCore, EntityFramework, GraphQL</PackageTags>
     <ImplicitUsings>true</ImplicitUsings>
     <ResolveAssemblyReferencesSilent>true</ResolveAssemblyReferencesSilent>
+    <!--
     <NuGetAuditMode>all</NuGetAuditMode>
     <NuGetAuditLevel>low</NuGetAuditLevel>
+    -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 </Project>

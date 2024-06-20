@@ -20,7 +20,7 @@
     <PackageVersion Include="Polyfill" Version="5.5.2" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.127" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="8.0.0" />
-    <PackageVersion Include="Verify.SqlServer" Version="8.0.5" />
+    <PackageVersion Include="Verify.SqlServer" Version="9.0.0-beta.1" />
     <PackageVersion Include="Verify.Xunit" Version="25.0.2" />
     <PackageVersion Include="Xunit" Version="2.8.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
