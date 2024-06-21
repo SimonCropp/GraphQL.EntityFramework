@@ -9,11 +9,11 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [e].[Id], [e].[Property]
 FROM [EnumEntities] AS [e]
-WHERE [e].[Property] <> 4 OR [e].[Property] IS NULL
+WHERE [e].[Property] <> 4 OR [e].[Property] IS NULL,
+    HasTransaction: false
   }
 }
