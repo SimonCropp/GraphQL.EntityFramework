@@ -86,10 +86,10 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
+FROM [ParentEntities] AS [p],
+    HasTransaction: false
   }
 }

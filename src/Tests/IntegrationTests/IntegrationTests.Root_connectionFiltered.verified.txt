@@ -20,24 +20,24 @@
     }
   }
 },
-  sql: [
+  sqlCommand: [
     {
-      HasTransaction: false,
       Text:
 SELECT COUNT(*)
-FROM [FilterParentEntities] AS [f]
+FROM [FilterParentEntities] AS [f],
+      HasTransaction: false
     },
     {
-      HasTransaction: false,
-      Parameters: {
-        @__p_0: 0,
-        @__p_1: 10
-      },
       Text:
 SELECT [f].[Id], [f].[Property]
 FROM [FilterParentEntities] AS [f]
 ORDER BY [f].[Id]
-OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY,
+      Parameters: {
+        @__p_0: 0,
+        @__p_1: 10
+      },
+      HasTransaction: false
     }
   ]
 }
