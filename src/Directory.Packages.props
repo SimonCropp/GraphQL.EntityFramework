@@ -21,7 +21,7 @@
     <PackageVersion Include="ProjectDefaults" Version="1.0.128" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="8.0.0" />
     <PackageVersion Include="Verify.SqlServer" Version="9.0.0" />
-    <PackageVersion Include="Verify.Xunit" Version="25.0.3" />
+    <PackageVersion Include="Verify.Xunit" Version="25.0.4" />
     <PackageVersion Include="Xunit" Version="2.8.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
   </ItemGroup>
