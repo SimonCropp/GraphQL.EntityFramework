@@ -12,12 +12,12 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
 FROM [ChildEntities] AS [c]
 LEFT JOIN [ParentEntities] AS [p] ON [c].[ParentId] = [p].[Id]
-ORDER BY [p].[Property]
+ORDER BY [p].[Property],
+    HasTransaction: false
   }
 }

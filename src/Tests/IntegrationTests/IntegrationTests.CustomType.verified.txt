@@ -12,11 +12,11 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [c].[Id], [c].[Property]
 FROM [CustomTypeEntities] AS [c]
-ORDER BY [c].[Property]
+ORDER BY [c].[Property],
+    HasTransaction: false
   }
 }

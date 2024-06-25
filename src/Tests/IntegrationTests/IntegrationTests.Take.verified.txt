@@ -9,14 +9,14 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
-    Parameters: {
-      @__p_0: 1
-    },
+  sqlCommand: {
     Text:
 SELECT TOP(@__p_0) [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-ORDER BY [p].[Property]
+ORDER BY [p].[Property],
+    Parameters: {
+      @__p_0: 1
+    },
+    HasTransaction: false
   }
 }

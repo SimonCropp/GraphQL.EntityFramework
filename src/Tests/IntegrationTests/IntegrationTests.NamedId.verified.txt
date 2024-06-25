@@ -9,11 +9,11 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [n].[NamedId], [n].[Property]
 FROM [NamedEntities] AS [n]
-WHERE [n].[NamedId] = 'Guid_1'
+WHERE [n].[NamedId] = 'Guid_1',
+    HasTransaction: false
   }
 }

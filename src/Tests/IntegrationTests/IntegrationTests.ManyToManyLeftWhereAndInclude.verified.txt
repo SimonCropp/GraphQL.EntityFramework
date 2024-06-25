@@ -17,8 +17,7 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [m].[Id], [m].[RightName], [t].[ManyToManyLeftEntityId], [t].[ManyToManyRightEntityId], [t].[Id], [t].[LeftName]
 FROM [ManyToManyRightEntities] AS [m]
@@ -32,6 +31,7 @@ WHERE EXISTS (
     FROM [ManyToManyMiddleEntities] AS [m0]
     INNER JOIN [ManyToManyLeftEntities] AS [m1] ON [m0].[ManyToManyLeftEntityId] = [m1].[Id]
     WHERE [m].[Id] = [m0].[ManyToManyRightEntityId] AND [m1].[LeftName] = N'Left2')
-ORDER BY [m].[Id], [t].[ManyToManyLeftEntityId], [t].[ManyToManyRightEntityId]
+ORDER BY [m].[Id], [t].[ManyToManyLeftEntityId], [t].[ManyToManyRightEntityId],
+    HasTransaction: false
   }
 }

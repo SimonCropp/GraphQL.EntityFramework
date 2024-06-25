@@ -9,11 +9,11 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [d].[Id], [d].[Property]
 FROM [DateEntities] AS [d]
-WHERE [d].[Property] = '2020-10-01'
+WHERE [d].[Property] = '2020-10-01',
+    HasTransaction: false
   }
 }

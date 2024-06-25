@@ -9,11 +9,11 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [t].[Id], [t].[Property]
 FROM [TimeEntities] AS [t]
-WHERE [t].[Property] <> '10:11:00' OR [t].[Property] IS NULL
+WHERE [t].[Property] <> '10:11:00' OR [t].[Property] IS NULL,
+    HasTransaction: false
   }
 }

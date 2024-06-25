@@ -9,11 +9,11 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-WHERE [p].[Property] IS NOT NULL AND [p].[Property] LIKE N'Valu%' AND [p].[Property] LIKE N'%ue3'
+WHERE [p].[Property] IS NOT NULL AND [p].[Property] LIKE N'Valu%' AND [p].[Property] LIKE N'%ue3',
+    HasTransaction: false
   }
 }

@@ -12,11 +12,11 @@
     ]
   }
 },
-  sql: {
-    HasTransaction: false,
+  sqlCommand: {
     Text:
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-WHERE [p].[Id] IN ('Guid_1', 'Guid_2')
+WHERE [p].[Id] IN ('Guid_1', 'Guid_2'),
+    HasTransaction: false
   }
 }
