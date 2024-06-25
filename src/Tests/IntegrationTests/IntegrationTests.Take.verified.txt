@@ -9,7 +9,7 @@
     ]
   }
 },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT TOP(@__p_0) [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]

@@ -29,7 +29,7 @@
     }
   }
 },
-  sqlCommand: [
+  sql: [
     {
       Text:
 SELECT COUNT(*)

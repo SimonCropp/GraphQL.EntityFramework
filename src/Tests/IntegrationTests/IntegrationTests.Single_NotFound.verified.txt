@@ -3,7 +3,7 @@
     Type: SingleEntityNotFoundException,
     Message: Not found
   },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT TOP(2) [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]

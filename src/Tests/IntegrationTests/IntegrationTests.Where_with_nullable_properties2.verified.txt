@@ -9,7 +9,7 @@
     ]
   }
 },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT [w].[Id], [w].[Nullable]
 FROM [WithNullableEntities] AS [w]

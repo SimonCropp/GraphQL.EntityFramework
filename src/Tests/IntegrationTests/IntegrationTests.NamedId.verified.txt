@@ -9,7 +9,7 @@
     ]
   }
 },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT [n].[NamedId], [n].[Property]
 FROM [NamedEntities] AS [n]

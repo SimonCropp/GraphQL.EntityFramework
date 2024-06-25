@@ -86,7 +86,7 @@
     ]
   }
 },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p],

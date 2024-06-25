@@ -9,7 +9,7 @@
     ]
   }
 },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT [e].[Id], [e].[Property]
 FROM [EnumEntities] AS [e]

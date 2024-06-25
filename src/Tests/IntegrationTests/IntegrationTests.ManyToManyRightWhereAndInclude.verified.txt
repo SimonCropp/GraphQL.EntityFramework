@@ -17,7 +17,7 @@
     ]
   }
 },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT [m].[Id], [m].[LeftName], [t].[ManyToManyLeftEntityId], [t].[ManyToManyRightEntityId], [t].[Id], [t].[RightName]
 FROM [ManyToManyLeftEntities] AS [m]

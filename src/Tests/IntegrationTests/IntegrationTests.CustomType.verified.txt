@@ -12,7 +12,7 @@
     ]
   }
 },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT [c].[Id], [c].[Property]
 FROM [CustomTypeEntities] AS [c]

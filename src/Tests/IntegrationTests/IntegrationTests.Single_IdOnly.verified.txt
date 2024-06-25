@@ -12,7 +12,7 @@
     }
   }
 },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT [t].[Id], [t].[Property], [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
 FROM (

@@ -9,7 +9,7 @@
     ]
   }
 },
-  sqlCommand: {
+  sql: {
     Text:
 SELECT [f].[Id], [f].[Property]
 FROM [FilterParentEntities] AS [f],
