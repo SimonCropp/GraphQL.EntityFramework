@@ -38,6 +38,17 @@ public class QueryGraphType<TDbContext>(IEfGraphQLService<TDbContext> graphQlSer
         where TReturn : class =>
         GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
 
+    public FieldBuilder<object, TReturn> AddFirstField<TReturn>(
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        string name = nameof(TReturn),
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TReturn : class =>
+        GraphQlService.AddFirstField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
+
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class =>
         GraphQlService.AddIncludes(query, context);

@@ -948,6 +948,21 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task First_NotFound()
+    {
+        var query =
+            """
+            {
+              parentEntityFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
     public async Task Single_Found_NoTracking()
     {
         var query =
@@ -973,12 +988,64 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task First_Found_NoTracking()
+    {
+        var query =
+            """
+            {
+              parentEntityFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, true, [entity1, entity2]);
+    }
+
+    [Fact]
     public async Task Single_Found_Large_Text_NoAsync()
     {
         var query =
             """
             {
               parentEntity(id: "00000000-0000-0000-0000-000000000001") {
+                id
+              }
+            }
+            """;
+        var largeString = new StringBuilder().Append('a', 3 * 1024 * 1024);
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = largeString.ToString()
+        };
+        var entity2 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2], true);
+    }
+
+    [Fact]
+    public async Task First_Found_Large_Text_NoAsync()
+    {
+        var query =
+            """
+            {
+              parentEntityFirst(id: "00000000-0000-0000-0000-000000000001") {
                 id
               }
             }
@@ -1071,12 +1138,67 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task First_Found()
+    {
+        var query =
+            """
+            {
+              parentEntityFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    [Fact]
     public async Task Single_NoArgs()
     {
         var query =
             """
             {
               parentEntityWithNoArgs {
+                property
+                children
+                {
+                  property
+                }
+              }
+            }
+            """;
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    [Fact]
+    public async Task First_NoArgs()
+    {
+        var query =
+            """
+            {
+              parentEntityWithNoArgsFirst {
                 property
                 children
                 {
@@ -1131,12 +1253,57 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task First_IdOnly()
+    {
+        var query =
+            """
+            {
+              parentEntityIdOnlyFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+                children
+                {
+                  property
+                }
+              }
+            }
+            """;
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    [Fact]
     public async Task SingleNullable_NotFound()
     {
         var query =
             """
             {
               parentEntityNullable(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task FirstNullable_NotFound()
+    {
+        var query =
+            """
+            {
+              parentEntityNullableFirst(id: "00000000-0000-0000-0000-000000000001") {
                 property
               }
             }
@@ -1171,12 +1338,85 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task FirstNullable_Found()
+    {
+        var query =
+            """
+            {
+              parentEntityNullableFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000002"),
+            Property = "Value2"
+        };
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    [Fact]
     public async Task SingleParent_Child_mutation()
     {
         var query =
             """
             mutation {
               parentEntityMutation(id: "00000000-0000-0000-0000-000000000001") {
+                property
+                children(orderBy: {path: "property"})
+                {
+                  property
+                }
+              }
+            }
+            """;
+
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Property = "Value5",
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
+    }
+
+    [Fact]
+    public async Task FirstParent_Child_mutation()
+    {
+        var query =
+            """
+            mutation {
+              parentEntityMutationFirst(id: "00000000-0000-0000-0000-000000000001") {
                 property
                 children(orderBy: {path: "property"})
                 {
@@ -1267,12 +1507,114 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task FirstParent_Child()
+    {
+        var query =
+            """
+            {
+              parentEntityFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+                children(orderBy: {path: "property"})
+                {
+                  property
+                }
+              }
+            }
+            """;
+
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Property = "Value5",
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
+    }
+
+    [Fact]
     public async Task SingleParent_Child_WithFragment()
     {
         var query =
             """
             {
               parentEntity(id: "00000000-0000-0000-0000-000000000001") {
+                ...parentEntityFields
+              }
+            }
+            fragment parentEntityFields on Parent {
+              property
+              children(orderBy: {path: "property"})
+              {
+                ...childEntityFields
+              }
+            }
+            fragment childEntityFields on Child {
+              property
+            }
+            """;
+
+        var entity1 = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Property = "Value3",
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new ParentEntity
+        {
+            Property = "Value4"
+        };
+        var entity5 = new ChildEntity
+        {
+            Property = "Value5",
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
+    }
+
+    [Fact]
+    public async Task FirstParent_Child_WithFragment()
+    {
+        var query =
+            """
+            {
+              parentEntityFirst(id: "00000000-0000-0000-0000-000000000001") {
                 ...parentEntityFields
               }
             }

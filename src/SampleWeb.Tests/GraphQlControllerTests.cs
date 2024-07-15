@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net;
+using Newtonsoft.Json;
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
 #region GraphQlControllerTests
@@ -81,6 +82,29 @@ public class GraphQlControllerTests
     }
 
     [Fact]
+    public async Task First()
+    {
+        var query =
+            """
+            query ($id: ID!)
+            {
+              companyFirst(id:$id)
+              {
+                id
+              }
+            }
+            """;
+        var variables = new
+        {
+            id = "1"
+        };
+
+        using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
+        response.EnsureSuccessStatusCode();
+        await Verify(await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public async Task Single_not_found()
     {
         var query =
@@ -100,6 +124,28 @@ public class GraphQlControllerTests
 
         await ThrowsTask(() => clientQueryExecutor.ExecuteGet(client, query, variables))
             .IgnoreStackTrace();
+    }
+
+    [Fact]
+    public async Task First_not_found()
+    {
+        var query =
+            """
+            query ($id: ID!)
+            {
+              companyFirst(id:$id)
+              {
+                id
+              }
+            }
+            """;
+        var variables = new
+        {
+            id = "99"
+        };
+
+        var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
