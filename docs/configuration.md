@@ -373,6 +373,14 @@ public class MultiContextQuery :
                 var userContext = (UserContext) context.UserContext;
                 return userContext.DbContext1.Entities;
             });
+        efGraphQlService1.AddFirstField(
+            graph: this,
+            name: "entity1First",
+            resolve: context =>
+            {
+                var userContext = (UserContext) context.UserContext;
+                return userContext.DbContext1.Entities;
+            });
         efGraphQlService2.AddSingleField(
             graph: this,
             name: "entity2",
@@ -381,10 +389,18 @@ public class MultiContextQuery :
                 var userContext = (UserContext) context.UserContext;
                 return userContext.DbContext2.Entities;
             });
+        efGraphQlService2.AddFirstField(
+            graph: this,
+            name: "entity2First",
+            resolve: context =>
+            {
+                var userContext = (UserContext) context.UserContext;
+                return userContext.DbContext2.Entities;
+            });
     }
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextQuery.cs#L1-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiContextQuery.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextQuery.cs#L1-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiContextQuery.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -492,6 +508,29 @@ public class GraphQlControllerTests
     }
 
     [Fact]
+    public async Task First()
+    {
+        var query =
+            """
+            query ($id: ID!)
+            {
+              companyFirst(id:$id)
+              {
+                id
+              }
+            }
+            """;
+        var variables = new
+        {
+            id = "1"
+        };
+
+        using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
+        response.EnsureSuccessStatusCode();
+        await Verify(await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public async Task Single_not_found()
     {
         var query =
@@ -511,6 +550,28 @@ public class GraphQlControllerTests
 
         await ThrowsTask(() => clientQueryExecutor.ExecuteGet(client, query, variables))
             .IgnoreStackTrace();
+    }
+
+    [Fact]
+    public async Task First_not_found()
+    {
+        var query =
+            """
+            query ($id: ID!)
+            {
+              companyFirst(id:$id)
+              {
+                id
+              }
+            }
+            """;
+        var variables = new
+        {
+            id = "99"
+        };
+
+        var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
@@ -612,7 +673,7 @@ public class GraphQlControllerTests
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L4-L204' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L5-L250' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
