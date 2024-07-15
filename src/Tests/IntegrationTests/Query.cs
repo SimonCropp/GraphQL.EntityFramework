@@ -1,7 +1,8 @@
 ﻿public class Query :
     QueryGraphType<IntegrationDbContext>
 {
-    public Query(IEfGraphQLService<IntegrationDbContext> efGraphQlService) :
+    public Query(IEfGraphQLService<IntegrationDbContext> efGraphQlService)
+        :
         base(efGraphQlService)
     {
         AddQueryField(
@@ -18,7 +19,8 @@
             resolve: context =>
             {
                 var dataContext = context.DbContext;
-                return dataContext.IncludeNonQueryableBs.AsQueryable()
+                return dataContext
+                    .IncludeNonQueryableBs.AsQueryable()
                     .Select(_ => _.IncludeNonQueryableA);
             });
 
@@ -62,13 +64,14 @@
             name: "timeEntities",
             resolve: _ => _.DbContext.TimeEntities);
 
-        efGraphQlService.AddQueryConnectionField<ParentGraphType, ParentEntity>(
-            this,
-            name: "parentEntitiesConnection",
-            resolve: _ => _.DbContext.ParentEntities.OrderBy(_ => _.Id))
+        efGraphQlService
+            .AddQueryConnectionField<ParentGraphType, ParentEntity>(
+                this,
+                name: "parentEntitiesConnection",
+                resolve: _ => _.DbContext.ParentEntities.OrderBy(_ => _.Id))
             .PageSize(10);
 
-       efGraphQlService.AddQueryConnectionField<ChildGraphType, ChildEntity>(
+        efGraphQlService.AddQueryConnectionField<ChildGraphType, ChildEntity>(
             this,
             name: "childEntitiesConnection",
             resolve: _ => _.DbContext.ChildEntities.OrderBy(_ => _.Parent));
@@ -77,19 +80,31 @@
             name: "parentEntitiesFiltered",
             resolve: _ => _.DbContext.FilterParentEntities);
 
-        efGraphQlService.AddQueryConnectionField<FilterParentGraphType, FilterParentEntity>(
-            this,
-            name: "parentEntitiesConnectionFiltered",
-            resolve: _ => _.DbContext.FilterParentEntities.OrderBy(_=>_.Id))
+        efGraphQlService
+            .AddQueryConnectionField<FilterParentGraphType, FilterParentEntity>(
+                this,
+                name: "parentEntitiesConnectionFiltered",
+                resolve: _ => _.DbContext.FilterParentEntities.OrderBy(_ => _.Id))
             .PageSize(10);
 
         AddSingleField(
             name: "parentEntity",
             resolve: _ => _.DbContext.ParentEntities);
+        AddFirstField(
+            name: "parentEntityFirst",
+            resolve: _ => _.DbContext.ParentEntities);
 
         AddSingleField(
             name: "parentEntityWithNoArgs",
-            resolve: _ => _.DbContext.ParentEntities.Where(_ => _.Id == new Guid("00000000-0000-0000-0000-000000000001")),
+            resolve: _ => _.DbContext.ParentEntities
+                .Where(_ => _.Id == new Guid("00000000-0000-0000-0000-000000000001")),
+            omitQueryArguments: true);
+
+        AddFirstField(
+            name: "parentEntityWithNoArgsFirst",
+            resolve: _ => _
+                .DbContext.ParentEntities
+                .Where(_ => _.Id == new Guid("00000000-0000-0000-0000-000000000001")),
             omitQueryArguments: true);
 
         AddSingleField(
@@ -97,8 +112,18 @@
             resolve: _ => _.DbContext.ParentEntities,
             idOnly: true);
 
+        AddFirstField(
+            name: "parentEntityIdOnlyFirst",
+            resolve: _ => _.DbContext.ParentEntities,
+            idOnly: true);
+
         AddSingleField(
             name: "parentEntityNullable",
+            resolve: _ => _.DbContext.ParentEntities,
+            nullable: true);
+
+        AddFirstField(
+            name: "parentEntityNullableFirst",
             resolve: _ => _.DbContext.ParentEntities,
             nullable: true);
 
@@ -128,14 +153,25 @@
         AddSingleField(
             name: "parentEntityView",
             resolve: _ => _.DbContext.ParentEntityView);
+        AddFirstField(
+            name: "parentEntityViewFirst",
+            resolve: _ => _.DbContext.ParentEntityView);
 
         AddSingleField(
             name: "parentEntityViewNullable",
             resolve: _ => _.DbContext.ParentEntityView,
             nullable: true);
+        AddFirstField(
+            name: "parentEntityViewNullableFirst",
+            resolve: _ => _.DbContext.ParentEntityView,
+            nullable: true);
 
         AddSingleField(
             name: "ownedParent",
+            resolve: _ => _.DbContext.OwnedParents,
+            nullable: true);
+        AddFirstField(
+            name: "ownedParentFirst",
             resolve: _ => _.DbContext.OwnedParents,
             nullable: true);
     }

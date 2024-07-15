@@ -74,4 +74,15 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
         bool idOnly = false)
         where TReturn : class =>
         GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<TSource, TReturn> AddFirstField<TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TReturn : class =>
+        GraphQlService.AddFirstField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
 }

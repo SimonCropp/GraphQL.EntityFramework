@@ -298,17 +298,24 @@ type Query {
   parentEntitiesFiltered(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterParent!]!
   parentEntitiesConnectionFiltered(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): FilterParentConnection!
   parentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  parentEntityFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
   parentEntityWithNoArgs: Parent!
+  parentEntityWithNoArgsFirst: Parent!
   parentEntityIdOnly(id: ID!): Parent!
+  parentEntityIdOnlyFirst(id: ID!): Parent!
   parentEntityNullable(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  parentEntityNullableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
   interfaceGraphConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): InterfaceConnection!
   manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
   manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
   parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentEntityView!]!
   parentEntitiesViewConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!]): ParentEntityViewConnection!
   parentEntityView(where: [WhereExpression!]): ParentEntityView!
+  parentEntityViewFirst(where: [WhereExpression!]): ParentEntityView!
   parentEntityViewNullable(where: [WhereExpression!]): ParentEntityView
+  parentEntityViewNullableFirst(where: [WhereExpression!]): ParentEntityView
   ownedParent(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
+  ownedParentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
 }
 
 type SkipLevelGraph {

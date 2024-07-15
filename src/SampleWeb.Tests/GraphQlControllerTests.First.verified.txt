@@ -1,0 +1,20 @@
+﻿{
+  "errors": [
+    {
+      "message": "Cannot query field \u0027companyFirst\u0027 on type \u0027Query\u0027. Did you mean \u0027companies\u0027, \u0027company\u0027, \u0027companyById\u0027, or \u0027companyOrNull\u0027?",
+      "locations": [
+        {
+          "line": 1,
+          "column": 16
+        }
+      ],
+      "extensions": {
+        "code": "FIELDS_ON_CORRECT_TYPE",
+        "codes": [
+          "FIELDS_ON_CORRECT_TYPE"
+        ],
+        "number": "5.3.1"
+      }
+    }
+  ]
+}

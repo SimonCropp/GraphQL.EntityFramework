@@ -1,0 +1,27 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntityWithNoArgsFirst": {
+      "property": "Value1",
+      "children": [
+        {
+          "property": "Value2"
+        }
+      ]
+    }
+  }
+},
+  sql: {
+    Text:
+SELECT [t].[Id], [t].[Property], [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
+FROM (
+    SELECT TOP(1) [p].[Id], [p].[Property]
+    FROM [ParentEntities] AS [p]
+    WHERE [p].[Id] = 'Guid_1'
+) AS [t]
+LEFT JOIN [ChildEntities] AS [c] ON [t].[Id] = [c].[ParentId]
+ORDER BY [t].[Id],
+    HasTransaction: false
+  }
+}
