@@ -61,7 +61,8 @@ public class Filters
         }
 
         var list = new List<TEntity>();
-        foreach (var item in result)
+        //force a ToList in case IEnumerable result is an open data reader
+        foreach (var item in result.ToList())
         {
             if (await ShouldInclude(userContext, userPrincipal, item, filters))
             {
