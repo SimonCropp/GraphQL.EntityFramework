@@ -60,11 +60,6 @@ public class Filters
             return result;
         }
 
-        if (result is IQueryable)
-        {
-            throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQuery*");
-        }
-
         var list = new List<TEntity>();
         foreach (var item in result)
         {

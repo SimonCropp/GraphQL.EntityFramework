@@ -30,6 +30,12 @@ partial class EfGraphQLService<TDbContext>
                 {
                     var fieldContext = BuildContext(context);
                     var result = resolve(fieldContext);
+
+                    if (result is IQueryable)
+                    {
+                        throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryField.");
+                    }
+
                     result = result.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
                     return await fieldContext.Filters.ApplyFilter(result, context.UserContext, context.User);
                 });
