@@ -18,7 +18,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="Polyfill" Version="6.0.0" />
-    <PackageVersion Include="ProjectDefaults" Version="1.0.132" />
+    <PackageVersion Include="ProjectDefaults" Version="1.0.133" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="8.0.0" />
     <PackageVersion Include="Verify.SqlServer" Version="9.0.1" />
     <PackageVersion Include="Verify.Xunit" Version="26.1.2" />
