@@ -2,12 +2,14 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <SignAssembly>false</SignAssembly>
+    <OutputType>Exe</OutputType>
+    <NoWarn>xUnit1051</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
-    <PackageReference Include="Xunit" />
-    <PackageReference Include="Verify.Xunit" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Verify.XunitV3" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <ProjectReference Include="..\SampleWeb\SampleWeb.csproj" />

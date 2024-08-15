@@ -1,13 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <NoWarn>xUnit1051</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" />
     <PackageReference Include="MarkdownSnippets.MsBuild" PrivateAssets="all" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
-    <PackageReference Include="Xunit" />
-    <PackageReference Include="Verify.Xunit" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Verify.XunitV3" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
