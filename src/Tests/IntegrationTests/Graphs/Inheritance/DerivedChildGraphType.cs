@@ -3,5 +3,5 @@
 {
     public DerivedChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService) =>
-        AutoMap(["Parent", "TypedParent"]);
+        AutoMap(new List<string> { "Parent", "TypedParent" });
 }
