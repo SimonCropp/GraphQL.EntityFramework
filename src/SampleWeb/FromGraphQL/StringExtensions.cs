@@ -34,7 +34,7 @@ static class StringExtensions
     {
         if (json == string.Empty)
         {
-            return new();
+            return [];
         }
 
         return JsonSerializer.Deserialize<Dictionary<string, object>>(json, jsonOptions)!;
