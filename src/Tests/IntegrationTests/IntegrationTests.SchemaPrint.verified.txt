@@ -200,7 +200,7 @@ type Level3 {
 scalar Long
 
 type ManyToManyLeft {
-  rights: [ManyToManyRight]!
+  rights(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
   id: String!
   leftName: String
 }

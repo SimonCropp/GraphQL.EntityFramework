@@ -7,5 +7,5 @@ public class ManyToManyLeftEntity
 
     public string? LeftName { get; set; }
 
-    public IEnumerable<ManyToManyRightEntity> Rights { get; set; } = new HashSet<ManyToManyRightEntity>();
+    public IList<ManyToManyRightEntity> Rights { get; set; } = [];
 }
