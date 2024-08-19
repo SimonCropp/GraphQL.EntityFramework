@@ -63,7 +63,6 @@ partial class EfGraphQLService<TDbContext>
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
 
-
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
         var names = GetKeyNames<TReturn>();

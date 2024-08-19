@@ -3,7 +3,7 @@
 public static class Mapper<TDbContext>
     where TDbContext : DbContext
 {
-    static HashSet<Type> ignoredTypes = new();
+    static HashSet<Type> ignoredTypes = [];
 
     /// <summary>
     /// Add a property type to exclude from mapping.
