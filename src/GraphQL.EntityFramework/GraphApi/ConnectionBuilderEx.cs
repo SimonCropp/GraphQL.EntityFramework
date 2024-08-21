@@ -8,18 +8,18 @@ class ConnectionBuilderEx<TSourceType> : ConnectionBuilder<TSourceType>
     public ConnectionBuilderEx(FieldType fieldType) : base(fieldType) =>
         Bidirectional();
 
-    public override void Resolve(Func<IResolveConnectionContext<TSourceType>, object?> resolver)
+    public override ConnectionBuilder<TSourceType> Resolve(Func<IResolveConnectionContext<TSourceType>, object?> resolver)
     {
         asyncResolver = null;
         syncResolver = resolver;
-        base.Resolve(resolver);
+        return base.Resolve(resolver);
     }
 
-    public override void ResolveAsync(Func<IResolveConnectionContext<TSourceType>, Task<object?>> resolver)
+    public override ConnectionBuilder<TSourceType> ResolveAsync(Func<IResolveConnectionContext<TSourceType>, Task<object?>> resolver)
     {
         asyncResolver = resolver;
         syncResolver = null;
-        base.ResolveAsync(resolver);
+        return base.ResolveAsync(resolver);
     }
 
     public override ConnectionBuilder<TSourceType> PageSize(int pageSize)
