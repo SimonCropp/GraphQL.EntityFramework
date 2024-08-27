@@ -18,15 +18,15 @@
     public async Task SchemaPrint()
     {
         var services = new ServiceCollection();
-        EfGraphQLConventions.RegisterInContainer<MappingContext>(services, model:sqlInstance.Model);
+        EfGraphQLConventions.RegisterInContainer<MappingContext>(services, model: sqlInstance.Model);
         services.AddSingleton<MappingChildGraphType>();
         services.AddSingleton<MappingParentGraphType>();
         services.AddSingleton<MappingSchema>();
+        services.AddGraphQL(null);
         await using var provider = services.BuildServiceProvider();
-        var mappingSchema = provider.GetRequiredService<MappingSchema>();
+        var schema = provider.GetRequiredService<MappingSchema>();
 
-        var printer = new SchemaPrinter(mappingSchema);
-        var print = printer.Print();
+        var print = schema.Print();
         await Verify(print);
     }
 

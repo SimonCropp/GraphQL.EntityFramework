@@ -2,24 +2,14 @@
   query: MappingQuery
 }
 
-enum Comparison {
-  contains
-  endsWith
-  equal
-  notEqual
-  greaterThan
-  greaterThanOrEqual
-  notIn
-  in
-  lessThan
-  lessThanOrEqual
-  like
-  startsWith
-}
-
-enum Connector {
-  and
-  or
+type MappingQuery {
+  child(id: ID, ids: [ID!], where: [WhereExpression!]): MappingChild!
+  childFirst(id: ID, ids: [ID!], where: [WhereExpression!]): MappingChild!
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
+  childrenOmitQueryArguments: [MappingChild!]!
+  parent(id: ID, ids: [ID!], where: [WhereExpression!]): MappingParent!
+  parentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): MappingParent!
+  parents(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingParent!]!
 }
 
 type MappingChild {
@@ -36,19 +26,30 @@ type MappingParent {
   property: String
 }
 
-type MappingQuery {
-  child(id: ID, ids: [ID!], where: [WhereExpression!]): MappingChild!
-  childFirst(id: ID, ids: [ID!], where: [WhereExpression!]): MappingChild!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
-  childrenOmitQueryArguments: [MappingChild!]!
-  parent(id: ID, ids: [ID!], where: [WhereExpression!]): MappingParent!
-  parentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): MappingParent!
-  parents(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingParent!]!
+input WhereExpression {
+  path: String
+  comparison: Comparison
+  negate: Boolean
+  case: StringComparison
+  value: [String]
+  connector: Connector
+  groupedExpressions: [WhereExpression]
 }
 
-input OrderBy {
-  path: String!
-  descending: Boolean
+enum Comparison {
+  contains
+  endsWith
+  equal
+  notEqual
+  greaterThan
+  greaterThanOrEqual
+  "Negation Property used with the 'in' comparison should be used in place of this"
+  notIn
+  in
+  lessThan
+  lessThanOrEqual
+  like
+  startsWith
 }
 
 enum StringComparison {
@@ -60,12 +61,12 @@ enum StringComparison {
   ORDINAL_IGNORE_CASE
 }
 
-input WhereExpression {
-  path: String
-  comparison: Comparison
-  negate: Boolean
-  case: StringComparison
-  value: [String]
-  connector: Connector
-  groupedExpressions: [WhereExpression]
+enum Connector {
+  and
+  or
+}
+
+input OrderBy {
+  path: String!
+  descending: Boolean
 }

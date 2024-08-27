@@ -21,6 +21,7 @@ public class Startup
         services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
         services.AddSingleton<ISchema, Schema>();
         services.AddMvc(option => option.EnableEndpointRouting = false);
+        services.AddGraphQL(null);
     }
 
     static IEnumerable<Type> GetGraphQlTypes() =>
