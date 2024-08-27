@@ -36,6 +36,7 @@ public partial class IntegrationTests
         services.AddSingleton<Query>();
         services.AddSingleton<Mutation>();
         services.AddSingleton(database.Context);
+        services.AddGraphQL(null);
         foreach (var type in GetGraphQlTypes())
         {
             services.AddSingleton(type);
@@ -45,8 +46,7 @@ public partial class IntegrationTests
         await using var provider = services.BuildServiceProvider();
         using var schema = new Schema(provider);
 
-        var printer = new SchemaPrinter(schema);
-        var print = printer.Print();
+        var print = schema.Print();
         await Verify(print);
     }
 
@@ -3021,6 +3021,7 @@ public partial class IntegrationTests
         services.AddSingleton<Query>();
         services.AddSingleton<Mutation>();
         services.AddSingleton(database.Context);
+        services.AddGraphQL(null);
         foreach (var type in GetGraphQlTypes())
         {
             services.AddSingleton(type);

@@ -1,40 +1,53 @@
-﻿type Company {
+﻿type Query {
+  companies(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Company!]!
+  company(id: ID, ids: [ID!], where: [WhereExpression!]): Company!
+  companyById(id: ID!): Company!
+  companyOrNull(id: ID, ids: [ID!], where: [WhereExpression!]): Company
+  companiesConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): CompanyConnection!
   employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
-  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): EmployeeConnection!
+  employeesByArgument(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int, content: String): [Employee!]!
+  employeesConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): EmployeeConnection!
+  employeeSummary(where: [WhereExpression]): [EmployeeSummary]
+}
+
+type Company {
+  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
+  employeesConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): EmployeeConnection!
   content: String
   id: Int!
-}
-
-type CompanyConnection {
-  totalCount: Int
-  pageInfo: PageInfo!
-  edges: [CompanyEdge]
-  items: [Company!]
-}
-
-type CompanyEdge {
-  cursor: String!
-  node: Company!
-}
-
-enum Comparison {
-  contains
-  endsWith
-  equal
-  notEqual
-  greaterThan
-  greaterThanOrEqual
-  notIn
-  in
-  lessThan
-  lessThanOrEqual
-  like
-  startsWith
-}
-
-enum Connector {
-  and
-  or
 }
 
 type Employee {
@@ -45,45 +58,30 @@ type Employee {
   id: Int!
 }
 
-type EmployeeConnection {
-  totalCount: Int
-  pageInfo: PageInfo!
-  edges: [EmployeeEdge]
-  items: [Employee!]
+input WhereExpression {
+  path: String
+  comparison: Comparison
+  negate: Boolean
+  case: StringComparison
+  value: [String]
+  connector: Connector
+  groupedExpressions: [WhereExpression]
 }
 
-type EmployeeEdge {
-  cursor: String!
-  node: Employee!
-}
-
-type EmployeeSummary {
-  averageAge: Float!
-  companyId: Int!
-}
-
-input OrderBy {
-  path: String!
-  descending: Boolean
-}
-
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
-}
-
-type Query {
-  companies(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Company!]!
-  company(id: ID, ids: [ID!], where: [WhereExpression!]): Company!
-  companyById(id: ID!): Company!
-  companyOrNull(id: ID, ids: [ID!], where: [WhereExpression!]): Company
-  companiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): CompanyConnection!
-  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
-  employeesByArgument(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int, content: String): [Employee!]!
-  employeesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): EmployeeConnection!
-  employeeSummary(where: [WhereExpression]): [EmployeeSummary]
+enum Comparison {
+  contains
+  endsWith
+  equal
+  notEqual
+  greaterThan
+  greaterThanOrEqual
+  "Negation Property used with the 'in' comparison should be used in place of this"
+  notIn
+  in
+  lessThan
+  lessThanOrEqual
+  like
+  startsWith
 }
 
 enum StringComparison {
@@ -95,12 +93,69 @@ enum StringComparison {
   ORDINAL_IGNORE_CASE
 }
 
-input WhereExpression {
-  path: String
-  comparison: Comparison
-  negate: Boolean
-  case: StringComparison
-  value: [String]
-  connector: Connector
-  groupedExpressions: [WhereExpression]
+enum Connector {
+  and
+  or
+}
+
+input OrderBy {
+  path: String!
+  descending: Boolean
+}
+
+"A connection from an object to a list of objects of type `Employee`."
+type EmployeeConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [EmployeeEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [Employee!]
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+  "When paginating forwards, are there more items?"
+  hasNextPage: Boolean!
+  "When paginating backwards, are there more items?"
+  hasPreviousPage: Boolean!
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
+}
+
+"An edge in a connection from an object to another object of type `Employee`."
+type EmployeeEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: Employee!
+}
+
+"A connection from an object to a list of objects of type `Company`."
+type CompanyConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [CompanyEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [Company!]
+}
+
+"An edge in a connection from an object to another object of type `Company`."
+type CompanyEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: Company!
+}
+
+type EmployeeSummary {
+  averageAge: Float!
+  companyId: Int!
 }

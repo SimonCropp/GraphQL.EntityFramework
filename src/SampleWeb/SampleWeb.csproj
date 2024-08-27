@@ -7,6 +7,7 @@
     <Folder Include="wwwroot\" />
     <PackageReference Include="EfLocalDb" />
     <PackageReference Include="graphiql" />
+    <PackageReference Include="GraphQL.MicrosoftDI" />
     <PackageReference Include="GraphQL.SystemTextJson" />
     <PackageReference Include="GraphQL" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />

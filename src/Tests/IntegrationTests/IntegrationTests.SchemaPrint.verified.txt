@@ -1,34 +1,111 @@
-﻿type Child {
-  parentAlias: Parent
-  parent: Parent
+﻿type Query {
+  customType(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [CustomType!]!
+  skipLevel(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SkipLevelGraph]!
+  queryFieldWithInclude(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [IncludeNonQueryableA!]!
+  manyChildren(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithManyChildren!]!
+  level1Entities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Level1!]!
+  withNullableEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithNullable!]!
+  namedEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [NamedId!]!
+  misNamed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryParent!]!
+  parentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
+  childEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
+  dateEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DateEntity!]!
+  enumEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [EnumEntity!]!
+  timeEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TimeEntity!]!
+  parentEntitiesConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): ParentConnection!
+  childEntitiesConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): ChildConnection!
+  parentEntitiesFiltered(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterParent!]!
+  parentEntitiesConnectionFiltered(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): FilterParentConnection!
+  parentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  parentEntityFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  parentEntityWithNoArgs: Parent!
+  parentEntityWithNoArgsFirst: Parent!
+  parentEntityIdOnly(id: ID!): Parent!
+  parentEntityIdOnlyFirst(id: ID!): Parent!
+  parentEntityNullable(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  parentEntityNullableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  interfaceGraphConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): InterfaceConnection!
+  manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
+  manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
+  parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentEntityView!]!
+  parentEntitiesViewConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!]): ParentEntityViewConnection!
+  parentEntityView(where: [WhereExpression!]): ParentEntityView!
+  parentEntityViewFirst(where: [WhereExpression!]): ParentEntityView!
+  parentEntityViewNullable(where: [WhereExpression!]): ParentEntityView
+  parentEntityViewNullableFirst(where: [WhereExpression!]): ParentEntityView
+  ownedParent(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
+  ownedParentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
+}
+
+type CustomType {
   id: ID!
-  nullable: Int
-  parentId: ID
-  property: String
+  property: Long!
 }
 
-type Child1 {
-  parent: WithManyChildren
-  id: ID!
-  parentId: ID
-}
+scalar Long
 
-type Child2 {
-  parent: WithManyChildren
-  id: ID!
-  parentId: ID
-}
-
-type ChildConnection {
-  totalCount: Int
-  pageInfo: PageInfo!
-  edges: [ChildEdge]
-  items: [Child!]
-}
-
-type ChildEdge {
-  cursor: String!
-  node: Child!
+input WhereExpression {
+  path: String
+  comparison: Comparison
+  negate: Boolean
+  case: StringComparison
+  value: [String]
+  connector: Connector
+  groupedExpressions: [WhereExpression]
 }
 
 enum Comparison {
@@ -38,6 +115,7 @@ enum Comparison {
   notEqual
   greaterThan
   greaterThanOrEqual
+  "Negation Property used with the 'in' comparison should be used in place of this"
   notIn
   in
   lessThan
@@ -46,108 +124,41 @@ enum Comparison {
   startsWith
 }
 
+enum StringComparison {
+  CURRENT_CULTURE
+  CURRENT_CULTURE_IGNORE_CASE
+  INVARIANT_CULTURE
+  INVARIANT_CULTURE_IGNORE_CASE
+  ORDINAL
+  ORDINAL_IGNORE_CASE
+}
+
 enum Connector {
   and
   or
 }
 
-type CustomType {
+input OrderBy {
+  path: String!
+  descending: Boolean
+}
+
+type SkipLevelGraph {
+  level3Entity: Level3
+  level2Entity: Level2
   id: ID!
-  property: Long!
+  level2EntityId: Int
 }
 
-type DateEntity {
-  id: ID!
-  property: DateOnly
-}
-
-scalar DateOnly
-
-enum DayOfWeek {
-  SUNDAY
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-}
-
-type Derived implements Interface {
-  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
-  childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
+type Level3 {
   id: ID!
   property: String
 }
 
-type DerivedChild {
+type Level2 {
+  level3Entity: Level3
   id: ID!
-  parentId: ID
-  property: String
-  typedParentId: ID
-}
-
-type DerivedChildConnection {
-  totalCount: Int
-  pageInfo: PageInfo!
-  edges: [DerivedChildEdge]
-  items: [DerivedChild!]
-}
-
-type DerivedChildEdge {
-  cursor: String!
-  node: DerivedChild!
-}
-
-type DerivedWithNavigation implements Interface {
-  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
-  childrenFromDerived(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
-  childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
-  id: ID!
-  property: String
-}
-
-type EnumEntity {
-  id: ID!
-  property: DayOfWeek
-}
-
-type FilterChild {
-  parent: FilterParent
-  id: ID!
-  property: String
-}
-
-type FilterChildConnection {
-  totalCount: Int
-  pageInfo: PageInfo!
-  edges: [FilterChildEdge]
-  items: [FilterChild!]
-}
-
-type FilterChildEdge {
-  cursor: String!
-  node: FilterChild!
-}
-
-type FilterParent {
-  childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): FilterChildConnection!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterChild!]!
-  id: ID!
-  property: String
-}
-
-type FilterParentConnection {
-  totalCount: Int
-  pageInfo: PageInfo!
-  edges: [FilterParentEdge]
-  items: [FilterParent!]
-}
-
-type FilterParentEdge {
-  cursor: String!
-  node: FilterParent!
+  level3EntityId: ID
 }
 
 type IncludeNonQueryableA {
@@ -162,22 +173,22 @@ type IncludeNonQueryableB {
   includeNonQueryableAId: ID!
 }
 
-interface Interface {
+type WithManyChildren {
+  child1: Child1!
+  child2: Child2!
   id: ID!
-  property: String
-  childrenFromInterface(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): DerivedChildConnection!
 }
 
-type InterfaceConnection {
-  totalCount: Int
-  pageInfo: PageInfo!
-  edges: [InterfaceEdge]
-  items: [Interface]
+type Child1 {
+  parent: WithManyChildren
+  id: ID!
+  parentId: ID
 }
 
-type InterfaceEdge {
-  cursor: String!
-  node: Interface
+type Child2 {
+  parent: WithManyChildren
+  id: ID!
+  parentId: ID
 }
 
 type Level1 {
@@ -186,18 +197,277 @@ type Level1 {
   level2EntityId: Int
 }
 
-type Level2 {
-  level3Entity: Level3
+type WithNullable {
   id: ID!
-  level3EntityId: ID
+  nullable: Int
 }
 
-type Level3 {
+type NamedId {
+  namedId: ID!
+  property: String
+}
+
+type WithMisNamedQueryParent {
+  misNamedChildren(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
+  id: ID!
+}
+
+type WithMisNamedQueryChild {
+  parent: WithMisNamedQueryParent
+  id: ID!
+  parentId: ID
+}
+
+type Parent {
+  childrenConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): ChildConnection!
+  childrenConnectionOmitQueryArguments(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): ChildConnection!
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   id: ID!
   property: String
 }
 
-scalar Long
+"A connection from an object to a list of objects of type `Child`."
+type ChildConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [ChildEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [Child!]
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+  "When paginating forwards, are there more items?"
+  hasNextPage: Boolean!
+  "When paginating backwards, are there more items?"
+  hasPreviousPage: Boolean!
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
+}
+
+"An edge in a connection from an object to another object of type `Child`."
+type ChildEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: Child!
+}
+
+type Child {
+  parentAlias: Parent
+  parent: Parent
+  id: ID!
+  nullable: Int
+  parentId: ID
+  property: String
+}
+
+type DateEntity {
+  id: ID!
+  property: DateOnly
+}
+
+"The `Date` scalar type represents a year, month and day in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard. Format is `yyyy-MM-dd`"
+scalar DateOnly
+
+type EnumEntity {
+  id: ID!
+  property: DayOfWeek
+}
+
+enum DayOfWeek {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+type TimeEntity {
+  id: ID!
+  property: TimeOnly
+}
+
+"The `Time` scalar type represents a time in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard. Format is `HH:mm:ss.FFFFFFF`."
+scalar TimeOnly
+
+"A connection from an object to a list of objects of type `Parent`."
+type ParentConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [ParentEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [Parent!]
+}
+
+"An edge in a connection from an object to another object of type `Parent`."
+type ParentEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: Parent!
+}
+
+type FilterParent {
+  childrenConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): FilterChildConnection!
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterChild!]!
+  id: ID!
+  property: String
+}
+
+"A connection from an object to a list of objects of type `FilterChild`."
+type FilterChildConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [FilterChildEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [FilterChild!]
+}
+
+"An edge in a connection from an object to another object of type `FilterChild`."
+type FilterChildEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: FilterChild!
+}
+
+type FilterChild {
+  parent: FilterParent
+  id: ID!
+  property: String
+}
+
+"A connection from an object to a list of objects of type `FilterParent`."
+type FilterParentConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [FilterParentEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [FilterParent!]
+}
+
+"An edge in a connection from an object to another object of type `FilterParent`."
+type FilterParentEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: FilterParent!
+}
+
+"A connection from an object to a list of objects of type `Interface`."
+type InterfaceConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [InterfaceEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [Interface]
+}
+
+"An edge in a connection from an object to another object of type `Interface`."
+type InterfaceEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: Interface
+}
+
+interface Interface {
+  id: ID!
+  property: String
+  childrenFromInterface(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): DerivedChildConnection!
+}
+
+"A connection from an object to a list of objects of type `DerivedChild`."
+type DerivedChildConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [DerivedChildEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [DerivedChild!]
+}
+
+"An edge in a connection from an object to another object of type `DerivedChild`."
+type DerivedChildEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: DerivedChild!
+}
+
+type DerivedChild {
+  id: ID!
+  parentId: ID
+  property: String
+  typedParentId: ID
+}
 
 type ManyToManyLeft {
   rights(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
@@ -211,22 +481,28 @@ type ManyToManyRight {
   rightName: String
 }
 
-type Mutation {
-  parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
-}
-
-type NamedId {
-  namedId: ID!
+type ParentEntityView {
   property: String
 }
 
-input OrderBy {
-  path: String!
-  descending: Boolean
+"A connection from an object to a list of objects of type `ParentEntityView`."
+type ParentEntityViewConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [ParentEntityViewEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [ParentEntityView!]
 }
 
-type OwnedChild {
-  property: String!
+"An edge in a connection from an object to another object of type `ParentEntityView`."
+type ParentEntityViewEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: ParentEntityView!
 }
 
 type OwnedParent {
@@ -236,140 +512,59 @@ type OwnedParent {
   property: String
 }
 
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
+type OwnedChild {
+  property: String!
 }
 
-type Parent {
-  childrenConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ChildConnection!
-  childrenConnectionOmitQueryArguments(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ChildConnection!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
+type Mutation {
+  parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+}
+
+type Derived implements Interface {
+  childrenFromInterface(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): DerivedChildConnection!
+  childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   id: ID!
   property: String
 }
 
-type ParentConnection {
-  totalCount: Int
-  pageInfo: PageInfo!
-  edges: [ParentEdge]
-  items: [Parent!]
-}
-
-type ParentEdge {
-  cursor: String!
-  node: Parent!
-}
-
-type ParentEntityView {
+type DerivedWithNavigation implements Interface {
+  childrenFromInterface(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): DerivedChildConnection!
+  childrenFromDerived(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): DerivedChildConnection!
+  childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
+  id: ID!
   property: String
-}
-
-type ParentEntityViewConnection {
-  totalCount: Int
-  pageInfo: PageInfo!
-  edges: [ParentEntityViewEdge]
-  items: [ParentEntityView!]
-}
-
-type ParentEntityViewEdge {
-  cursor: String!
-  node: ParentEntityView!
-}
-
-type Query {
-  customType(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [CustomType!]!
-  skipLevel(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SkipLevelGraph]!
-  queryFieldWithInclude(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [IncludeNonQueryableA!]!
-  manyChildren(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithManyChildren!]!
-  level1Entities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Level1!]!
-  withNullableEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithNullable!]!
-  namedEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [NamedId!]!
-  misNamed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryParent!]!
-  parentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
-  childEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
-  dateEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DateEntity!]!
-  enumEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [EnumEntity!]!
-  timeEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TimeEntity!]!
-  parentEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ParentConnection!
-  childEntitiesConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): ChildConnection!
-  parentEntitiesFiltered(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterParent!]!
-  parentEntitiesConnectionFiltered(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): FilterParentConnection!
-  parentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
-  parentEntityFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
-  parentEntityWithNoArgs: Parent!
-  parentEntityWithNoArgsFirst: Parent!
-  parentEntityIdOnly(id: ID!): Parent!
-  parentEntityIdOnlyFirst(id: ID!): Parent!
-  parentEntityNullable(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  parentEntityNullableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  interfaceGraphConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!], ids: [ID!]): InterfaceConnection!
-  manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
-  manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
-  parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentEntityView!]!
-  parentEntitiesViewConnection(after: String, first: Int, before: String, last: Int, where: [WhereExpression!], orderBy: [OrderBy!]): ParentEntityViewConnection!
-  parentEntityView(where: [WhereExpression!]): ParentEntityView!
-  parentEntityViewFirst(where: [WhereExpression!]): ParentEntityView!
-  parentEntityViewNullable(where: [WhereExpression!]): ParentEntityView
-  parentEntityViewNullableFirst(where: [WhereExpression!]): ParentEntityView
-  ownedParent(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
-  ownedParentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
-}
-
-type SkipLevelGraph {
-  level3Entity: Level3
-  level2Entity: Level2
-  id: ID!
-  level2EntityId: Int
-}
-
-enum StringComparison {
-  CURRENT_CULTURE
-  CURRENT_CULTURE_IGNORE_CASE
-  INVARIANT_CULTURE
-  INVARIANT_CULTURE_IGNORE_CASE
-  ORDINAL
-  ORDINAL_IGNORE_CASE
-}
-
-type TimeEntity {
-  id: ID!
-  property: TimeOnly
-}
-
-scalar TimeOnly
-
-input WhereExpression {
-  path: String
-  comparison: Comparison
-  negate: Boolean
-  case: StringComparison
-  value: [String]
-  connector: Connector
-  groupedExpressions: [WhereExpression]
-}
-
-type WithManyChildren {
-  child1: Child1!
-  child2: Child2!
-  id: ID!
-}
-
-type WithMisNamedQueryChild {
-  parent: WithMisNamedQueryParent
-  id: ID!
-  parentId: ID
-}
-
-type WithMisNamedQueryParent {
-  misNamedChildren(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
-  id: ID!
-}
-
-type WithNullable {
-  id: ID!
-  nullable: Int
 }
