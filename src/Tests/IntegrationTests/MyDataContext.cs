@@ -1,4 +1,4 @@
-﻿public class IntegrationDbContext(DbContextOptions options) :
+public class IntegrationDbContext(DbContextOptions options) :
     DbContext(options)
 {
     public DbSet<ParentEntity> ParentEntities { get; set; } = null!;
@@ -26,6 +26,8 @@
     public DbSet<ManyToManyLeftEntity> ManyToManyLeftEntities { get; set; } = null!;
     public DbSet<ManyToManyRightEntity> ManyToManyRightEntities { get; set; } = null!;
     public DbSet<ManyToManyMiddleEntity> ManyToManyMiddleEntities { get; set; } = null!;
+    public DbSet<ManyToManyShadowLeftEntity> ManyToManyShadowLeftEntities { get; set; } = null!;
+    public DbSet<ManyToManyShadowRightEntity> ManyToManyShadowRightEntities { get; set; } = null!;
     public DbSet<OwnedParent> OwnedParents { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -67,5 +69,9 @@
             .UsingEntity<ManyToManyMiddleEntity>(
                 _ => _.HasOne(_ => _.ManyToManyLeftEntity).WithMany(),
                 _ => _.HasOne(_ => _.ManyToManyRightEntity).WithMany());
+        modelBuilder.Entity<ManyToManyShadowLeftEntity>()
+            .HasMany(x=> x.ManyToManyShadowRightEntities)
+            .WithMany(x=> x.ManyToManyShadowLeftEntities)
+            .UsingEntity("ManyToManyShadowMiddleEntity");
     }
 }
