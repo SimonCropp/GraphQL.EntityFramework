@@ -28,6 +28,20 @@ public partial class IntegrationTests
             });
 
     [Fact]
+    public async Task SchemaNoDuplicateClrTypes()
+    {
+        await using var database = await sqlInstance.Build();
+        var dbContext = database.Context;
+        var dbModel = dbContext.Model;
+        var entityTypes = dbModel.GetEntityTypes();
+        var groupedTypes = entityTypes.GroupBy(x => x.ClrType);
+        var duplicates = groupedTypes.Where(x => x.Count() > 1).ToList();
+
+        var keyNames = KeyNameExtractor.GetKeyNames(dbModel);
+        var kn = dbModel.GetKeyNames();
+    }
+
+    [Fact]
     public async Task SchemaPrint()
     {
         await using var database = await sqlInstance.Build();
