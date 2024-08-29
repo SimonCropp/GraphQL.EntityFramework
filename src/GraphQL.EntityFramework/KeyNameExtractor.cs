@@ -3,22 +3,30 @@
     public static IReadOnlyDictionary<Type, List<string>> GetKeyNames(this IModel model)
     {
         var keyNames = new Dictionary<Type, List<string>>();
-        foreach (var entityType in model.GetEntityTypes())
+        foreach (var entity in model.GetEntityTypes())
         {
-            var primaryKey = entityType.FindPrimaryKey();
+            var clrType = entity.ClrType;
+
+            // join entities ClrTypes are dictionaries
+            if (clrType.Assembly.FullName!.StartsWith("System"))
+            {
+                continue;
+            }
+
+            var primaryKey = entity.FindPrimaryKey();
             //This can happen for views
             if (primaryKey is null)
             {
                 continue;
             }
 
-            if (entityType.IsOwned())
+            if (entity.IsOwned())
             {
                 continue;
             }
 
             var names = primaryKey.Properties.Select(_ => _.Name).ToList();
-            keyNames.Add(entityType.ClrType, names);
+            keyNames.Add(clrType, names);
         }
 
         return keyNames;
