@@ -52,10 +52,17 @@ type Company {
 
 type Employee {
   company: Company!
+  devices(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Device!]!
   age: Int!
   companyId: Int!
   content: String
   id: Int!
+}
+
+type Device {
+  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
+  id: Int!
+  name: String!
 }
 
 input WhereExpression {
