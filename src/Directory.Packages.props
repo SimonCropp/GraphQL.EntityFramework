@@ -21,7 +21,7 @@
     <PackageVersion Include="Polyfill" Version="6.4.1" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.134" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="8.0.0" />
-    <PackageVersion Include="Verify.SqlServer" Version="9.0.1" />
+    <PackageVersion Include="Verify.SqlServer" Version="9.0.2" />
     <PackageVersion Include="Verify.XunitV3" Version="26.2.0-beta.1" />
     <PackageVersion Include="xunit.v3" Version="0.2.0-pre.69" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0-pre.24" />
