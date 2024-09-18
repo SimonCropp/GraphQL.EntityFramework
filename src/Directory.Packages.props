@@ -8,7 +8,7 @@
     <PackageVersion Include="EfLocalDb" Version="19.0.4" />
     <PackageVersion Include="Fody" Version="6.8.2" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
-    <PackageVersion Include="GraphQL" Version="8.0.2" />
+    <PackageVersion Include="GraphQL" Version="8.1.0" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.0.2" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.0.2" />
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="27.0.2" />
