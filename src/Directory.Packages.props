@@ -9,8 +9,8 @@
     <PackageVersion Include="Fody" Version="6.8.2" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
     <PackageVersion Include="GraphQL" Version="8.1.0" />
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.0.2" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.0.2" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.1.0" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.1.0" />
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="27.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.8" />
@@ -22,7 +22,7 @@
     <PackageVersion Include="ProjectDefaults" Version="1.0.135" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="8.0.0" />
     <PackageVersion Include="Verify.SqlServer" Version="10.0.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="26.4.5-beta.1" />
+    <PackageVersion Include="Verify.XunitV3" Version="26.5.0-beta.1" />
     <PackageVersion Include="xunit.v3" Version="0.3.0-pre.18" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0-pre.30" />
   </ItemGroup>
