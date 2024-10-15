@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="ConfigureAwait.Fody" Version="3.3.2" />
-    <PackageVersion Include="EfLocalDb" Version="19.1.1" />
+    <PackageVersion Include="EfLocalDb" Version="19.1.2" />
     <PackageVersion Include="Fody" Version="6.8.2" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
     <PackageVersion Include="GraphQL" Version="8.1.0" />
