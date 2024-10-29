@@ -54,9 +54,10 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
         Type? graphType = null,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments = false,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>, IOrderedQueryable<TReturn>>? orderBy = null)
         where TReturn : class =>
-        GraphQlService.AddQueryField(this, name, resolve, graphType, omitQueryArguments);
+        GraphQlService.AddQueryField(this, name, resolve, graphType, omitQueryArguments, orderBy);
 
     public TDbContext ResolveDbContext(IResolveFieldContext<TSource> context) =>
         GraphQlService.ResolveDbContext(context);

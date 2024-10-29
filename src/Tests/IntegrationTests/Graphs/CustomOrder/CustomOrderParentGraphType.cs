@@ -1,7 +1,8 @@
 ﻿public class CustomOrderParentGraphType :
     EfObjectGraphType<IntegrationDbContext, CustomOrderParentEntity>
 {
-    public CustomOrderParentGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+    public CustomOrderParentGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService)
+        :
         base(graphQlService)
     {
         AddQueryField(
@@ -11,7 +12,8 @@
                 var parentId = context.Source.Id;
                 return context.DbContext.CustomOrderChildEntities
                     .Where(_ => _.ParentId == parentId);
-            });
+            },
+            orderBy: (context, query) => query.OrderBy(_ => _.Property));
         AutoMap();
     }
 }

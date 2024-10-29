@@ -230,6 +230,7 @@ type CustomOrderChild {
   parent: CustomOrderParent
   id: ID!
   parentId: ID
+  property: String
 }
 
 type Parent {

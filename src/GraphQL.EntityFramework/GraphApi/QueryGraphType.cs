@@ -23,9 +23,10 @@ public class QueryGraphType<TDbContext>(IEfGraphQLService<TDbContext> graphQlSer
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
         Type? graphType = null,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments = false,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>, IOrderedQueryable<TReturn>>? orderBy = null)
         where TReturn : class =>
-        GraphQlService.AddQueryField(this, name, resolve, graphType, omitQueryArguments);
+        GraphQlService.AddQueryField(this, name, resolve, graphType, omitQueryArguments, orderBy);
 
     public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,

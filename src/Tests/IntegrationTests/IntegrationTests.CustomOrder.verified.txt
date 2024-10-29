@@ -6,17 +6,20 @@
       {
         "customOrderChildren": [
           {
-            "id": "Guid_1"
+            "id": "Guid_1",
+            "property": "Value2"
           },
           {
-            "id": "Guid_2"
+            "id": "Guid_2",
+            "property": "Value3"
           }
         ]
       },
       {
         "customOrderChildren": [
           {
-            "id": "Guid_3"
+            "id": "Guid_3",
+            "property": "Value5"
           }
         ]
       }
@@ -32,9 +35,10 @@ FROM [CustomOrderParentEntities] AS [c],
     },
     {
       Text:
-SELECT [c].[Id], [c].[ParentId]
+SELECT [c].[Id], [c].[ParentId], [c].[Property]
 FROM [CustomOrderChildEntities] AS [c]
-WHERE [c].[ParentId] = @__parentId_0,
+WHERE [c].[ParentId] = @__parentId_0
+ORDER BY [c].[Property],
       Parameters: {
         @__parentId_0: {
           Value: Guid_4,
@@ -45,9 +49,10 @@ WHERE [c].[ParentId] = @__parentId_0,
     },
     {
       Text:
-SELECT [c].[Id], [c].[ParentId]
+SELECT [c].[Id], [c].[ParentId], [c].[Property]
 FROM [CustomOrderChildEntities] AS [c]
-WHERE [c].[ParentId] = @__parentId_0,
+WHERE [c].[ParentId] = @__parentId_0
+ORDER BY [c].[Property],
       Parameters: {
         @__parentId_0: {
           Value: Guid_5,

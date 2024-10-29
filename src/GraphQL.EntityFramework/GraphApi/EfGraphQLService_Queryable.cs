@@ -8,10 +8,11 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>>? resolve = null,
         Type? graphType = null,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments = false,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>, IOrderedQueryable<TReturn>>? orderBy = null)
         where TReturn : class
     {
-        var field = BuildQueryField(graphType, name, resolve, omitQueryArguments);
+        var field = BuildQueryField(graphType, name, resolve, omitQueryArguments, orderBy);
         graph.AddField(field);
         return new FieldBuilderEx<object, TReturn>(field);
     }
@@ -21,10 +22,11 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve = null,
         Type? itemGraphType = null,
-        bool omitQueryArguments = false)
+        bool omitQueryArguments = false,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>, IOrderedQueryable<TReturn>>? orderBy = null)
         where TReturn : class
     {
-        var field = BuildQueryField(itemGraphType, name, resolve, omitQueryArguments);
+        var field = BuildQueryField(itemGraphType, name, resolve, omitQueryArguments, orderBy);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
@@ -33,7 +35,8 @@ partial class EfGraphQLService<TDbContext>
         Type? itemGraphType,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
-        bool omitQueryArguments)
+        bool omitQueryArguments,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>, IOrderedQueryable<TReturn>>? orderBy)
         where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
@@ -63,6 +66,11 @@ partial class EfGraphQLService<TDbContext>
                     if (!omitQueryArguments)
                     {
                         query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
+                    }
+
+                    if(orderBy is not null)
+                    {
+                        query = orderBy(fieldContext, query);
                     }
 
                     QueryLogger.Write(query);

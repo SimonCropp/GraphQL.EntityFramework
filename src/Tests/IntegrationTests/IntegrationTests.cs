@@ -2524,7 +2524,8 @@ public partial class IntegrationTests
               {
                 customOrderChildren
                 {
-                  id
+                  id,
+                  property
                 }
               }
             }
@@ -2533,18 +2534,21 @@ public partial class IntegrationTests
         var entity1 = new CustomOrderParentEntity();
         var entity2 = new CustomOrderChildEntity
         {
-            Parent = entity1
+            Parent = entity1,
+            Property = "Value2"
         };
         var entity3 = new CustomOrderChildEntity
         {
-            Parent = entity1
+            Parent = entity1,
+            Property = "Value3"
         };
         entity1.Children.Add(entity2);
         entity1.Children.Add(entity3);
         var entity4 = new CustomOrderParentEntity();
         var entity5 = new CustomOrderChildEntity
         {
-            Parent = entity4
+            Parent = entity4,
+            Property = "Value5"
         };
         entity4.Children.Add(entity5);
 
