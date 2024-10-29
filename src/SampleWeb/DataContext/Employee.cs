@@ -9,5 +9,5 @@ public class Employee
 
     [ForeignKey("EmployeeId")]
     [InverseProperty("Employees")]
-    public virtual ICollection<Device> Devices { get; set; } = new List<Device>();
+    public virtual ICollection<Device> Devices { get; set; } = [];
 }
