@@ -7,5 +7,5 @@ public class ManyToManyShadowLeftEntity
 
     [ForeignKey("ManyToManyShadowLeftEntityId")]
     [InverseProperty("ManyToManyShadowLeftEntities")]
-    public virtual ICollection<ManyToManyShadowRightEntity> ManyToManyShadowRightEntities { get; set; } = new List<ManyToManyShadowRightEntity>();
+    public virtual ICollection<ManyToManyShadowRightEntity> ManyToManyShadowRightEntities { get; set; } = [];
 }
