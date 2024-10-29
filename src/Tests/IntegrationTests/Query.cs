@@ -45,6 +45,10 @@
             resolve: _ => _.DbContext.WithMisNamedQueryParentEntities);
 
         AddQueryField(
+            name: "customOrder",
+            resolve: _ => _.DbContext.CustomOrderParentEntities);
+
+        AddQueryField(
             name: "parentEntities",
             resolve: _ => _.DbContext.ParentEntities);
 

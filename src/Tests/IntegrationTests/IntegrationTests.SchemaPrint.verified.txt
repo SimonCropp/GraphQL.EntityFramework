@@ -7,6 +7,7 @@
   withNullableEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithNullable!]!
   namedEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [NamedId!]!
   misNamed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryParent!]!
+  customOrder(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [CustomOrderParent!]!
   parentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
   childEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   dateEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DateEntity!]!
@@ -215,6 +216,18 @@ type WithMisNamedQueryParent {
 
 type WithMisNamedQueryChild {
   parent: WithMisNamedQueryParent
+  id: ID!
+  parentId: ID
+}
+
+type CustomOrderParent {
+  customOrderChildren(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [CustomOrderChild!]!
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [CustomOrderChild!]!
+  id: ID!
+}
+
+type CustomOrderChild {
+  parent: CustomOrderParent
   id: ID!
   parentId: ID
 }

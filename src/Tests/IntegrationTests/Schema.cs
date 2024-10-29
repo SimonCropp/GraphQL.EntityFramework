@@ -25,6 +25,8 @@
         RegisterTypeMapping(typeof(WithMisNamedQueryChildEntity), typeof(WithMisNamedQueryChildGraphType));
         RegisterTypeMapping(typeof(WithNullableEntity), typeof(WithNullableGraphType));
         RegisterTypeMapping(typeof(NamedIdEntity), typeof(NamedIdGraphType));
+        RegisterTypeMapping(typeof(CustomOrderParentEntity), typeof(CustomOrderParentGraphType));
+        RegisterTypeMapping(typeof(CustomOrderChildEntity), typeof(CustomOrderChildGraphType));
         RegisterTypeMapping(typeof(DerivedEntity), typeof(DerivedGraphType));
         RegisterTypeMapping(typeof(DerivedWithNavigationEntity), typeof(DerivedWithNavigationGraphType));
         RegisterTypeMapping(typeof(DerivedChildEntity), typeof(DerivedChildGraphType));

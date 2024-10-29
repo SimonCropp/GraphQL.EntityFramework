@@ -2514,6 +2514,44 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
+    [Fact]
+    public async Task CustomOrder()
+    {
+        var query =
+            """
+            {
+              customOrder
+              {
+                customOrderChildren
+                {
+                  id
+                }
+              }
+            }
+            """;
+
+        var entity1 = new CustomOrderParentEntity();
+        var entity2 = new CustomOrderChildEntity
+        {
+            Parent = entity1
+        };
+        var entity3 = new CustomOrderChildEntity
+        {
+            Parent = entity1
+        };
+        entity1.Children.Add(entity2);
+        entity1.Children.Add(entity3);
+        var entity4 = new CustomOrderParentEntity();
+        var entity5 = new CustomOrderChildEntity
+        {
+            Parent = entity4
+        };
+        entity4.Children.Add(entity5);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
+    }
+
     [Fact(Skip = "fix order")]
     public async Task Parent_child()
     {

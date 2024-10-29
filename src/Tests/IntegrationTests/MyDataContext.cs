@@ -8,6 +8,8 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<FilterParentEntity> FilterParentEntities { get; set; } = null!;
     public DbSet<FilterChildEntity> FilterChildEntities { get; set; } = null!;
     public DbSet<ChildEntity> ChildEntities { get; set; } = null!;
+    public DbSet<CustomOrderChildEntity> CustomOrderChildEntities { get; set; } = null!;
+    public DbSet<CustomOrderParentEntity> CustomOrderParentEntities { get; set; } = null!;
     public DbSet<WithMisNamedQueryChildEntity> WithMisNamedQueryChildEntities { get; set; } = null!;
     public DbSet<WithMisNamedQueryParentEntity> WithMisNamedQueryParentEntities { get; set; } = null!;
     public DbSet<Level1Entity> Level1Entities { get; set; } = null!;
@@ -44,6 +46,8 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<ChildEntity>();
         modelBuilder.Entity<WithMisNamedQueryParentEntity>();
         modelBuilder.Entity<WithMisNamedQueryChildEntity>();
+        modelBuilder.Entity<CustomOrderParentEntity>();
+        modelBuilder.Entity<CustomOrderChildEntity>();
         modelBuilder.Entity<IncludeNonQueryableB>();
         modelBuilder.Entity<IncludeNonQueryableA>()
             .HasOne(_ => _.IncludeNonQueryableB)

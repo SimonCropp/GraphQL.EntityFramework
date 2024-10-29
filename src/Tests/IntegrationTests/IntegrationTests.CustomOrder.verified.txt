@@ -1,0 +1,60 @@
+﻿{
+  target:
+{
+  "data": {
+    "customOrder": [
+      {
+        "customOrderChildren": [
+          {
+            "id": "Guid_1"
+          },
+          {
+            "id": "Guid_2"
+          }
+        ]
+      },
+      {
+        "customOrderChildren": [
+          {
+            "id": "Guid_3"
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: [
+    {
+      Text:
+SELECT [c].[Id]
+FROM [CustomOrderParentEntities] AS [c],
+      HasTransaction: false
+    },
+    {
+      Text:
+SELECT [c].[Id], [c].[ParentId]
+FROM [CustomOrderChildEntities] AS [c]
+WHERE [c].[ParentId] = @__parentId_0,
+      Parameters: {
+        @__parentId_0: {
+          Value: Guid_4,
+          IsNullable: true
+        }
+      },
+      HasTransaction: false
+    },
+    {
+      Text:
+SELECT [c].[Id], [c].[ParentId]
+FROM [CustomOrderChildEntities] AS [c]
+WHERE [c].[ParentId] = @__parentId_0,
+      Parameters: {
+        @__parentId_0: {
+          Value: Guid_5,
+          IsNullable: true
+        }
+      },
+      HasTransaction: false
+    }
+  ]
+}
