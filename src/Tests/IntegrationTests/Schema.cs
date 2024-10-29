@@ -22,9 +22,9 @@
         RegisterTypeMapping(typeof(IncludeNonQueryableB), typeof(IncludeNonQueryableBGraphType));
         RegisterTypeMapping(typeof(IncludeNonQueryableA), typeof(IncludeNonQueryableAGraphType));
         RegisterTypeMapping(typeof(WithMisNamedQueryParentEntity), typeof(WithMisNamedQueryParentGraphType));
+        RegisterTypeMapping(typeof(WithMisNamedQueryChildEntity), typeof(WithMisNamedQueryChildGraphType));
         RegisterTypeMapping(typeof(WithNullableEntity), typeof(WithNullableGraphType));
         RegisterTypeMapping(typeof(NamedIdEntity), typeof(NamedIdGraphType));
-        RegisterTypeMapping(typeof(WithMisNamedQueryChildEntity), typeof(WithMisNamedQueryChildGraphType));
         RegisterTypeMapping(typeof(DerivedEntity), typeof(DerivedGraphType));
         RegisterTypeMapping(typeof(DerivedWithNavigationEntity), typeof(DerivedWithNavigationGraphType));
         RegisterTypeMapping(typeof(DerivedChildEntity), typeof(DerivedChildGraphType));
