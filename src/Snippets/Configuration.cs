@@ -13,14 +13,13 @@
     }
     #endregion
 
-    static void RegisterInContainerExplicit(IServiceCollection serviceCollection)
-    {
-        #region RegisterInContainer
+    static void RegisterInContainerExplicit(IServiceCollection serviceCollection) =>
+    #region RegisterInContainer
         EfGraphQLConventions.RegisterInContainer<MyDbContext>(
             serviceCollection,
             model: ModelBuilder.GetInstance());
-        #endregion
-    }
+    #endregion
+
 
     public class MyDbContext(DbContextOptions options) :
         DbContext(options);

@@ -32,7 +32,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup><a href='/src/Snippets/Configuration.cs#L18-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/Configuration.cs#L17-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -132,7 +132,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     serviceCollection,
     model: ModelBuilder.GetInstance());
 ```
-<sup><a href='/src/Snippets/Configuration.cs#L18-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/Configuration.cs#L17-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Then the `IEfGraphQLService` can be resolved via [dependency injection in GraphQL.net](https://graphql-dotnet.github.io/docs/guides/advanced#dependency-injection) to be used in `ObjectGraphType`s when adding query fields.
