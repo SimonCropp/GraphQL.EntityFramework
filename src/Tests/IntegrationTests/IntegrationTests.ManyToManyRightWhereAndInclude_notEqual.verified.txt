@@ -27,19 +27,19 @@
 },
   sql: {
     Text:
-SELECT [m].[Id], [m].[LeftName], [t].[ManyToManyLeftEntityId], [t].[ManyToManyRightEntityId], [t].[Id], [t].[RightName]
+SELECT [m].[Id], [m].[LeftName], [s].[ManyToManyLeftEntityId], [s].[ManyToManyRightEntityId], [s].[Id], [s].[RightName]
 FROM [ManyToManyLeftEntities] AS [m]
 LEFT JOIN (
     SELECT [m2].[ManyToManyLeftEntityId], [m2].[ManyToManyRightEntityId], [m3].[Id], [m3].[RightName]
     FROM [ManyToManyMiddleEntities] AS [m2]
     INNER JOIN [ManyToManyRightEntities] AS [m3] ON [m2].[ManyToManyRightEntityId] = [m3].[Id]
-) AS [t] ON [m].[Id] = [t].[ManyToManyLeftEntityId]
+) AS [s] ON [m].[Id] = [s].[ManyToManyLeftEntityId]
 WHERE EXISTS (
     SELECT 1
     FROM [ManyToManyMiddleEntities] AS [m0]
     INNER JOIN [ManyToManyRightEntities] AS [m1] ON [m0].[ManyToManyRightEntityId] = [m1].[Id]
     WHERE [m].[Id] = [m0].[ManyToManyLeftEntityId] AND ([m1].[RightName] <> N'Right2' OR [m1].[RightName] IS NULL))
-ORDER BY [m].[Id], [t].[ManyToManyLeftEntityId], [t].[ManyToManyRightEntityId],
+ORDER BY [m].[Id], [s].[ManyToManyLeftEntityId], [s].[ManyToManyRightEntityId],
     HasTransaction: false
   }
 }
