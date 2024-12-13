@@ -18,11 +18,11 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageVersion Include="Polyfill" Version="7.6.0" />
+    <PackageVersion Include="Polyfill" Version="7.7.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.147" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="9.0.0" />
     <PackageVersion Include="Verify.SqlServer" Version="10.1.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="28.4.0" />
+    <PackageVersion Include="Verify.XunitV3" Version="28.5.0" />
     <PackageVersion Include="xunit.v3" Version="0.7.0-pre.15" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0-pre.49" />
   </ItemGroup>
