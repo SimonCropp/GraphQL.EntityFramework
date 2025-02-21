@@ -8,6 +8,12 @@ Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/ap
 
 **See [Milestones](../../milestones?state=closed) for release notes.**
 
+
+### Powered by
+
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSourceSupport)
+
+
 ## NuGet package
 
 https://nuget.org/packages/GraphQL.EntityFramework/
