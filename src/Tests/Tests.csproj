@@ -3,6 +3,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <NoWarn>$(NoWarn);EF1000;xUnit1051</NoWarn>
     <OutputType>Exe</OutputType>
+    <RootNamespace>testing</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" />
