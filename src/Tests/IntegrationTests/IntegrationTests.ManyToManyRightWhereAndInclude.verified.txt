@@ -19,19 +19,31 @@
 },
   sql: {
     Text:
-SELECT [m].[Id], [m].[LeftName], [s].[ManyToManyLeftEntityId], [s].[ManyToManyRightEntityId], [s].[Id], [s].[RightName]
-FROM [ManyToManyLeftEntities] AS [m]
-LEFT JOIN (
-    SELECT [m2].[ManyToManyLeftEntityId], [m2].[ManyToManyRightEntityId], [m3].[Id], [m3].[RightName]
-    FROM [ManyToManyMiddleEntities] AS [m2]
-    INNER JOIN [ManyToManyRightEntities] AS [m3] ON [m2].[ManyToManyRightEntityId] = [m3].[Id]
-) AS [s] ON [m].[Id] = [s].[ManyToManyLeftEntityId]
-WHERE EXISTS (
-    SELECT 1
-    FROM [ManyToManyMiddleEntities] AS [m0]
-    INNER JOIN [ManyToManyRightEntities] AS [m1] ON [m0].[ManyToManyRightEntityId] = [m1].[Id]
-    WHERE [m].[Id] = [m0].[ManyToManyLeftEntityId] AND [m1].[RightName] = N'Right2')
-ORDER BY [m].[Id], [s].[ManyToManyLeftEntityId], [s].[ManyToManyRightEntityId],
+select   m.Id,
+         m.LeftName,
+         s.ManyToManyLeftEntityId,
+         s.ManyToManyRightEntityId,
+         s.Id,
+         s.RightName
+from     ManyToManyLeftEntities as m
+         left outer join
+         (select m2.ManyToManyLeftEntityId,
+                 m2.ManyToManyRightEntityId,
+                 m3.Id,
+                 m3.RightName
+          from   ManyToManyMiddleEntities as m2
+                 inner join
+                 ManyToManyRightEntities as m3
+                 on m2.ManyToManyRightEntityId = m3.Id) as s
+         on m.Id = s.ManyToManyLeftEntityId
+where    exists (select 1
+                 from   ManyToManyMiddleEntities as m0
+                        inner join
+                        ManyToManyRightEntities as m1
+                        on m0.ManyToManyRightEntityId = m1.Id
+                 where  m.Id = m0.ManyToManyLeftEntityId
+                        and m1.RightName = N'Right2')
+order by m.Id, s.ManyToManyLeftEntityId, s.ManyToManyRightEntityId,
     HasTransaction: false
   }
 }

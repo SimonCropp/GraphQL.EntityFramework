@@ -13,11 +13,22 @@
 },
   sql: {
     Text:
-SELECT [l].[Id], [l].[Level2EntityId], [l].[Level2EntityId1], [l0].[Id], [l0].[Level3EntityId], [l1].[Id], [l1].[Property]
-FROM [Level1Entities] AS [l]
-LEFT JOIN [Level2Entities] AS [l0] ON [l].[Level2EntityId1] = [l0].[Id]
-LEFT JOIN [Level3Entities] AS [l1] ON [l0].[Level3EntityId] = [l1].[Id]
-WHERE [l0].[Level3EntityId] <> 'Guid_1' OR [l0].[Level3EntityId] IS NULL,
+select l.Id,
+       l.Level2EntityId,
+       l.Level2EntityId1,
+       l0.Id,
+       l0.Level3EntityId,
+       l1.Id,
+       l1.Property
+from   Level1Entities as l
+       left outer join
+       Level2Entities as l0
+       on l.Level2EntityId1 = l0.Id
+       left outer join
+       Level3Entities as l1
+       on l0.Level3EntityId = l1.Id
+where  l0.Level3EntityId <> 'Guid_1'
+       or l0.Level3EntityId is null,
     HasTransaction: false
   }
 }

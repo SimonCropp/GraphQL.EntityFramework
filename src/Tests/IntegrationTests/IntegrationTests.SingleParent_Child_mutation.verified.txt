@@ -18,24 +18,32 @@
   sql: [
     {
       Text:
-SELECT [p0].[Id], [p0].[Property], [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
-FROM (
-    SELECT TOP(2) [p].[Id], [p].[Property]
-    FROM [ParentEntities] AS [p]
-    WHERE [p].[Id] = 'Guid_1'
-) AS [p0]
-LEFT JOIN [ChildEntities] AS [c] ON [p0].[Id] = [c].[ParentId]
-ORDER BY [p0].[Id],
+select   p0.Id,
+         p0.Property,
+         c.Id,
+         c.Nullable,
+         c.ParentId,
+         c.Property
+from     (select top (2) p.Id,
+                         p.Property
+          from   ParentEntities as p
+          where  p.Id = 'Guid_1') as p0
+         left outer join
+         ChildEntities as c
+         on p0.Id = c.ParentId
+order by p0.Id,
       HasTransaction: false
     },
     {
       Text:
-SET IMPLICIT_TRANSACTIONS OFF;
-SET NOCOUNT ON;
-UPDATE [ParentEntities] SET [Property] = @p0
-OUTPUT 1
-WHERE [Id] = @p1;
-,
+set implicit_transactions off;
+
+set nocount on;
+
+update ParentEntities
+set    Property = @p0
+output 1
+where  Id = @p1,
       Parameters: {
         @p1: Guid_1,
         @p0: {

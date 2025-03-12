@@ -32,16 +32,17 @@
   sql: [
     {
       Text:
-SELECT COUNT(*)
-FROM [ParentEntities] AS [p],
+select COUNT(*)
+from   ParentEntities as p,
       HasTransaction: false
     },
     {
       Text:
-SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-ORDER BY [p].[Id]
-OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY,
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+order by p.Id
+offset @__p_0 rows fetch next @__p_1 rows only,
       Parameters: {
         @__p_0: 0,
         @__p_1: 2

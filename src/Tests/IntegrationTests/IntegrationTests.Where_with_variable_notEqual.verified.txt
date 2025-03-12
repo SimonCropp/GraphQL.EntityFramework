@@ -11,9 +11,11 @@
 },
   sql: {
     Text:
-SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-WHERE [p].[Property] <> N'value2' OR [p].[Property] IS NULL,
+select p.Id,
+       p.Property
+from   ParentEntities as p
+where  p.Property <> N'value2'
+       or p.Property is null,
     HasTransaction: false
   }
 }

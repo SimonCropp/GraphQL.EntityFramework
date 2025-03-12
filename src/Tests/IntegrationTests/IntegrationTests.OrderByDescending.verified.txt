@@ -14,9 +14,10 @@
 },
   sql: {
     Text:
-SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-ORDER BY [p].[Property] DESC,
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+order by p.Property desc,
     HasTransaction: false
   }
 }

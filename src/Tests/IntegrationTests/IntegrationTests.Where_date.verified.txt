@@ -11,9 +11,10 @@
 },
   sql: {
     Text:
-SELECT [d].[Id], [d].[Property]
-FROM [DateEntities] AS [d]
-WHERE [d].[Property] = '2020-10-01',
+select d.Id,
+       d.Property
+from   DateEntities as d
+where  d.Property = '2020-10-01',
     HasTransaction: false
   }
 }

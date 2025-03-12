@@ -11,9 +11,10 @@
 },
   sql: {
     Text:
-SELECT [n].[NamedId], [n].[Property]
-FROM [NamedEntities] AS [n]
-WHERE [n].[NamedId] = 'Guid_1',
+select n.NamedId,
+       n.Property
+from   NamedEntities as n
+where  n.NamedId = 'Guid_1',
     HasTransaction: false
   }
 }

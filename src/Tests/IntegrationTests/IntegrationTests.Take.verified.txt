@@ -11,9 +11,10 @@
 },
   sql: {
     Text:
-SELECT TOP(@__p_0) [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-ORDER BY [p].[Property],
+select   top (@__p_0) p.Id,
+                      p.Property
+from     ParentEntities as p
+order by p.Property,
     Parameters: {
       @__p_0: 1
     },

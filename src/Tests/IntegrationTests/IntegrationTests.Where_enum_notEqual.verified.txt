@@ -11,9 +11,11 @@
 },
   sql: {
     Text:
-SELECT [e].[Id], [e].[Property]
-FROM [EnumEntities] AS [e]
-WHERE [e].[Property] <> 4 OR [e].[Property] IS NULL,
+select e.Id,
+       e.Property
+from   EnumEntities as e
+where  e.Property <> 4
+       or e.Property is null,
     HasTransaction: false
   }
 }

@@ -62,11 +62,24 @@
 },
   sql: {
     Text:
-SELECT [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property], [p].[Id], [p].[Property], [c0].[Id], [c0].[Nullable], [c0].[ParentId], [c0].[Property]
-FROM [ChildEntities] AS [c]
-LEFT JOIN [ParentEntities] AS [p] ON [c].[ParentId] = [p].[Id]
-LEFT JOIN [ChildEntities] AS [c0] ON [p].[Id] = [c0].[ParentId]
-ORDER BY [c].[Property], [c].[Id], [p].[Id],
+select   c.Id,
+         c.Nullable,
+         c.ParentId,
+         c.Property,
+         p.Id,
+         p.Property,
+         c0.Id,
+         c0.Nullable,
+         c0.ParentId,
+         c0.Property
+from     ChildEntities as c
+         left outer join
+         ParentEntities as p
+         on c.ParentId = p.Id
+         left outer join
+         ChildEntities as c0
+         on p.Id = c0.ParentId
+order by c.Property, c.Id, p.Id,
     HasTransaction: false
   }
 }

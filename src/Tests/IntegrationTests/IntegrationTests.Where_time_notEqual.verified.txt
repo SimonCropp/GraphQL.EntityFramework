@@ -11,9 +11,11 @@
 },
   sql: {
     Text:
-SELECT [t].[Id], [t].[Property]
-FROM [TimeEntities] AS [t]
-WHERE [t].[Property] <> '10:11:00' OR [t].[Property] IS NULL,
+select t.Id,
+       t.Property
+from   TimeEntities as t
+where  t.Property <> '10:11:00'
+       or t.Property is null,
     HasTransaction: false
   }
 }

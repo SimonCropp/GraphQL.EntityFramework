@@ -14,9 +14,10 @@
 },
   sql: {
     Text:
-SELECT [c].[Id], [c].[Property]
-FROM [CustomTypeEntities] AS [c]
-ORDER BY [c].[Property],
+select   c.Id,
+         c.Property
+from     CustomTypeEntities as c
+order by c.Property,
     HasTransaction: false
   }
 }

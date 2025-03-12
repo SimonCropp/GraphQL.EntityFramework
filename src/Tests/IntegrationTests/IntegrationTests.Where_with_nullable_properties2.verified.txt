@@ -11,9 +11,10 @@
 },
   sql: {
     Text:
-SELECT [w].[Id], [w].[Nullable]
-FROM [WithNullableEntities] AS [w]
-WHERE [w].[Nullable] = 10,
+select w.Id,
+       w.Nullable
+from   WithNullableEntities as w
+where  w.Nullable = 10,
     HasTransaction: false
   }
 }

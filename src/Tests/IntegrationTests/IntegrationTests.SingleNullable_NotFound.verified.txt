@@ -7,9 +7,10 @@
 },
   sql: {
     Text:
-SELECT TOP(2) [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-WHERE [p].[Id] = 'Guid_1',
+select top (2) p.Id,
+               p.Property
+from   ParentEntities as p
+where  p.Id = 'Guid_1',
     HasTransaction: false
   }
 }

@@ -11,10 +11,11 @@
 },
   sql: {
     Text:
-SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-ORDER BY [p].[Property]
-OFFSET @__p_0 ROWS,
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+order by p.Property
+offset @__p_0 rows,
     Parameters: {
       @__p_0: 1
     },

@@ -88,8 +88,9 @@
 },
   sql: {
     Text:
-SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p],
+select p.Id,
+       p.Property
+from   ParentEntities as p,
     HasTransaction: false
   }
 }

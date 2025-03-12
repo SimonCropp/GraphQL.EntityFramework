@@ -11,9 +11,10 @@
 },
   sql: {
     Text:
-SELECT [t].[Id], [t].[Property]
-FROM [TimeEntities] AS [t]
-WHERE [t].[Property] = '10:11:00',
+select t.Id,
+       t.Property
+from   TimeEntities as t
+where  t.Property = '10:11:00',
     HasTransaction: false
   }
 }

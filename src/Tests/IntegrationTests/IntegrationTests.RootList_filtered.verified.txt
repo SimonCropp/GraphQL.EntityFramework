@@ -11,8 +11,9 @@
 },
   sql: {
     Text:
-SELECT [f].[Id], [f].[Property]
-FROM [FilterParentEntities] AS [f],
+select f.Id,
+       f.Property
+from   FilterParentEntities as f,
     HasTransaction: false
   }
 }

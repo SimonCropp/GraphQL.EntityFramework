@@ -14,10 +14,15 @@
 },
   sql: {
     Text:
-SELECT [c].[Id], [c].[Nullable], [c].[ParentId], [c].[Property]
-FROM [ChildEntities] AS [c]
-LEFT JOIN [ParentEntities] AS [p] ON [c].[ParentId] = [p].[Id]
-ORDER BY [p].[Property],
+select   c.Id,
+         c.Nullable,
+         c.ParentId,
+         c.Property
+from     ChildEntities as c
+         left outer join
+         ParentEntities as p
+         on c.ParentId = p.Id
+order by p.Property,
     HasTransaction: false
   }
 }

@@ -13,10 +13,18 @@
 },
   sql: {
     Text:
-SELECT [w].[Id], [c].[Id], [c].[ParentId], [c0].[Id], [c0].[ParentId]
-FROM [WithManyChildrenEntities] AS [w]
-LEFT JOIN [Child2Entities] AS [c] ON [w].[Id] = [c].[ParentId]
-LEFT JOIN [Child1Entities] AS [c0] ON [w].[Id] = [c0].[ParentId],
+select w.Id,
+       c.Id,
+       c.ParentId,
+       c0.Id,
+       c0.ParentId
+from   WithManyChildrenEntities as w
+       left outer join
+       Child2Entities as c
+       on w.Id = c.ParentId
+       left outer join
+       Child1Entities as c0
+       on w.Id = c0.ParentId,
     HasTransaction: false
   }
 }

@@ -14,10 +14,11 @@
 },
   sql: {
     Text:
-SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-WHERE [p].[Property] IN (N'Value1', N'Value2')
-ORDER BY [p].[Property],
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+where    p.Property in (N'Value1', N'Value2')
+order by p.Property,
     HasTransaction: false
   }
 }
