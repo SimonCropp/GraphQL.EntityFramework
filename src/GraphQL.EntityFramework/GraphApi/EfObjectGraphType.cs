@@ -58,6 +58,14 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
         where TReturn : class =>
         GraphQlService.AddQueryField(this, name, resolve, graphType, omitQueryArguments);
 
+    public FieldBuilder<TSource, TReturn> AddQueryField<TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Type? graphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class =>
+        GraphQlService.AddQueryField(this, name, resolve, graphType, omitQueryArguments);
+
     public TDbContext ResolveDbContext(IResolveFieldContext<TSource> context) =>
         GraphQlService.ResolveDbContext(context);
 
@@ -75,9 +83,31 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
         where TReturn : class =>
         GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
 
+    public FieldBuilder<TSource, TReturn> AddSingleField<TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TReturn : class =>
+        GraphQlService.AddSingleField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
+
     public FieldBuilder<TSource, TReturn> AddFirstField<TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TReturn : class =>
+        GraphQlService.AddFirstField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<TSource, TReturn> AddFirstField<TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
