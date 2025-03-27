@@ -16,6 +16,19 @@ partial class EfGraphQLService<TDbContext>
         return new FieldBuilderEx<object, TReturn>(field);
     }
 
+    public FieldBuilder<object, TReturn> AddQueryField<TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>>? resolve = null,
+        Type? graphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class
+    {
+        var field = BuildQueryField(graphType, name, resolve, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<object, TReturn>(field);
+    }
+
     public FieldBuilder<TSource, TReturn> AddQueryField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
@@ -29,10 +42,35 @@ partial class EfGraphQLService<TDbContext>
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
+    public FieldBuilder<TSource, TReturn> AddQueryField<TSource, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>>? resolve = null,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class
+    {
+        var field = BuildQueryField(itemGraphType, name, resolve, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, TReturn>(field);
+    }
+
     FieldType BuildQueryField<TSource, TReturn>(
         Type? itemGraphType,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>>? resolve,
+        bool omitQueryArguments)
+        where TReturn : class =>
+        BuildQueryField<TSource, TReturn>(
+            itemGraphType,
+            name,
+            resolve == null ? null : context => Task.FromResult(resolve(context)),
+            omitQueryArguments);
+
+    FieldType BuildQueryField<TSource, TReturn>(
+        Type? itemGraphType,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>>? resolve,
         bool omitQueryArguments)
         where TReturn : class
     {
@@ -53,7 +91,7 @@ partial class EfGraphQLService<TDbContext>
                 async context =>
                 {
                     var fieldContext = BuildContext(context);
-                    var query = resolve(fieldContext);
+                    var query = await resolve(fieldContext);
                     if (disableTracking)
                     {
                         query = query.AsNoTracking();

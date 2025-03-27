@@ -20,9 +20,41 @@ partial class EfGraphQLService<TDbContext>
     }
 
     public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
+        IObjectGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TReturn : class
+    {
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
+        graph.AddField(field);
+        return new FieldBuilderEx<object, TReturn>(field);
+    }
+
+    public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         IComplexGraphType graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TReturn : class
+    {
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
+        graph.AddField(field);
+        return new FieldBuilderEx<object, TReturn>(field);
+    }
+
+    public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -51,6 +83,22 @@ partial class EfGraphQLService<TDbContext>
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
+    public FieldBuilder<TSource, TReturn> AddSingleField<TSource, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TReturn : class
+    {
+        var field = BuildSingleField(name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, TReturn>(field);
+    }
+
     FieldType BuildSingleField<TSource, TReturn>(
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
@@ -60,9 +108,30 @@ partial class EfGraphQLService<TDbContext>
         bool omitQueryArguments,
         bool idOnly)
         where TReturn : class
+        => BuildSingleField(
+            name,
+            _ =>
+            {
+                var queryable = resolve(_);
+                return Task.FromResult(queryable);
+            },
+            mutate,
+            graphType,
+            nullable,
+            omitQueryArguments,
+            idOnly);
+
+    FieldType BuildSingleField<TSource, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
+        Type? graphType,
+        bool nullable,
+        bool omitQueryArguments,
+        bool idOnly)
+        where TReturn : class
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
-
 
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
@@ -77,7 +146,7 @@ partial class EfGraphQLService<TDbContext>
                 {
                     var efFieldContext = BuildContext(context);
 
-                    var query = resolve(efFieldContext);
+                    var query = await resolve(efFieldContext);
                     if (disableTracking)
                     {
                         query = query.AsNoTracking();
