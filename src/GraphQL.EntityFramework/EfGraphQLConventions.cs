@@ -17,7 +17,7 @@ public static class EfGraphQLConventions
             IServiceCollection services,
             ResolveDbContext<TDbContext>? resolveDbContext = null,
             IModel? model = null,
-            ResolveFilters? resolveFilters = null,
+            ResolveFilters<TDbContext>? resolveFilters = null,
             bool disableTracking = false,
             bool disableAsync = false)
 
@@ -37,14 +37,14 @@ public static class EfGraphQLConventions
     static EfGraphQLService<TDbContext> Build<TDbContext>(
         ResolveDbContext<TDbContext>? dbContextResolver,
         IModel? model,
-        ResolveFilters? filters,
+        ResolveFilters<TDbContext>? filters,
         IServiceProvider provider,
         bool disableTracking,
         bool disableAsync)
         where TDbContext : DbContext
     {
         model ??= ResolveModel<TDbContext>(provider);
-        filters ??= provider.GetService<ResolveFilters>();
+        filters ??= provider.GetService<ResolveFilters<TDbContext>>();
         dbContextResolver ??= _ => DbContextFromProvider<TDbContext>(provider);
 
         return new(

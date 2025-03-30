@@ -1,5 +1,3 @@
-using Filters = GraphQL.EntityFramework.Filters;
-
 public partial class IntegrationTests
 {
     static SqlInstance<IntegrationDbContext> sqlInstance;
@@ -3008,7 +3006,7 @@ public partial class IntegrationTests
         SqlDatabase<IntegrationDbContext> database,
         string query,
         Inputs? inputs,
-        Filters? filters,
+        Filters<IntegrationDbContext>? filters,
         bool disableTracking,
         object[] entities,
         bool disableAsync = false,

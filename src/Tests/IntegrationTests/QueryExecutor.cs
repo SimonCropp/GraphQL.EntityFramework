@@ -5,7 +5,7 @@ static class QueryExecutor
         ServiceCollection services,
         TDbContext data,
         Inputs? inputs,
-        Filters? filters,
+        Filters<TDbContext>? filters,
         bool disableTracking,
         bool disableAsync)
         where TDbContext : DbContext

@@ -68,7 +68,7 @@
         return Build(skip, take, count, page);
     }
 
-    public static Task<Connection<TItem>> ApplyConnectionContext<TSource, TItem>(
+    public static Task<Connection<TItem>> ApplyConnectionContext<TDbContext, TSource, TItem>(
         this IQueryable<TItem> queryable,
         int? first,
         string afterString,
@@ -76,23 +76,27 @@
         string beforeString,
         IResolveFieldContext<TSource> context,
         Cancel cancel,
-        Filters filters)
+        Filters<TDbContext>? filters,
+        TDbContext data)
         where TItem : class
+        where TDbContext : DbContext
     {
         Parse(afterString, beforeString, out var after, out var before);
-        return ApplyConnectionContext(queryable, first, after, last, before, context, filters, cancel);
+        return ApplyConnectionContext(queryable, first, after, last, before, context, filters, cancel, data);
     }
 
-    public static async Task<Connection<TItem>> ApplyConnectionContext<TSource, TItem>(
+    public static async Task<Connection<TItem>> ApplyConnectionContext<TDbContext, TSource, TItem>(
         IQueryable<TItem> queryable,
         int? first,
         int? after,
         int? last,
         int? before,
         IResolveFieldContext<TSource> context,
-        Filters filters,
-        Cancel cancel = default)
+        Filters<TDbContext>? filters,
+        Cancel cancel,
+        TDbContext data)
         where TItem : class
+        where TDbContext : DbContext
     {
         if (queryable is not IOrderedQueryable<TItem>)
         {
@@ -102,22 +106,24 @@
         cancel.ThrowIfCancellationRequested();
         if (last is null)
         {
-            return await First(queryable, first.GetValueOrDefault(0), after, before, count, context, filters, cancel);
+            return await First(queryable, first.GetValueOrDefault(0), after, before, count, context, filters, cancel, data);
         }
 
-        return await Last(queryable, last.Value, after, before, count, context, filters, cancel);
+        return await Last(queryable, last.Value, after, before, count, context, filters, cancel, data);
     }
 
-    static Task<Connection<TItem>> First<TSource, TItem>(
+    static Task<Connection<TItem>> First<TDbContext, TSource, TItem>(
         IQueryable<TItem> queryable,
         int first,
         int? after,
         int? before,
         int count,
         IResolveFieldContext<TSource> context,
-        Filters filters,
-        Cancel cancel)
+        Filters<TDbContext>? filters,
+        Cancel cancel,
+        TDbContext data)
         where TItem : class
+        where TDbContext : DbContext
     {
         int skip;
         if (before is null)
@@ -129,19 +135,21 @@
             skip = Math.Max(before.Value - first, 0);
         }
 
-        return Range(queryable, skip, first, count, context, filters, cancel);
+        return Range(queryable, skip, first, count, context, filters, cancel, data);
     }
 
-    static Task<Connection<TItem>> Last<TSource, TItem>(
+    static Task<Connection<TItem>> Last<TDbContext, TSource, TItem>(
         IQueryable<TItem> queryable,
         int last,
         int? after,
         int? before,
         int count,
         IResolveFieldContext<TSource> context,
-        Filters filters,
-        Cancel cancel)
+        Filters<TDbContext>? filters,
+        Cancel cancel,
+        TDbContext data)
         where TItem : class
+        where TDbContext : DbContext
     {
         int skip;
         if (after is null)
@@ -155,23 +163,28 @@
             skip = after.Value + 1;
         }
 
-        return Range(queryable, skip, take: last, count, context, filters, cancel);
+        return Range(queryable, skip, take: last, count, context, filters, cancel, data);
     }
 
-    static async Task<Connection<TItem>> Range<TSource, TItem>(
+    static async Task<Connection<TItem>> Range<TDbContext, TSource, TItem>(
         IQueryable<TItem> queryable,
         int skip,
         int take,
         int count,
         IResolveFieldContext<TSource> context,
-        Filters filters,
-        Cancel cancel)
+        Filters<TDbContext>? filters,
+        Cancel cancel,
+        TDbContext data)
         where TItem : class
+        where TDbContext : DbContext
     {
         var page = queryable.Skip(skip).Take(take);
         QueryLogger.Write(page);
         IEnumerable<TItem> result = await page.ToListAsync(cancel);
-        result = await filters.ApplyFilter(result, context.UserContext, context.User);
+        if (filters != null)
+        {
+            result = await filters.ApplyFilter(result, context.UserContext, data, context.User);
+        }
 
         cancel.ThrowIfCancellationRequested();
         return Build(skip, take, count, result);

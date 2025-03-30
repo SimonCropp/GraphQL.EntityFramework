@@ -144,7 +144,12 @@ partial class EfGraphQLService<TDbContext>
                             exception);
                     }
 
-                    return await fieldContext.Filters.ApplyFilter(list, context.UserContext, context.User);
+                    if (fieldContext.Filters == null)
+                    {
+                        return list;
+                    }
+
+                    return await fieldContext.Filters.ApplyFilter(list, context.UserContext, fieldContext.DbContext, context.User);
                 });
         }
 

@@ -25,20 +25,24 @@ partial class EfGraphQLService<TDbContext>
 
         if (resolve is not null)
         {
-            field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
-                async context =>
+            field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(async context =>
+            {
+                var fieldContext = BuildContext(context);
+                var result = resolve(fieldContext);
+
+                if (result is IQueryable)
                 {
-                    var fieldContext = BuildContext(context);
-                    var result = resolve(fieldContext);
+                    throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryField.");
+                }
 
-                    if (result is IQueryable)
-                    {
-                        throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryField.");
-                    }
+                result = result.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
+                if (fieldContext.Filters == null)
+                {
+                    return result;
+                }
 
-                    result = result.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
-                    return await fieldContext.Filters.ApplyFilter(result, context.UserContext, context.User);
-                });
+                return await fieldContext.Filters.ApplyFilter(result, context.UserContext, fieldContext.DbContext, context.User);
+            });
         }
 
         graph.AddField(field);

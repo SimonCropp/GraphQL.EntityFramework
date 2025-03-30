@@ -21,7 +21,7 @@ public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
         ResolveDbContext<TDbContext>? resolveDbContext = null,
         IModel? model = null,
-        ResolveFilters? resolveFilters = null,
+        ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
         bool disableAsync = false)
 ```
@@ -92,9 +92,10 @@ A delegate that resolves the [Filters](filters.md).
 ```cs
 namespace GraphQL.EntityFramework;
 
-public delegate Filters? ResolveFilters(object userContext);
+public delegate Filters<TDbContext>? ResolveFilters<TDbContext>(object userContext)
+    where TDbContext : DbContext;
 ```
-<sup><a href='/src/GraphQL.EntityFramework/Filters/ResolveFilters.cs#L1-L3' title='Snippet source file'>snippet source</a> | <a href='#snippet-ResolveFilters.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/Filters/ResolveFilters.cs#L1-L4' title='Snippet source file'>snippet source</a> | <a href='#snippet-ResolveFilters.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 It has access to the current GraphQL user context.
@@ -121,7 +122,7 @@ public static void RegisterInContainer<TDbContext>(
         IServiceCollection services,
         ResolveDbContext<TDbContext>? resolveDbContext = null,
         IModel? model = null,
-        ResolveFilters? resolveFilters = null,
+        ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
         bool disableAsync = false)
 ```

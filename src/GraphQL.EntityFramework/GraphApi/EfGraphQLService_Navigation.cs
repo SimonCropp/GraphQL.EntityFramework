@@ -46,7 +46,8 @@ partial class EfGraphQLService<TDbContext>
                             exception);
                     }
 
-                    if (await fieldContext.Filters.ShouldInclude(context.UserContext, context.User, result))
+                    if (fieldContext.Filters == null ||
+                        await fieldContext.Filters.ShouldInclude(context.UserContext, fieldContext.DbContext, context.User, result))
                     {
                         return result;
                     }

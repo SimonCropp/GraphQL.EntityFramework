@@ -156,7 +156,8 @@ partial class EfGraphQLService<TDbContext>
                                 context.Before!,
                                 context,
                                 context.CancellationToken,
-                                efFieldContext.Filters);
+                                efFieldContext.Filters,
+                                efFieldContext.DbContext);
                     }
                     catch (TaskCanceledException)
                     {
