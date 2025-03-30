@@ -73,7 +73,6 @@
 
     public Task List(int? first, int? after, int? last, int? before)
     {
-
         var connection = ConnectionConverter.ApplyConnectionContext(list, first, after, last, before);
         return Verify(connection).UseParameters(first, after, last, before);
     }
