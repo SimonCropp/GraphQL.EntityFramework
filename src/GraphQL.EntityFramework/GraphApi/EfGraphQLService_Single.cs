@@ -196,7 +196,8 @@ partial class EfGraphQLService<TDbContext>
 
                     if (single is not null)
                     {
-                        if (await efFieldContext.Filters.ShouldInclude(context.UserContext, context.User, single))
+                        if (efFieldContext.Filters == null ||
+                            await efFieldContext.Filters.ShouldInclude(context.UserContext, efFieldContext.DbContext, context.User, single))
                         {
                             if (mutate is not null)
                             {

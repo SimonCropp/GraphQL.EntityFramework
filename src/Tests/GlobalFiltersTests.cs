@@ -1,11 +1,11 @@
-﻿using Filters = GraphQL.EntityFramework.Filters;
+﻿using Filters = GraphQL.EntityFramework.Filters<T>;
 
 public class GlobalFiltersTests
 {
     [Fact]
     public async Task Simple()
     {
-        var filters= new Filters();
+        var filters = new Filters();
         filters.Add<Target>((_, _, target) => target.Property != "Ignore");
         Assert.True(await filters.ShouldInclude(new(), null, new Target()));
         Assert.False(await filters.ShouldInclude<object>(new(), null, null));

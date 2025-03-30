@@ -4,7 +4,7 @@ public partial class EfGraphQLService<TDbContext> :
     IEfGraphQLService<TDbContext>
     where TDbContext : DbContext
 {
-    ResolveFilters? resolveFilters;
+    ResolveFilters<TDbContext>? resolveFilters;
     bool disableTracking;
     bool disableAsync;
     ResolveDbContext<TDbContext> resolveDbContext;
@@ -14,7 +14,7 @@ public partial class EfGraphQLService<TDbContext> :
     public EfGraphQLService(
         IModel model,
         ResolveDbContext<TDbContext> resolveDbContext,
-        ResolveFilters? resolveFilters = null,
+        ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
         bool disableAsync = false)
     {
@@ -68,11 +68,8 @@ public partial class EfGraphQLService<TDbContext> :
     public TDbContext ResolveDbContext(IResolveFieldContext context) =>
         resolveDbContext(context.UserContext);
 
-    Filters ResolveFilter<TSource>(IResolveFieldContext<TSource> context)
-    {
-        var filter = resolveFilters?.Invoke(context.UserContext);
-        return filter ?? NullFilters.Instance;
-    }
+    Filters<TDbContext>? ResolveFilter<TSource>(IResolveFieldContext<TSource> context) =>
+        resolveFilters?.Invoke(context.UserContext);
 
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class =>

@@ -5,5 +5,5 @@ public class ResolveEfFieldContext<TDbContext, TSource> :
     where TDbContext : DbContext
 {
     public TDbContext DbContext { get; set; } = null!;
-    public Filters Filters { get; set; } = null!;
+    public Filters<TDbContext>? Filters { get; set; }
 }
