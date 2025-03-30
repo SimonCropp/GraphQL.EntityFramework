@@ -14,7 +14,6 @@
 select p.Id,
        p.Property
 from   ParentEntities as p
-where  p.Property is not null,
-    HasTransaction: false
+where  p.Property is not null
   }
 }

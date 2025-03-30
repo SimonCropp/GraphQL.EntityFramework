@@ -24,7 +24,6 @@ from   WithManyChildrenEntities as w
        on w.Id = c.ParentId
        left outer join
        Child1Entities as c0
-       on w.Id = c0.ParentId,
-    HasTransaction: false
+       on w.Id = c0.ParentId
   }
 }

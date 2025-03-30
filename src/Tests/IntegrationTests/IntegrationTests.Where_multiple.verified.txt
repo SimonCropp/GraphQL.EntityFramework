@@ -16,7 +16,6 @@ select p.Id,
 from   ParentEntities as p
 where  p.Property is not null
        and p.Property like N'Valu%'
-       and p.Property like N'%ue3',
-    HasTransaction: false
+       and p.Property like N'%ue3'
   }
 }

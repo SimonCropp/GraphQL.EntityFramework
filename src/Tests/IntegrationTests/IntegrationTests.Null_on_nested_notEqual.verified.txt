@@ -28,7 +28,6 @@ from   Level1Entities as l
        Level3Entities as l1
        on l0.Level3EntityId = l1.Id
 where  l0.Level3EntityId <> 'Guid_1'
-       or l0.Level3EntityId is null,
-    HasTransaction: false
+       or l0.Level3EntityId is null
   }
 }

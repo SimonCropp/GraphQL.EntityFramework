@@ -17,7 +17,6 @@ select top (2) o.Id,
                o.Child1_Property,
                o.Child2_Property
 from   OwnedParents as o
-where  o.Id = 'Guid_1',
-    HasTransaction: false
+where  o.Id = 'Guid_1'
   }
 }

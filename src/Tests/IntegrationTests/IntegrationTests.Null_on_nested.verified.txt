@@ -29,7 +29,6 @@ from   Level1Entities as l
        left outer join
        Level3Entities as l1
        on l0.Level3EntityId = l1.Id
-where  l0.Level3EntityId = 'Guid_1',
-    HasTransaction: false
+where  l0.Level3EntityId = 'Guid_1'
   }
 }

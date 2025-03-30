@@ -17,7 +17,6 @@
 select   c.Id,
          c.Property
 from     CustomTypeEntities as c
-order by c.Property,
-    HasTransaction: false
+order by c.Property
   }
 }

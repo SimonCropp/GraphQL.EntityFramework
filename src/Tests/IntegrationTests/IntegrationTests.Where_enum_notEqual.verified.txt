@@ -15,7 +15,6 @@ select e.Id,
        e.Property
 from   EnumEntities as e
 where  e.Property <> 4
-       or e.Property is null,
-    HasTransaction: false
+       or e.Property is null
   }
 }

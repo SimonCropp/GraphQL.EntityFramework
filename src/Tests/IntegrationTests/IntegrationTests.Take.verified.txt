@@ -17,7 +17,6 @@ from     ParentEntities as p
 order by p.Property,
     Parameters: {
       @__p_0: 1
-    },
-    HasTransaction: false
+    }
   }
 }

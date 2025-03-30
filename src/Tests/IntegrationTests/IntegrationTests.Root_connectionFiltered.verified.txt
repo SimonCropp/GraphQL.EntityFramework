@@ -24,8 +24,7 @@
     {
       Text:
 select COUNT(*)
-from   FilterParentEntities as f,
-      HasTransaction: false
+from   FilterParentEntities as f
     },
     {
       Text:
@@ -37,8 +36,7 @@ offset @__p_0 rows fetch next @__p_1 rows only,
       Parameters: {
         @__p_0: 0,
         @__p_1: 10
-      },
-      HasTransaction: false
+      }
     }
   ]
 }

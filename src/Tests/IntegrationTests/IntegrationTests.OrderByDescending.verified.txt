@@ -17,7 +17,6 @@
 select   p.Id,
          p.Property
 from     ParentEntities as p
-order by p.Property desc,
-    HasTransaction: false
+order by p.Property desc
   }
 }

@@ -28,7 +28,6 @@ from   Level1Entities as l
        on l.Level2EntityId1 = l0.Id
        left outer join
        Level3Entities as l1
-       on l0.Level3EntityId = l1.Id,
-    HasTransaction: false
+       on l0.Level3EntityId = l1.Id
   }
 }

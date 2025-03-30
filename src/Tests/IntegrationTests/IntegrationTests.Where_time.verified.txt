@@ -14,7 +14,6 @@
 select t.Id,
        t.Property
 from   TimeEntities as t
-where  t.Property = '10:11:00',
-    HasTransaction: false
+where  t.Property = '10:11:00'
   }
 }

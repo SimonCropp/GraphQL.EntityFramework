@@ -90,7 +90,6 @@
     Text:
 select p.Id,
        p.Property
-from   ParentEntities as p,
-    HasTransaction: false
+from   ParentEntities as p
   }
 }

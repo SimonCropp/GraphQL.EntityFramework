@@ -14,7 +14,6 @@
 select w.Id,
        w.Nullable
 from   WithNullableEntities as w
-where  w.Nullable = 10,
-    HasTransaction: false
+where  w.Nullable = 10
   }
 }

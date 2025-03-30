@@ -17,7 +17,6 @@
 select p.Id,
        p.Property
 from   ParentEntities as p
-where  p.Id in ('Guid_1', 'Guid_2'),
-    HasTransaction: false
+where  p.Id in ('Guid_1', 'Guid_2')
   }
 }

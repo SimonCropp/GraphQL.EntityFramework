@@ -79,7 +79,6 @@ from     ChildEntities as c
          left outer join
          ChildEntities as c0
          on p.Id = c0.ParentId
-order by c.Property, c.Id, p.Id,
-    HasTransaction: false
+order by c.Property, c.Id, p.Id
   }
 }

@@ -13,7 +13,6 @@
     Text:
 select f.Id,
        f.Property
-from   FilterParentEntities as f,
-    HasTransaction: false
+from   FilterParentEntities as f
   }
 }

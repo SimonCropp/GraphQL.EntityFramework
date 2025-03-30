@@ -33,8 +33,7 @@
     {
       Text:
 select COUNT(*)
-from   ParentEntities as p,
-      HasTransaction: false
+from   ParentEntities as p
     },
     {
       Text:
@@ -46,8 +45,7 @@ offset @__p_0 rows fetch next @__p_1 rows only,
       Parameters: {
         @__p_0: 0,
         @__p_1: 2
-      },
-      HasTransaction: false
+      }
     }
   ]
 }

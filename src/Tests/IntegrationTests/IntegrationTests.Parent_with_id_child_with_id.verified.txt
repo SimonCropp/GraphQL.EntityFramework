@@ -27,7 +27,6 @@ from     ParentEntities as p
          ChildEntities as c
          on p.Id = c.ParentId
 where    p.Id = 'Guid_1'
-order by p.Id,
-    HasTransaction: false
+order by p.Id
   }
 }

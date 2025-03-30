@@ -18,7 +18,6 @@ order by p.Property
 offset @__p_0 rows,
     Parameters: {
       @__p_0: 1
-    },
-    HasTransaction: false
+    }
   }
 }
