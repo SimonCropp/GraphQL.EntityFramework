@@ -1,6 +1,4 @@
-﻿using Filters = GraphQL.EntityFramework.Filters;
-
-public partial class IntegrationTests
+﻿public partial class IntegrationTests
 {
     [Fact]
     public async Task Child_filtered()
@@ -39,11 +37,11 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, BuildFilters(), false, [entity1, entity2, entity3]);
     }
 
-    static Filters BuildFilters()
+    static Filters<IntegrationDbContext> BuildFilters()
     {
-        var filters = new Filters();
-        filters.Add<FilterParentEntity>((_, _, item) => item.Property != "Ignore");
-        filters.Add<FilterChildEntity>((_, _, item) => item.Property != "Ignore");
+        var filters = new Filters<IntegrationDbContext>();
+        filters.Add<FilterParentEntity>((_, _, _, item) => item.Property != "Ignore");
+        filters.Add<FilterChildEntity>((_, _, _, item) => item.Property != "Ignore");
         return filters;
     }
 
