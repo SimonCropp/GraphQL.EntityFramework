@@ -17,7 +17,7 @@ public class GlobalFilterSnippets
 
         var filters = new Filters<MyDbContext>();
         filters.Add<MyEntity>(
-            (userContext, date, userPrincipal, item) => item.Property != "Ignore");
+            (userContext, dbContext, userPrincipal, item) => item.Property != "Ignore");
         EfGraphQLConventions.RegisterInContainer<MyDbContext>(
             services,
             resolveFilters: _ => filters);
