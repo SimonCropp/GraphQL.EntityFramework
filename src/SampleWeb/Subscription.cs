@@ -101,7 +101,6 @@
 //        {
 //            Document = document,
 //            Schema = schema,
-//            UserContext = new UserContext(dbContext),
 //            Variables = variableValues,
 //            Fragments = document.Fragments,
 //            CancellationToken = token,
@@ -141,7 +140,6 @@
 //            Document = context.Document,
 //            Fragments = context.Fragments,
 //            RootValue = context.RootValue,
-//            UserContext = context.UserContext,
 //            Operation = context.Operation,
 //            Variables = context.Variables,
 //            CancellationToken = context.CancellationToken,

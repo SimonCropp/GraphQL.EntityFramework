@@ -1,4 +1,6 @@
-﻿public class MappingTests
+﻿using ExecutionContext = GraphQL.Execution.ExecutionContext;
+
+public class MappingTests
 {
     static SqlInstance<MappingContext> sqlInstance;
 
@@ -43,14 +45,21 @@
         await database.AddDataUntracked(child, parent);
         var services = new ServiceCollection();
         services.AddSingleton<MappingQuery>();
-        EfGraphQLConventions.RegisterInContainer(services,_ => database.NewDbContext(), model:sqlInstance.Model);
+        EfGraphQLConventions.RegisterInContainer(services, (_, _) => database.NewDbContext(), model: sqlInstance.Model);
         await using var provider = services.BuildServiceProvider();
         var mappingQuery = provider.GetRequiredService<MappingQuery>();
 
+        var fieldContext = new ResolveFieldContext
+        {
+            ExecutionContext = new ExecutionContext
+            {
+                RequestServices = provider
+            }
+        };
         var resolve = await mappingQuery.Fields
             .Single(_ => _.Name == "children")
             .Resolver!
-            .ResolveAsync(new ResolveFieldContext());
+            .ResolveAsync(fieldContext);
         await Verify(resolve);
     }
 
@@ -58,7 +67,10 @@
     public async Task PropertyToObject()
     {
         var expression = Mapper<MappingContext>.PropertyToObject<MappingParent>("Property");
-        var result = expression.Compile()(new() {Property = "value"});
+        var result = expression.Compile()(new()
+        {
+            Property = "value"
+        });
         await Verify(
             new
             {

@@ -12,7 +12,7 @@ static class QueryExecutor
     {
         EfGraphQLConventions.RegisterInContainer(
             services,
-            _ => data,
+            (_, _) => data,
             data.Model,
             _ => filters,
             disableTracking,
@@ -26,8 +26,8 @@ static class QueryExecutor
             Schema = schema,
             Query = query,
             ThrowOnUnhandledException = true,
-            UserContext = new UserContextSingleDb<TDbContext>(data),
             Variables = inputs,
+            RequestServices = provider,
         };
 
         var result = await executer.ExecuteWithErrorCheck(options);

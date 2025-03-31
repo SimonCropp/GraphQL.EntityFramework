@@ -72,7 +72,7 @@ A delegate that resolves the DbContext.
 ```cs
 namespace GraphQL.EntityFramework;
 
-public delegate TDbContext ResolveDbContext<out TDbContext>(object userContext)
+public delegate TDbContext ResolveDbContext<out TDbContext>(object userContext, IServiceProvider? requestServices)
     where TDbContext : DbContext;
 ```
 <sup><a href='/src/GraphQL.EntityFramework/GraphApi/ResolveDbContext.cs#L1-L4' title='Snippet source file'>snippet source</a> | <a href='#snippet-ResolveDbContext.cs' title='Start of snippet'>anchor</a></sup>
@@ -298,23 +298,6 @@ public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
 Multiple different DbContext types can be registered and used.
 
 
-### UserContext
-
-A user context that exposes both types.
-
-<!-- snippet: MultiUserContext -->
-<a id='snippet-MultiUserContext'></a>
-```cs
-public class UserContext(DbContext1 context1, DbContext2 context2) : Dictionary<string, object?>
-{
-    public readonly DbContext1 DbContext1 = context1;
-    public readonly DbContext2 DbContext2 = context2;
-}
-```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L80-L86' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiUserContext' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
-
 ### Register in container
 
 Register both DbContext types in the container and include how those instance can be extracted from the GraphQL context:
@@ -324,10 +307,10 @@ Register both DbContext types in the container and include how those instance ca
 ```cs
 EfGraphQLConventions.RegisterInContainer(
     services,
-    userContext => ((UserContext) userContext).DbContext1);
+    (_, requestServices) => requestServices!.GetRequiredService<DbContext1>());
 EfGraphQLConventions.RegisterInContainer(
     services,
-    userContext => ((UserContext) userContext).DbContext2);
+    (_, requestServices) => requestServices!.GetRequiredService<DbContext2>());
 ```
 <sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L49-L58' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterMultipleInContainer' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
@@ -345,7 +328,7 @@ var executionOptions = new ExecutionOptions
 {
     Schema = schema,
     Query = query,
-    UserContext = new UserContext(dbContext1, dbContext2)
+    RequestServices = provider,
 };
 ```
 <sup><a href='/src/Tests/MultiContextTests/MultiContextTests.cs#L64-L73' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiExecutionOptions' title='Start of snippet'>anchor</a></sup>
@@ -369,39 +352,23 @@ public class MultiContextQuery :
         efGraphQlService1.AddSingleField(
             graph: this,
             name: "entity1",
-            resolve: context =>
-            {
-                var userContext = (UserContext) context.UserContext;
-                return userContext.DbContext1.Entities;
-            });
+            resolve: _ => _.DbContext.Entities);
         efGraphQlService1.AddFirstField(
             graph: this,
             name: "entity1First",
-            resolve: context =>
-            {
-                var userContext = (UserContext) context.UserContext;
-                return userContext.DbContext1.Entities;
-            });
+            resolve: _ => _.DbContext.Entities);
         efGraphQlService2.AddSingleField(
             graph: this,
             name: "entity2",
-            resolve: context =>
-            {
-                var userContext = (UserContext) context.UserContext;
-                return userContext.DbContext2.Entities;
-            });
+            resolve: _ => _.DbContext.Entities);
         efGraphQlService2.AddFirstField(
             graph: this,
             name: "entity2First",
-            resolve: context =>
-            {
-                var userContext = (UserContext) context.UserContext;
-                return userContext.DbContext2.Entities;
-            });
+            resolve: _ => _.DbContext.Entities);
     }
 }
 ```
-<sup><a href='/src/Tests/MultiContextTests/MultiContextQuery.cs#L1-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiContextQuery.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/MultiContextTests/MultiContextQuery.cs#L1-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-MultiContextQuery.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

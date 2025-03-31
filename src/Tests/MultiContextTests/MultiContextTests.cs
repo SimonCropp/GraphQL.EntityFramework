@@ -50,10 +50,10 @@
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => ((UserContext) userContext).DbContext1);
+            (_, requestServices) => requestServices!.GetRequiredService<DbContext1>());
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => ((UserContext) userContext).DbContext2);
+            (_, requestServices) => requestServices!.GetRequiredService<DbContext2>());
 
         #endregion
 
@@ -67,7 +67,7 @@
         {
             Schema = schema,
             Query = query,
-            UserContext = new UserContext(dbContext1, dbContext2)
+            RequestServices = provider,
         };
 
         #endregion
@@ -76,11 +76,3 @@
         await Verify(result.Serialize());
     }
 }
-
-#region MultiUserContext
-public class UserContext(DbContext1 context1, DbContext2 context2) : Dictionary<string, object?>
-{
-    public readonly DbContext1 DbContext1 = context1;
-    public readonly DbContext2 DbContext2 = context2;
-}
-#endregion
