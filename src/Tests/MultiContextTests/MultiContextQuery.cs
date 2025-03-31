@@ -8,34 +8,18 @@
         efGraphQlService1.AddSingleField(
             graph: this,
             name: "entity1",
-            resolve: context =>
-            {
-                var data = context.RequestServices!.GetRequiredService<DbContext1>();
-                return data.Entities;
-            });
+            resolve: _ => _.DbContext.Entities);
         efGraphQlService1.AddFirstField(
             graph: this,
             name: "entity1First",
-            resolve: context =>
-            {
-                var data = context.RequestServices!.GetRequiredService<DbContext1>();
-                return data.Entities;
-            });
+            resolve: _ => _.DbContext.Entities);
         efGraphQlService2.AddSingleField(
             graph: this,
             name: "entity2",
-            resolve: context =>
-            {
-                var data = context.RequestServices!.GetRequiredService<DbContext2>();
-                return data.Entities;
-            });
+            resolve: _ => _.DbContext.Entities);
         efGraphQlService2.AddFirstField(
             graph: this,
             name: "entity2First",
-            resolve: context =>
-            {
-                var data = context.RequestServices!.GetRequiredService<DbContext2>();
-                return data.Entities;
-            });
+            resolve: _ => _.DbContext.Entities);
     }
 }
