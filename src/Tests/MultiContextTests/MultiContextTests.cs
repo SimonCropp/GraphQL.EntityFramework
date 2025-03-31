@@ -67,7 +67,6 @@
         {
             Schema = schema,
             Query = query,
-            UserContext = new UserContext(dbContext1, dbContext2),
             RequestServices = provider,
         };
 
@@ -77,11 +76,3 @@
         await Verify(result.Serialize());
     }
 }
-
-#region MultiUserContext
-public class UserContext(DbContext1 context1, DbContext2 context2) : Dictionary<string, object?>
-{
-    public readonly DbContext1 DbContext1 = context1;
-    public readonly DbContext2 DbContext2 = context2;
-}
-#endregion

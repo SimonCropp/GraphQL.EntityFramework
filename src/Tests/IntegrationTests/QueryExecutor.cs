@@ -26,8 +26,8 @@ static class QueryExecutor
             Schema = schema,
             Query = query,
             ThrowOnUnhandledException = true,
-            UserContext = new UserContextSingleDb<TDbContext>(data),
             Variables = inputs,
+            RequestServices = provider,
         };
 
         var result = await executer.ExecuteWithErrorCheck(options);

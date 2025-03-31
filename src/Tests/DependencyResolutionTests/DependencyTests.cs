@@ -24,7 +24,7 @@
         services.AddSingleton<DependencySchema>();
         EfGraphQLConventions.RegisterInContainer(
             services,
-            (userContext, _) => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext,
+            (_, _) => dbContext,
             sqlInstance.Model);
         await using var provider = services.BuildServiceProvider();
         using var schema = provider.GetRequiredService<DependencySchema>();
@@ -32,8 +32,8 @@
         {
             Schema = schema,
             Query = query,
-            UserContext = new UserContextSingleDb<DependencyDbContext>(dbContext),
-            Variables = null
+            Variables = null,
+            RequestServices = provider
         };
 
         await ExecutionResultData(executionOptions);
@@ -50,15 +50,15 @@
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            (userContext, _)  => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
+            (_, requestServices) => requestServices!.GetRequiredService<DependencyDbContext>());
         await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
         var executionOptions = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
-            UserContext = new UserContextSingleDb<DependencyDbContext>(dbContext),
-            Variables = null
+            Variables = null,
+            RequestServices = provider
         };
 
         await ExecutionResultData(executionOptions);
@@ -75,15 +75,15 @@
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            (userContext, _) => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
+            (_, requestServices) => requestServices!.GetRequiredService<DependencyDbContext>());
         await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
         var options = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
-            UserContext = new UserContextSingleDb<DependencyDbContext>(dbContext),
-            Variables = null
+            Variables = null,
+            RequestServices = provider
         };
 
         await ExecutionResultData(options);
@@ -100,15 +100,15 @@
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            (userContext, _) => ((UserContextSingleDb<DependencyDbContext>) userContext).DbContext);
+            (_, requestServices) => requestServices!.GetRequiredService<DependencyDbContext>());
         await using var provider = services.BuildServiceProvider();
         using var schema = new DependencySchema(provider);
         var options = new ExecutionOptions
         {
             Schema = schema,
             Query = query,
-            UserContext = new UserContextSingleDb<DependencyDbContext>(dbContext),
-            Variables = null
+            Variables = null,
+            RequestServices = provider
         };
 
         await ExecutionResultData(options);
