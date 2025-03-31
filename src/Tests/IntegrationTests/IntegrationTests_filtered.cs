@@ -104,7 +104,7 @@
         await RunQuery(database, query, null, BuildFilters(), false, [entity1, entity2]);
     }
 
-    [Fact(Skip = "Work out why include is not used")]
+    [Fact]
     public async Task Connection_parent_child_Filtered()
     {
         var query =

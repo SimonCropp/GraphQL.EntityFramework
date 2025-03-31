@@ -1,0 +1,61 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntitiesConnectionFiltered": {
+      "totalCount": 1,
+      "edges": [
+        {
+          "cursor": "0",
+          "node": {
+            "property": "Value1",
+            "children": [
+              {
+                "property": "Value3"
+              }
+            ]
+          }
+        }
+      ],
+      "items": [
+        {
+          "property": "Value1",
+          "children": [
+            {
+              "property": "Value3"
+            }
+          ]
+        }
+      ]
+    }
+  }
+},
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   FilterParentEntities as f
+    },
+    {
+      Text:
+select   f1.Id,
+         f1.Property,
+         f0.Id,
+         f0.ParentId,
+         f0.Property
+from     (select   f.Id,
+                   f.Property
+          from     FilterParentEntities as f
+          order by f.Id
+          offset @__p_0 rows fetch next @__p_1 rows only) as f1
+         left outer join
+         FilterChildEntities as f0
+         on f1.Id = f0.ParentId
+order by f1.Id,
+      Parameters: {
+        @__p_0: 0,
+        @__p_1: 10
+      }
+    }
+  ]
+}
