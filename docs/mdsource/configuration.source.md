@@ -139,13 +139,6 @@ snippet: GraphQlController
 Multiple different DbContext types can be registered and used.
 
 
-### UserContext
-
-A user context that exposes both types.
-
-snippet: MultiUserContext
-
-
 ### Register in container
 
 Register both DbContext types in the container and include how those instance can be extracted from the GraphQL context:
