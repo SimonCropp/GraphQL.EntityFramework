@@ -28,10 +28,8 @@ public static class EfGraphQLConventions
         RegisterScalarsAndArgs(services);
         services.AddHttpContextAccessor();
         services.AddTransient<HttpContextCapture>();
-        services.AddSingleton(
-            provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, disableAsync));
-        services.AddSingleton<IEfGraphQLService<TDbContext>>(
-            provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
+        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, disableAsync));
+        services.AddSingleton<IEfGraphQLService<TDbContext>>(provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
     }
 
     static EfGraphQLService<TDbContext> Build<TDbContext>(
@@ -45,7 +43,7 @@ public static class EfGraphQLConventions
     {
         model ??= ResolveModel<TDbContext>(provider);
         filters ??= provider.GetService<ResolveFilters<TDbContext>>();
-        dbContextResolver ??= _ => DbContextFromProvider<TDbContext>(provider);
+        dbContextResolver ??= (_, requestServices) => DbContextFromProvider<TDbContext>(provider, requestServices);
 
         return new(
             model,
@@ -55,9 +53,16 @@ public static class EfGraphQLConventions
             disableAsync);
     }
 
-    static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider)
+    static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider, IServiceProvider? requestServices)
         where TDbContext : DbContext
     {
+        var dataFromRequestServices = requestServices?
+            .GetService<TDbContext>();
+        if (dataFromRequestServices is not null)
+        {
+            return dataFromRequestServices;
+        }
+
         var dataFromHttpContext = provider.GetService<HttpContextCapture>()?
             .HttpContextAccessor
             .HttpContext?

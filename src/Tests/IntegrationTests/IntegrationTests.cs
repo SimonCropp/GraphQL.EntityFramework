@@ -40,7 +40,7 @@ public partial class IntegrationTests
             services.AddSingleton(type);
         }
 
-        EfGraphQLConventions.RegisterInContainer(services, _ => dbContext, dbContext.Model);
+        EfGraphQLConventions.RegisterInContainer(services, (_, _) => dbContext, dbContext.Model);
         await using var provider = services.BuildServiceProvider();
         using var schema = new Schema(provider);
 

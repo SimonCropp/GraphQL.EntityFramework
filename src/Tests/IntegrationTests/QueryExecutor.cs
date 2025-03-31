@@ -12,7 +12,7 @@ static class QueryExecutor
     {
         EfGraphQLConventions.RegisterInContainer(
             services,
-            _ => data,
+            (_, _) => data,
             data.Model,
             _ => filters,
             disableTracking,

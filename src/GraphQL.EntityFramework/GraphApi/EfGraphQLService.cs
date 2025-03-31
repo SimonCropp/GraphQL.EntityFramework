@@ -65,8 +65,13 @@ public partial class EfGraphQLService<TDbContext> :
             User = context.User
         };
 
-    public TDbContext ResolveDbContext(IResolveFieldContext context) =>
-        resolveDbContext(context.UserContext);
+    public TDbContext ResolveDbContext(IResolveFieldContext fieldContext)
+    {
+        var userContext = fieldContext.UserContext;
+        var executionContext = fieldContext.ExecutionContext;
+        var requestServices = executionContext.RequestServices ?? executionContext.ExecutionOptions.RequestServices;
+        return resolveDbContext(userContext, requestServices);
+    }
 
     Filters<TDbContext>? ResolveFilter<TSource>(IResolveFieldContext<TSource> context) =>
         resolveFilters?.Invoke(context.UserContext);

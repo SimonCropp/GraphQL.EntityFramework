@@ -50,10 +50,10 @@
 
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => ((UserContext) userContext).DbContext1);
+            (_, requestServices) => requestServices!.GetRequiredService<DbContext1>());
         EfGraphQLConventions.RegisterInContainer(
             services,
-            userContext => ((UserContext) userContext).DbContext2);
+            (_, requestServices) => requestServices!.GetRequiredService<DbContext2>());
 
         #endregion
 
@@ -67,7 +67,8 @@
         {
             Schema = schema,
             Query = query,
-            UserContext = new UserContext(dbContext1, dbContext2)
+            UserContext = new UserContext(dbContext1, dbContext2),
+            RequestServices = provider,
         };
 
         #endregion
