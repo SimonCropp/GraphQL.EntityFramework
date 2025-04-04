@@ -518,7 +518,6 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-
     [Fact]
     public async Task Connection_page_back()
     {
@@ -869,7 +868,6 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, inputs, null, false, [entity1, entity2]);
     }
-
 
     [Fact]
     public async Task Where_with_variable_notEqual()
