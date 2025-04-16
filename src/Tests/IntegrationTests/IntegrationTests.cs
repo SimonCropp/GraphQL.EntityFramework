@@ -216,6 +216,33 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Where_string_notEqual()
+    {
+        var query =
+            """
+            {
+              stringEntities (where: {path: "Property", comparison: notEqual, value: "notValue"})
+              {
+                id
+              }
+            }
+            """;
+
+        var entity1 = new StringEntity();
+        var entity2 = new StringEntity
+        {
+            Property = "Value"
+        };
+        var entity3 = new StringEntity
+        {
+            Property = "notValue"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
+    }
+
+    [Fact]
     public async Task Where_enum_in()
     {
         var query =

@@ -11,6 +11,7 @@
   childEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   dateEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DateEntity!]!
   enumEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [EnumEntity!]!
+  stringEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [StringEntity!]!
   timeEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TimeEntity!]!
   parentEntitiesConnection(
     "Only return edges after the specified cursor."
@@ -311,6 +312,11 @@ enum DayOfWeek {
   THURSDAY
   FRIDAY
   SATURDAY
+}
+
+type StringEntity {
+  id: ID!
+  property: String
 }
 
 type TimeEntity {

@@ -1,0 +1,23 @@
+﻿{
+  target:
+{
+  "data": {
+    "stringEntities": [
+      {
+        "id": "Guid_1"
+      },
+      {
+        "id": "Guid_2"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select s.Id,
+       s.Property
+from   StringEntities as s
+where  s.Property <> N'notValue'
+       or s.Property is null
+  }
+}

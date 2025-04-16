@@ -61,6 +61,10 @@
             resolve: _ => _.DbContext.EnumEntities);
 
         AddQueryField(
+            name: "stringEntities",
+            resolve: _ => _.DbContext.StringEntities);
+
+        AddQueryField(
             name: "timeEntities",
             resolve: _ => _.DbContext.TimeEntities);
 
