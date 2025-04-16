@@ -115,11 +115,18 @@ public static class ExpressionBuilder<T>
         var listItemType = property.PropertyType.GetGenericArguments().Single();
 
         // Generate the predicate for the list item type
-        var subPredicate = (Expression) typeof(ExpressionBuilder<>)
-            .MakeGenericType(listItemType)
+        var genericType = typeof(ExpressionBuilder<>)
+            .MakeGenericType(listItemType);
+        var buildPredicate = genericType
             .GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Single(_ => _.Name == "BuildPredicate" &&
-                         _.GetParameters().Length == 5)
+            .SingleOrDefault(_ => _.Name == "BuildPredicate" &&
+                         _.GetParameters().Length == 5);
+        if (buildPredicate == null)
+        {
+            throw new($"Could not find BuildPredicate method on {genericType.FullName}");
+        }
+
+        var subPredicate = (Expression) buildPredicate
             .Invoke(
                 new(),
                 [
