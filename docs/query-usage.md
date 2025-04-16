@@ -253,25 +253,6 @@ Or:
 ```
 
 
-#### Case Sensitivity
-
-All string comparisons are, by default, done using no [StringComparison](https://msdn.microsoft.com/en-us/library/system.stringcomparison.aspx). A custom StringComparison can be used via the `case` attribute.
-
-```graphql
-{
-  entities
-  (where: {
-    path: "Property",
-    comparison: "endsWith",
-    value: "the value",
-    case: "Ordinal"})
-  {
-    property
-  }
-}
-```
-
-
 #### Null
 
 Null can be expressed by omitting the `value`:
