@@ -444,7 +444,6 @@ public class ExpressionBuilderTests
     [InlineData("Name", Comparison.Contains, "son 2", "Person 2")]
     [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2")]
     [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2")]
-    [InlineData("Name", Comparison.EndsWith, "person 2", "Person 2", false, StringComparison.OrdinalIgnoreCase)]
     [InlineData("Age", Comparison.Equal, "13", "Person 2")]
     [InlineData("Age", Comparison.GreaterThan, "12", "Person 2")]
     [InlineData("Age", Comparison.Equal, "12", "Person 2", true)]
@@ -453,7 +452,7 @@ public class ExpressionBuilderTests
     [InlineData("Age", Comparison.LessThanOrEqual, "12", "Person 1")]
     [InlineData("DateOfBirth", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Person 1")]
     [InlineData("DateOfBirth.Day", Comparison.Equal, "11", "Person 2")]
-    public void Combos(string name, Comparison expression, string value, string expectedName, bool negate = false, StringComparison? stringComparison = null)
+    public void Combos(string name, Comparison expression, string value, string expectedName, bool negate = false)
     {
         var people = new List<Person>
         {
@@ -473,7 +472,7 @@ public class ExpressionBuilderTests
 
         var result = people
             .AsQueryable()
-            .Where(ExpressionBuilder<Person>.BuildPredicate(name, expression, [value], negate, stringComparison))
+            .Where(ExpressionBuilder<Person>.BuildPredicate(name, expression, [value], negate))
             .Single();
         Assert.Equal(expectedName, result.Name);
     }
@@ -489,7 +488,6 @@ public class ExpressionBuilderTests
     [InlineData("Employees[Name]", Comparison.Contains, "son 2", "Company 1")]
     [InlineData("Employees[Name]", Comparison.StartsWith, "Person 2", "Company 1")]
     [InlineData("Employees[Name]", Comparison.EndsWith, "son 2", "Company 1")]
-    [InlineData("Employees[Name]", Comparison.EndsWith, "person 2", "Company 1", false, StringComparison.OrdinalIgnoreCase)]
     [InlineData("Employees[Age]", Comparison.Equal, "12", "Company 1")]
     [InlineData("Employees[Age]", Comparison.GreaterThan, "12", "Company 2")]
     [InlineData("Employees[Age]", Comparison.Equal, "12", "Company 2", true)]
@@ -499,7 +497,7 @@ public class ExpressionBuilderTests
     [InlineData("Employees[DateOfBirth]", Comparison.Equal, "2001-10-10T10:10:10+00:00", "Company 1")]
     [InlineData("Employees[DateOfBirth.Day]", Comparison.Equal, "11", "Company 2")]
     [InlineData("Employees[Company.Employees[Name]]", Comparison.Contains, "son 2", "Company 1")]
-    public void ListMemberQueryCombos(string name, Comparison expression, string value, string expectedName, bool negate = false, StringComparison? stringComparison = null)
+    public void ListMemberQueryCombos(string name, Comparison expression, string value, string expectedName, bool negate = false)
     {
         var companies = new List<Company>
         {
@@ -560,7 +558,7 @@ public class ExpressionBuilderTests
 
         var result = companies
             .AsQueryable()
-            .Where(ExpressionBuilder<Company>.BuildPredicate(name, expression, [value], negate, stringComparison))
+            .Where(ExpressionBuilder<Company>.BuildPredicate(name, expression, [value], negate))
             .Single();
         Assert.Equal(expectedName, result.Name);
     }
