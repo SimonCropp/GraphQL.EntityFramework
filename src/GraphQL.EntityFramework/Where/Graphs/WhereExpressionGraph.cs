@@ -9,7 +9,6 @@ public class WhereExpressionGraph :
         Field(_ => _.Path, true);
         Field<ComparisonGraph>("comparison");
         Field(_ => _.Negate, true);
-        Field<EnumerationGraphType<StringComparison>>("case");
         Field(_ => _.Value, true);
         Field<ConnectorGraph>("connector");
         Field<ListGraphType<WhereExpressionGraph>>("GroupedExpressions");

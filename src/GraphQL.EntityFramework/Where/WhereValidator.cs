@@ -1,6 +1,6 @@
 ﻿static class WhereValidator
 {
-    public static void ValidateObject(Type propertyType, Comparison comparison, StringComparison? @case)
+    public static void ValidateObject(Type propertyType, Comparison comparison)
     {
         if (comparison is
             Comparison.Contains or
@@ -10,23 +10,18 @@
         {
             throw new($"Cannot perform {comparison} on {propertyType.FullName}.");
         }
-
-        if (@case is not null)
-        {
-            throw new($"Cannot use {nameof(StringComparison)} when comparing {propertyType.FullName}.");
-        }
     }
 
-    public static void ValidateSingleObject(Type propertyType, Comparison comparison, StringComparison? @case)
+    public static void ValidateSingleObject(Type propertyType, Comparison comparison)
     {
-        ValidateObject(propertyType, comparison, @case);
+        ValidateObject(propertyType, comparison);
         if (comparison == Comparison.In)
         {
             throw new($"Cannot perform {comparison} on {propertyType.FullName}.");
         }
     }
 
-    public static void ValidateString(Comparison comparison, StringComparison? @case)
+    public static void ValidateString(Comparison comparison)
     {
         if (comparison is
             Comparison.GreaterThan or
@@ -36,16 +31,11 @@
         {
             throw new($"Cannot perform {comparison} on a String.");
         }
-
-        if (comparison == Comparison.Like && @case is not null)
-        {
-            throw new($"{nameof(Comparison.Like)} is not compatible with {nameof(StringComparison)}.");
-        }
     }
 
-    public static void ValidateSingleString(Comparison comparison, StringComparison? @case)
+    public static void ValidateSingleString(Comparison comparison)
     {
-        ValidateString(comparison, @case);
+        ValidateString(comparison);
         if (comparison == Comparison.In)
         {
             throw new($"Cannot perform {comparison} on a single String.");
