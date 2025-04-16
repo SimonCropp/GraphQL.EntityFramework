@@ -28,7 +28,7 @@ select   s.Id,
          s.Property
 from     StringEntities as s
 where    s.Property is not null
-         and cast (CHARINDEX(N'b', s.Property) as int) - 1 <> -1
+         and cast (CHARINDEX(N'B', s.Property) as int) - 1 <> -1
 order by s.Property
   }
 }

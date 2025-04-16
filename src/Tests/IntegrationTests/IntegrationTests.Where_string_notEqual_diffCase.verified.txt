@@ -19,7 +19,7 @@
 select   s.Id,
          s.Property
 from     StringEntities as s
-where    s.Property <> N'notValue'
+where    s.Property <> N'NotValue'
          or s.Property is null
 order by s.Property
   }

@@ -221,7 +221,34 @@ public partial class IntegrationTests
         var query =
             """
             {
-              stringEntities (where: {path: "Property", comparison: notEqual, value: "notValue"})
+              stringEntities (orderBy: {path: "property"}, where: {path: "Property", comparison: notEqual, value: "notValue"})
+              {
+                id, property
+              }
+            }
+            """;
+
+        var entity1 = new StringEntity();
+        var entity2 = new StringEntity
+        {
+            Property = "Value"
+        };
+        var entity3 = new StringEntity
+        {
+            Property = "notValue"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
+    }
+
+    [Fact]
+    public async Task Where_string_notEqual_diffCase()
+    {
+        var query =
+            """
+            {
+              stringEntities (orderBy: {path: "property"}, where: {path: "Property", comparison: notEqual, value: "NotValue"})
               {
                 id, property
               }
@@ -248,7 +275,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              stringEntities (where: {path: "Property", comparison: contains, value: "b" })
+              stringEntities (orderBy: {path: "property"}, where: {path: "Property", comparison: contains, value: "b" })
               {
                 id, property
               }
@@ -288,6 +315,54 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8]);
     }
+
+    [Fact]
+    public async Task Where_string_contains_diffCase()
+    {
+        var query =
+            """
+            {
+              stringEntities (orderBy: {path: "property"}, where: {path: "Property", comparison: contains, value: "B" })
+              {
+                id, property
+              }
+            }
+            """;
+
+        var entity1 = new StringEntity();
+        var entity2 = new StringEntity
+        {
+            Property = "a"
+        };
+        var entity3 = new StringEntity
+        {
+            Property = "ab"
+        };
+        var entity4 = new StringEntity
+        {
+            Property = "abc"
+        };
+        var entity5 = new StringEntity
+        {
+            Property = "bc"
+        };
+        var entity6 = new StringEntity
+        {
+            Property = "c"
+        };
+        var entity7 = new StringEntity
+        {
+            Property = "b"
+        };
+        var entity8 = new StringEntity
+        {
+            Property = ""
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8]);
+    }
+
 
     [Fact]
     public async Task Where_enum_in()
@@ -688,58 +763,6 @@ public partial class IntegrationTests
                 Property = "Value" + index
             };
         }
-    }
-
-    [Fact(Skip = "Work out how to eval server side")]
-    public async Task Where_case_sensitive()
-    {
-        var query =
-            """
-            {
-              parentEntities (where: {path: "Property", comparison: equal, value: "Value2", case: "Ordinal" })
-              {
-                property
-              }
-            }
-            """;
-
-        var entity1 = new ParentEntity
-        {
-            Property = "Value1"
-        };
-        var entity2 = new ParentEntity
-        {
-            Property = "Value2"
-        };
-
-        await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, [entity1, entity2]);
-    }
-
-    [Fact(Skip = "Work out how to eval server side")]
-    public async Task Where_case_sensitive_notEqual()
-    {
-        var query =
-            """
-            {
-              parentEntities (where: {path: "Property", comparison: notEqual, value: "Value2", case: "Ordinal" })
-              {
-                property
-              }
-            }
-            """;
-
-        var entity1 = new ParentEntity
-        {
-            Property = "Value1"
-        };
-        var entity2 = new ParentEntity
-        {
-            Property = "Value2"
-        };
-
-        await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
     [Fact]
@@ -1791,32 +1814,6 @@ public partial class IntegrationTests
             """
             {
               parentEntities (where: {path: "Property", value: "value2"})
-              {
-                property
-              }
-            }
-            """;
-
-        var entity1 = new ParentEntity
-        {
-            Property = "Value1"
-        };
-        var entity2 = new ParentEntity
-        {
-            Property = "Value2"
-        };
-
-        await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, [entity1, entity2]);
-    }
-
-    [Fact(Skip = "Work out how to eval server side")]
-    public async Task In_case_sensitive()
-    {
-        var query =
-            """
-            {
-              parentEntities (where: {path: "Property", comparison: in, value: "Value2", case: "Ordinal" })
               {
                 property
               }
