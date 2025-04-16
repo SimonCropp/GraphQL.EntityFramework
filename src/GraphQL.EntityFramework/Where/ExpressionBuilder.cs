@@ -1,9 +1,7 @@
 ﻿namespace GraphQL.EntityFramework;
 
-public static class ExpressionBuilder<T>
+public static partial class ExpressionBuilder<T>
 {
-    const string listPropertyPattern = @"\[(.*)\]";
-
     /// <summary>
     /// Build a predicate for a supplied list of where's (Grouped or not)
     /// </summary>
@@ -104,9 +102,9 @@ public static class ExpressionBuilder<T>
     static Expression ProcessList(string path, Comparison comparison, string?[]? values, StringComparison? stringComparison)
     {
         // Get the path pertaining to individual list items
-        var listPath = Regex.Match(path, listPropertyPattern).Groups[1].Value;
+        var listPath = ListPropertyRegex().Match(path).Groups[1].Value;
         // Remove the part of the path that leads into list item properties
-        path = Regex.Replace(path, listPropertyPattern, "");
+        path = ListPropertyRegex().Replace(path, "");
 
         // Get the property on the current object up to the list member
         var property = PropertyCache<T>.GetProperty(path);
@@ -319,4 +317,7 @@ public static class ExpressionBuilder<T>
 
     static Expression NegateExpression(Expression expression) =>
         Expression.Not(expression);
+
+    [GeneratedRegex(@"\[(.*)\]")]
+    private static partial Regex ListPropertyRegex();
 }
