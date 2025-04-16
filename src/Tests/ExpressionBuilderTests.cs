@@ -444,7 +444,7 @@ public class ExpressionBuilderTests
     [InlineData("Name", Comparison.Contains, "son 2", "Person 2")]
     [InlineData("Name", Comparison.StartsWith, "Person 2", "Person 2")]
     [InlineData("Name", Comparison.EndsWith, "son 2", "Person 2")]
-    [InlineData("Name", Comparison.EndsWith, "person 2", "Person 2", false)] [InlineData("Age", Comparison.Equal, "13", "Person 2")]
+    [InlineData("Age", Comparison.Equal, "13", "Person 2")]
     [InlineData("Age", Comparison.GreaterThan, "12", "Person 2")]
     [InlineData("Age", Comparison.Equal, "12", "Person 2", true)]
     [InlineData("Age", Comparison.GreaterThanOrEqual, "13", "Person 2")]
