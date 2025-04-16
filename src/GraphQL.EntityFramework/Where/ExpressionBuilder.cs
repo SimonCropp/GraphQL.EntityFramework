@@ -120,13 +120,13 @@ public static class ExpressionBuilder<T>
         var buildPredicate = genericType
             .GetMethods(BindingFlags.Public | BindingFlags.Static)
             .SingleOrDefault(_ => _.Name == "BuildPredicate" &&
-                         _.GetParameters().Length == 5);
+                                  _.GetParameters().Length == 5);
         if (buildPredicate == null)
         {
             throw new($"Could not find BuildPredicate method on {genericType.FullName}");
         }
 
-        var subPredicate = (Expression) buildPredicate
+        var subPredicate = (Expression)buildPredicate
             .Invoke(
                 new(),
                 [
