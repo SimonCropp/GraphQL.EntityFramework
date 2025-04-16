@@ -4,10 +4,12 @@
   "data": {
     "stringEntities": [
       {
-        "id": "Guid_1"
+        "id": "Guid_1",
+        "property": "Value"
       },
       {
-        "id": "Guid_2"
+        "id": "Guid_2",
+        "property": null
       }
     ]
   }

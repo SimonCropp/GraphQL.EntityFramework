@@ -223,7 +223,7 @@ public partial class IntegrationTests
             {
               stringEntities (where: {path: "Property", comparison: notEqual, value: "notValue"})
               {
-                id
+                id, property
               }
             }
             """;
@@ -240,6 +240,53 @@ public partial class IntegrationTests
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
+    }
+
+    [Fact]
+    public async Task Where_string_contains()
+    {
+        var query =
+            """
+            {
+              stringEntities (where: {path: "Property", comparison: contains, value: "b" })
+              {
+                id, property
+              }
+            }
+            """;
+
+        var entity1 = new StringEntity();
+        var entity2 = new StringEntity
+        {
+            Property = "a"
+        };
+        var entity3 = new StringEntity
+        {
+            Property = "ab"
+        };
+        var entity4 = new StringEntity
+        {
+            Property = "abc"
+        };
+        var entity5 = new StringEntity
+        {
+            Property = "bc"
+        };
+        var entity6 = new StringEntity
+        {
+            Property = "c"
+        };
+        var entity7 = new StringEntity
+        {
+            Property = "b"
+        };
+        var entity8 = new StringEntity
+        {
+            Property = ""
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8]);
     }
 
     [Fact]
