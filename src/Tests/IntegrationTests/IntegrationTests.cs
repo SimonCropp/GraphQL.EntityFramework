@@ -692,7 +692,6 @@ public partial class IntegrationTests
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, entities.ToArray());
-
     }
 
     [Fact]
@@ -1129,7 +1128,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, [entity1, entity2], true);
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
     [Fact]
@@ -1156,7 +1155,7 @@ public partial class IntegrationTests
         };
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, [entity1, entity2], true);
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
     [Fact]
@@ -2406,7 +2405,7 @@ public partial class IntegrationTests
         entity4.Children.Add(entity5);
 
         await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5], true);
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
     [Fact]
@@ -3078,7 +3077,6 @@ public partial class IntegrationTests
         Filters<IntegrationDbContext>? filters,
         bool disableTracking,
         object[] entities,
-        bool disableAsync = false,
         [CallerFilePath] string sourceFile = "")
     {
         var dbContext = database.Context;
@@ -3099,7 +3097,7 @@ public partial class IntegrationTests
         string result;
         try
         {
-            result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking, disableAsync);
+            result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking);
         }
         catch (ExecutionError executionError)
         {

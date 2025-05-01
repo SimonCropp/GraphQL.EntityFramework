@@ -18,8 +18,7 @@ public static class EfGraphQLConventions
             ResolveDbContext<TDbContext>? resolveDbContext = null,
             IModel? model = null,
             ResolveFilters<TDbContext>? resolveFilters = null,
-            bool disableTracking = false,
-            bool disableAsync = false)
+            bool disableTracking = false)
 
         #endregion
 
@@ -28,7 +27,7 @@ public static class EfGraphQLConventions
         RegisterScalarsAndArgs(services);
         services.AddHttpContextAccessor();
         services.AddTransient<HttpContextCapture>();
-        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, disableAsync));
+        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking));
         services.AddSingleton<IEfGraphQLService<TDbContext>>(provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
     }
 
@@ -37,8 +36,7 @@ public static class EfGraphQLConventions
         IModel? model,
         ResolveFilters<TDbContext>? filters,
         IServiceProvider provider,
-        bool disableTracking,
-        bool disableAsync)
+        bool disableTracking)
         where TDbContext : DbContext
     {
         model ??= ResolveModel<TDbContext>(provider);
@@ -49,8 +47,7 @@ public static class EfGraphQLConventions
             model,
             dbContextResolver,
             filters,
-            disableTracking,
-            disableAsync);
+            disableTracking);
     }
 
     static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider, IServiceProvider? requestServices)
