@@ -17,7 +17,7 @@
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.0.3" />
     <PackageVersion Include="Polyfill" Version="7.31.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.152" />
