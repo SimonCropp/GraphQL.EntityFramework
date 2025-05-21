@@ -75,28 +75,35 @@ public static partial class ExpressionBuilder<T>
 
     static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate)
     {
-        Expression expressionBody;
-
-        // If path includes list property access
-        if (HasListPropertyInPath(path))
+        try
         {
-            // Handle a list path
-            expressionBody = ProcessList(path, comparison, values!);
-        }
-        // Otherwise linear property access
-        else
-        {
-            // Just get expression
-            expressionBody = GetExpression(path, comparison, values);
-        }
+            Expression expressionBody;
 
-        // If the expression should be negated
-        if (negate)
-        {
-            expressionBody = NegateExpression(expressionBody);
-        }
+            // If path includes list property access
+            if (HasListPropertyInPath(path))
+            {
+                // Handle a list path
+                expressionBody = ProcessList(path, comparison, values!);
+            }
+            // Otherwise linear property access
+            else
+            {
+                // Just get expression
+                expressionBody = GetExpression(path, comparison, values);
+            }
 
-        return expressionBody;
+            // If the expression should be negated
+            if (negate)
+            {
+                expressionBody = NegateExpression(expressionBody);
+            }
+
+            return expressionBody;
+        }
+        catch (Exception exception)
+        {
+            throw new ($"Failed to build expression. Path: {path}, Comparison: {comparison}, Negate: {negate}, ", exception);
+        }
     }
 
     static Expression ProcessList(string path, Comparison comparison, string?[]? values)
