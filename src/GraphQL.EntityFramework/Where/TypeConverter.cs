@@ -203,11 +203,6 @@
             type = underlyingType;
         }
 
-        if (value is null)
-        {
-            throw new($"Expected value to be convertible to {type}. However it was null. It is possible a required variable was not provided");
-        }
-
         if (type == typeof(DateTime))
         {
             return ValueConverter.ConvertTo<DateTime>(value);
@@ -230,12 +225,12 @@
 
         if (type == typeof(Guid))
         {
-            return new Guid(value);
+            return new Guid(value!);
         }
 
         if (type.IsEnum)
         {
-            return Enum.Parse(type, value, true);
+            return Enum.Parse(type, value!, true);
         }
 
         return Convert.ChangeType(value, type);
