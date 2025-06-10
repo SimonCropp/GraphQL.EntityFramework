@@ -53,7 +53,7 @@
         }
     }
 
-    public static QueryArguments? GetQueryArguments(Func<Key>? hasId, bool applyOrder, bool idOnly, bool omitQueryArguments = false)
+    public static QueryArguments? GetQueryArguments(bool hasId, bool applyOrder, bool idOnly, bool omitQueryArguments = false)
     {
         if (omitQueryArguments && idOnly)
         {
