@@ -1,6 +1,6 @@
 ﻿static class TypeConverter
 {
-    public static IList ConvertStringsToList(string?[] values, MemberInfo property)
+    public static List<object?> ConvertStringsToList(string?[] values, MemberInfo property)
     {
         var hash = new HashSet<string?>();
         var duplicates = values.Where(_ => !hash.Add(_)).ToArray();
@@ -37,126 +37,126 @@
             _ => bool.Parse(value)
         };
 
-    static IList ConvertStringsToListInternal(IEnumerable<string> values, Type type)
+    static List<object?> ConvertStringsToListInternal(IEnumerable<string> values, Type type)
     {
         if (type == typeof(Guid))
         {
-            return values.Select(Guid.Parse).ToList();
+            return values.Select(s => (object?)Guid.Parse(s)).ToList();
         }
         if (type == typeof(Guid?))
         {
-            return values.Select(_ => (Guid?)new Guid(_)).ToList();
+            return values.Select(_ => (object?)new Guid(_)).ToList();
         }
 
         if (type == typeof(bool))
         {
-            return values.Select(ParseBoolean).ToList();
+            return values.Select(s => (object?)ParseBoolean(s)).ToList();
         }
         if (type == typeof(bool?))
         {
-            return values.Select(_ => (bool?)ParseBoolean(_)).ToList();
+            return values.Select(_ => (object?)ParseBoolean(_)).ToList();
         }
 
         if (type == typeof(int))
         {
-            return values.Select(int.Parse).ToList();
+            return values.Select(s => (object?)int.Parse(s)).ToList();
         }
         if (type == typeof(int?))
         {
-            return values.Select(_ => (int?)int.Parse(_)).ToList();
+            return values.Select(_ => (object?)int.Parse(_)).ToList();
         }
 
         if (type == typeof(short))
         {
-            return values.Select(short.Parse).ToList();
+            return values.Select(s => (object?)short.Parse(s)).ToList();
         }
         if (type == typeof(short?))
         {
-            return values.Select(_ => (short?)short.Parse(_)).ToList();
+            return values.Select(_ => (object?)short.Parse(_)).ToList();
         }
 
         if (type == typeof(long))
         {
-            return values.Select(long.Parse).ToList();
+            return values.Select(s => (object?)long.Parse(s)).ToList();
         }
         if (type == typeof(long?))
         {
-            return values.Select(_ => (long?)long.Parse(_)).ToList();
+            return values.Select(_ => (object?)long.Parse(_)).ToList();
         }
 
         if (type == typeof(uint))
         {
-            return values.Select(uint.Parse).ToList();
+            return values.Select(s => (object?)uint.Parse(s)).ToList();
         }
         if (type == typeof(uint?))
         {
-            return values.Select(_ => (uint?)uint.Parse(_)).ToList();
+            return values.Select(_ => (object?)uint.Parse(_)).ToList();
         }
 
         if (type == typeof(ushort))
         {
-            return values.Select(ushort.Parse).ToList();
+            return values.Select(s =>(object?) ushort.Parse(s)).ToList();
         }
         if (type == typeof(ushort?))
         {
-            return values.Select(_ => (ushort?)ushort.Parse(_)).ToList();
+            return values.Select(_ => (object?)ushort.Parse(_)).ToList();
         }
 
         if (type == typeof(ulong))
         {
-            return values.Select(ulong.Parse).ToList();
+            return values.Select(s => (object?)ulong.Parse(s)).ToList();
         }
         if (type == typeof(ulong?))
         {
-            return values.Select(_ => (ulong?)ulong.Parse(_)).ToList();
+            return values.Select(_ => (object?)ulong.Parse(_)).ToList();
         }
 
         if (type == typeof(DateTime))
         {
-            return values.Select(DateTime.Parse).ToList();
+            return values.Select(s => (object?)DateTime.Parse(s)).ToList();
         }
         if (type == typeof(DateTime?))
         {
-            return values.Select(_ => (DateTime?)DateTime.Parse(_)).ToList();
+            return values.Select(_ => (object?)DateTime.Parse(_)).ToList();
         }
 
         if (type == typeof(Time))
         {
-            return values.Select(Time.Parse).ToList();
+            return values.Select(s => (object?)Time.Parse(s)).ToList();
         }
         if (type == typeof(Time?))
         {
-            return values.Select(_ => (Time?)Time.Parse(_)).ToList();
+            return values.Select(_ => (object?)Time.Parse(_)).ToList();
         }
 
         if (type == typeof(Date))
         {
-            return values.Select(_ => Date.ParseExact(_, "yyyy-MM-dd")).ToList();
+            return values.Select(_ => (object?)Date.ParseExact(_, "yyyy-MM-dd")).ToList();
         }
         if (type == typeof(Date?))
         {
-            return values.Select(_ => (Date?)Date.ParseExact(_, "yyyy-MM-dd")).ToList();
+            return values.Select(_ => (object?)Date.ParseExact(_, "yyyy-MM-dd")).ToList();
         }
 
         if (type == typeof(DateTimeOffset))
         {
-            return values.Select(DateTimeOffset.Parse).ToList();
+            return values.Select(s => (object?)DateTimeOffset.Parse(s)).ToList();
         }
         if (type == typeof(DateTimeOffset?))
         {
-            return values.Select(_ => (DateTimeOffset?)DateTimeOffset.Parse(_)).ToList();
+            return values.Select(_ => (object?)DateTimeOffset.Parse(_)).ToList();
         }
 
         if (type.IsEnum)
         {
             var getList = enumListMethod.MakeGenericMethod(type);
-            return (IList)getList.Invoke(null, [values])!;
+            return (List<object?>)getList.Invoke(null, [values])!;
         }
 
         if (type.TryGetEnumType(out var enumType))
         {
             var getList = nullableEnumListMethod.MakeGenericMethod(enumType);
-            return (IList)getList.Invoke(null, [values])!;
+            return  (List<object?>)getList.Invoke(null, [values])!;
         }
 
         throw new($"Could not convert strings to {type.FullName}.");
