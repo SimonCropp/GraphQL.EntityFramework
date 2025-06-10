@@ -17,10 +17,10 @@ public static partial class ArgumentProcessor
 
         if (keyNames is not null)
         {
-            if (ArgumentReader.TryReadIds(context, out var values))
+            if (ArgumentReader.TryReadIds(context, out var idValues))
             {
                 var keyName = GetKeyName(keyNames);
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, values);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, idValues);
                 queryable = queryable.Where(predicate);
             }
         }

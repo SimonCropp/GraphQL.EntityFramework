@@ -17,9 +17,9 @@ public static partial class ArgumentProcessor
 
         if (hasId)
         {
-            if (ArgumentReader.TryReadIds(context, out var values))
+            if (ArgumentReader.TryReadIds(context, out var idValues))
             {
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, values);
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate("Id", Comparison.In, idValues);
                 items = items.Where(predicate.Compile());
             }
         }

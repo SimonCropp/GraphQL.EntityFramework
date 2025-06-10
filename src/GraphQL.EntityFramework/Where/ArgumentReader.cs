@@ -9,7 +9,7 @@
     public static IReadOnlyCollection<OrderBy> ReadOrderBy(IResolveFieldContext context) =>
         ReadList<OrderBy>(context, "orderBy");
 
-    public static bool TryReadIds(IResolveFieldContext context, [NotNullWhen(true)] out string[]? result)
+    public static bool TryReadIds(IResolveFieldContext context, [NotNullWhen(true)] out string[]? idValues)
     {
         static string ArgumentToExpression(object argument) =>
             argument switch
@@ -23,7 +23,7 @@
         var arguments = context.Arguments;
         if (arguments == null)
         {
-            result = null;
+            idValues = null;
             return false;
         }
 
@@ -32,14 +32,14 @@
 
         if (!containsIds && !containsId)
         {
-            result = null;
+            idValues = null;
             return false;
         }
 
         if (ids.Source == ArgumentSource.FieldDefault &&
             id.Source == ArgumentSource.FieldDefault)
         {
-            result = null;
+            idValues = null;
             return false;
         }
 
@@ -66,7 +66,7 @@
             expressions.AddRange(objCollection.Select(ArgumentToExpression));
         }
 
-        result = expressions.ToArray();
+        idValues = expressions.ToArray();
         return true;
     }
 
