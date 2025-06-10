@@ -135,7 +135,7 @@ partial class EfGraphQLService<TDbContext>
 
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
-        var names = GetKeyNames<TReturn>();
+        var names = GetKeyFunc<TReturn>();
         var hasId = keyNames.ContainsKey(typeof(TReturn));
         var type = new FieldType
         {
@@ -188,7 +188,7 @@ partial class EfGraphQLService<TDbContext>
                              DisableAsync: {disableAsync}
                              OmitQueryArguments: {omitQueryArguments}
                              Nullable: {nullable}
-                             KeyNames: {JoinKeys(names)}
+                             KeyNames: {JoinKeys<TReturn>()}
                              Query: {query.ToQueryString()}
                              """,
                             exception);

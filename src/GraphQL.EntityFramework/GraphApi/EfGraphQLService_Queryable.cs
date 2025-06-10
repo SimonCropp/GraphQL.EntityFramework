@@ -84,73 +84,72 @@ partial class EfGraphQLService<TDbContext>
             Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false, omitQueryArguments),
         };
 
-        var names = GetKeyNames<TReturn>();
+        var names = GetKeyFunc<TReturn>();
         if (resolve is not null)
         {
-            fieldType.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
-                async context =>
+            fieldType.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(async context =>
+            {
+                var fieldContext = BuildContext(context);
+                var query = await resolve(fieldContext);
+                if (disableTracking)
                 {
-                    var fieldContext = BuildContext(context);
-                    var query = await resolve(fieldContext);
-                    if (disableTracking)
-                    {
-                        query = query.AsNoTracking();
-                    }
+                    query = query.AsNoTracking();
+                }
 
-                    query = includeAppender.AddIncludes(query, context);
-                    if (!omitQueryArguments)
-                    {
-                        query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
-                    }
+                query = includeAppender.AddIncludes(query, context);
+                if (!omitQueryArguments)
+                {
+                    query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
+                }
 
-                    QueryLogger.Write(query);
+                QueryLogger.Write(query);
 
-                    List<TReturn> list;
+                List<TReturn> list;
 
-                    try
+                try
+                {
+                    if (disableAsync)
                     {
-                        if (disableAsync)
-                        {
-                            list = query.ToList();
-                        }
-                        else
-                        {
-                            list = await query
-                                .ToListAsync(context.CancellationToken);
-                        }
+                        list = query.ToList();
                     }
-                    catch (TaskCanceledException)
+                    else
                     {
-                        throw;
+                        list = await query
+                            .ToListAsync(context.CancellationToken);
                     }
-                    catch (OperationCanceledException)
-                    {
-                        throw;
-                    }
-                    catch (Exception exception)
-                    {
-                        throw new(
-                            $"""
-                             Failed to execute query for field `{name}`
-                             GraphType: {fieldType.Type.FullName}
-                             TSource: {typeof(TSource).FullName}
-                             TReturn: {typeof(TReturn).FullName}
-                             DisableTracking: {disableTracking}
-                             HasId: {hasId}
-                             DisableAsync: {disableAsync}
-                             KeyNames: {JoinKeys(names)}
-                             Query: {query.ToQueryString()}
-                             """,
-                            exception);
-                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    throw;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception exception)
+                {
+                    throw new(
+                        $"""
+                         Failed to execute query for field `{name}`
+                         GraphType: {fieldType.Type.FullName}
+                         TSource: {typeof(TSource).FullName}
+                         TReturn: {typeof(TReturn).FullName}
+                         DisableTracking: {disableTracking}
+                         HasId: {hasId}
+                         DisableAsync: {disableAsync}
+                         KeyNames: {JoinKeys<TReturn>()}
+                         Query: {query.ToQueryString()}
+                         """,
+                        exception);
+                }
 
-                    if (fieldContext.Filters == null)
-                    {
-                        return list;
-                    }
+                if (fieldContext.Filters == null)
+                {
+                    return list;
+                }
 
-                    return await fieldContext.Filters.ApplyFilter(list, context.UserContext, fieldContext.DbContext, context.User);
-                });
+                return await fieldContext.Filters.ApplyFilter(list, context.UserContext, fieldContext.DbContext, context.User);
+            });
         }
 
         return fieldType;
@@ -165,11 +164,5 @@ partial class EfGraphQLService<TDbContext>
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
         return nonNullType.MakeGenericType(listGraphType.MakeGenericType(itemGraphType));
-    }
-
-    List<string>? GetKeyNames<TSource>()
-    {
-        keyNames.TryGetValue(typeof(TSource), out var names);
-        return names;
     }
 }

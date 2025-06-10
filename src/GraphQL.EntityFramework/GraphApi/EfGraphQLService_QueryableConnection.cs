@@ -132,7 +132,7 @@ partial class EfGraphQLService<TDbContext>
 
         if (resolve is not null)
         {
-            var names = GetKeyNames<TReturn>();
+            var names = GetKeyFunc<TReturn>();
             builder.ResolveAsync(
                 async context =>
                 {
@@ -176,7 +176,7 @@ partial class EfGraphQLService<TDbContext>
                              TSource: {typeof(TSource).FullName}
                              TReturn: {typeof(TReturn).FullName}
                              DisableAsync: {disableAsync}
-                             KeyNames: {JoinKeys(names)}
+                             KeyNames: {JoinKeys<TReturn>()}
                              Query: {query.ToQueryString()}
                              """,
                             exception);

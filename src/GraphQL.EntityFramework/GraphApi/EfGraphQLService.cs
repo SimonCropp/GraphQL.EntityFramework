@@ -80,9 +80,27 @@ public partial class EfGraphQLService<TDbContext> :
         where TItem : class =>
         includeAppender.AddIncludes(query, context);
 
-    static string JoinKeys(IReadOnlyCollection<string>? names)
+    Func<string>? GetKeyFunc<T>()
     {
-        if (names == null)
+        if (!keyNames.TryGetValue(typeof(T), out var names))
+        {
+            return null;
+        }
+
+        return () =>
+        {
+            if (names.Count > 1)
+            {
+                throw new("Only one id field is currently supported");
+            }
+
+            return names[0];
+        };
+    }
+
+    string JoinKeys<T>()
+    {
+        if (!keyNames.TryGetValue(typeof(T), out var names))
         {
             return "";
         }
