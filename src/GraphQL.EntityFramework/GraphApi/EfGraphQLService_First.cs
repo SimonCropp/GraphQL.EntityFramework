@@ -135,8 +135,7 @@ partial class EfGraphQLService<TDbContext>
 
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
-        var names = GetKeyFunc<TReturn>();
-        var hasId = keys.ContainsKey(typeof(TReturn));
+        var keyFunc = GetKeyFunc<TReturn>();
         var type = new FieldType
         {
             Name = name,
@@ -152,7 +151,7 @@ partial class EfGraphQLService<TDbContext>
                 }
 
                 query = includeAppender.AddIncludes(query, context);
-                query = query.ApplyGraphQlArguments(context, names, false, omitQueryArguments);
+                query = query.ApplyGraphQlArguments(context, keyFunc, false, omitQueryArguments);
 
                 QueryLogger.Write(query);
 
@@ -218,7 +217,7 @@ partial class EfGraphQLService<TDbContext>
 
         if (!omitQueryArguments)
         {
-            type.Arguments = ArgumentAppender.GetQueryArguments(hasId, false, idOnly, omitQueryArguments);
+            type.Arguments = ArgumentAppender.GetQueryArguments(keyFunc, false, idOnly, omitQueryArguments);
         }
 
         return type;

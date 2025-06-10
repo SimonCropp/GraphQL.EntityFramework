@@ -76,12 +76,13 @@ partial class EfGraphQLService<TDbContext>
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
 
+        var keyFunc = GetKeyFunc<TReturn>();
         var hasId = keys.ContainsKey(typeof(TReturn));
         var fieldType = new FieldType
         {
             Name = name,
             Type = MakeListGraphType<TReturn>(itemGraphType),
-            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false, omitQueryArguments),
+            Arguments = ArgumentAppender.GetQueryArguments(keyFunc, true, false, omitQueryArguments),
         };
 
         var names = GetKeyFunc<TReturn>();
