@@ -162,8 +162,81 @@
         throw new($"Could not convert strings to {type.FullName}.");
     }
 
+    public static IList ConvertIdObjects(IEnumerable<object> values, MemberInfo member)
+    {
+        member.GetNullabilityInfo()
+
+        if (!property.IsNullable() && hasNull)
+        {
+            throw new($"Null passed to In expression for non nullable type '{type.FullName}'.");
+        }
+        if (type == typeof(Guid))
+        {
+            return values.Cast<Guid>().ToList();
+        }
+
+        if (type == typeof(int))
+        {
+            return values.Cast<int>().ToList();
+        }
+
+        if (type == typeof(short))
+        {
+            return values.Cast<short>().ToList();
+        }
+
+        if (type == typeof(long))
+        {
+            return values.Cast<long>().ToList();
+        }
+
+        if (type == typeof(uint))
+        {
+            return values.Cast<uint>().ToList();
+        }
+
+        if (type == typeof(ushort))
+        {
+            return values.Cast<ushort>().ToList();
+        }
+
+        if (type == typeof(ulong))
+        {
+            return values.Cast<ulong>().ToList();
+        }
+
+        if (type == typeof(DateTime))
+        {
+            return values.Cast<DateTime>().ToList();
+        }
+
+        if (type == typeof(Time))
+        {
+            return values.Cast<Time>().ToList();
+        }
+
+        if (type == typeof(Date))
+        {
+            return values.Cast<Date>().ToList();
+        }
+
+        if (type == typeof(DateTimeOffset))
+        {
+            return values.Cast<DateTimeOffset>().ToList();
+        }
+
+        if (type.IsEnum)
+        {
+            var getList = enumListMethod.MakeGenericMethod(type);
+            return (IList)getList.Invoke(null, [values])!;
+        }
+
+        throw new($"Could not convert strings to {type.FullName}.");
+    }
+
     static MethodInfo enumListMethod = typeof(TypeConverter)
         .GetMethod("GetEnumList", BindingFlags.Static | BindingFlags.NonPublic)!;
+
     static List<T> GetEnumList<T>(IEnumerable<string> values)
         where T : struct
     {

@@ -9,17 +9,8 @@
     public static IReadOnlyCollection<OrderBy> ReadOrderBy(IResolveFieldContext context) =>
         ReadList<OrderBy>(context, "orderBy");
 
-    public static bool TryReadIds(IResolveFieldContext context, [NotNullWhen(true)] out string[]? idValues)
+    public static bool TryReadIds(IResolveFieldContext context, [NotNullWhen(true)] out object[]? idValues)
     {
-        static string ArgumentToExpression(object argument) =>
-            argument switch
-            {
-                long l => l.ToString(CultureInfo.InvariantCulture),
-                int i => i.ToString(CultureInfo.InvariantCulture),
-                string s => s,
-                _ => throw new($"TryReadId got an 'id' argument of type '{argument.GetType().FullName}' which is not supported.")
-            };
-
         var arguments = context.Arguments;
         if (arguments == null)
         {
@@ -43,7 +34,7 @@
             return false;
         }
 
-        var expressions = new List<string>();
+        var expressions = new List<object>();
 
         if (id.Source != ArgumentSource.FieldDefault)
         {
@@ -53,7 +44,7 @@
                 throw new("Null 'id' is not supported.");
             }
 
-            expressions.Add(ArgumentToExpression(idValue));
+            expressions.Add(idValue);
         }
 
         if (ids.Source != ArgumentSource.FieldDefault)
@@ -63,7 +54,7 @@
                 throw new($"TryReadIds got an 'ids' argument of type '{ids.Value!.GetType().FullName}' which is not supported.");
             }
 
-            expressions.AddRange(objCollection.Select(ArgumentToExpression));
+            expressions.AddRange(objCollection);
         }
 
         idValues = expressions.ToArray();

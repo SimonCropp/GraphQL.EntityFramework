@@ -109,7 +109,7 @@ public static partial class ExpressionBuilder<T>
     /// <summary>
     /// Create a single predicate for the single set of supplied conditional arguments
     /// </summary>
-    public static Expression<Func<T, bool>> BuildIdPredicate(string path, string[] values)
+    public static Expression<Func<T, bool>> BuildIdPredicate(string path, object[] values)
     {
         var expressionBody = MakeIdPredicateBody(path, values);
         var param = PropertyCache<T>.SourceParameter;
@@ -117,7 +117,7 @@ public static partial class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(expressionBody, param);
     }
 
-    static Expression MakeIdPredicateBody(string path, string[] values)
+    static Expression MakeIdPredicateBody(string path, object[] values)
     {
         try
         {
@@ -125,11 +125,10 @@ public static partial class ExpressionBuilder<T>
 
             if (property.PropertyType == typeof(string))
             {
-                return MakeStringListInComparison(values, property);
+                return MakeStringListInComparison(values.Cast<string>().ToArray(), property);
             }
 
-            // Attempt to convert the string values to the object type
-            var objects = TypeConverter.ConvertStringsToList(values, property.Info);
+            var objects = TypeConverter.ConvertIdObjects(values, property.Info);
             // Make the object values a constant expression
             var constant = Expression.Constant(objects);
             // Build and return the expression body
