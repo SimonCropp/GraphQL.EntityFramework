@@ -233,12 +233,7 @@ public static partial class ExpressionBuilder<T>
         // Make the object values a constant expression
         var constant = Expression.Constant(objects);
         // Build and return the expression body
-        if (property.ListContains is null)
-        {
-            throw new($"No ListContains found for {typeof(T).Name}");
-        }
-
-        return Expression.Call(constant, property.ListContains, property.Left);
+        return Expression.Call(constant, property.SafeListContains, property.Left);
     }
 
     static MethodCallExpression MakeStringListInComparison(string[] values, Property<T> property)
