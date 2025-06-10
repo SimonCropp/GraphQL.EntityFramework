@@ -202,7 +202,7 @@ public static partial class ExpressionBuilder<T>
         return expressionBody;
     }
 
-    static Expression MakeObjectListInComparision(string[] values, Property<T> property)
+    static MethodCallExpression MakeObjectListInComparision(string[] values, Property<T> property)
     {
         // Attempt to convert the string values to the object type
         var objects = TypeConverter.ConvertStringsToList(values, property.Info);
@@ -217,7 +217,7 @@ public static partial class ExpressionBuilder<T>
         return Expression.Call(constant, property.ListContains, property.Left);
     }
 
-    static Expression MakeStringListInComparison(string[] values, Property<T> property)
+    static MethodCallExpression MakeStringListInComparison(string[] values, Property<T> property)
     {
         var equalsBody = Expression.Call(null, ReflectionCache.StringEqual, ExpressionCache.StringParam, property.Left);
 
