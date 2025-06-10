@@ -128,7 +128,12 @@ public static partial class ExpressionBuilder<T>
                 return MakeStringListInComparison(values, property);
             }
 
-            return MakeObjectListInComparision(values, property);
+            // Attempt to convert the string values to the object type
+            var objects = TypeConverter.ConvertStringsToList(values, property.Info);
+            // Make the object values a constant expression
+            var constant = Expression.Constant(objects);
+            // Build and return the expression body
+            return Expression.Call(constant, property.SafeListContains, property.Left);
         }
         catch (Exception exception)
         {
