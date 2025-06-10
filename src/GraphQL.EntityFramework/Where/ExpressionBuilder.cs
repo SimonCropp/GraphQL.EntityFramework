@@ -45,7 +45,7 @@ public static partial class ExpressionBuilder<T>
                     var property = PropertyCache<T>.GetProperty(where.Path);
                     var values = TypeConverter.ConvertStringsToList(where.Value, property.PropertyType);
                     // Get the predicate body for the single expression
-                    nextExpression = MakePredicateBody(where.Path, where.Comparison, values, where.Negate);
+                    nextExpression = MakePredicateBody(where.Path, where.Comparison, values.ToArray(), where.Negate);
                 }
                 else
                 {
