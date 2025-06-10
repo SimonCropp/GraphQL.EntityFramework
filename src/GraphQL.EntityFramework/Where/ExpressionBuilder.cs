@@ -106,6 +106,29 @@ public static partial class ExpressionBuilder<T>
         }
     }
 
+    /// <summary>
+    /// Create a single predicate for the single set of supplied conditional arguments
+    /// </summary>
+    public static Expression<Func<T, bool>> BuildIdPredicate(string path, string[] values)
+    {
+        var expressionBody = MakeIdPredicateBody(path, values);
+        var param = PropertyCache<T>.SourceParameter;
+
+        return Expression.Lambda<Func<T, bool>>(expressionBody, param);
+    }
+
+    static Expression MakeIdPredicateBody(string path, string[] values)
+    {
+        try
+        {
+            return GetExpression(path, Comparison.In, values);
+        }
+        catch (Exception exception)
+        {
+            throw new ($"Failed to build expression. Path: {path} ", exception);
+        }
+    }
+
     static Expression ProcessList(string path, Comparison comparison, string?[]? values)
     {
         // Get the path pertaining to individual list items

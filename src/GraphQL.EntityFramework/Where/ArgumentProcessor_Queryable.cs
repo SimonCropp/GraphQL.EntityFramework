@@ -20,7 +20,7 @@ public static partial class ArgumentProcessor
             if (ArgumentReader.TryReadIds(context, out var idValues))
             {
                 var keyName = GetKeyName(keyNames);
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, idValues);
+                var predicate = ExpressionBuilder<TItem>.BuildIdPredicate(keyName, idValues);
                 queryable = queryable.Where(predicate);
             }
         }
