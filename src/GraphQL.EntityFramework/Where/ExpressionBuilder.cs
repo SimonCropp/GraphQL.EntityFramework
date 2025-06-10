@@ -39,8 +39,18 @@ public static partial class ExpressionBuilder<T>
             // Otherwise handle single expressions
             else
             {
-                // Get the predicate body for the single expression
-                nextExpression = MakePredicateBody(where.Path, where.Comparison, where.Value, where.Negate);
+
+                if (where.Value != null)
+                {
+                    var property = PropertyCache<T>.GetProperty(where.Path);
+                    var values = TypeConverter.ConvertStringsToList(where.Value, property.PropertyType);
+                    // Get the predicate body for the single expression
+                    nextExpression = MakePredicateBody(where.Path, where.Comparison, values, where.Negate);
+                }
+                else
+                {
+                    nextExpression = MakePredicateBody(where.Path, where.Comparison, null, where.Negate);
+                }
             }
 
             // If this is the first where processed
@@ -65,7 +75,7 @@ public static partial class ExpressionBuilder<T>
     /// <summary>
     /// Create a single predicate for the single set of supplied conditional arguments
     /// </summary>
-    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, string?[]? values, bool negate = false)
+    public static Expression<Func<T, bool>> BuildPredicate(string path, Comparison comparison, object?[]? values, bool negate = false)
     {
         var expressionBody = MakePredicateBody(path, comparison, values, negate);
         var param = PropertyCache<T>.SourceParameter;
@@ -73,7 +83,7 @@ public static partial class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(expressionBody, param);
     }
 
-    static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate)
+    static Expression MakePredicateBody(string path, Comparison comparison, object?[]? values, bool negate)
     {
         try
         {
@@ -106,7 +116,7 @@ public static partial class ExpressionBuilder<T>
         }
     }
 
-    static Expression ProcessList(string path, Comparison comparison, string?[]? values)
+    static Expression ProcessList(string path, Comparison comparison, object?[]? values)
     {
         // Get the path pertaining to individual list items
         var listPath = ListPropertyRegex().Match(path).Groups[1].Value;
@@ -152,7 +162,7 @@ public static partial class ExpressionBuilder<T>
         return Expression.Call(anyInfo, property.Left, subPredicate);
     }
 
-    static Expression GetExpression(string path, Comparison comparison, string?[]? values)
+    static Expression GetExpression(string path, Comparison comparison, object?[]? values)
     {
         var property = PropertyCache<T>.GetProperty(path);
         Expression expressionBody;
@@ -193,8 +203,7 @@ public static partial class ExpressionBuilder<T>
                 default:
                     WhereValidator.ValidateSingleObject(property.PropertyType, comparison);
                     var value = values?.Single();
-                    var valueObject = TypeConverter.ConvertStringToType(value, property.PropertyType);
-                    expressionBody = MakeSingleObjectComparison(comparison, valueObject, property);
+                    expressionBody = MakeSingleObjectComparison(comparison, value, property);
                     break;
             }
         }
@@ -202,12 +211,10 @@ public static partial class ExpressionBuilder<T>
         return expressionBody;
     }
 
-    static Expression MakeObjectListInComparision(string[] values, Property<T> property)
+    static Expression MakeObjectListInComparision(object[] values, Property<T> property)
     {
-        // Attempt to convert the string values to the object type
-        var objects = TypeConverter.ConvertStringsToList(values, property.Info);
         // Make the object values a constant expression
-        var constant = Expression.Constant(objects);
+        var constant = Expression.Constant(values);
         // Build and return the expression body
         if (property.ListContains is null)
         {
@@ -217,7 +224,7 @@ public static partial class ExpressionBuilder<T>
         return Expression.Call(constant, property.ListContains, property.Left);
     }
 
-    static Expression MakeStringListInComparison(string[] values, Property<T> property)
+    static Expression MakeStringListInComparison(object[] values, Property<T> property)
     {
         var equalsBody = Expression.Call(null, ReflectionCache.StringEqual, ExpressionCache.StringParam, property.Left);
 
@@ -228,7 +235,7 @@ public static partial class ExpressionBuilder<T>
         return Expression.Call(null, ReflectionCache.StringAny, Expression.Constant(values), itemEvaluate);
     }
 
-    static Expression MakeSingleStringComparison(Comparison comparison, string? value, Property<T> property)
+    static Expression MakeSingleStringComparison(Comparison comparison, object? value, Property<T> property)
     {
         var left = property.Left;
 
