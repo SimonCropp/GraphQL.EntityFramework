@@ -8,7 +8,7 @@ public partial class EfGraphQLService<TDbContext> :
     bool disableTracking;
     bool disableAsync;
     ResolveDbContext<TDbContext> resolveDbContext;
-    IReadOnlyDictionary<Type, List<string>> keyNames;
+    IReadOnlyDictionary<Type, List<Key>> keys;
 
     /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
     public EfGraphQLService(
@@ -23,7 +23,7 @@ public partial class EfGraphQLService<TDbContext> :
         this.disableAsync = disableAsync;
         this.resolveDbContext = resolveDbContext;
 
-        keyNames = model.GetKeyNames();
+        keys = model.GetKeys();
 
         Navigations = NavigationReader.GetNavigationProperties(model);
         includeAppender = new(Navigations);
@@ -80,31 +80,31 @@ public partial class EfGraphQLService<TDbContext> :
         where TItem : class =>
         includeAppender.AddIncludes(query, context);
 
-    Func<string>? GetKeyFunc<T>()
+    Func<Key>? GetKeyFunc<T>()
     {
-        if (!keyNames.TryGetValue(typeof(T), out var names))
+        if (!keys.TryGetValue(typeof(T), out var values))
         {
             return null;
         }
 
         return () =>
         {
-            if (names.Count > 1)
+            if (values.Count > 1)
             {
                 throw new("Only one id field is currently supported");
             }
 
-            return names[0];
+            return values[0];
         };
     }
 
     string JoinKeys<T>()
     {
-        if (!keyNames.TryGetValue(typeof(T), out var names))
+        if (!keys.TryGetValue(typeof(T), out var names))
         {
             return "";
         }
 
-        return string.Join(", ", names);
+        return string.Join(", ", names.Select(_ => _.Name));
     }
 }

@@ -136,7 +136,7 @@ partial class EfGraphQLService<TDbContext>
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
         var names = GetKeyFunc<TReturn>();
-        var hasId = keyNames.ContainsKey(typeof(TReturn));
+        var hasId = keys.ContainsKey(typeof(TReturn));
         var type = new FieldType
         {
             Name = name,

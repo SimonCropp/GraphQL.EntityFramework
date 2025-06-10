@@ -60,7 +60,7 @@ partial class EfGraphQLService<TDbContext>
 
         IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
-        var hasId = keyNames.ContainsKey(typeof(TReturn));
+        var hasId = keys.ContainsKey(typeof(TReturn));
         if (resolve is not null)
         {
             builder.ResolveAsync(async context =>

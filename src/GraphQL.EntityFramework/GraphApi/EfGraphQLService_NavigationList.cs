@@ -14,12 +14,13 @@ partial class EfGraphQLService<TDbContext>
     {
         Guard.AgainstWhiteSpace(nameof(name), name);
 
-        var hasId = keyNames.ContainsKey(typeof(TReturn));
+        var keyFunc = GetKeyFunc<TReturn>();
+        var hasId = keys.ContainsKey(typeof(TReturn));
         var field = new FieldType
         {
             Name = name,
             Type = MakeListGraphType<TReturn>(itemGraphType),
-            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false),
+            Arguments = ArgumentAppender.GetQueryArguments(keyFunc, true, false),
         };
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
@@ -35,7 +36,7 @@ partial class EfGraphQLService<TDbContext>
                     throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryField.");
                 }
 
-                result = result.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
+                result = result.ApplyGraphQlArguments(keyFunc, context, omitQueryArguments);
                 if (fieldContext.Filters == null)
                 {
                     return result;

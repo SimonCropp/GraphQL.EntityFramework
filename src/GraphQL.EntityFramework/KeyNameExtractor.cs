@@ -1,8 +1,8 @@
 ﻿static class KeyNameExtractor
 {
-    public static IReadOnlyDictionary<Type, List<string>> GetKeyNames(this IModel model)
+    public static IReadOnlyDictionary<Type, List<Key>> GetKeys(this IModel model)
     {
-        var keyNames = new Dictionary<Type, List<string>>();
+        var keyNames = new Dictionary<Type, List<Key>>();
         foreach (var entity in model.GetEntityTypes())
         {
             var clrType = entity.ClrType;
@@ -25,7 +25,7 @@
                 continue;
             }
 
-            var names = primaryKey.Properties.Select(_ => _.Name).ToList();
+            var names = primaryKey.Properties.Select(_ => new Key(_.Name,_.ClrType)).ToList();
             keyNames.Add(clrType, names);
         }
 

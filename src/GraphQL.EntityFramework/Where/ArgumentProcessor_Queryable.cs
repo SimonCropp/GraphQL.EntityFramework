@@ -5,7 +5,7 @@ public static partial class ArgumentProcessor
     public static IQueryable<TItem> ApplyGraphQlArguments<TItem>(
         this IQueryable<TItem> queryable,
         IResolveFieldContext context,
-        Func<string>? keyNameFunc,
+        Func<Key>? keyFunc,
         bool applyOrder,
         bool omitQueryArguments)
         where TItem : class
@@ -15,12 +15,12 @@ public static partial class ArgumentProcessor
             return queryable;
         }
 
-        if (keyNameFunc is not null)
+        if (keyFunc is not null)
         {
             if (ArgumentReader.TryReadIds(context, out var idValues))
             {
-                var keyName = keyNameFunc();
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(keyName, Comparison.In, idValues);
+                var key = keyFunc();
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(key, Comparison.In, idValues);
                 queryable = queryable.Where(predicate);
             }
         }
