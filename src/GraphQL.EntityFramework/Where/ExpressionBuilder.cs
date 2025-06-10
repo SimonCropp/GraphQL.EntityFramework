@@ -178,7 +178,7 @@ public static partial class ExpressionBuilder<T>
     static Expression GetExpression(string path, Comparison comparison, string?[]? values)
     {
         var property = PropertyCache<T>.GetProperty(path);
-        Expression expressionBody;
+        Expression expression;
 
         if (property.PropertyType == typeof(string))
         {
@@ -186,17 +186,18 @@ public static partial class ExpressionBuilder<T>
             {
                 case Comparison.NotIn:
                     WhereValidator.ValidateString(comparison);
-                    expressionBody = NegateExpression(MakeStringListInComparison(values!, property)); // Ensure expression is negated
+                    // Ensure expression is negated
+                    expression = NegateExpression(MakeStringListInComparison(values!, property));
                     break;
                 case Comparison.In:
                     WhereValidator.ValidateString(comparison);
-                    expressionBody = MakeStringListInComparison(values!, property);
+                    expression = MakeStringListInComparison(values!, property);
                     break;
 
                 default:
                     WhereValidator.ValidateSingleString(comparison);
                     var value = values?.Single();
-                    expressionBody = MakeSingleStringComparison(comparison, value, property);
+                    expression = MakeSingleStringComparison(comparison, value, property);
                     break;
             }
         }
@@ -206,23 +207,23 @@ public static partial class ExpressionBuilder<T>
             {
                 case Comparison.NotIn:
                     WhereValidator.ValidateObject(property.PropertyType, comparison);
-                    expressionBody = NegateExpression(MakeObjectListInComparision(values!, property));
+                    expression = NegateExpression(MakeObjectListInComparision(values!, property));
                     break;
                 case Comparison.In:
                     WhereValidator.ValidateObject(property.PropertyType, comparison);
-                    expressionBody = MakeObjectListInComparision(values!, property);
+                    expression = MakeObjectListInComparision(values!, property);
                     break;
 
                 default:
                     WhereValidator.ValidateSingleObject(property.PropertyType, comparison);
                     var value = values?.Single();
                     var valueObject = TypeConverter.ConvertStringToType(value, property.PropertyType);
-                    expressionBody = MakeSingleObjectComparison(comparison, valueObject, property);
+                    expression = MakeSingleObjectComparison(comparison, valueObject, property);
                     break;
             }
         }
 
-        return expressionBody;
+        return expression;
     }
 
     static MethodCallExpression MakeObjectListInComparision(string[] values, Property<T> property)
