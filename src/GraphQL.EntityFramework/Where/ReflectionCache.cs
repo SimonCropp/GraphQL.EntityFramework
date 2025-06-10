@@ -164,14 +164,14 @@
 
         if (IsEnumType(type))
         {
-            return typeof(List<>).MakeGenericType(type).GetMethod("Contains");
+            return typeof(ICollection<>).MakeGenericType(type).GetMethod("Contains");
         }
 
         return null;
     }
 
     static MethodInfo GetContains<T>() =>
-        typeof(List<T>).GetMethod("Contains")!;
+        typeof(ICollection<T>).GetMethod("Contains")!;
 
     public static bool TryGetEnumType(this Type type, [NotNullWhen(true)] out Type? enumType)
     {
