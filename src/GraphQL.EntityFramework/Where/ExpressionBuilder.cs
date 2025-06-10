@@ -121,7 +121,14 @@ public static partial class ExpressionBuilder<T>
     {
         try
         {
-            return GetExpression(path, Comparison.In, values);
+            var property = PropertyCache<T>.GetProperty(path);
+
+            if (property.PropertyType == typeof(string))
+            {
+                return MakeStringListInComparison(values, property);
+            }
+
+            return MakeObjectListInComparision(values, property);
         }
         catch (Exception exception)
         {
