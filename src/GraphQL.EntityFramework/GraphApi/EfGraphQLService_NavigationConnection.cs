@@ -31,7 +31,7 @@ partial class EfGraphQLService<TDbContext>
                 includeNames,
                 omitQueryArguments
             };
-            return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, arguments)!;
+            return (ConnectionBuilder<TSource>)addConnectionT.Invoke(this, arguments)!;
         }
         catch (Exception exception)
         {
@@ -60,7 +60,7 @@ partial class EfGraphQLService<TDbContext>
 
         IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
-        var hasId = keys.ContainsKey(typeof(TReturn));
+        var keyFunc = GetKeyFunc<TReturn>();
         if (resolve is not null)
         {
             builder.ResolveAsync(async context =>
@@ -98,7 +98,7 @@ partial class EfGraphQLService<TDbContext>
                     throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryConnectionField.");
                 }
 
-                enumerable = enumerable.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
+                enumerable = enumerable.ApplyGraphQlArguments(keyFunc != null, context, omitQueryArguments);
                 if (efFieldContext.Filters != null)
                 {
                     enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext, efFieldContext.DbContext, context.User);
@@ -119,7 +119,7 @@ partial class EfGraphQLService<TDbContext>
         builder.FieldType.Type = typeof(NonNullGraphType<ConnectionType<TGraph, EdgeType<TGraph>>>);
         var field = graph.AddField(builder.FieldType);
 
-        field.AddWhereArgument(hasId);
+        field.AddWhereArgument(keyFunc);
         return builder;
     }
 }
