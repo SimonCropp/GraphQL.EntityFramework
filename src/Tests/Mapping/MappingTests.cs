@@ -4,7 +4,9 @@ public class MappingTests
 {
     static SqlInstance<MappingContext> sqlInstance;
 
-    static MappingTests() =>
+    static MappingTests()
+    {
+        Mapper<MappingContext>.AddIgnoredName("IgnoreByName");
         sqlInstance = new(builder =>
         {
             builder.ConfigureWarnings(_ =>
@@ -15,6 +17,7 @@ public class MappingTests
                     CoreEventId.CollectionWithoutComparer));
             return new(builder.Options);
         });
+    }
 
     [Fact]
     public async Task SchemaPrint()

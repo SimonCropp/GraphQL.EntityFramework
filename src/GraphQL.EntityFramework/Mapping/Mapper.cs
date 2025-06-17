@@ -3,6 +3,20 @@
 public static class Mapper<TDbContext>
     where TDbContext : DbContext
 {
+    static List<Func<string, bool>> ignoredNames = [];
+
+    /// <summary>
+    /// Add a property name to exclude from mapping.
+    /// </summary>
+    public static void AddIgnoredName(Func<string, bool> ignore) =>
+        ignoredNames.Add(ignore);
+
+    /// <summary>
+    /// Add a property name to exclude from mapping.
+    /// </summary>
+    public static void AddIgnoredName(string name) =>
+        ignoredNames.Add(_=> string.Equals(_, name, StringComparison.OrdinalIgnoreCase));
+
     static HashSet<Type> ignoredTypes = [];
 
     /// <summary>
@@ -175,6 +189,11 @@ public static class Mapper<TDbContext>
             {
                 return true;
             }
+        }
+
+        if (ignoredNames.Any(_ => _.Invoke(name)))
+        {
+            return true;
         }
 
         if (FieldExists(graphType, name))
