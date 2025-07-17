@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <Project>
   <PropertyGroup>
     <NoWarn>CS1591;NU5104;CS1573;CS9107;NU1608;NU1109</NoWarn>
