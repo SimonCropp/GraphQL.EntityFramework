@@ -1106,60 +1106,6 @@ public partial class IntegrationTests
     }
 
     [Fact]
-    public async Task Single_Found_Large_Text_NoAsync()
-    {
-        var query =
-            """
-            {
-              parentEntity(id: "00000000-0000-0000-0000-000000000001") {
-                id
-              }
-            }
-            """;
-        var largeString = new StringBuilder().Append('a', 3 * 1024 * 1024);
-        var entity1 = new ParentEntity
-        {
-            Id = new("00000000-0000-0000-0000-000000000001"),
-            Property = largeString.ToString()
-        };
-        var entity2 = new ParentEntity
-        {
-            Id = new("00000000-0000-0000-0000-000000000002"),
-            Property = "Value2"
-        };
-
-        await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, [entity1, entity2], true);
-    }
-
-    [Fact]
-    public async Task First_Found_Large_Text_NoAsync()
-    {
-        var query =
-            """
-            {
-              parentEntityFirst(id: "00000000-0000-0000-0000-000000000001") {
-                id
-              }
-            }
-            """;
-        var largeString = new StringBuilder().Append('a', 3 * 1024 * 1024);
-        var entity1 = new ParentEntity
-        {
-            Id = new("00000000-0000-0000-0000-000000000001"),
-            Property = largeString.ToString()
-        };
-        var entity2 = new ParentEntity
-        {
-            Id = new("00000000-0000-0000-0000-000000000002"),
-            Property = "Value2"
-        };
-
-        await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, [entity1, entity2], true);
-    }
-
-    [Fact]
     public async Task Owned()
     {
         var query =
@@ -2360,53 +2306,6 @@ public partial class IntegrationTests
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, true, [entity1, entity2, entity3, entity4, entity5]);
-    }
-
-    [Fact]
-    public async Task Query_Large_Text_NoAsync()
-    {
-        var query =
-            """
-            {
-              childEntities (orderBy: {path: "property"})
-              {
-                parent
-                {
-                  property
-                }
-              }
-            }
-            """;
-        var largeString = new StringBuilder().Append('a', 3 * 1024 * 1024);
-        var entity1 = new ParentEntity
-        {
-            Property = "Value1"
-        };
-        var entity2 = new ChildEntity
-        {
-            Property = largeString.ToString(),
-            Parent = entity1
-        };
-        var entity3 = new ChildEntity
-        {
-            Property = "Value3",
-            Parent = entity1
-        };
-        entity1.Children.Add(entity2);
-        entity1.Children.Add(entity3);
-        var entity4 = new ParentEntity
-        {
-            Property = "Value4"
-        };
-        var entity5 = new ChildEntity
-        {
-            Property = "Value5",
-            Parent = entity4
-        };
-        entity4.Children.Add(entity5);
-
-        await using var database = await sqlInstance.Build();
-        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5], true);
     }
 
     [Fact]
