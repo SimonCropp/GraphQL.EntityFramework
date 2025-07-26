@@ -56,7 +56,6 @@ partial class EfGraphQLService<TDbContext>
                 Failed to execute query for field `{name}`
                 ItemGraphType: {itemGraphType.FullName}
                 TReturn: {typeof(TReturn).FullName}
-                DisableAsync: {disableAsync}
                 """,
                 exception);
         }
@@ -114,7 +113,6 @@ partial class EfGraphQLService<TDbContext>
                 ItemGraphType: {itemGraphType.FullName}
                 TSource: {typeof(TSource).FullName}
                 TReturn: {typeof(TReturn).FullName}
-                DisableAsync: {disableAsync}
                 """,
                 exception);
         }
@@ -175,7 +173,6 @@ partial class EfGraphQLService<TDbContext>
                              TGraph: {typeof(TGraph).FullName}
                              TSource: {typeof(TSource).FullName}
                              TReturn: {typeof(TReturn).FullName}
-                             DisableAsync: {disableAsync}
                              KeyNames: {JoinKeys(names)}
                              Query: {query.ToQueryString()}
                              """,

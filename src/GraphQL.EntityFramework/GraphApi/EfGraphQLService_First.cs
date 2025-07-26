@@ -159,14 +159,7 @@ partial class EfGraphQLService<TDbContext>
                 TReturn? first;
                 try
                 {
-                    if (disableAsync)
-                    {
-                        first = query.FirstOrDefault();
-                    }
-                    else
-                    {
-                        first = await query.FirstOrDefaultAsync(context.CancellationToken);
-                    }
+                    first = await query.FirstOrDefaultAsync(context.CancellationToken);
                 }
                 catch (TaskCanceledException)
                 {
@@ -184,7 +177,6 @@ partial class EfGraphQLService<TDbContext>
                          GraphType: {graphType.FullName}
                          TSource: {typeof(TSource).FullName}
                          TReturn: {typeof(TReturn).FullName}
-                         DisableAsync: {disableAsync}
                          OmitQueryArguments: {omitQueryArguments}
                          Nullable: {nullable}
                          KeyNames: {JoinKeys(names)}

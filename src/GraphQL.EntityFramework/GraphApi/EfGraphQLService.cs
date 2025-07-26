@@ -6,7 +6,6 @@ public partial class EfGraphQLService<TDbContext> :
 {
     ResolveFilters<TDbContext>? resolveFilters;
     bool disableTracking;
-    bool disableAsync;
     ResolveDbContext<TDbContext> resolveDbContext;
     IReadOnlyDictionary<Type, List<string>> keyNames;
 
@@ -15,12 +14,10 @@ public partial class EfGraphQLService<TDbContext> :
         IModel model,
         ResolveDbContext<TDbContext> resolveDbContext,
         ResolveFilters<TDbContext>? resolveFilters = null,
-        bool disableTracking = false,
-        bool disableAsync = false)
+        bool disableTracking = false)
     {
         this.resolveFilters = resolveFilters;
         this.disableTracking = disableTracking;
-        this.disableAsync = disableAsync;
         this.resolveDbContext = resolveDbContext;
 
         keyNames = model.GetKeyNames();
