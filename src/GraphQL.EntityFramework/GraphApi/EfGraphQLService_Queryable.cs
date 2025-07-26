@@ -109,15 +109,8 @@ partial class EfGraphQLService<TDbContext>
 
                     try
                     {
-                        if (disableAsync)
-                        {
-                            list = query.ToList();
-                        }
-                        else
-                        {
                             list = await query
                                 .ToListAsync(context.CancellationToken);
-                        }
                     }
                     catch (TaskCanceledException)
                     {
@@ -137,7 +130,6 @@ partial class EfGraphQLService<TDbContext>
                              TReturn: {typeof(TReturn).FullName}
                              DisableTracking: {disableTracking}
                              HasId: {hasId}
-                             DisableAsync: {disableAsync}
                              KeyNames: {JoinKeys(names)}
                              Query: {query.ToQueryString()}
                              """,

@@ -6,8 +6,7 @@ static class QueryExecutor
         TDbContext data,
         Inputs? inputs,
         Filters<TDbContext>? filters,
-        bool disableTracking,
-        bool disableAsync)
+        bool disableTracking)
         where TDbContext : DbContext
     {
         EfGraphQLConventions.RegisterInContainer(
@@ -15,8 +14,7 @@ static class QueryExecutor
             (_, _) => data,
             data.Model,
             _ => filters,
-            disableTracking,
-            disableAsync);
+            disableTracking);
         await using var provider = services.BuildServiceProvider();
         using var schema = new Schema(provider);
         var executer = new EfDocumentExecuter();

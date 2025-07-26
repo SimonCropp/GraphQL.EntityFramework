@@ -3078,7 +3078,6 @@ public partial class IntegrationTests
         Filters<IntegrationDbContext>? filters,
         bool disableTracking,
         object[] entities,
-        bool disableAsync = false,
         [CallerFilePath] string sourceFile = "")
     {
         var dbContext = database.Context;
@@ -3099,7 +3098,7 @@ public partial class IntegrationTests
         string result;
         try
         {
-            result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking, disableAsync);
+            result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking);
         }
         catch (ExecutionError executionError)
         {
