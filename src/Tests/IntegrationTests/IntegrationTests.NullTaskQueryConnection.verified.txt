@@ -1,0 +1,9 @@
+﻿{
+  "data": {
+    "nullTaskQueryConnection": {
+      "totalCount": null,
+      "edges": null,
+      "items": null
+    }
+  }
+}

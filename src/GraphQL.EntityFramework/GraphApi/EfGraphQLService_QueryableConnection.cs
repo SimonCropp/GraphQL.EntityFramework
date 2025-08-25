@@ -9,7 +9,7 @@ partial class EfGraphQLService<TDbContext>
     public ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, IOrderedQueryable<TReturn>>? resolve = null,
+        Func<ResolveEfFieldContext<TDbContext, object>, IOrderedQueryable<TReturn>?>? resolve = null,
         Type? itemGraphType = null,
         bool omitQueryArguments = false)
         where TReturn : class =>
@@ -23,7 +23,7 @@ partial class EfGraphQLService<TDbContext>
     public ConnectionBuilder<object> AddQueryConnectionField<TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, Task<IOrderedQueryable<TReturn>>>? resolve = null,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IOrderedQueryable<TReturn>?>?>? resolve = null,
         Type? itemGraphType = null,
         bool omitQueryArguments = false)
         where TReturn : class
@@ -64,7 +64,7 @@ partial class EfGraphQLService<TDbContext>
     public ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IOrderedQueryable<TReturn>>? resolve = null,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IOrderedQueryable<TReturn>?>? resolve = null,
         Type? itemGraphType = null,
         bool omitQueryArguments = false)
         where TReturn : class =>
@@ -78,7 +78,7 @@ partial class EfGraphQLService<TDbContext>
     public ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IOrderedQueryable<TReturn>>>? resolve = null,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IOrderedQueryable<TReturn>?>?>? resolve = null,
         Type? itemGraphType = null,
         bool omitQueryArguments = false)
         where TReturn : class
@@ -121,7 +121,7 @@ partial class EfGraphQLService<TDbContext>
     ConnectionBuilder<TSource> AddQueryableConnection<TSource, TGraph, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IOrderedQueryable<TReturn>>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IOrderedQueryable<TReturn>?>?>? resolve,
         bool omitQueryArguments)
         where TGraph : IGraphType
         where TReturn : class
@@ -134,8 +134,20 @@ partial class EfGraphQLService<TDbContext>
             builder.ResolveAsync(
                 async context =>
                 {
-                    var efFieldContext = BuildContext(context);
-                    IQueryable<TReturn> query = await resolve(efFieldContext);
+                    var fieldContext = BuildContext(context);
+
+                    var task = resolve(fieldContext);
+                    if (task == null)
+                    {
+                        return new Connection<TSource>();
+                    }
+
+                    IQueryable<TReturn>? query = await task;
+                    if (query == null)
+                    {
+                        return new Connection<TSource>();
+                    }
+
                     if (disableTracking)
                     {
                         query = query.AsNoTracking();
@@ -154,8 +166,8 @@ partial class EfGraphQLService<TDbContext>
                                 context.Before!,
                                 context,
                                 context.CancellationToken,
-                                efFieldContext.Filters,
-                                efFieldContext.DbContext);
+                                fieldContext.Filters,
+                                fieldContext.DbContext);
                     }
                     catch (TaskCanceledException)
                     {

@@ -90,6 +90,54 @@
   parentEntityViewNullableFirst(where: [WhereExpression!]): ParentEntityView
   ownedParent(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
   ownedParentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
+  nullQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  nullQueryableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  nullTaskQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  nullTaskInnerQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  nullTaskQueryableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  nullTaskInnerQueryableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  nullQueryableSingleDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  nullQueryableFirstDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  nullTaskQueryableSingleDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  nullTaskInnerQueryableSingleDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  nullTaskQueryableFirstDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  nullTaskInnerQueryableFirstDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  nullQueryConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): ParentConnection!
+  nullTaskQueryConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): ParentConnection!
+  nullTaskInnerQueryConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): ParentConnection!
 }
 
 type CustomType {

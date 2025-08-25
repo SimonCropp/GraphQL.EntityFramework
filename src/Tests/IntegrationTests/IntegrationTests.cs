@@ -3021,4 +3021,262 @@ public partial class IntegrationTests
             .Assembly
             .GetTypes()
             .Where(_ => !_.IsAbstract && _.IsAssignableTo<GraphType>());
+
+    [Fact]
+    public async Task SingleNullQueryableSingle()
+    {
+        var query =
+            """
+            {
+              nullQueryableSingle(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullQueryableFirst()
+    {
+        var query =
+            """
+            {
+              nullQueryableFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullTaskQueryableSingle()
+    {
+        var query =
+            """
+            {
+              nullTaskQueryableSingle(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullTaskInnerQueryableSingle()
+    {
+        var query =
+            """
+            {
+              nullTaskInnerQueryableSingle(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullTaskQueryableFirst()
+    {
+        var query =
+            """
+            {
+              nullTaskQueryableFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullTaskInnerQueryableFirst()
+    {
+        var query =
+            """
+            {
+              nullTaskInnerQueryableFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task SingleNullQueryableSingleDisallowNull()
+    {
+        var query =
+            """
+            {
+              nullQueryableSingleDisallowNull(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullQueryableFirstDisallowNull()
+    {
+        var query =
+            """
+            {
+              nullQueryableFirstDisallowNull(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullTaskQueryableSingleDisallowNull()
+    {
+        var query =
+            """
+            {
+              nullTaskQueryableSingleDisallowNull(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullTaskInnerQueryableSingleDisallowNull()
+    {
+        var query =
+            """
+            {
+              nullTaskInnerQueryableSingleDisallowNull(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullTaskQueryableFirstDisallowNull()
+    {
+        var query =
+            """
+            {
+              nullTaskQueryableFirstDisallowNull(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullTaskInnerQueryableFirstDisallowNull()
+    {
+        var query =
+            """
+            {
+              nullTaskInnerQueryableFirstDisallowNull(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task NullQueryConnection()
+    {
+        var query =
+            """
+            {
+              nullQueryConnection(first:2, after: "0") {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    property
+                  }
+                }
+                items {
+                  property
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
+    [Fact]
+    public async Task NullTaskQueryConnection()
+    {
+        var query =
+            """
+            {
+              nullTaskQueryConnection(first:2, after: "0") {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    property
+                  }
+                }
+                items {
+                  property
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
+    [Fact]
+    public async Task NullTaskInnerQueryConnection()
+    {
+        var query =
+            """
+            {
+              nullTaskInnerQueryConnection(first:2, after: "0") {
+                totalCount
+                edges {
+                  cursor
+                  node {
+                    property
+                  }
+                }
+                items {
+                  property
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
 }

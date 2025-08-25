@@ -1,0 +1,4 @@
+﻿{
+  Type: FirstEntityNotFoundException,
+  Message: Not found
+}

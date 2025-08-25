@@ -6,7 +6,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<object, TReturn> AddFirstField<TReturn>(
         IObjectGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -22,7 +22,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<object, TReturn> AddFirstField<TReturn>(
         IObjectGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -38,7 +38,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<object, TReturn> AddFirstField<TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -54,7 +54,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<object, TReturn> AddFirstField<TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -70,7 +70,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddFirstField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -86,7 +86,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddFirstField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -101,7 +101,7 @@ partial class EfGraphQLService<TDbContext>
 
     FieldType BuildFirstField<TSource, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
         Type? graphType,
         bool nullable,
@@ -123,7 +123,7 @@ partial class EfGraphQLService<TDbContext>
 
     FieldType BuildFirstField<TSource, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
         Type? graphType,
         bool nullable,
@@ -143,9 +143,20 @@ partial class EfGraphQLService<TDbContext>
             Type = graphType,
             Resolver = new FuncFieldResolver<TSource, TReturn?>(async context =>
             {
-                var efFieldContext = BuildContext(context);
+                var fieldContext = BuildContext(context);
 
-                var query = await resolve(efFieldContext);
+                var task = resolve(fieldContext);
+                if (task == null)
+                {
+                    return ReturnNullable();
+                }
+
+                var query = await task;
+                if (query == null)
+                {
+                    return ReturnNullable();
+                }
+
                 if (disableTracking)
                 {
                     query = query.AsNoTracking();
@@ -187,24 +198,19 @@ partial class EfGraphQLService<TDbContext>
 
                 if (first is not null)
                 {
-                    if (efFieldContext.Filters == null ||
-                        await efFieldContext.Filters.ShouldInclude(context.UserContext, efFieldContext.DbContext, context.User, first))
+                    if (fieldContext.Filters == null ||
+                        await fieldContext.Filters.ShouldInclude(context.UserContext, fieldContext.DbContext, context.User, first))
                     {
                         if (mutate is not null)
                         {
-                            await mutate.Invoke(efFieldContext, first);
+                            await mutate.Invoke(fieldContext, first);
                         }
 
                         return first;
                     }
                 }
 
-                if (nullable)
-                {
-                    return null;
-                }
-
-                throw new FirstEntityNotFoundException();
+                return ReturnNullable();
             })
         };
 
@@ -214,5 +220,8 @@ partial class EfGraphQLService<TDbContext>
         }
 
         return type;
+
+        TReturn? ReturnNullable() =>
+            nullable ? null : throw new FirstEntityNotFoundException();
     }
 }

@@ -178,5 +178,80 @@
             name: "ownedParentFirst",
             resolve: _ => _.DbContext.OwnedParents,
             nullable: true);
+
+        AddSingleField(
+            name: "nullQueryableSingle",
+            resolve: IQueryable<ParentEntity>? (_) => null,
+            nullable: true);
+
+        AddFirstField(
+            name: "nullQueryableFirst",
+            resolve: IQueryable<ParentEntity>? (_) => null,
+            nullable: true);
+
+        AddSingleField(
+            name: "nullTaskQueryableSingle",
+            resolve: Task<IQueryable<ParentEntity>?>? (_) => null,
+            nullable: true);
+
+        AddSingleField(
+            name: "nullTaskInnerQueryableSingle",
+            resolve: Task<IQueryable<ParentEntity>?>? (_) => Task.FromResult<IQueryable<ParentEntity>?>(null),
+            nullable: true);
+
+        AddFirstField(
+            name: "nullTaskQueryableFirst",
+            resolve: Task<IQueryable<ParentEntity>?>? (_) => null,
+            nullable: true);
+
+        AddFirstField(
+            name: "nullTaskInnerQueryableFirst",
+            resolve: Task<IQueryable<ParentEntity>?>? (_) => Task.FromResult<IQueryable<ParentEntity>?>(null),
+            nullable: true);
+
+        AddSingleField(
+            name: "nullQueryableSingleDisallowNull",
+            resolve: IQueryable<ParentEntity>? (_) => null);
+
+        AddFirstField(
+            name: "nullQueryableFirstDisallowNull",
+            resolve: IQueryable<ParentEntity>? (_) => null);
+
+        AddSingleField(
+            name: "nullTaskQueryableSingleDisallowNull",
+            resolve: Task<IQueryable<ParentEntity>?>? (_) => null);
+
+        AddSingleField(
+            name: "nullTaskInnerQueryableSingleDisallowNull",
+            resolve: Task<IQueryable<ParentEntity>?>? (_) => Task.FromResult<IQueryable<ParentEntity>?>(null));
+
+        AddFirstField(
+            name: "nullTaskQueryableFirstDisallowNull",
+            resolve: Task<IQueryable<ParentEntity>?>? (_) => null);
+
+        AddFirstField(
+            name: "nullTaskInnerQueryableFirstDisallowNull",
+            resolve: Task<IQueryable<ParentEntity>?>? (_) => Task.FromResult<IQueryable<ParentEntity>?>(null));
+
+        efGraphQlService
+            .AddQueryConnectionField<ParentGraphType, ParentEntity>(
+                this,
+                name: "nullQueryConnection",
+                resolve: IOrderedQueryable<ParentEntity>? (_) => null)
+            .PageSize(10);
+
+        efGraphQlService
+            .AddQueryConnectionField<ParentGraphType, ParentEntity>(
+                this,
+                name: "nullTaskQueryConnection",
+                resolve: Task<IOrderedQueryable<ParentEntity>?>? (_) => null)
+            .PageSize(10);
+
+        efGraphQlService
+            .AddQueryConnectionField<ParentGraphType, ParentEntity>(
+                this,
+                name: "nullTaskInnerQueryConnection",
+                resolve: Task<IOrderedQueryable<ParentEntity>?>? (_) => Task.FromResult<IOrderedQueryable<ParentEntity>?>(null))
+            .PageSize(10);
     }
 }
