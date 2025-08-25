@@ -6,7 +6,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         IObjectGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -22,7 +22,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         IObjectGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -38,7 +38,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -54,7 +54,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<object, TReturn> AddSingleField<TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, object>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -70,7 +70,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddSingleField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -86,7 +86,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddSingleField<TSource, TReturn>(
         IComplexGraphType graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -101,7 +101,7 @@ partial class EfGraphQLService<TDbContext>
 
     FieldType BuildSingleField<TSource, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
         Type? graphType,
         bool nullable,
@@ -123,7 +123,7 @@ partial class EfGraphQLService<TDbContext>
 
     FieldType BuildSingleField<TSource, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate,
         Type? graphType,
         bool nullable,
@@ -144,9 +144,20 @@ partial class EfGraphQLService<TDbContext>
             Resolver = new FuncFieldResolver<TSource, TReturn?>(
                 async context =>
                 {
-                    var efFieldContext = BuildContext(context);
+                    var fieldContext = BuildContext(context);
 
-                    var query = await resolve(efFieldContext);
+                    var task = resolve(fieldContext);
+                    if (task == null)
+                    {
+                        return ReturnNullable();
+                    }
+
+                    var query = await task;
+                    if (query == null)
+                    {
+                        return ReturnNullable();
+                    }
+
                     if (disableTracking)
                     {
                         query = query.AsNoTracking();
@@ -188,24 +199,19 @@ partial class EfGraphQLService<TDbContext>
 
                     if (single is not null)
                     {
-                        if (efFieldContext.Filters == null ||
-                            await efFieldContext.Filters.ShouldInclude(context.UserContext, efFieldContext.DbContext, context.User, single))
+                        if (fieldContext.Filters == null ||
+                            await fieldContext.Filters.ShouldInclude(context.UserContext, fieldContext.DbContext, context.User, single))
                         {
                             if (mutate is not null)
                             {
-                                await mutate.Invoke(efFieldContext, single);
+                                await mutate.Invoke(fieldContext, single);
                             }
 
                             return single;
                         }
                     }
 
-                    if (nullable)
-                    {
-                        return null;
-                    }
-
-                    throw new SingleEntityNotFoundException();
+                    return ReturnNullable();
                 })
         };
 
@@ -215,5 +221,8 @@ partial class EfGraphQLService<TDbContext>
         }
 
         return type;
+
+        TReturn? ReturnNullable() =>
+            nullable ? null : throw new SingleEntityNotFoundException();
     }
 }

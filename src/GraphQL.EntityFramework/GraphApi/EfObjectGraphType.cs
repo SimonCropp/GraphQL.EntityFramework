@@ -45,14 +45,14 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public ConnectionBuilder<TSource> AddQueryConnectionField<TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IOrderedQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IOrderedQueryable<TReturn>?> resolve,
         Type? graphType = null)
         where TReturn : class =>
         GraphQlService.AddQueryConnectionField(this, name, resolve, graphType);
 
     public FieldBuilder<TSource, TReturn> AddQueryField<TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>?> resolve,
         Type? graphType = null,
         bool omitQueryArguments = false)
         where TReturn : class =>
@@ -60,7 +60,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddQueryField<TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>?>?> resolve,
         Type? graphType = null,
         bool omitQueryArguments = false)
         where TReturn : class =>
@@ -74,7 +74,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddSingleField<TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -85,7 +85,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddSingleField<TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -96,7 +96,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddFirstField<TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TReturn>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
@@ -107,7 +107,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddFirstField<TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>>> resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TReturn>?>?> resolve,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn, Task>? mutate = null,
         Type? graphType = null,
         bool nullable = false,
