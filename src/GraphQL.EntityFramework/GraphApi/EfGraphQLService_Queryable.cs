@@ -121,8 +121,14 @@ partial class EfGraphQLService<TDbContext>
 
                     try
                     {
-                        list = await query
-                            .ToListAsync(context.CancellationToken);
+                        if (query.Provider is IAsyncQueryProvider)
+                        {
+                            list = await query.ToListAsync(context.CancellationToken);
+                        }
+                        else
+                        {
+                            list = query.ToList();
+                        }
                     }
                     catch (TaskCanceledException)
                     {

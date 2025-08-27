@@ -180,6 +180,47 @@
             nullable: true);
 
         AddSingleField(
+            name: "iQueryableSingle",
+            resolve: IQueryable<ParentEntity>? (_) =>
+            {
+                List<ParentEntity> items = [
+                    new()
+                    {
+                        Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                        Property = "Foo"
+                    }];
+                return items.AsQueryable();
+            },
+            nullable: true);
+
+        AddFirstField(
+            name: "iQueryableFirst",
+            resolve: IQueryable<ParentEntity>? (_) =>
+            {
+                List<ParentEntity> items = [
+                    new()
+                    {
+                        Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                        Property = "Foo"
+                    }];
+                return items.AsQueryable();
+            },
+            nullable: true);
+
+        AddQueryField(
+            name: "iQueryable",
+            resolve: IQueryable<ParentEntity>? (_) =>
+            {
+                List<ParentEntity> items = [
+                    new()
+                    {
+                        Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                        Property = "Foo"
+                    }];
+                return items.AsQueryable();
+            });
+
+        AddSingleField(
             name: "nullQueryableSingle",
             resolve: IQueryable<ParentEntity>? (_) => null,
             nullable: true);

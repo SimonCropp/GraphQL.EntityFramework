@@ -3023,6 +3023,51 @@ public partial class IntegrationTests
             .Where(_ => !_.IsAbstract && _.IsAssignableTo<GraphType>());
 
     [Fact]
+    public async Task IQueryableFirst()
+    {
+        var query =
+            """
+            {
+              iQueryableFirst(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task IQueryableSingle()
+    {
+        var query =
+            """
+            {
+              iQueryableSingle(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
+    public async Task IQueryable()
+    {
+        var query =
+            """
+            {
+              iQueryable(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
+    }
+
+    [Fact]
     public async Task SingleNullQueryableSingle()
     {
         var query =

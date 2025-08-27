@@ -90,6 +90,9 @@
   parentEntityViewNullableFirst(where: [WhereExpression!]): ParentEntityView
   ownedParent(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
   ownedParentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
+  iQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  iQueryableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  iQueryable(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
   nullQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
   nullQueryableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
   nullTaskQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
