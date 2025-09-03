@@ -1,4 +1,13 @@
 ﻿{
   Type: SingleEntityNotFoundException,
-  Message: Not found
+  Message:
+Not found.
+Query:
+SELECT [c].[Id], [c].[Content]
+FROM [Companies] AS [c]
+WHERE [c].[Id] = 99,
+  Query:
+SELECT [c].[Id], [c].[Content]
+FROM [Companies] AS [c]
+WHERE [c].[Id] = 99
 }

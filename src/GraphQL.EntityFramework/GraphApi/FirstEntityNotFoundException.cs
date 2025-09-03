@@ -1,6 +1,6 @@
 namespace GraphQL.EntityFramework;
 
-public class SingleEntityNotFoundException(string? query = null) :
+public class FirstEntityNotFoundException(string? query = null) :
     Exception
 {
     public override string Message

@@ -218,7 +218,7 @@ partial class EfGraphQLService<TDbContext>
                         }
                     }
 
-                    return ReturnNullable();
+                    return ReturnNullable(query);
                 })
         };
 
@@ -229,7 +229,7 @@ partial class EfGraphQLService<TDbContext>
 
         return type;
 
-        TReturn? ReturnNullable() =>
-            nullable ? null : throw new SingleEntityNotFoundException();
+        TReturn? ReturnNullable(IQueryable<TReturn>? query = null) =>
+            nullable ? null : throw new SingleEntityNotFoundException(query?.ToQueryString());
     }
 }

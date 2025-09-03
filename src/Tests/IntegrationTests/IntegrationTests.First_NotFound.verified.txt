@@ -1,7 +1,16 @@
 ﻿{
   target: {
     Type: FirstEntityNotFoundException,
-    Message: Not found
+    Message:
+Not found.
+Query:
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+WHERE [p].[Id] = '00000000-0000-0000-0000-000000000001',
+    Query:
+SELECT [p].[Id], [p].[Property]
+FROM [ParentEntities] AS [p]
+WHERE [p].[Id] = '00000000-0000-0000-0000-000000000001'
   },
   sql: {
     Text:
