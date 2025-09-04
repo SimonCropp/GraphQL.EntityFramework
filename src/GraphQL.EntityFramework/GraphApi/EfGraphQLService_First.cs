@@ -198,7 +198,7 @@ partial class EfGraphQLService<TDbContext>
                          OmitQueryArguments: {omitQueryArguments}
                          Nullable: {nullable}
                          KeyNames: {JoinKeys(names)}
-                         Query: {query.ToQueryString()}
+                         Query: {query.SafeToQueryString()}
                          """,
                         exception);
                 }
@@ -229,6 +229,6 @@ partial class EfGraphQLService<TDbContext>
         return type;
 
         TReturn? ReturnNullable(IQueryable<TReturn>? query = null) =>
-            nullable ? null : throw new FirstEntityNotFoundException(query?.ToQueryString());
+            nullable ? null : throw new FirstEntityNotFoundException(query?.SafeToQueryString());
     }
 }

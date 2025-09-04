@@ -1,4 +1,17 @@
 ﻿{
-  Type: InvalidOperationException,
-  Message: An error was generated for warning 'Microsoft.EntityFrameworkCore.Query.RowLimitingOperationWithoutOrderByWarning': The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased. This exception can be suppressed or logged by passing event ID 'CoreEventId.RowLimitingOperationWithoutOrderByWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+  Type: Exception,
+  Message:
+Failed to execute query for field `parentEntities`
+GraphType: GraphQL.Types.NonNullGraphType`1[[GraphQL.Types.ListGraphType`1[[GraphQL.Types.NonNullGraphType`1[[ParentGraphType, Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=ef9e5a364f5893c5]], GraphQL, Version=8.5.0.0, Culture=neutral, PublicKeyToken=e6238258560628ee]], GraphQL, Version=8.5.0.0, Culture=neutral, PublicKeyToken=e6238258560628ee]]
+TSource: System.Object
+TReturn: ParentEntity
+DisableTracking: False
+HasId: True
+KeyNames: Id
+Query: Could not resolve ToQueryString: An error was generated for warning 'Microsoft.EntityFrameworkCore.Query.RowLimitingOperationWithoutOrderByWarning': The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased. This exception can be suppressed or logged by passing event ID 'CoreEventId.RowLimitingOperationWithoutOrderByWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.,
+  InnerException: {
+    $type: InvalidOperationException,
+    Type: InvalidOperationException,
+    Message: An error was generated for warning 'Microsoft.EntityFrameworkCore.Query.RowLimitingOperationWithoutOrderByWarning': The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased. This exception can be suppressed or logged by passing event ID 'CoreEventId.RowLimitingOperationWithoutOrderByWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+  }
 }

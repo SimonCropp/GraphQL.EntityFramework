@@ -149,7 +149,7 @@ partial class EfGraphQLService<TDbContext>
                              DisableTracking: {disableTracking}
                              HasId: {hasId}
                              KeyNames: {JoinKeys(names)}
-                             Query: {query.ToQueryString()}
+                             Query: {query.SafeToQueryString()}
                              """,
                             exception);
                     }

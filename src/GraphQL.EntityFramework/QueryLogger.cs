@@ -8,5 +8,5 @@ public static class QueryLogger
         QueryLogger.log = log;
 
     internal static void Write(IQueryable queryable) =>
-        log?.Invoke(queryable.ToQueryString());
+        log?.Invoke(queryable.SafeToQueryString());
 }
