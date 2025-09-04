@@ -19,7 +19,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.1" />
-    <PackageVersion Include="Polyfill" Version="8.8.0" />
+    <PackageVersion Include="Polyfill" Version="8.8.1" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.157" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="9.0.0" />
     <PackageVersion Include="Verify.SqlServer" Version="11.1.3" />
