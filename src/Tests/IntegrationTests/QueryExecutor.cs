@@ -23,7 +23,6 @@ static class QueryExecutor
         {
             Schema = schema,
             Query = query,
-            ThrowOnUnhandledException = true,
             Variables = inputs,
             RequestServices = provider,
         };
