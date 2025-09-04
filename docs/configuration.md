@@ -659,9 +659,10 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     this IDocumentExecuter executer,
     ExecutionOptions options)
 {
+    options.ThrowOnUnhandledException = true;
+
     var executionResult = await executer.ExecuteAsync(options);
 
-    options.ThrowOnUnhandledException = true;
     var errors = executionResult.Errors;
     if (errors is { Count: > 0 })
     {
@@ -676,7 +677,7 @@ public static async Task<ExecutionResult> ExecuteWithErrorCheck(
     return executionResult;
 }
 ```
-<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L5-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-ExecuteWithErrorCheck' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/GraphQlExtensions.cs#L5-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-ExecuteWithErrorCheck' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
