@@ -8,9 +8,10 @@ public static class GraphQlExtensions
         this IDocumentExecuter executer,
         ExecutionOptions options)
     {
+        options.ThrowOnUnhandledException = true;
+
         var executionResult = await executer.ExecuteAsync(options);
 
-        options.ThrowOnUnhandledException = true;
         var errors = executionResult.Errors;
         if (errors is { Count: > 0 })
         {
