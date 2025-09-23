@@ -8,9 +8,9 @@
     <PackageVersion Include="EfLocalDb" Version="20.3.0" />
     <PackageVersion Include="Fody" Version="6.9.3" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
-    <PackageVersion Include="GraphQL" Version="8.5.0" />
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.5.0" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.5.0" />
+    <PackageVersion Include="GraphQL" Version="8.6.0" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.6.0" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.6.0" />
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.0.0-beta.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.9" />
