@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../readme.source.md" />
+    <File Path=".editorconfig" />
+    <File Path="appveyor.yml" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="mdsnippets.json" />
+  </Folder>
+  <Project Path="GraphQL.EntityFramework/GraphQL.EntityFramework.csproj" />
+  <Project Path="SampleWeb.Tests/SampleWeb.Tests.csproj" />
+  <Project Path="SampleWeb/SampleWeb.csproj" />
+  <Project Path="Snippets/Snippets.csproj" />
+  <Project Path="Tests/Tests.csproj" />
+</Solution>
