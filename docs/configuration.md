@@ -688,24 +688,24 @@ Map a [table-per-hierarchy (TPH) EF Core pattern](https://docs.microsoft.com/en-
 
 ### EF Core Entities
 
-<!-- snippet: InheritedEntity.cs -->
-<a id='snippet-InheritedEntity.cs'></a>
+<!-- snippet: BaseEntity.cs -->
+<a id='snippet-BaseEntity.cs'></a>
 ```cs
-public abstract class InheritedEntity
+public abstract class BaseEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string? Property { get; set; }
     public IList<DerivedChildEntity> ChildrenFromBase { get; set; } = [];
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InheritedEntity.cs#L1-L6' title='Snippet source file'>snippet source</a> | <a href='#snippet-InheritedEntity.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/BaseEntity.cs#L1-L6' title='Snippet source file'>snippet source</a> | <a href='#snippet-BaseEntity.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 <!-- snippet: DerivedEntity.cs -->
 <a id='snippet-DerivedEntity.cs'></a>
 ```cs
 public class DerivedEntity :
-    InheritedEntity;
+    BaseEntity;
 ```
 <sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedEntity.cs#L1-L3' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedEntity.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
@@ -713,24 +713,20 @@ public class DerivedEntity :
 
 ### GraphQL types
 
-<!-- snippet: InterfaceGraphType.cs -->
-<a id='snippet-InterfaceGraphType.cs'></a>
+<!-- snippet: BaseGraphType.cs -->
+<a id='snippet-BaseGraphType.cs'></a>
 ```cs
-public class InterfaceGraphType :
-    EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
+public class BaseGraphType :
+    EfInterfaceGraphType<IntegrationDbContext, BaseEntity>
 {
-    public InterfaceGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
-        base(graphQlService)
-    {
-        Field(_ => _.Id);
-        Field(_ => _.Property, nullable: true);
+    public BaseGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+        base(graphQlService) =>
         AddNavigationConnectionField<DerivedChildEntity>(
             name: "childrenFromInterface",
-            includeNames: [ "ChildrenFromBase" ]);
-    }
+            includeNames: ["ChildrenFromBase"]);
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/InterfaceGraphType.cs#L1-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-InterfaceGraphType.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/BaseGraphType.cs#L1-L9' title='Snippet source file'>snippet source</a> | <a href='#snippet-BaseGraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 <!-- snippet: DerivedGraphType.cs -->
@@ -746,7 +742,7 @@ public class DerivedGraphType :
             name: "childrenFromInterface",
             _ => _.Source.ChildrenFromBase);
         AutoMap();
-        Interface<InterfaceGraphType>();
+        Interface<BaseGraphType>();
         IsTypeOf = obj => obj is DerivedEntity;
     }
 }
