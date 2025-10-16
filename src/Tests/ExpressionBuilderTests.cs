@@ -1,5 +1,21 @@
 public class ExpressionBuilderTests
 {
+    [Theory, CombinatorialData]
+    public Task BuildPredicate_Comparison(Comparison comparison)
+    {
+        object result;
+        try
+        {
+            result = ExpressionBuilder<Target>.BuildPredicate("Member.Length", comparison, ["2"]);
+        }
+        catch (Exception exception)
+        {
+            result = exception;
+        }
+
+        return Verify(result);
+    }
+
     public class Target
     {
         public string? Member { get; set; }

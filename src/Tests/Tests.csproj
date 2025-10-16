@@ -10,7 +10,9 @@
     <PackageReference Include="GraphQL.SystemTextJson" />
     <PackageReference Include="EfLocalDb" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Verify.ReadableExpressions" />
     <PackageReference Include="Verify.SqlServer" />
+    <PackageReference Include="Xunit.Combinatorial" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="Verify.XunitV3" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />

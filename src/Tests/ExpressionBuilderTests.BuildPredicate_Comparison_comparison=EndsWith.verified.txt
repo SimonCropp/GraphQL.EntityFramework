@@ -1,0 +1,18 @@
+﻿{
+  Type: Exception,
+  Message: Failed to build expression. Path: Member.Length, Comparison: EndsWith, Negate: False, ,
+  InnerException: {
+    $type: Exception,
+    Type: Exception,
+    Message: Cannot perform EndsWith on System.Int32.,
+    StackTrace:
+at WhereValidator.ValidateObject(Type propertyType, Comparison comparison)
+at WhereValidator.ValidateSingleObject(Type propertyType, Comparison comparison)
+at GraphQL.EntityFramework.ExpressionBuilder`1.GetExpression(String path, Comparison comparison, String[] values)
+at GraphQL.EntityFramework.ExpressionBuilder`1.MakePredicateBody(String path, Comparison comparison, String[] values, Boolean negate)
+  },
+  StackTrace:
+at GraphQL.EntityFramework.ExpressionBuilder`1.MakePredicateBody(String path, Comparison comparison, String[] values, Boolean negate)
+at GraphQL.EntityFramework.ExpressionBuilder`1.BuildPredicate(String path, Comparison comparison, String[] values, Boolean negate)
+at ExpressionBuilderTests.BuildPredicate_Comparison(Comparison comparison)
+}
