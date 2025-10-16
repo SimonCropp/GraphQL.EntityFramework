@@ -194,14 +194,14 @@ Map a [table-per-hierarchy (TPH) EF Core pattern](https://docs.microsoft.com/en-
 
 ### EF Core Entities
 
-snippet: InheritedEntity.cs
+snippet: BaseEntity.cs
 
 snippet: DerivedEntity.cs
 
 
 ### GraphQL types
 
-snippet: InterfaceGraphType.cs
+snippet: BaseGraphType.cs
 
 snippet: DerivedGraphType.cs
 

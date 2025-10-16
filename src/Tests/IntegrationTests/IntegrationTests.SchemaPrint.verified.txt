@@ -461,7 +461,7 @@ type BaseConnection {
   "A list of all of the edges returned in the connection."
   edges: [BaseEdge]
   "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
-  items: [Base]
+  items: [BaseEntity]
 }
 
 "An edge in a connection from an object to another object of type `Base`."
@@ -469,12 +469,13 @@ type BaseEdge {
   "A cursor for use in pagination"
   cursor: String!
   "The item at the end of the edge"
-  node: Base
+  node: BaseEntity
 }
 
-interface Base {
+interface BaseEntity {
   id: ID!
   property: String
+  childrenFromBase: [DerivedChild!]!
   childrenFromInterface(
     "Only return edges after the specified cursor."
     after: String,
@@ -487,6 +488,13 @@ interface Base {
     where: [WhereExpression!],
     orderBy: [OrderBy!],
     ids: [ID!]): DerivedChildConnection!
+}
+
+type DerivedChild {
+  id: ID!
+  parentId: ID
+  property: String
+  typedParentId: ID
 }
 
 "A connection from an object to a list of objects of type `DerivedChild`."
@@ -507,13 +515,6 @@ type DerivedChildEdge {
   cursor: String!
   "The item at the end of the edge"
   node: DerivedChild!
-}
-
-type DerivedChild {
-  id: ID!
-  parentId: ID
-  property: String
-  typedParentId: ID
 }
 
 type ManyToManyLeft {
@@ -567,7 +568,7 @@ type Mutation {
   parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
 }
 
-type Derived implements Base {
+type Derived implements BaseEntity {
   childrenFromInterface(
     "Only return edges after the specified cursor."
     after: String,
@@ -585,7 +586,7 @@ type Derived implements Base {
   property: String
 }
 
-type DerivedWithNavigation implements Base {
+type DerivedWithNavigation implements BaseEntity {
   childrenFromInterface(
     "Only return edges after the specified cursor."
     after: String,

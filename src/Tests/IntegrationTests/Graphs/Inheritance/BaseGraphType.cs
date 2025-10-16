@@ -2,12 +2,8 @@
     EfInterfaceGraphType<IntegrationDbContext, BaseEntity>
 {
     public BaseGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
-        base(graphQlService)
-    {
-        Field(_ => _.Id);
-        Field(_ => _.Property, nullable: true);
+        base(graphQlService) =>
         AddNavigationConnectionField<DerivedChildEntity>(
             name: "childrenFromInterface",
-            includeNames: [ "ChildrenFromBase" ]);
-    }
+            includeNames: ["ChildrenFromBase"]);
 }
