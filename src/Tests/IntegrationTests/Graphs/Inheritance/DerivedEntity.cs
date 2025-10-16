@@ -1,3 +1,3 @@
 ﻿
 public class DerivedEntity :
-    InheritedEntity;
+    BaseEntity;

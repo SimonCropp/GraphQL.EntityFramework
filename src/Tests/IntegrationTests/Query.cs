@@ -131,11 +131,11 @@
             resolve: _ => _.DbContext.ParentEntities,
             nullable: true);
 
-        efGraphQlService.AddQueryConnectionField<InheritedEntity>(
+        efGraphQlService.AddQueryConnectionField<BaseEntity>(
             this,
-            itemGraphType: typeof(InterfaceGraphType),
+            itemGraphType: typeof(BaseGraphType),
             name: "interfaceGraphConnection",
-            resolve: _ => _.DbContext.InheritedEntities.OrderBy(_ => _.Property));
+            resolve: _ => _.DbContext.BaseEntities.OrderBy(_ => _.Property));
 
         AddQueryField(
             name: "manyToManyLeftEntities",

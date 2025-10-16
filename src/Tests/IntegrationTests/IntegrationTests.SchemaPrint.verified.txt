@@ -69,7 +69,7 @@
     last: Int,
     where: [WhereExpression!],
     orderBy: [OrderBy!],
-    ids: [ID!]): InterfaceConnection!
+    ids: [ID!]): BaseConnection!
   manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
   manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
   parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentEntityView!]!
@@ -452,27 +452,27 @@ type FilterParentEdge {
   node: FilterParent!
 }
 
-"A connection from an object to a list of objects of type `Interface`."
-type InterfaceConnection {
+"A connection from an object to a list of objects of type `Base`."
+type BaseConnection {
   "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
   totalCount: Int
   "Information to aid in pagination."
   pageInfo: PageInfo!
   "A list of all of the edges returned in the connection."
-  edges: [InterfaceEdge]
+  edges: [BaseEdge]
   "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
-  items: [Interface]
+  items: [Base]
 }
 
-"An edge in a connection from an object to another object of type `Interface`."
-type InterfaceEdge {
+"An edge in a connection from an object to another object of type `Base`."
+type BaseEdge {
   "A cursor for use in pagination"
   cursor: String!
   "The item at the end of the edge"
-  node: Interface
+  node: Base
 }
 
-interface Interface {
+interface Base {
   id: ID!
   property: String
   childrenFromInterface(
@@ -567,7 +567,7 @@ type Mutation {
   parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
 }
 
-type Derived implements Interface {
+type Derived implements Base {
   childrenFromInterface(
     "Only return edges after the specified cursor."
     after: String,
@@ -585,7 +585,7 @@ type Derived implements Interface {
   property: String
 }
 
-type DerivedWithNavigation implements Interface {
+type DerivedWithNavigation implements Base {
   childrenFromInterface(
     "Only return edges after the specified cursor."
     after: String,

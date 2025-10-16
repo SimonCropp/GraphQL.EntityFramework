@@ -1,7 +1,7 @@
-﻿public class InterfaceGraphType :
-    EfInterfaceGraphType<IntegrationDbContext, InheritedEntity>
+﻿public class BaseGraphType :
+    EfInterfaceGraphType<IntegrationDbContext, BaseEntity>
 {
-    public InterfaceGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+    public BaseGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService)
     {
         Field(_ => _.Id);

@@ -1,4 +1,4 @@
-﻿public class DerivedWithNavigationEntity : InheritedEntity
+﻿public class DerivedWithNavigationEntity : BaseEntity
 {
     public IList<DerivedChildEntity> Children { get; set; } = [];
 }

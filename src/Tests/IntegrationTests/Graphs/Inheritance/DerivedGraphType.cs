@@ -8,7 +8,7 @@
             name: "childrenFromInterface",
             _ => _.Source.ChildrenFromBase);
         AutoMap();
-        Interface<InterfaceGraphType>();
+        Interface<BaseGraphType>();
         IsTypeOf = obj => obj is DerivedEntity;
     }
 }

@@ -23,7 +23,7 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<Child1Entity> Child1Entities { get; set; } = null!;
     public DbSet<Child2Entity> Child2Entities { get; set; } = null!;
     public DbSet<ParentEntityView> ParentEntityView { get; set; } = null!;
-    public DbSet<InheritedEntity> InheritedEntities { get; set; } = null!;
+    public DbSet<BaseEntity> BaseEntities { get; set; } = null!;
     public DbSet<ManyToManyLeftEntity> ManyToManyLeftEntities { get; set; } = null!;
     public DbSet<ManyToManyRightEntity> ManyToManyRightEntities { get; set; } = null!;
     public DbSet<ManyToManyMiddleEntity> ManyToManyMiddleEntities { get; set; } = null!;
@@ -58,9 +58,9 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<NamedIdEntity>();
         modelBuilder.Entity<OwnedParent>();
         modelBuilder.Entity<Child2Entity>();
-        modelBuilder.Entity<DerivedEntity>().HasBaseType<InheritedEntity>();
+        modelBuilder.Entity<DerivedEntity>().HasBaseType<BaseEntity>();
         modelBuilder.Entity<DerivedWithNavigationEntity>()
-            .HasBaseType<InheritedEntity>()
+            .HasBaseType<BaseEntity>()
             .HasMany(_ => _.Children)
             .WithOne(_ => _.TypedParent!)
             .HasForeignKey(_ => _.TypedParentId);

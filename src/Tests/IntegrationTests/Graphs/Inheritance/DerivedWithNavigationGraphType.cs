@@ -12,7 +12,7 @@
             _ => _.Source.Children,
             includeNames: [ "Children" ]);
         AutoMap();
-        Interface<InterfaceGraphType>();
+        Interface<BaseGraphType>();
         IsTypeOf = obj => obj is DerivedWithNavigationEntity;
     }
 }
