@@ -1,18 +1,16 @@
 ﻿namespace GraphQL.EntityFramework;
 
-public class EfInterfaceGraphType<TDbContext, TSource> :
-    AutoRegisteringInterfaceGraphType<TSource>
+public class EfInterfaceGraphType<TDbContext, TSource>(
+    IEfGraphQLService<TDbContext> graphQlService,
+    params Expression<Func<TSource, object?>>[]? excludedProperties) :
+        AutoRegisteringInterfaceGraphType<TSource>(excludedProperties)
     where TDbContext : DbContext
 {
     public EfInterfaceGraphType(IEfGraphQLService<TDbContext> graphQlService):this(graphQlService, null)
     {
     }
 
-    public EfInterfaceGraphType(IEfGraphQLService<TDbContext> graphQlService,params Expression<Func<TSource, object?>>[]? excludedProperties) :
-        base(excludedProperties) =>
-        GraphQlService = graphQlService;
-
-    public IEfGraphQLService<TDbContext> GraphQlService { get; }
+    public IEfGraphQLService<TDbContext> GraphQlService { get; } = graphQlService;
 
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,
