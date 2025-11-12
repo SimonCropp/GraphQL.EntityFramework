@@ -1,4 +1,5 @@
-﻿public class Program
+﻿#pragma warning disable ASPDEPR008
+public class Program
 {
     public static Task Main()
     {

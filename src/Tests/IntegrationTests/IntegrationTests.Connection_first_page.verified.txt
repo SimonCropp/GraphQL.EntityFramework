@@ -41,10 +41,10 @@ select   p.Id,
          p.Property
 from     ParentEntities as p
 order by p.Id
-offset @__p_0 rows fetch next @__p_1 rows only,
+offset @p rows fetch next @p0 rows only,
       Parameters: {
-        @__p_0: 1,
-        @__p_1: 2
+        @p: 1,
+        @p0: 2
       }
     }
   ]

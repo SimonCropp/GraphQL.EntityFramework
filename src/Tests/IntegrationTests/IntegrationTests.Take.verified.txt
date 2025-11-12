@@ -11,12 +11,12 @@
 },
   sql: {
     Text:
-select   top (@__p_0) p.Id,
-                      p.Property
+select   top (@p) p.Id,
+                  p.Property
 from     ParentEntities as p
 order by p.Property,
     Parameters: {
-      @__p_0: 1
+      @p: 1
     }
   }
 }
