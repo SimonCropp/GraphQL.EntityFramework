@@ -32,10 +32,10 @@ select   f.Id,
          f.Property
 from     FilterParentEntities as f
 order by f.Id
-offset @__p_0 rows fetch next @__p_1 rows only,
+offset @p rows fetch next @p0 rows only,
       Parameters: {
-        @__p_0: 0,
-        @__p_1: 10
+        @p: 0,
+        @p0: 10
       }
     }
   ]

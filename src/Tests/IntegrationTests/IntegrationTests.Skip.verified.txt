@@ -15,9 +15,9 @@ select   p.Id,
          p.Property
 from     ParentEntities as p
 order by p.Property
-offset @__p_0 rows,
+offset @p rows,
     Parameters: {
-      @__p_0: 1
+      @p: 1
     }
   }
 }

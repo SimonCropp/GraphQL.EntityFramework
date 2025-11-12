@@ -639,7 +639,7 @@ public class GraphQlControllerTests
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L5-L250' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L7-L252' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
