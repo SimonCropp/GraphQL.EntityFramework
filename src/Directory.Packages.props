@@ -11,7 +11,7 @@
     <PackageVersion Include="GraphQL" Version="8.8.0" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.0" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.0" />
-    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.0.0-beta.7" />
+    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.0.0-beta.8" />
     <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.3" />
@@ -19,7 +19,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.4" />
-    <PackageVersion Include="Polyfill" Version="9.2.0" />
+    <PackageVersion Include="Polyfill" Version="9.3.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.162" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="9.0.0" />
     <PackageVersion Include="Verify.SqlServer" Version="11.2.0" />
