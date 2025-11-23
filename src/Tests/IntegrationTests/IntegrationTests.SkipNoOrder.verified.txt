@@ -2,7 +2,7 @@
   Type: Exception,
   Message:
 Failed to execute query for field `parentEntities`
-GraphType: GraphQL.Types.NonNullGraphType`1[[GraphQL.Types.ListGraphType`1[[GraphQL.Types.NonNullGraphType`1[[ParentGraphType, Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=ef9e5a364f5893c5]], GraphQL, Version=8.7.0.0, Culture=neutral, PublicKeyToken=e6238258560628ee]], GraphQL, Version=8.7.0.0, Culture=neutral, PublicKeyToken=e6238258560628ee]]
+GraphType: GraphQL.Types.NonNullGraphType`1[[GraphQL.Types.ListGraphType`1[[GraphQL.Types.NonNullGraphType`1[[ParentGraphType, Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=ef9e5a364f5893c5]], GraphQL, Version=8.8.0.0, Culture=neutral, PublicKeyToken=e6238258560628ee]], GraphQL, Version=8.8.0.0, Culture=neutral, PublicKeyToken=e6238258560628ee]]
 TSource: System.Object
 TReturn: ParentEntity
 DisableTracking: False
