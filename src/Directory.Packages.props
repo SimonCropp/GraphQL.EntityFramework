@@ -20,7 +20,7 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.4" />
     <PackageVersion Include="Polyfill" Version="9.3.0" />
-    <PackageVersion Include="ProjectDefaults" Version="1.0.162" />
+    <PackageVersion Include="ProjectDefaults" Version="1.0.163" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="9.0.0" />
     <PackageVersion Include="Verify.SqlServer" Version="11.2.0" />
     <PackageVersion Include="Verify.XunitV3" Version="31.7.2" />
