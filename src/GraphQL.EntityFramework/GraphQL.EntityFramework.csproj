@@ -5,6 +5,7 @@
     <PolyNullability>true</PolyNullability>
   </PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="ConfigureAwait.Fody" PrivateAssets="All" />
     <PackageReference Include="Fody" PrivateAssets="all" />
     <PackageReference Include="GraphQL" />
