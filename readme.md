@@ -7,7 +7,7 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 # <img src="/src/icon.png" height="30px"> GraphQL.EntityFramework
 
-[![Build status](https://ci.appveyor.com/api/projects/status/x554cp7clu8yh2yy/branch/main?svg=true)](https://ci.appveyor.com/project/SimonCropp/graphql-entityframework)
+[![Build status](https://img.shields.io/appveyor/build/SimonCropp/graphql-entityframework)](https://ci.appveyor.com/project/SimonCropp/graphql-entityframework)
 [![NuGet Status](https://img.shields.io/nuget/v/GraphQL.EntityFramework.svg)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
 
 
