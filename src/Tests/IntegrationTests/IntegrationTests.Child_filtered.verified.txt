@@ -19,12 +19,11 @@
 select   f.Id,
          f.Property,
          f0.Id,
-         f0.ParentId,
          f0.Property
 from     FilterParentEntities as f
          left outer join
          FilterChildEntities as f0
          on f.Id = f0.ParentId
-order by f.Id
+order by f.Id, f0.Id
   }
 }

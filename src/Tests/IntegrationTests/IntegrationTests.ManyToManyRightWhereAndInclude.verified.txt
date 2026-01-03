@@ -21,16 +21,16 @@
     Text:
 select   m.Id,
          m.LeftName,
-         s.ManyToManyLeftEntityId,
-         s.ManyToManyRightEntityId,
          s.Id,
-         s.RightName
+         s.RightName,
+         s.ManyToManyLeftEntityId,
+         s.ManyToManyRightEntityId
 from     ManyToManyLeftEntities as m
          left outer join
-         (select m2.ManyToManyLeftEntityId,
-                 m2.ManyToManyRightEntityId,
-                 m3.Id,
-                 m3.RightName
+         (select m3.Id,
+                 m3.RightName,
+                 m2.ManyToManyLeftEntityId,
+                 m2.ManyToManyRightEntityId
           from   ManyToManyMiddleEntities as m2
                  inner join
                  ManyToManyRightEntities as m3
@@ -43,6 +43,6 @@ where    exists (select 1
                         on m0.ManyToManyRightEntityId = m1.Id
                  where  m.Id = m0.ManyToManyLeftEntityId
                         and m1.RightName = N'Right2')
-order by m.Id, s.ManyToManyLeftEntityId, s.ManyToManyRightEntityId
+order by m.Id, s.Id, s.ManyToManyLeftEntityId
   }
 }

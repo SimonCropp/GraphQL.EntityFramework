@@ -11,8 +11,7 @@
 },
   sql: {
     Text:
-select e.Id,
-       e.Property
+select e.Id
 from   EnumEntities as e
 where  e.Property = 4
   }

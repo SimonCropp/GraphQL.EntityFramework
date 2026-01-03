@@ -11,8 +11,7 @@
 },
   sql: {
     Text:
-select w.Id,
-       w.Nullable
+select w.Id
 from   WithNullableEntities as w
 where  w.Nullable = 10
   }

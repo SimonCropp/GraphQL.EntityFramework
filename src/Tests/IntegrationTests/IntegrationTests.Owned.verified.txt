@@ -14,8 +14,8 @@
     Text:
 select top (2) o.Id,
                o.Property,
-               o.Child1_Property,
-               o.Child2_Property
+               cast (0 as bit),
+               o.Child1_Property
 from   OwnedParents as o
 where  o.Id = 'Guid_1'
   }

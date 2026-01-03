@@ -88,8 +88,12 @@
 },
   sql: {
     Text:
-select p.Id,
-       p.Property
-from   ParentEntities as p
+select   p.Id,
+         c.Id
+from     ParentEntities as p
+         left outer join
+         ChildEntities as c
+         on p.Id = c.ParentId
+order by p.Id, c.Id
   }
 }
