@@ -49,21 +49,21 @@ static class SelectExpressionBuilder
         foreach (var (navFieldName, navProjection) in projection.Navigations)
         {
             var prop = GetProperty(entityType, navFieldName);
-            if (prop != null && addedProperties.Add(prop.Name))
+            if (prop == null ||
+                !addedProperties.Add(prop.Name))
             {
-                var binding = BuildNavigationBinding(parameter, prop, navProjection, keyNames);
-                if (binding != null)
-                {
-                    bindings.Add(binding);
-                }
+                continue;
             }
+
+            var binding = BuildNavigationBinding(parameter, prop, navProjection, keyNames);
+            bindings.Add(binding);
         }
 
         var memberInit = Expression.MemberInit(Expression.New(entityType), bindings);
         return Expression.Lambda<Func<TEntity, TEntity>>(memberInit, parameter);
     }
 
-    static MemberBinding? BuildNavigationBinding(
+    static MemberBinding BuildNavigationBinding(
         ParameterExpression parameter,
         PropertyInfo prop,
         NavigationProjectionInfo navProjection,
@@ -72,7 +72,7 @@ static class SelectExpressionBuilder
             ? BuildCollectionNavigationBinding(parameter, prop, navProjection, keyNames)
             : BuildSingleNavigationBinding(parameter, prop, navProjection, keyNames);
 
-    static MemberBinding BuildCollectionNavigationBinding(
+    static MemberAssignment BuildCollectionNavigationBinding(
         ParameterExpression parameter,
         PropertyInfo prop,
         NavigationProjectionInfo navProjection,
@@ -102,8 +102,8 @@ static class SelectExpressionBuilder
 
                 var orderByMethod = typeof(Enumerable)
                     .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                    .First(m => m.Name == "OrderBy" &&
-                                m.GetParameters().Length == 2)
+                    .First(_ => _.Name == "OrderBy" &&
+                                _.GetParameters().Length == 2)
                     .MakeGenericMethod(navType, keyProp.PropertyType);
 
                 orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
@@ -113,9 +113,9 @@ static class SelectExpressionBuilder
         // Build: x.Children.OrderBy(...).Select(n => new Child { ... })
         var selectMethod = typeof(Enumerable)
             .GetMethods(BindingFlags.Static | BindingFlags.Public)
-            .First(m => m.Name == "Select" &&
-                        m.GetParameters().Length == 2 &&
-                        m.GetParameters()[1].ParameterType.GetGenericArguments().Length == 2)
+            .First(_ => _.Name == "Select" &&
+                        _.GetParameters().Length == 2 &&
+                        _.GetParameters()[1].ParameterType.GetGenericArguments().Length == 2)
             .MakeGenericMethod(navType, navType);
 
         var selectCall = Expression.Call(null, selectMethod, orderedCollection, innerLambda);
@@ -193,17 +193,14 @@ static class SelectExpressionBuilder
             if (prop != null && addedProperties.Add(prop.Name))
             {
                 var binding = BuildNestedNavigationBinding(sourceExpression, prop, nestedNavProjection, keyNames);
-                if (binding != null)
-                {
-                    bindings.Add(binding);
-                }
+                bindings.Add(binding);
             }
         }
 
         return bindings;
     }
 
-    static MemberBinding? BuildNestedNavigationBinding(
+    static MemberAssignment BuildNestedNavigationBinding(
         Expression sourceExpression,
         PropertyInfo prop,
         NavigationProjectionInfo navProjection,
@@ -235,8 +232,8 @@ static class SelectExpressionBuilder
 
                     var orderByMethod = typeof(Enumerable)
                         .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                        .First(m => m.Name == "OrderBy" &&
-                                    m.GetParameters().Length == 2)
+                        .First(_ => _.Name == "OrderBy" &&
+                                    _.GetParameters().Length == 2)
                         .MakeGenericMethod(navType, keyProp.PropertyType);
 
                     orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
@@ -246,9 +243,9 @@ static class SelectExpressionBuilder
             // .Select(n => new Child { ... })
             var selectMethod = typeof(Enumerable)
                 .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                .First(m => m.Name == "Select" &&
-                            m.GetParameters().Length == 2 &&
-                            m.GetParameters()[1].ParameterType.GetGenericArguments().Length == 2)
+                .First(_ => _.Name == "Select" &&
+                            _.GetParameters().Length == 2 &&
+                            _.GetParameters()[1].ParameterType.GetGenericArguments().Length == 2)
                 .MakeGenericMethod(navType, navType);
 
             var selectCall = Expression.Call(null, selectMethod, orderedCollection, innerLambda);
@@ -289,31 +286,33 @@ static class SelectExpressionBuilder
 
     static string BuildCacheKey<TEntity>(FieldProjectionInfo projection)
     {
-        var sb = new StringBuilder();
-        sb.Append(typeof(TEntity).FullName);
-        sb.Append('|');
-        BuildProjectionKey(sb, projection);
-        return sb.ToString();
+        var builder = new StringBuilder();
+        builder.Append(typeof(TEntity).FullName);
+        builder.Append('|');
+        BuildProjectionKey(builder, projection);
+        return builder.ToString();
     }
 
-    static void BuildProjectionKey(StringBuilder sb, FieldProjectionInfo projection)
+    static void BuildProjectionKey(StringBuilder builder, FieldProjectionInfo projection)
     {
         // Sort scalar fields for consistent cache key
         var sortedScalars = projection.ScalarFields.OrderBy(_ => _, StringComparer.OrdinalIgnoreCase);
-        sb.Append(string.Join(",", sortedScalars));
+        builder.Append(string.Join(',', sortedScalars));
 
-        if (projection.Navigations.Count > 0)
+        if (projection.Navigations.Count <= 0)
         {
-            sb.Append('{');
-            var sortedNavs = projection.Navigations.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase);
-            foreach (var (navName, navProjection) in sortedNavs)
-            {
-                sb.Append(navName);
-                sb.Append(':');
-                BuildProjectionKey(sb, navProjection.Projection);
-                sb.Append(';');
-            }
-            sb.Append('}');
+            return;
         }
+
+        builder.Append('{');
+        var sortedNavs = projection.Navigations.OrderBy(_ => _.Key, StringComparer.OrdinalIgnoreCase);
+        foreach (var (navName, navProjection) in sortedNavs)
+        {
+            builder.Append(navName);
+            builder.Append(':');
+            BuildProjectionKey(builder, navProjection.Projection);
+            builder.Append(';');
+        }
+        builder.Append('}');
     }
 }
