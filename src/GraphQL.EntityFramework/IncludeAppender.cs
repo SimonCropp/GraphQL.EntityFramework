@@ -31,12 +31,11 @@
         navigations.TryGetValue(type, out var navigationProperties);
         keyNames.TryGetValue(type, out var keys);
 
-        return GetProjectionInfo(context, type, navigationProperties, keys ?? []);
+        return GetProjectionInfo(context, navigationProperties, keys ?? []);
     }
 
     FieldProjectionInfo GetProjectionInfo(
         IResolveFieldContext context,
-        Type entityType,
         IReadOnlyList<Navigation>? navigationProperties,
         List<string> keys)
     {
@@ -50,21 +49,20 @@
                 // Handle connection wrapper fields (edges, items, node)
                 if (IsConnectionNodeName(fieldName))
                 {
-                    ProcessConnectionNodeFields(fieldInfo.Field.SelectionSet, entityType, navigationProperties, scalarFields, navProjections, context);
+                    ProcessConnectionNodeFields(fieldInfo.Field.SelectionSet, navigationProperties, scalarFields, navProjections, context);
                 }
                 else
                 {
-                    ProcessProjectionField(fieldName, fieldInfo, entityType, navigationProperties, scalarFields, navProjections, context);
+                    ProcessProjectionField(fieldName, fieldInfo, navigationProperties, scalarFields, navProjections, context);
                 }
             }
         }
 
-        return new FieldProjectionInfo(scalarFields, keys, navProjections);
+        return new(scalarFields, keys, navProjections);
     }
 
     void ProcessConnectionNodeFields(
         GraphQLSelectionSet? selectionSet,
-        Type entityType,
         IReadOnlyList<Navigation>? navigationProperties,
         List<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
@@ -82,12 +80,12 @@
             // Recursively handle nested connection nodes (e.g., edges -> node)
             if (IsConnectionNodeName(fieldName))
             {
-                ProcessConnectionNodeFields(selection.SelectionSet, entityType, navigationProperties, scalarFields, navProjections, context);
+                ProcessConnectionNodeFields(selection.SelectionSet, navigationProperties, scalarFields, navProjections, context);
             }
             else
             {
                 // Process as regular field
-                ProcessNestedProjectionField(fieldName, selection, entityType, navigationProperties, scalarFields, navProjections, context);
+                ProcessNestedProjectionField(fieldName, selection, navigationProperties, scalarFields, navProjections, context);
             }
         }
     }
@@ -100,7 +98,6 @@
     void ProcessProjectionField(
         string fieldName,
         (GraphQLField Field, FieldType FieldType) fieldInfo,
-        Type entityType,
         IReadOnlyList<Navigation>? navigationProperties,
         List<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
@@ -127,13 +124,12 @@
                     var nestedProjection = !addedAny
                         ? GetNestedProjection(
                             fieldInfo.Field.SelectionSet,
-                            navType,
                             nestedNavProps,
                             nestedKeys ?? [],
                             context)
-                        : new FieldProjectionInfo([], nestedKeys ?? [], new Dictionary<string, NavigationProjectionInfo>());
+                        : new([], nestedKeys ?? [], []);
 
-                    navProjections[navigation.Name] = new NavigationProjectionInfo(
+                    navProjections[navigation.Name] = new(
                         navType,
                         navigation.IsCollection,
                         nestedProjection);
@@ -160,12 +156,11 @@
 
             var nestedProjection = GetNestedProjection(
                 fieldInfo.Field.SelectionSet,
-                navType,
                 nestedNavProps,
                 nestedKeys ?? [],
                 context);
 
-            navProjections[navByName.Name] = new NavigationProjectionInfo(
+            navProjections[navByName.Name] = new(
                 navType,
                 navByName.IsCollection,
                 nestedProjection);
@@ -179,7 +174,6 @@
 
     FieldProjectionInfo GetNestedProjection(
         GraphQLSelectionSet? selectionSet,
-        Type entityType,
         IReadOnlyList<Navigation>? navigationProperties,
         List<string> keys,
         IResolveFieldContext context)
@@ -189,26 +183,23 @@
 
         if (selectionSet?.Selections is null)
         {
-            return new FieldProjectionInfo(scalarFields, keys, navProjections);
+            return new(scalarFields, keys, navProjections);
         }
 
         // Process direct fields
         foreach (var selection in selectionSet.Selections.OfType<GraphQLField>())
         {
             var fieldName = selection.Name.StringValue;
-            ProcessNestedProjectionField(fieldName, selection, entityType, navigationProperties, scalarFields, navProjections, context);
+            ProcessNestedProjectionField(fieldName, selection, navigationProperties, scalarFields, navProjections, context);
         }
 
         // Process inline fragments
         foreach (var inlineFragment in selectionSet.Selections.OfType<GraphQLInlineFragment>())
         {
-            if (inlineFragment.SelectionSet?.Selections is not null)
+            foreach (var selection in inlineFragment.SelectionSet.Selections.OfType<GraphQLField>())
             {
-                foreach (var selection in inlineFragment.SelectionSet.Selections.OfType<GraphQLField>())
-                {
-                    var fieldName = selection.Name.StringValue;
-                    ProcessNestedProjectionField(fieldName, selection, entityType, navigationProperties, scalarFields, navProjections, context);
-                }
+                var fieldName = selection.Name.StringValue;
+                ProcessNestedProjectionField(fieldName, selection, navigationProperties, scalarFields, navProjections, context);
             }
         }
 
@@ -218,25 +209,26 @@
             var name = fragmentSpread.FragmentName.Name;
             var fragmentDefinition = context.Document.Definitions
                 .OfType<GraphQLFragmentDefinition>()
-                .SingleOrDefault(x => x.FragmentName.Name == name);
+                .SingleOrDefault(_ => _.FragmentName.Name == name);
 
-            if (fragmentDefinition?.SelectionSet?.Selections is not null)
+            if (fragmentDefinition?.SelectionSet.Selections is null)
             {
-                foreach (var selection in fragmentDefinition.SelectionSet.Selections.OfType<GraphQLField>())
-                {
-                    var fieldName = selection.Name.StringValue;
-                    ProcessNestedProjectionField(fieldName, selection, entityType, navigationProperties, scalarFields, navProjections, context);
-                }
+                continue;
+            }
+
+            foreach (var selection in fragmentDefinition.SelectionSet.Selections.OfType<GraphQLField>())
+            {
+                var fieldName = selection.Name.StringValue;
+                ProcessNestedProjectionField(fieldName, selection, navigationProperties, scalarFields, navProjections, context);
             }
         }
 
-        return new FieldProjectionInfo(scalarFields, keys, navProjections);
+        return new(scalarFields, keys, navProjections);
     }
 
     void ProcessNestedProjectionField(
         string fieldName,
         GraphQLField field,
-        Type entityType,
         IReadOnlyList<Navigation>? navigationProperties,
         List<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
@@ -255,12 +247,11 @@
 
             var nestedProjection = GetNestedProjection(
                 field.SelectionSet,
-                navType,
                 nestedNavProps,
                 nestedKeys ?? [],
                 context);
 
-            navProjections[navigation.Name] = new NavigationProjectionInfo(
+            navProjections[navigation.Name] = new(
                 navType,
                 navigation.IsCollection,
                 nestedProjection);
