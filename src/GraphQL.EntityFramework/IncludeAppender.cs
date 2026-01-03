@@ -45,14 +45,57 @@
 
         if (context.SubFields is not null)
         {
-            foreach (var (fieldName, fieldAst) in context.SubFields)
+            foreach (var (fieldName, fieldInfo) in context.SubFields)
             {
-                ProcessProjectionField(fieldName, fieldAst, entityType, navigationProperties, scalarFields, navProjections, context);
+                // Handle connection wrapper fields (edges, items, node)
+                if (IsConnectionNodeName(fieldName))
+                {
+                    ProcessConnectionNodeFields(fieldInfo.Field.SelectionSet, entityType, navigationProperties, scalarFields, navProjections, context);
+                }
+                else
+                {
+                    ProcessProjectionField(fieldName, fieldInfo, entityType, navigationProperties, scalarFields, navProjections, context);
+                }
             }
         }
 
         return new FieldProjectionInfo(scalarFields, keys, navProjections);
     }
+
+    void ProcessConnectionNodeFields(
+        GraphQLSelectionSet? selectionSet,
+        Type entityType,
+        IReadOnlyList<Navigation>? navigationProperties,
+        List<string> scalarFields,
+        Dictionary<string, NavigationProjectionInfo> navProjections,
+        IResolveFieldContext context)
+    {
+        if (selectionSet?.Selections is null)
+        {
+            return;
+        }
+
+        foreach (var selection in selectionSet.Selections.OfType<GraphQLField>())
+        {
+            var fieldName = selection.Name.StringValue;
+
+            // Recursively handle nested connection nodes (e.g., edges -> node)
+            if (IsConnectionNodeName(fieldName))
+            {
+                ProcessConnectionNodeFields(selection.SelectionSet, entityType, navigationProperties, scalarFields, navProjections, context);
+            }
+            else
+            {
+                // Process as regular field
+                ProcessNestedProjectionField(fieldName, selection, entityType, navigationProperties, scalarFields, navProjections, context);
+            }
+        }
+    }
+
+    static bool IsConnectionNodeName(string fieldName) =>
+        fieldName.Equals("edges", StringComparison.OrdinalIgnoreCase) ||
+        fieldName.Equals("items", StringComparison.OrdinalIgnoreCase) ||
+        fieldName.Equals("node", StringComparison.OrdinalIgnoreCase);
 
     void ProcessProjectionField(
         string fieldName,
