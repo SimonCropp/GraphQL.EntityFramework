@@ -41,7 +41,6 @@ from   FilterParentEntities as f
 select   f1.Id,
          f1.Property,
          f0.Id,
-         f0.ParentId,
          f0.Property
 from     (select   f.Id,
                    f.Property
