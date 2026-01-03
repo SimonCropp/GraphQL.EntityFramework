@@ -21,16 +21,16 @@
     Text:
 select   m.Id,
          m.RightName,
-         s.ManyToManyLeftEntityId,
-         s.ManyToManyRightEntityId,
          s.Id,
-         s.LeftName
+         s.LeftName,
+         s.ManyToManyLeftEntityId,
+         s.ManyToManyRightEntityId
 from     ManyToManyRightEntities as m
          left outer join
-         (select m2.ManyToManyLeftEntityId,
-                 m2.ManyToManyRightEntityId,
-                 m3.Id,
-                 m3.LeftName
+         (select m3.Id,
+                 m3.LeftName,
+                 m2.ManyToManyLeftEntityId,
+                 m2.ManyToManyRightEntityId
           from   ManyToManyMiddleEntities as m2
                  inner join
                  ManyToManyLeftEntities as m3
