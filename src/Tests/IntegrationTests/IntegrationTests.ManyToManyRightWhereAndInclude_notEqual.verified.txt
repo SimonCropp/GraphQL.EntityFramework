@@ -52,6 +52,6 @@ where    exists (select 1
                  where  m.Id = m0.ManyToManyLeftEntityId
                         and (m1.RightName <> N'Right2'
                              or m1.RightName is null))
-order by m.Id, s.ManyToManyLeftEntityId, s.ManyToManyRightEntityId
+order by m.Id, s.Id, s.ManyToManyLeftEntityId
   }
 }

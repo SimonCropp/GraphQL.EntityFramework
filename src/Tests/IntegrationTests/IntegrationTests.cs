@@ -2216,7 +2216,7 @@ public partial class IntegrationTests
                 parent
                 {
                   property
-                  children
+                  children (orderBy: {path: "property"})
                   {
                     property
                     parent

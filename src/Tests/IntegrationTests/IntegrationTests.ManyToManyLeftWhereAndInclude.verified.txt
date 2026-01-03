@@ -43,6 +43,6 @@ where    exists (select 1
                         on m0.ManyToManyLeftEntityId = m1.Id
                  where  m.Id = m0.ManyToManyRightEntityId
                         and m1.LeftName = N'Left2')
-order by m.Id, s.ManyToManyLeftEntityId, s.ManyToManyRightEntityId
+order by m.Id, s.Id, s.ManyToManyLeftEntityId
   }
 }

@@ -24,6 +24,6 @@ from     ParentEntities as p
          left outer join
          ChildEntities as c
          on p.Id = c.ParentId
-order by p.Id
+order by p.Id, c.Id
   }
 }

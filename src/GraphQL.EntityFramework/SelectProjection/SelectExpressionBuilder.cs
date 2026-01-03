@@ -89,7 +89,28 @@ static class SelectExpressionBuilder
         // x.Children
         var navAccess = Expression.Property(parameter, prop);
 
-        // Build: x.Children.Select(n => new Child { ... })
+        // Build: x.Children.OrderBy(n => n.Key) to ensure deterministic ordering
+        Expression orderedCollection = navAccess;
+        if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
+        {
+            var orderParam = Expression.Parameter(navType, "o");
+            var keyProp = GetProperty(navType, keys[0]);
+            if (keyProp != null)
+            {
+                var keyAccess = Expression.Property(orderParam, keyProp);
+                var keyLambda = Expression.Lambda(keyAccess, orderParam);
+
+                var orderByMethod = typeof(Enumerable)
+                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                    .First(m => m.Name == "OrderBy" &&
+                                m.GetParameters().Length == 2)
+                    .MakeGenericMethod(navType, keyProp.PropertyType);
+
+                orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
+            }
+        }
+
+        // Build: x.Children.OrderBy(...).Select(n => new Child { ... })
         var selectMethod = typeof(Enumerable)
             .GetMethods(BindingFlags.Static | BindingFlags.Public)
             .First(m => m.Name == "Select" &&
@@ -97,7 +118,7 @@ static class SelectExpressionBuilder
                         m.GetParameters()[1].ParameterType.GetGenericArguments().Length == 2)
             .MakeGenericMethod(navType, navType);
 
-        var selectCall = Expression.Call(null, selectMethod, navAccess, innerLambda);
+        var selectCall = Expression.Call(null, selectMethod, orderedCollection, innerLambda);
 
         // Build: .ToList()
         var toListMethod = typeof(Enumerable)
@@ -201,6 +222,27 @@ static class SelectExpressionBuilder
             var innerMemberInit = Expression.MemberInit(Expression.New(navType), innerBindings);
             var innerLambda = Expression.Lambda(innerMemberInit, navParam);
 
+            // .OrderBy(o => o.Key) to ensure deterministic ordering
+            Expression orderedCollection = navAccess;
+            if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
+            {
+                var orderParam = Expression.Parameter(navType, "o");
+                var keyProp = GetProperty(navType, keys[0]);
+                if (keyProp != null)
+                {
+                    var keyAccess = Expression.Property(orderParam, keyProp);
+                    var keyLambda = Expression.Lambda(keyAccess, orderParam);
+
+                    var orderByMethod = typeof(Enumerable)
+                        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                        .First(m => m.Name == "OrderBy" &&
+                                    m.GetParameters().Length == 2)
+                        .MakeGenericMethod(navType, keyProp.PropertyType);
+
+                    orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
+                }
+            }
+
             // .Select(n => new Child { ... })
             var selectMethod = typeof(Enumerable)
                 .GetMethods(BindingFlags.Static | BindingFlags.Public)
@@ -209,7 +251,7 @@ static class SelectExpressionBuilder
                             m.GetParameters()[1].ParameterType.GetGenericArguments().Length == 2)
                 .MakeGenericMethod(navType, navType);
 
-            var selectCall = Expression.Call(null, selectMethod, navAccess, innerLambda);
+            var selectCall = Expression.Call(null, selectMethod, orderedCollection, innerLambda);
 
             // .ToList()
             var toListMethod = typeof(Enumerable)

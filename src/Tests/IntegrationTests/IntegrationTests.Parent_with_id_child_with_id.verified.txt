@@ -25,6 +25,6 @@ from     ParentEntities as p
          ChildEntities as c
          on p.Id = c.ParentId
 where    p.Id = 'Guid_1'
-order by p.Id
+order by p.Id, c.Id
   }
 }
