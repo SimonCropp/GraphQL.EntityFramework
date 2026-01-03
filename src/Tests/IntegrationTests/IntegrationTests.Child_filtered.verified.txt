@@ -19,7 +19,6 @@
 select   f.Id,
          f.Property,
          f0.Id,
-         f0.ParentId,
          f0.Property
 from     FilterParentEntities as f
          left outer join
