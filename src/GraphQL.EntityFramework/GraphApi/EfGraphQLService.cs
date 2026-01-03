@@ -23,7 +23,7 @@ public partial class EfGraphQLService<TDbContext> :
         keyNames = model.GetKeyNames();
 
         Navigations = NavigationReader.GetNavigationProperties(model);
-        includeAppender = new(Navigations);
+        includeAppender = new(Navigations, keyNames);
     }
 
     public IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> Navigations { get; }

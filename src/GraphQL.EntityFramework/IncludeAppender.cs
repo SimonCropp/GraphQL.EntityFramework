@@ -1,4 +1,6 @@
-﻿class IncludeAppender(IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations)
+﻿class IncludeAppender(
+    IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations,
+    IReadOnlyDictionary<Type, List<string>> keyNames)
 {
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class
@@ -15,6 +17,207 @@
         }
 
         return AddIncludes(query, context, navigationProperty);
+    }
+
+    public FieldProjectionInfo? GetProjection<TItem>(IResolveFieldContext context)
+        where TItem : class
+    {
+        if (context.SubFields is null)
+        {
+            return null;
+        }
+
+        var type = typeof(TItem);
+        navigations.TryGetValue(type, out var navigationProperties);
+        keyNames.TryGetValue(type, out var keys);
+
+        return GetProjectionInfo(context, type, navigationProperties, keys ?? []);
+    }
+
+    FieldProjectionInfo GetProjectionInfo(
+        IResolveFieldContext context,
+        Type entityType,
+        IReadOnlyList<Navigation>? navigationProperties,
+        List<string> keys)
+    {
+        var scalarFields = new List<string>();
+        var navProjections = new Dictionary<string, NavigationProjectionInfo>();
+
+        if (context.SubFields is not null)
+        {
+            foreach (var (fieldName, fieldAst) in context.SubFields)
+            {
+                ProcessProjectionField(fieldName, fieldAst, entityType, navigationProperties, scalarFields, navProjections, context);
+            }
+        }
+
+        return new FieldProjectionInfo(scalarFields, keys, navProjections);
+    }
+
+    void ProcessProjectionField(
+        string fieldName,
+        (GraphQLField Field, FieldType FieldType) fieldInfo,
+        Type entityType,
+        IReadOnlyList<Navigation>? navigationProperties,
+        List<string> scalarFields,
+        Dictionary<string, NavigationProjectionInfo> navProjections,
+        IResolveFieldContext context)
+    {
+        // Check if this field has include metadata (navigation field with possible alias)
+        if (TryGetIncludeMetadata(fieldInfo.FieldType, out var includeNames))
+        {
+            // It's a navigation field - use the include name to find the navigation
+            var navName = includeNames[0]; // Primary navigation name
+            var navigation = navigationProperties?.FirstOrDefault(n =>
+                n.Name.Equals(navName, StringComparison.OrdinalIgnoreCase));
+
+            if (navigation != null)
+            {
+                var navType = navigation.Type;
+                navigations.TryGetValue(navType, out var nestedNavProps);
+                keyNames.TryGetValue(navType, out var nestedKeys);
+
+                var nestedProjection = GetNestedProjection(
+                    fieldInfo.Field.SelectionSet,
+                    navType,
+                    nestedNavProps,
+                    nestedKeys ?? [],
+                    context);
+
+                navProjections[navigation.Name] = new NavigationProjectionInfo(
+                    navType,
+                    navigation.IsCollection,
+                    nestedProjection);
+                return;
+            }
+        }
+
+        // Check if this field is a navigation property by name
+        var navByName = navigationProperties?.FirstOrDefault(n =>
+            n.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
+
+        if (navByName != null)
+        {
+            // It's a navigation - build nested projection
+            var navType = navByName.Type;
+            navigations.TryGetValue(navType, out var nestedNavProps);
+            keyNames.TryGetValue(navType, out var nestedKeys);
+
+            var nestedProjection = GetNestedProjection(
+                fieldInfo.Field.SelectionSet,
+                navType,
+                nestedNavProps,
+                nestedKeys ?? [],
+                context);
+
+            navProjections[navByName.Name] = new NavigationProjectionInfo(
+                navType,
+                navByName.IsCollection,
+                nestedProjection);
+        }
+        else
+        {
+            // It's a scalar field
+            scalarFields.Add(fieldName);
+        }
+    }
+
+    FieldProjectionInfo GetNestedProjection(
+        GraphQLSelectionSet? selectionSet,
+        Type entityType,
+        IReadOnlyList<Navigation>? navigationProperties,
+        List<string> keys,
+        IResolveFieldContext context)
+    {
+        var scalarFields = new List<string>();
+        var navProjections = new Dictionary<string, NavigationProjectionInfo>();
+
+        if (selectionSet?.Selections is null)
+        {
+            return new FieldProjectionInfo(scalarFields, keys, navProjections);
+        }
+
+        // Process direct fields
+        foreach (var selection in selectionSet.Selections.OfType<GraphQLField>())
+        {
+            var fieldName = selection.Name.StringValue;
+            ProcessNestedProjectionField(fieldName, selection, entityType, navigationProperties, scalarFields, navProjections, context);
+        }
+
+        // Process inline fragments
+        foreach (var inlineFragment in selectionSet.Selections.OfType<GraphQLInlineFragment>())
+        {
+            if (inlineFragment.SelectionSet?.Selections is not null)
+            {
+                foreach (var selection in inlineFragment.SelectionSet.Selections.OfType<GraphQLField>())
+                {
+                    var fieldName = selection.Name.StringValue;
+                    ProcessNestedProjectionField(fieldName, selection, entityType, navigationProperties, scalarFields, navProjections, context);
+                }
+            }
+        }
+
+        // Process fragment spreads
+        foreach (var fragmentSpread in selectionSet.Selections.OfType<GraphQLFragmentSpread>())
+        {
+            var name = fragmentSpread.FragmentName.Name;
+            var fragmentDefinition = context.Document.Definitions
+                .OfType<GraphQLFragmentDefinition>()
+                .SingleOrDefault(x => x.FragmentName.Name == name);
+
+            if (fragmentDefinition?.SelectionSet?.Selections is not null)
+            {
+                foreach (var selection in fragmentDefinition.SelectionSet.Selections.OfType<GraphQLField>())
+                {
+                    var fieldName = selection.Name.StringValue;
+                    ProcessNestedProjectionField(fieldName, selection, entityType, navigationProperties, scalarFields, navProjections, context);
+                }
+            }
+        }
+
+        return new FieldProjectionInfo(scalarFields, keys, navProjections);
+    }
+
+    void ProcessNestedProjectionField(
+        string fieldName,
+        GraphQLField field,
+        Type entityType,
+        IReadOnlyList<Navigation>? navigationProperties,
+        List<string> scalarFields,
+        Dictionary<string, NavigationProjectionInfo> navProjections,
+        IResolveFieldContext context)
+    {
+        // Check if this field is a navigation property
+        var navigation = navigationProperties?.FirstOrDefault(n =>
+            n.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
+
+        if (navigation != null)
+        {
+            // It's a navigation - build nested projection
+            var navType = navigation.Type;
+            navigations.TryGetValue(navType, out var nestedNavProps);
+            keyNames.TryGetValue(navType, out var nestedKeys);
+
+            var nestedProjection = GetNestedProjection(
+                field.SelectionSet,
+                navType,
+                nestedNavProps,
+                nestedKeys ?? [],
+                context);
+
+            navProjections[navigation.Name] = new NavigationProjectionInfo(
+                navType,
+                navigation.IsCollection,
+                nestedProjection);
+        }
+        else
+        {
+            // It's a scalar field - avoid duplicates
+            if (!scalarFields.Contains(fieldName, StringComparer.OrdinalIgnoreCase))
+            {
+                scalarFields.Add(fieldName);
+            }
+        }
     }
 
     IQueryable<T> AddIncludes<T>(IQueryable<T> query, IResolveFieldContext context, IReadOnlyList<Navigation> navigationProperties)

@@ -115,6 +115,14 @@ partial class EfGraphQLService<TDbContext>
                         query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
                     }
 
+                    // Apply column projection based on requested GraphQL fields
+                    var projection = includeAppender.GetProjection<TReturn>(context);
+                    if (projection != null)
+                    {
+                        var selectExpr = SelectExpressionBuilder.Build<TReturn>(projection, keyNames);
+                        query = query.Select(selectExpr);
+                    }
+
                     QueryLogger.Write(query);
 
                     List<TReturn> list;
