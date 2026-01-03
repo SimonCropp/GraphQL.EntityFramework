@@ -20,8 +20,6 @@
 select   p0.Id,
          p0.Property,
          c.Id,
-         c.Nullable,
-         c.ParentId,
          c.Property
 from     (select top (2) p.Id,
                          p.Property

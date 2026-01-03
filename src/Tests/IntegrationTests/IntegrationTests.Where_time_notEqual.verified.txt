@@ -11,8 +11,7 @@
 },
   sql: {
     Text:
-select t.Id,
-       t.Property
+select t.Id
 from   TimeEntities as t
 where  t.Property <> '10:11:00'
        or t.Property is null

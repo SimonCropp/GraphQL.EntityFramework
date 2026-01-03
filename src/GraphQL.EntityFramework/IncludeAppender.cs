@@ -109,28 +109,40 @@
         // Check if this field has include metadata (navigation field with possible alias)
         if (TryGetIncludeMetadata(fieldInfo.FieldType, out var includeNames))
         {
-            // It's a navigation field - use the include name to find the navigation
-            var navName = includeNames[0]; // Primary navigation name
-            var navigation = navigationProperties?.FirstOrDefault(n =>
-                n.Name.Equals(navName, StringComparison.OrdinalIgnoreCase));
-
-            if (navigation != null)
+            // It's a navigation field - include ALL navigation properties from metadata
+            var addedAny = false;
+            foreach (var navName in includeNames)
             {
-                var navType = navigation.Type;
-                navigations.TryGetValue(navType, out var nestedNavProps);
-                keyNames.TryGetValue(navType, out var nestedKeys);
+                var navigation = navigationProperties?.FirstOrDefault(n =>
+                    n.Name.Equals(navName, StringComparison.OrdinalIgnoreCase));
 
-                var nestedProjection = GetNestedProjection(
-                    fieldInfo.Field.SelectionSet,
-                    navType,
-                    nestedNavProps,
-                    nestedKeys ?? [],
-                    context);
+                if (navigation != null && !navProjections.ContainsKey(navigation.Name))
+                {
+                    var navType = navigation.Type;
+                    navigations.TryGetValue(navType, out var nestedNavProps);
+                    keyNames.TryGetValue(navType, out var nestedKeys);
 
-                navProjections[navigation.Name] = new NavigationProjectionInfo(
-                    navType,
-                    navigation.IsCollection,
-                    nestedProjection);
+                    // Only the first (primary) navigation gets the nested projection from the query
+                    // Other navigations get empty projections (select all their keys)
+                    var nestedProjection = !addedAny
+                        ? GetNestedProjection(
+                            fieldInfo.Field.SelectionSet,
+                            navType,
+                            nestedNavProps,
+                            nestedKeys ?? [],
+                            context)
+                        : new FieldProjectionInfo([], nestedKeys ?? [], new Dictionary<string, NavigationProjectionInfo>());
+
+                    navProjections[navigation.Name] = new NavigationProjectionInfo(
+                        navType,
+                        navigation.IsCollection,
+                        nestedProjection);
+                    addedAny = true;
+                }
+            }
+
+            if (addedAny)
+            {
                 return;
             }
         }

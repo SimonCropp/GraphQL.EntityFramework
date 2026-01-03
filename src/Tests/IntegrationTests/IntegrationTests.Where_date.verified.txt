@@ -11,8 +11,7 @@
 },
   sql: {
     Text:
-select d.Id,
-       d.Property
+select d.Id
 from   DateEntities as d
 where  d.Property = '2020-10-01'
   }

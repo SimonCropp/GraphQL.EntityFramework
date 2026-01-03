@@ -11,8 +11,7 @@
 },
   sql: {
     Text:
-select p.Id,
-       p.Property
+select p.Id
 from   ParentEntities as p
 where  p.Property is null
   }
