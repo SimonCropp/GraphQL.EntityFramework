@@ -1,6 +1,6 @@
 ﻿static class TypeConverter
 {
-    static readonly Dictionary<Type, Func<IEnumerable<string>, IList>> listConverters = new()
+    static Dictionary<Type, Func<IEnumerable<string>, IList>> listConverters = new()
     {
         [typeof(Guid)] = values => values.Select(Guid.Parse).ToList(),
         [typeof(Guid?)] = values => values.Select(_ => (Guid?)new Guid(_)).ToList(),
@@ -28,12 +28,12 @@
         [typeof(DateTimeOffset?)] = values => values.Select(_ => (DateTimeOffset?)DateTimeOffset.Parse(_)).ToList(),
     };
 
-    static readonly Dictionary<Type, Func<string, object>> singleConverters = new()
+    static Dictionary<Type, Func<string, object>> singleConverters = new()
     {
         [typeof(DateTime)] = value => ValueConverter.ConvertTo<DateTime>(value),
-        [typeof(Date)] = value => ValueConverter.ConvertTo<Date>(value)!,
-        [typeof(Time)] = value => ValueConverter.ConvertTo<Time>(value)!,
-        [typeof(DateTimeOffset)] = value => ValueConverter.ConvertTo<DateTimeOffset>(value)!,
+        [typeof(Date)] = value => ValueConverter.ConvertTo<Date>(value),
+        [typeof(Time)] = value => ValueConverter.ConvertTo<Time>(value),
+        [typeof(DateTimeOffset)] = value => ValueConverter.ConvertTo<DateTimeOffset>(value),
         [typeof(Guid)] = value => new Guid(value),
     };
 
@@ -43,10 +43,11 @@
         var duplicates = values.Where(_ => !hash.Add(_)).ToArray();
         if (duplicates.Length != 0)
         {
-            throw new($"""
-                       Duplicates detected for In expression. Duplicates:
-                       {string.Join(" * ", duplicates)}
-                       """);
+            throw new(
+                $"""
+                 Duplicates detected for In expression. Duplicates:
+                 {string.Join(" * ", duplicates)}
+                 """);
         }
 
         var hasNull = values.Contains(null);
@@ -100,6 +101,7 @@
 
     static MethodInfo enumListMethod = typeof(TypeConverter)
         .GetMethod("GetEnumList", BindingFlags.Static | BindingFlags.NonPublic)!;
+
     static List<T> GetEnumList<T>(IEnumerable<string> values)
         where T : struct
     {
@@ -114,6 +116,7 @@
 
     static MethodInfo nullableEnumListMethod = typeof(TypeConverter)
         .GetMethod("GetNullableEnumList", BindingFlags.Static | BindingFlags.NonPublic)!;
+
     static List<T?> GetNullableEnumList<T>(IEnumerable<string> values)
         where T : struct
     {
