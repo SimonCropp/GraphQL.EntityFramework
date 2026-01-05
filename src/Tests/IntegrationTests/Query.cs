@@ -143,6 +143,11 @@
             resolve: _ => _.DbContext.BaseEntities);
 
         AddQueryField(
+            name: "readOnlyEntities",
+            graphType: typeof(ReadOnlyEntityGraphType),
+            resolve: _ => _.DbContext.ReadOnlyEntities);
+
+        AddQueryField(
             name: "manyToManyLeftEntities",
             resolve: _ => _.DbContext.ManyToManyLeftEntities);
 

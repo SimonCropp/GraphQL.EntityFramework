@@ -28,8 +28,9 @@ static class SelectExpressionBuilder
         // 1. Always include key properties
         foreach (var keyName in projection.KeyNames)
         {
-            var prop = GetProperty(entityType, keyName);
-            if (prop != null && addedProperties.Add(prop.Name))
+            if (TryGetProperty(entityType, keyName, out var prop) &&
+                prop!.CanWrite &&
+                addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
             }
@@ -38,8 +39,9 @@ static class SelectExpressionBuilder
         // 2. Add requested scalar properties
         foreach (var fieldName in projection.ScalarFields)
         {
-            var prop = GetProperty(entityType, fieldName);
-            if (prop != null && addedProperties.Add(prop.Name))
+            if (TryGetProperty(entityType, fieldName, out var prop) &&
+                prop!.CanWrite &&
+                addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
             }
@@ -48,9 +50,8 @@ static class SelectExpressionBuilder
         // 3. Add navigation properties with nested projections
         foreach (var (navFieldName, navProjection) in projection.Navigations)
         {
-            var prop = GetProperty(entityType, navFieldName);
-            if (prop == null ||
-                !addedProperties.Add(prop.Name))
+            if (!TryGetProperty(entityType, navFieldName, out var prop) ||
+                !addedProperties.Add(prop!.Name))
             {
                 continue;
             }
@@ -94,17 +95,16 @@ static class SelectExpressionBuilder
         if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
         {
             var orderParam = Expression.Parameter(navType, "o");
-            var keyProp = GetProperty(navType, keys[0]);
-            if (keyProp != null)
+            if (TryGetProperty(navType, keys[0], out var keyProp))
             {
-                var keyAccess = Expression.Property(orderParam, keyProp);
+                var keyAccess = Expression.Property(orderParam, keyProp!);
                 var keyLambda = Expression.Lambda(keyAccess, orderParam);
 
                 var orderByMethod = typeof(Enumerable)
                     .GetMethods(BindingFlags.Static | BindingFlags.Public)
                     .First(_ => _.Name == "OrderBy" &&
                                 _.GetParameters().Length == 2)
-                    .MakeGenericMethod(navType, keyProp.PropertyType);
+                    .MakeGenericMethod(navType, keyProp!.PropertyType);
 
                 orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
             }
@@ -169,8 +169,9 @@ static class SelectExpressionBuilder
         // Add key properties
         foreach (var keyName in projection.KeyNames)
         {
-            var prop = GetProperty(entityType, keyName);
-            if (prop != null && addedProperties.Add(prop.Name))
+            if (TryGetProperty(entityType, keyName, out var prop) &&
+                prop!.CanWrite &&
+                addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(sourceExpression, prop)));
             }
@@ -179,8 +180,9 @@ static class SelectExpressionBuilder
         // Add scalar properties
         foreach (var fieldName in projection.ScalarFields)
         {
-            var prop = GetProperty(entityType, fieldName);
-            if (prop != null && addedProperties.Add(prop.Name))
+            if (TryGetProperty(entityType, fieldName, out var prop) &&
+                prop!.CanWrite &&
+                addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(sourceExpression, prop)));
             }
@@ -189,8 +191,8 @@ static class SelectExpressionBuilder
         // Add nested navigations recursively
         foreach (var (navFieldName, nestedNavProjection) in projection.Navigations)
         {
-            var prop = GetProperty(entityType, navFieldName);
-            if (prop != null && addedProperties.Add(prop.Name))
+            if (TryGetProperty(entityType, navFieldName, out var prop) &&
+                addedProperties.Add(prop!.Name))
             {
                 var binding = BuildNestedNavigationBinding(sourceExpression, prop, nestedNavProjection, keyNames);
                 bindings.Add(binding);
@@ -224,17 +226,16 @@ static class SelectExpressionBuilder
             if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
             {
                 var orderParam = Expression.Parameter(navType, "o");
-                var keyProp = GetProperty(navType, keys[0]);
-                if (keyProp != null)
+                if (TryGetProperty(navType, keys[0], out var keyProp))
                 {
-                    var keyAccess = Expression.Property(orderParam, keyProp);
+                    var keyAccess = Expression.Property(orderParam, keyProp!);
                     var keyLambda = Expression.Lambda(keyAccess, orderParam);
 
                     var orderByMethod = typeof(Enumerable)
                         .GetMethods(BindingFlags.Static | BindingFlags.Public)
                         .First(_ => _.Name == "OrderBy" &&
                                     _.GetParameters().Length == 2)
-                        .MakeGenericMethod(navType, keyProp.PropertyType);
+                        .MakeGenericMethod(navType, keyProp!.PropertyType);
 
                     orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
                 }
@@ -281,8 +282,11 @@ static class SelectExpressionBuilder
         }
     }
 
-    static PropertyInfo? GetProperty(Type type, string name) =>
-        type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+    static bool TryGetProperty(Type type, string name, out PropertyInfo? property)
+    {
+        property = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        return property != null;
+    }
 
     static string BuildCacheKey<TEntity>(FieldProjectionInfo projection)
     {
