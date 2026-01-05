@@ -100,30 +100,27 @@ static class SelectExpressionBuilder
                 var keyAccess = Expression.Property(orderParam, keyProp);
                 var keyLambda = Expression.Lambda(keyAccess, orderParam);
 
-                var orderByMethod = typeof(Enumerable)
-                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                    .First(_ => _.Name == "OrderBy" &&
-                                _.GetParameters().Length == 2)
-                    .MakeGenericMethod(navType, keyProp.PropertyType);
+                var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
+                    EnumerableMethodCache.OrderByMethod,
+                    navType,
+                    keyProp.PropertyType);
 
                 orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
             }
         }
 
         // Build: x.Children.OrderBy(...).Select(n => new Child { ... })
-        var selectMethod = typeof(Enumerable)
-            .GetMethods(BindingFlags.Static | BindingFlags.Public)
-            .First(_ => _.Name == "Select" &&
-                        _.GetParameters().Length == 2 &&
-                        _.GetParameters()[1].ParameterType.GetGenericArguments().Length == 2)
-            .MakeGenericMethod(navType, navType);
+        var selectMethod = EnumerableMethodCache.MakeGenericMethod(
+            EnumerableMethodCache.SelectMethod,
+            navType,
+            navType);
 
         var selectCall = Expression.Call(null, selectMethod, orderedCollection, innerLambda);
 
         // Build: .ToList()
-        var toListMethod = typeof(Enumerable)
-            .GetMethod("ToList", BindingFlags.Static | BindingFlags.Public)!
-            .MakeGenericMethod(navType);
+        var toListMethod = EnumerableMethodCache.MakeGenericMethod(
+            EnumerableMethodCache.ToListMethod,
+            navType);
 
         var toListCall = Expression.Call(null, toListMethod, selectCall);
 
@@ -230,30 +227,27 @@ static class SelectExpressionBuilder
                     var keyAccess = Expression.Property(orderParam, keyProp);
                     var keyLambda = Expression.Lambda(keyAccess, orderParam);
 
-                    var orderByMethod = typeof(Enumerable)
-                        .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                        .First(_ => _.Name == "OrderBy" &&
-                                    _.GetParameters().Length == 2)
-                        .MakeGenericMethod(navType, keyProp.PropertyType);
+                    var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
+                        EnumerableMethodCache.OrderByMethod,
+                        navType,
+                        keyProp.PropertyType);
 
                     orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
                 }
             }
 
             // .Select(n => new Child { ... })
-            var selectMethod = typeof(Enumerable)
-                .GetMethods(BindingFlags.Static | BindingFlags.Public)
-                .First(_ => _.Name == "Select" &&
-                            _.GetParameters().Length == 2 &&
-                            _.GetParameters()[1].ParameterType.GetGenericArguments().Length == 2)
-                .MakeGenericMethod(navType, navType);
+            var selectMethod = EnumerableMethodCache.MakeGenericMethod(
+                EnumerableMethodCache.SelectMethod,
+                navType,
+                navType);
 
             var selectCall = Expression.Call(null, selectMethod, orderedCollection, innerLambda);
 
             // .ToList()
-            var toListMethod = typeof(Enumerable)
-                .GetMethod("ToList", BindingFlags.Static | BindingFlags.Public)!
-                .MakeGenericMethod(navType);
+            var toListMethod = EnumerableMethodCache.MakeGenericMethod(
+                EnumerableMethodCache.ToListMethod,
+                navType);
 
             var toListCall = Expression.Call(null, toListMethod, selectCall);
 

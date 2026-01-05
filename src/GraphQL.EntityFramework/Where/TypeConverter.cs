@@ -1,5 +1,42 @@
 ﻿static class TypeConverter
 {
+    static readonly Dictionary<Type, Func<IEnumerable<string>, IList>> listConverters = new()
+    {
+        [typeof(Guid)] = values => values.Select(Guid.Parse).ToList(),
+        [typeof(Guid?)] = values => values.Select(_ => (Guid?)new Guid(_)).ToList(),
+        [typeof(bool)] = values => values.Select(ParseBoolean).ToList(),
+        [typeof(bool?)] = values => values.Select(_ => (bool?)ParseBoolean(_)).ToList(),
+        [typeof(int)] = values => values.Select(int.Parse).ToList(),
+        [typeof(int?)] = values => values.Select(_ => (int?)int.Parse(_)).ToList(),
+        [typeof(short)] = values => values.Select(short.Parse).ToList(),
+        [typeof(short?)] = values => values.Select(_ => (short?)short.Parse(_)).ToList(),
+        [typeof(long)] = values => values.Select(long.Parse).ToList(),
+        [typeof(long?)] = values => values.Select(_ => (long?)long.Parse(_)).ToList(),
+        [typeof(uint)] = values => values.Select(uint.Parse).ToList(),
+        [typeof(uint?)] = values => values.Select(_ => (uint?)uint.Parse(_)).ToList(),
+        [typeof(ushort)] = values => values.Select(ushort.Parse).ToList(),
+        [typeof(ushort?)] = values => values.Select(_ => (ushort?)ushort.Parse(_)).ToList(),
+        [typeof(ulong)] = values => values.Select(ulong.Parse).ToList(),
+        [typeof(ulong?)] = values => values.Select(_ => (ulong?)ulong.Parse(_)).ToList(),
+        [typeof(DateTime)] = values => values.Select(DateTime.Parse).ToList(),
+        [typeof(DateTime?)] = values => values.Select(_ => (DateTime?)DateTime.Parse(_)).ToList(),
+        [typeof(Time)] = values => values.Select(Time.Parse).ToList(),
+        [typeof(Time?)] = values => values.Select(_ => (Time?)Time.Parse(_)).ToList(),
+        [typeof(Date)] = values => values.Select(_ => Date.ParseExact(_, "yyyy-MM-dd")).ToList(),
+        [typeof(Date?)] = values => values.Select(_ => (Date?)Date.ParseExact(_, "yyyy-MM-dd")).ToList(),
+        [typeof(DateTimeOffset)] = values => values.Select(DateTimeOffset.Parse).ToList(),
+        [typeof(DateTimeOffset?)] = values => values.Select(_ => (DateTimeOffset?)DateTimeOffset.Parse(_)).ToList(),
+    };
+
+    static readonly Dictionary<Type, Func<string, object>> singleConverters = new()
+    {
+        [typeof(DateTime)] = value => ValueConverter.ConvertTo<DateTime>(value)!,
+        [typeof(Date)] = value => ValueConverter.ConvertTo<Date>(value)!,
+        [typeof(Time)] = value => ValueConverter.ConvertTo<Time>(value)!,
+        [typeof(DateTimeOffset)] = value => ValueConverter.ConvertTo<DateTimeOffset>(value)!,
+        [typeof(Guid)] = value => new Guid(value),
+    };
+
     public static IList ConvertStringsToList(string?[] values, MemberInfo property)
     {
         var hash = new HashSet<string?>();
@@ -39,114 +76,13 @@
 
     static IList ConvertStringsToListInternal(IEnumerable<string> values, Type type)
     {
-        if (type == typeof(Guid))
+        // Try dictionary lookup first for common types
+        if (listConverters.TryGetValue(type, out var converter))
         {
-            return values.Select(Guid.Parse).ToList();
-        }
-        if (type == typeof(Guid?))
-        {
-            return values.Select(_ => (Guid?)new Guid(_)).ToList();
+            return converter(values);
         }
 
-        if (type == typeof(bool))
-        {
-            return values.Select(ParseBoolean).ToList();
-        }
-        if (type == typeof(bool?))
-        {
-            return values.Select(_ => (bool?)ParseBoolean(_)).ToList();
-        }
-
-        if (type == typeof(int))
-        {
-            return values.Select(int.Parse).ToList();
-        }
-        if (type == typeof(int?))
-        {
-            return values.Select(_ => (int?)int.Parse(_)).ToList();
-        }
-
-        if (type == typeof(short))
-        {
-            return values.Select(short.Parse).ToList();
-        }
-        if (type == typeof(short?))
-        {
-            return values.Select(_ => (short?)short.Parse(_)).ToList();
-        }
-
-        if (type == typeof(long))
-        {
-            return values.Select(long.Parse).ToList();
-        }
-        if (type == typeof(long?))
-        {
-            return values.Select(_ => (long?)long.Parse(_)).ToList();
-        }
-
-        if (type == typeof(uint))
-        {
-            return values.Select(uint.Parse).ToList();
-        }
-        if (type == typeof(uint?))
-        {
-            return values.Select(_ => (uint?)uint.Parse(_)).ToList();
-        }
-
-        if (type == typeof(ushort))
-        {
-            return values.Select(ushort.Parse).ToList();
-        }
-        if (type == typeof(ushort?))
-        {
-            return values.Select(_ => (ushort?)ushort.Parse(_)).ToList();
-        }
-
-        if (type == typeof(ulong))
-        {
-            return values.Select(ulong.Parse).ToList();
-        }
-        if (type == typeof(ulong?))
-        {
-            return values.Select(_ => (ulong?)ulong.Parse(_)).ToList();
-        }
-
-        if (type == typeof(DateTime))
-        {
-            return values.Select(DateTime.Parse).ToList();
-        }
-        if (type == typeof(DateTime?))
-        {
-            return values.Select(_ => (DateTime?)DateTime.Parse(_)).ToList();
-        }
-
-        if (type == typeof(Time))
-        {
-            return values.Select(Time.Parse).ToList();
-        }
-        if (type == typeof(Time?))
-        {
-            return values.Select(_ => (Time?)Time.Parse(_)).ToList();
-        }
-
-        if (type == typeof(Date))
-        {
-            return values.Select(_ => Date.ParseExact(_, "yyyy-MM-dd")).ToList();
-        }
-        if (type == typeof(Date?))
-        {
-            return values.Select(_ => (Date?)Date.ParseExact(_, "yyyy-MM-dd")).ToList();
-        }
-
-        if (type == typeof(DateTimeOffset))
-        {
-            return values.Select(DateTimeOffset.Parse).ToList();
-        }
-        if (type == typeof(DateTimeOffset?))
-        {
-            return values.Select(_ => (DateTimeOffset?)DateTimeOffset.Parse(_)).ToList();
-        }
-
+        // Handle enums
         if (type.IsEnum)
         {
             var getList = enumListMethod.MakeGenericMethod(type);
@@ -203,29 +139,10 @@
             type = underlyingType;
         }
 
-        if (type == typeof(DateTime))
+        // Try dictionary lookup first for common types
+        if (singleConverters.TryGetValue(type, out var converter))
         {
-            return ValueConverter.ConvertTo<DateTime>(value);
-        }
-
-        if (type == typeof(Date))
-        {
-            return ValueConverter.ConvertTo<Date>(value);
-        }
-
-        if (type == typeof(Time))
-        {
-            return ValueConverter.ConvertTo<Time>(value);
-        }
-
-        if (type == typeof(DateTimeOffset))
-        {
-            return ValueConverter.ConvertTo<DateTimeOffset>(value);
-        }
-
-        if (type == typeof(Guid))
-        {
-            return new Guid(value!);
+            return converter(value!);
         }
 
         if (type.IsEnum)
