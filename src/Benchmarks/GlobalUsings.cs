@@ -7,6 +7,7 @@ global using BenchmarkDotNet.Loggers;
 global using BenchmarkDotNet.Running;
 global using GraphQL;
 global using GraphQL.EntityFramework;
+global using GraphQL.SystemTextJson;
 global using GraphQL.Types;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
