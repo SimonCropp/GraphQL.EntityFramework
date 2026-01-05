@@ -4,14 +4,14 @@
   "data": {
     "readOnlyEntities": [
       {
-        "firstName": "Jane",
-        "lastName": "Smith",
-        "age": 25
-      },
-      {
         "firstName": "John",
         "lastName": "Doe",
         "age": 30
+      },
+      {
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "age": 25
       }
     ]
   }

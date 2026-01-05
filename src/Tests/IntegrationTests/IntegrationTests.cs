@@ -2791,12 +2791,14 @@ public partial class IntegrationTests
 
         var entity1 = new ReadOnlyEntity
         {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             FirstName = "John",
             LastName = "Doe",
             Age = 30
         };
         var entity2 = new ReadOnlyEntity
         {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
             FirstName = "Jane",
             LastName = "Smith",
             Age = 25
