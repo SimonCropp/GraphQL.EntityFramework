@@ -1,41 +1,43 @@
 ﻿static class TypeConverter
 {
-    static Dictionary<Type, Func<IEnumerable<string>, IList>> listConverters = new()
-    {
-        [typeof(Guid)] = values => values.Select(Guid.Parse).ToList(),
-        [typeof(Guid?)] = values => values.Select(_ => (Guid?)new Guid(_)).ToList(),
-        [typeof(bool)] = values => values.Select(ParseBoolean).ToList(),
-        [typeof(bool?)] = values => values.Select(_ => (bool?)ParseBoolean(_)).ToList(),
-        [typeof(int)] = values => values.Select(int.Parse).ToList(),
-        [typeof(int?)] = values => values.Select(_ => (int?)int.Parse(_)).ToList(),
-        [typeof(short)] = values => values.Select(short.Parse).ToList(),
-        [typeof(short?)] = values => values.Select(_ => (short?)short.Parse(_)).ToList(),
-        [typeof(long)] = values => values.Select(long.Parse).ToList(),
-        [typeof(long?)] = values => values.Select(_ => (long?)long.Parse(_)).ToList(),
-        [typeof(uint)] = values => values.Select(uint.Parse).ToList(),
-        [typeof(uint?)] = values => values.Select(_ => (uint?)uint.Parse(_)).ToList(),
-        [typeof(ushort)] = values => values.Select(ushort.Parse).ToList(),
-        [typeof(ushort?)] = values => values.Select(_ => (ushort?)ushort.Parse(_)).ToList(),
-        [typeof(ulong)] = values => values.Select(ulong.Parse).ToList(),
-        [typeof(ulong?)] = values => values.Select(_ => (ulong?)ulong.Parse(_)).ToList(),
-        [typeof(DateTime)] = values => values.Select(DateTime.Parse).ToList(),
-        [typeof(DateTime?)] = values => values.Select(_ => (DateTime?)DateTime.Parse(_)).ToList(),
-        [typeof(Time)] = values => values.Select(Time.Parse).ToList(),
-        [typeof(Time?)] = values => values.Select(_ => (Time?)Time.Parse(_)).ToList(),
-        [typeof(Date)] = values => values.Select(_ => Date.ParseExact(_, "yyyy-MM-dd")).ToList(),
-        [typeof(Date?)] = values => values.Select(_ => (Date?)Date.ParseExact(_, "yyyy-MM-dd")).ToList(),
-        [typeof(DateTimeOffset)] = values => values.Select(DateTimeOffset.Parse).ToList(),
-        [typeof(DateTimeOffset?)] = values => values.Select(_ => (DateTimeOffset?)DateTimeOffset.Parse(_)).ToList(),
-    };
+    static FrozenDictionary<Type, Func<IEnumerable<string>, IList>> listConverters =
+        FrozenDictionary.Create<Type, Func<IEnumerable<string>, IList>>(
+        [
+            new(typeof(Guid), values => values.Select(Guid.Parse).ToList()),
+            new(typeof(Guid?), values => values.Select(_ => (Guid?)new Guid(_)).ToList()),
+            new(typeof(bool), values => values.Select(ParseBoolean).ToList()),
+            new(typeof(bool?), values => values.Select(_ => (bool?)ParseBoolean(_)).ToList()),
+            new(typeof(int), values => values.Select(int.Parse).ToList()),
+            new(typeof(int?), values => values.Select(_ => (int?)int.Parse(_)).ToList()),
+            new(typeof(short), values => values.Select(short.Parse).ToList()),
+            new(typeof(short?), values => values.Select(_ => (short?)short.Parse(_)).ToList()),
+            new(typeof(long), values => values.Select(long.Parse).ToList()),
+            new(typeof(long?), values => values.Select(_ => (long?)long.Parse(_)).ToList()),
+            new(typeof(uint), values => values.Select(uint.Parse).ToList()),
+            new(typeof(uint?), values => values.Select(_ => (uint?)uint.Parse(_)).ToList()),
+            new(typeof(ushort), values => values.Select(ushort.Parse).ToList()),
+            new(typeof(ushort?), values => values.Select(_ => (ushort?)ushort.Parse(_)).ToList()),
+            new(typeof(ulong), values => values.Select(ulong.Parse).ToList()),
+            new(typeof(ulong?), values => values.Select(_ => (ulong?)ulong.Parse(_)).ToList()),
+            new(typeof(DateTime), values => values.Select(DateTime.Parse).ToList()),
+            new(typeof(DateTime?), values => values.Select(_ => (DateTime?)DateTime.Parse(_)).ToList()),
+            new(typeof(Time), values => values.Select(Time.Parse).ToList()),
+            new(typeof(Time?), values => values.Select(_ => (Time?)Time.Parse(_)).ToList()),
+            new(typeof(Date), values => values.Select(_ => Date.ParseExact(_, "yyyy-MM-dd")).ToList()),
+            new(typeof(Date?), values => values.Select(_ => (Date?)Date.ParseExact(_, "yyyy-MM-dd")).ToList()),
+            new(typeof(DateTimeOffset), values => values.Select(DateTimeOffset.Parse).ToList()),
+            new(typeof(DateTimeOffset?), values => values.Select(_ => (DateTimeOffset?)DateTimeOffset.Parse(_)).ToList()),
+        ]);
 
-    static Dictionary<Type, Func<string, object>> singleConverters = new()
-    {
-        [typeof(DateTime)] = value => ValueConverter.ConvertTo<DateTime>(value),
-        [typeof(Date)] = value => ValueConverter.ConvertTo<Date>(value),
-        [typeof(Time)] = value => ValueConverter.ConvertTo<Time>(value),
-        [typeof(DateTimeOffset)] = value => ValueConverter.ConvertTo<DateTimeOffset>(value),
-        [typeof(Guid)] = value => new Guid(value),
-    };
+    static FrozenDictionary<Type, Func<string, object>> singleConverters =
+        FrozenDictionary.Create<Type, Func<string, object>>(
+        [
+            new(typeof(DateTime), value => ValueConverter.ConvertTo<DateTime>(value)),
+            new(typeof(Date), value => ValueConverter.ConvertTo<Date>(value)),
+            new(typeof(Time), value => ValueConverter.ConvertTo<Time>(value)),
+            new(typeof(DateTimeOffset), value => ValueConverter.ConvertTo<DateTimeOffset>(value)),
+            new(typeof(Guid), value => new Guid(value)),
+        ]);
 
     public static IList ConvertStringsToList(string?[] values, MemberInfo property)
     {
