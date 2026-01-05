@@ -138,6 +138,11 @@
             resolve: _ => _.DbContext.BaseEntities.OrderBy(_ => _.Property));
 
         AddQueryField(
+            name: "baseEntities",
+            graphType: typeof(ListGraphType<BaseGraphType>),
+            resolve: _ => _.DbContext.BaseEntities);
+
+        AddQueryField(
             name: "manyToManyLeftEntities",
             resolve: _ => _.DbContext.ManyToManyLeftEntities);
 
