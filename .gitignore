@@ -9,3 +9,4 @@ obj/
 nugets/
 nul
 .claude/settings.local.json
+/src/Benchmarks/BenchmarkDotNet.Artifacts
