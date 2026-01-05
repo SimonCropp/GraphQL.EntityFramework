@@ -1,6 +1,3 @@
-using BenchmarkDotNet.Attributes;
-using GraphQL.EntityFramework;
-
 [MemoryDiagnoser]
 [SimpleJob(iterationCount: 10)]
 public class NavigationLookupBenchmarks
@@ -14,40 +11,34 @@ public class NavigationLookupBenchmarks
     {
         // Simulate typical entity with 20 navigation properties
         navigationList = Enumerable.Range(0, NavigationCount)
-            .Select(i => new Navigation(
-                $"Property{i}",
+            .Select(_ => new Navigation(
+                $"Property{_}",
                 typeof(string),
                 IsCollection: true,
                 IsNullable: false))
             .ToList();
 
         navigationDict = navigationList
-            .ToDictionary(n => n.Name.ToLowerInvariant(), n => n);
+            .ToDictionary(_ => _.Name.ToLowerInvariant(), n => n);
     }
 
     [Benchmark(Baseline = true)]
-    public Navigation? LinearSearch_FirstItem()
-    {
+    public Navigation? LinearSearch_FirstItem() =>
         // Current pattern - search at beginning
-        return navigationList.FirstOrDefault(n =>
-            n.Name.Equals("Property0", StringComparison.OrdinalIgnoreCase));
-    }
+        navigationList.FirstOrDefault(_ =>
+            _.Name.Equals("Property0", StringComparison.OrdinalIgnoreCase));
 
     [Benchmark]
-    public Navigation? LinearSearch_MiddleItem()
-    {
+    public Navigation? LinearSearch_MiddleItem() =>
         // Current pattern - search in middle
-        return navigationList.FirstOrDefault(n =>
-            n.Name.Equals("Property10", StringComparison.OrdinalIgnoreCase));
-    }
+        navigationList.FirstOrDefault(_ =>
+            _.Name.Equals("Property10", StringComparison.OrdinalIgnoreCase));
 
     [Benchmark]
-    public Navigation? LinearSearch_LastItem()
-    {
+    public Navigation? LinearSearch_LastItem() =>
         // Current pattern - worst case
-        return navigationList.FirstOrDefault(n =>
+        navigationList.FirstOrDefault(n =>
             n.Name.Equals("Property19", StringComparison.OrdinalIgnoreCase));
-    }
 
     [Benchmark]
     public Navigation? DictionaryLookup_FirstItem()
