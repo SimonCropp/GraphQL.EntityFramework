@@ -71,6 +71,7 @@
     orderBy: [OrderBy!],
     ids: [ID!]): BaseConnection!
   baseEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [BaseEntity]!
+  readOnlyEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyEntity]!
   manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
   manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
   parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentEntityView!]!
@@ -516,6 +517,15 @@ type DerivedChildEdge {
   cursor: String!
   "The item at the end of the edge"
   node: DerivedChild!
+}
+
+type ReadOnlyEntity {
+  age: Int!
+  displayName: String!
+  firstName: String
+  id: ID!
+  isAdult: Boolean!
+  lastName: String
 }
 
 type ManyToManyLeft {

@@ -2776,6 +2776,37 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Query_entity_with_readonly_properties()
+    {
+        var query =
+            """
+            {
+              readOnlyEntities(orderBy: {path: "id"}) {
+                firstName
+                lastName
+                age
+              }
+            }
+            """;
+
+        var entity1 = new ReadOnlyEntity
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Age = 30
+        };
+        var entity2 = new ReadOnlyEntity
+        {
+            FirstName = "Jane",
+            LastName = "Smith",
+            Age = 25
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    [Fact]
     public async Task ManyToManyRightWhereAndInclude()
     {
         var query =
