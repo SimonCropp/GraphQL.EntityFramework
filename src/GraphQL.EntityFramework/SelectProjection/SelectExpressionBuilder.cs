@@ -188,12 +188,14 @@ static class SelectExpressionBuilder
         // Add nested navigations recursively
         foreach (var (navFieldName, nestedNavProjection) in projection.Navigations)
         {
-            if (TryGetProperty(entityType, navFieldName, out var prop) &&
-                addedProperties.Add(prop.Name))
+            if (!TryGetProperty(entityType, navFieldName, out var prop) ||
+                !addedProperties.Add(prop.Name))
             {
-                var binding = BuildNestedNavigationBinding(sourceExpression, prop, nestedNavProjection, keyNames);
-                bindings.Add(binding);
+                continue;
             }
+
+            var binding = BuildNestedNavigationBinding(sourceExpression, prop, nestedNavProjection, keyNames);
+            bindings.Add(binding);
         }
 
         return bindings;
