@@ -30,7 +30,7 @@
 
     static readonly Dictionary<Type, Func<string, object>> singleConverters = new()
     {
-        [typeof(DateTime)] = value => ValueConverter.ConvertTo<DateTime>(value)!,
+        [typeof(DateTime)] = value => ValueConverter.ConvertTo<DateTime>(value),
         [typeof(Date)] = value => ValueConverter.ConvertTo<Date>(value)!,
         [typeof(Time)] = value => ValueConverter.ConvertTo<Time>(value)!,
         [typeof(DateTimeOffset)] = value => ValueConverter.ConvertTo<DateTimeOffset>(value)!,
