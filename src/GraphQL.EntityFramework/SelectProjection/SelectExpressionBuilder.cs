@@ -29,7 +29,7 @@ static class SelectExpressionBuilder
         foreach (var keyName in projection.KeyNames)
         {
             if (TryGetProperty(entityType, keyName, out var prop) &&
-                prop!.CanWrite &&
+                prop.CanWrite &&
                 addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
@@ -40,7 +40,7 @@ static class SelectExpressionBuilder
         foreach (var fieldName in projection.ScalarFields)
         {
             if (TryGetProperty(entityType, fieldName, out var prop) &&
-                prop!.CanWrite &&
+                prop.CanWrite &&
                 addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
@@ -51,7 +51,7 @@ static class SelectExpressionBuilder
         foreach (var (navFieldName, navProjection) in projection.Navigations)
         {
             if (!TryGetProperty(entityType, navFieldName, out var prop) ||
-                !addedProperties.Add(prop!.Name))
+                !addedProperties.Add(prop.Name))
             {
                 continue;
             }
@@ -97,14 +97,14 @@ static class SelectExpressionBuilder
             var orderParam = Expression.Parameter(navType, "o");
             if (TryGetProperty(navType, keys[0], out var keyProp))
             {
-                var keyAccess = Expression.Property(orderParam, keyProp!);
+                var keyAccess = Expression.Property(orderParam, keyProp);
                 var keyLambda = Expression.Lambda(keyAccess, orderParam);
 
                 var orderByMethod = typeof(Enumerable)
                     .GetMethods(BindingFlags.Static | BindingFlags.Public)
                     .First(_ => _.Name == "OrderBy" &&
                                 _.GetParameters().Length == 2)
-                    .MakeGenericMethod(navType, keyProp!.PropertyType);
+                    .MakeGenericMethod(navType, keyProp.PropertyType);
 
                 orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
             }
@@ -170,7 +170,7 @@ static class SelectExpressionBuilder
         foreach (var keyName in projection.KeyNames)
         {
             if (TryGetProperty(entityType, keyName, out var prop) &&
-                prop!.CanWrite &&
+                prop.CanWrite &&
                 addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(sourceExpression, prop)));
@@ -181,7 +181,7 @@ static class SelectExpressionBuilder
         foreach (var fieldName in projection.ScalarFields)
         {
             if (TryGetProperty(entityType, fieldName, out var prop) &&
-                prop!.CanWrite &&
+                prop.CanWrite &&
                 addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(sourceExpression, prop)));
@@ -192,7 +192,7 @@ static class SelectExpressionBuilder
         foreach (var (navFieldName, nestedNavProjection) in projection.Navigations)
         {
             if (TryGetProperty(entityType, navFieldName, out var prop) &&
-                addedProperties.Add(prop!.Name))
+                addedProperties.Add(prop.Name))
             {
                 var binding = BuildNestedNavigationBinding(sourceExpression, prop, nestedNavProjection, keyNames);
                 bindings.Add(binding);
@@ -228,14 +228,14 @@ static class SelectExpressionBuilder
                 var orderParam = Expression.Parameter(navType, "o");
                 if (TryGetProperty(navType, keys[0], out var keyProp))
                 {
-                    var keyAccess = Expression.Property(orderParam, keyProp!);
+                    var keyAccess = Expression.Property(orderParam, keyProp);
                     var keyLambda = Expression.Lambda(keyAccess, orderParam);
 
                     var orderByMethod = typeof(Enumerable)
                         .GetMethods(BindingFlags.Static | BindingFlags.Public)
                         .First(_ => _.Name == "OrderBy" &&
                                     _.GetParameters().Length == 2)
-                        .MakeGenericMethod(navType, keyProp!.PropertyType);
+                        .MakeGenericMethod(navType, keyProp.PropertyType);
 
                     orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
                 }
@@ -282,7 +282,7 @@ static class SelectExpressionBuilder
         }
     }
 
-    static bool TryGetProperty(Type type, string name, out PropertyInfo? property)
+    static bool TryGetProperty(Type type, string name, [NotNullWhen(true)] out PropertyInfo? property)
     {
         property = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
         return property != null;
