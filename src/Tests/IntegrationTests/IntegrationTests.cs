@@ -2751,6 +2751,31 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Query_abstract_entity()
+    {
+        var query =
+            """
+            {
+              baseEntities(orderBy: {path: "property"}) {
+                property
+              }
+            }
+            """;
+
+        var derivedEntity1 = new DerivedEntity
+        {
+            Property = "Value1"
+        };
+        var derivedEntity2 = new DerivedWithNavigationEntity
+        {
+            Property = "Value2"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [derivedEntity1, derivedEntity2]);
+    }
+
+    [Fact]
     public async Task ManyToManyRightWhereAndInclude()
     {
         var query =
