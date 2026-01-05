@@ -1,0 +1,8 @@
+<Project>
+  <Import Project="../Directory.Build.props"/>
+  <PropertyGroup>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors></WarningsAsErrors>
+    <NoWarn>$(NoWarn);IDE0022;CA1823</NoWarn>
+  </PropertyGroup>
+</Project>
