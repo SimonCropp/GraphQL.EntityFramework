@@ -2,6 +2,9 @@
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames)
 {
+    static readonly ConcurrentDictionary<string, FieldProjectionInfo> projectionCache = new();
+    static readonly ConcurrentDictionary<string, List<string>> includePathsCache = new();
+
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class
     {
@@ -28,10 +31,14 @@
         }
 
         var type = typeof(TItem);
-        navigations.TryGetValue(type, out var navigationProperties);
-        keyNames.TryGetValue(type, out var keys);
+        var cacheKey = BuildProjectionCacheKey(type, context.SubFields);
 
-        return GetProjectionInfo(context, navigationProperties, keys ?? []);
+        return projectionCache.GetOrAdd(cacheKey, _ =>
+        {
+            navigations.TryGetValue(type, out var navigationProperties);
+            keyNames.TryGetValue(type, out var keys);
+            return GetProjectionInfo(context, navigationProperties, keys ?? []);
+        });
     }
 
     FieldProjectionInfo GetProjectionInfo(
@@ -59,6 +66,47 @@
         }
 
         return new(scalarFields, keys, navProjections);
+    }
+
+    static string BuildProjectionCacheKey(Type type, IReadOnlyDictionary<string, (GraphQLField Field, FieldType FieldType)> subFields)
+    {
+        var builder = new StringBuilder();
+        builder.Append(type.FullName);
+        builder.Append(':');
+
+        // Create stable key by sorting field names and including their nested structure
+        foreach (var (fieldName, fieldInfo) in subFields.OrderBy(x => x.Key, StringComparer.Ordinal))
+        {
+            builder.Append(fieldName);
+
+            // Include nested field structure for navigation properties
+            if (fieldInfo.Field.SelectionSet?.Selections is not null)
+            {
+                builder.Append('[');
+                AppendSelectionSetToKey(builder, fieldInfo.Field.SelectionSet);
+                builder.Append(']');
+            }
+
+            builder.Append(',');
+        }
+
+        return builder.ToString();
+    }
+
+    static void AppendSelectionSetToKey(StringBuilder builder, GraphQLSelectionSet selectionSet)
+    {
+        var fields = selectionSet.Selections.OfType<GraphQLField>().OrderBy(f => f.Name.StringValue, StringComparer.Ordinal);
+        foreach (var field in fields)
+        {
+            builder.Append(field.Name.StringValue);
+            if (field.SelectionSet?.Selections is not null)
+            {
+                builder.Append('[');
+                AppendSelectionSetToKey(builder, field.SelectionSet);
+                builder.Append(']');
+            }
+            builder.Append(';');
+        }
     }
 
     void ProcessConnectionNodeFields(
@@ -275,11 +323,28 @@
 
     List<string> GetPaths(IResolveFieldContext context, IReadOnlyDictionary<string, Navigation> navigationProperty)
     {
-        var list = new List<string>();
+        var cacheKey = BuildIncludePathsCacheKey(context);
 
-        AddField(list, context.FieldAst, context.FieldAst.SelectionSet!, null, context.FieldDefinition, navigationProperty, context);
+        return includePathsCache.GetOrAdd(cacheKey, _ =>
+        {
+            var list = new List<string>();
+            AddField(list, context.FieldAst, context.FieldAst.SelectionSet!, null, context.FieldDefinition, navigationProperty, context);
+            return list;
+        });
+    }
 
-        return list;
+    static string BuildIncludePathsCacheKey(IResolveFieldContext context)
+    {
+        var builder = new StringBuilder();
+        builder.Append(context.FieldDefinition.Name);
+        builder.Append(':');
+
+        if (context.FieldAst.SelectionSet?.Selections is not null)
+        {
+            AppendSelectionSetToKey(builder, context.FieldAst.SelectionSet);
+        }
+
+        return builder.ToString();
     }
 
     void AddField(List<string> list, GraphQLField field, GraphQLSelectionSet selectionSet, string? parentPath, FieldType fieldType, IReadOnlyDictionary<string, Navigation> parentNavigationProperties, IResolveFieldContext context, IComplexGraphType? graph = null)
