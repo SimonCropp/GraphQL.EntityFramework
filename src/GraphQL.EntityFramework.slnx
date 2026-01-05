@@ -8,6 +8,7 @@
     <File Path="global.json" />
     <File Path="mdsnippets.json" />
   </Folder>
+  <Project Path="Benchmarks/Benchmarks.csproj" />
   <Project Path="GraphQL.EntityFramework/GraphQL.EntityFramework.csproj" />
   <Project Path="SampleWeb.Tests/SampleWeb.Tests.csproj" />
   <Project Path="SampleWeb/SampleWeb.csproj" />
