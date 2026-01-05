@@ -11,7 +11,7 @@ partial class EfGraphQLService<TDbContext>
         IEnumerable<string>? includeNames = null)
         where TReturn : class
     {
-        Guard.AgainstWhiteSpace(nameof(name), name);
+        Ensure.NotWhiteSpace(nameof(name), name);
 
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 

@@ -6,7 +6,7 @@ public class ClientQueryExecutor(Func<object, string> json, string uri = "graphq
 {
     public Task<HttpResponseMessage> ExecutePost(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
     {
-        Guard.AgainstWhiteSpace(nameof(query), query);
+        Ensure.NotWhiteSpace(nameof(query), query);
         query = CompressQuery(query);
         var body = new
         {
@@ -23,7 +23,7 @@ public class ClientQueryExecutor(Func<object, string> json, string uri = "graphq
 
     public Task<HttpResponseMessage> ExecuteGet(HttpClient client, string query, object? variables = null, Action<HttpHeaders>? headerAction = null)
     {
-        Guard.AgainstWhiteSpace(nameof(query), query);
+        Ensure.NotWhiteSpace(nameof(query), query);
         var compressed = CompressQuery(query);
         var variablesString = ToJson(variables);
         var getUri = $"{uri}?query={compressed}&variables={variablesString}";

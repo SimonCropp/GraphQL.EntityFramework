@@ -121,13 +121,13 @@
 
                     // Only the first (primary) navigation gets the nested projection from the query
                     // Other navigations get empty projections (select all their keys)
-                    var nestedProjection = !addedAny
-                        ? GetNestedProjection(
+                    var nestedProjection = addedAny
+                        ? new([], nestedKeys ?? [], [])
+                        : GetNestedProjection(
                             fieldInfo.Field.SelectionSet,
                             nestedNavProps,
                             nestedKeys ?? [],
-                            context)
-                        : new([], nestedKeys ?? [], []);
+                            context);
 
                     navProjections[navigation.Name] = new(
                         navType,
@@ -238,7 +238,15 @@
         Navigation? navigation = null;
         navigationProperties?.TryGetValue(fieldName, out navigation);
 
-        if (navigation != null)
+        if (navigation == null)
+        {
+            // It's a scalar field - avoid duplicates
+            if (!scalarFields.Contains(fieldName, StringComparer.OrdinalIgnoreCase))
+            {
+                scalarFields.Add(fieldName);
+            }
+        }
+        else
         {
             // It's a navigation - build nested projection
             var navType = navigation.Type;
@@ -256,26 +264,13 @@
                 navigation.IsCollection,
                 nestedProjection);
         }
-        else
-        {
-            // It's a scalar field - avoid duplicates
-            if (!scalarFields.Contains(fieldName, StringComparer.OrdinalIgnoreCase))
-            {
-                scalarFields.Add(fieldName);
-            }
-        }
     }
 
     IQueryable<T> AddIncludes<T>(IQueryable<T> query, IResolveFieldContext context, IReadOnlyDictionary<string, Navigation> navigationProperties)
         where T : class
     {
         var paths = GetPaths(context, navigationProperties);
-        foreach (var path in paths)
-        {
-            query = query.Include(path);
-        }
-
-        return query;
+        return paths.Aggregate(query, (current, path) => current.Include(path));
     }
 
     List<string> GetPaths(IResolveFieldContext context, IReadOnlyDictionary<string, Navigation> navigationProperty)
@@ -289,7 +284,8 @@
 
     void AddField(List<string> list, GraphQLField field, GraphQLSelectionSet selectionSet, string? parentPath, FieldType fieldType, IReadOnlyDictionary<string, Navigation> parentNavigationProperties, IResolveFieldContext context, IComplexGraphType? graph = null)
     {
-        if (graph == null && !fieldType.TryGetComplexGraph(out graph))
+        if (graph == null &&
+            !fieldType.TryGetComplexGraph(out graph))
         {
             return;
         }
@@ -309,7 +305,7 @@
             var name = fragmentSpread.FragmentName.Name;
             var fragmentDefinition = context.Document.Definitions
                 .OfType<GraphQLFragmentDefinition>()
-                .SingleOrDefault(x=>x.FragmentName.Name == name);
+                .SingleOrDefault(x => x.FragmentName.Name == name);
             if (fragmentDefinition is null)
             {
                 continue;
@@ -339,10 +335,7 @@
         }
 
         var paths = GetPaths(parentPath, includeNames).ToList();
-        foreach (var path in paths)
-        {
-            list.Add(path);
-        }
+        list.AddRange(paths);
 
         ProcessSubFields(list, paths.First(), subFields, graph, navigations[entityType], context);
     }
@@ -391,13 +384,13 @@
     }
 
     static string[] FieldNameToArray(string fieldName) =>
-        [ char.ToUpperInvariant(fieldName[0]) + fieldName[1..] ];
+        [char.ToUpperInvariant(fieldName[0]) + fieldName[1..]];
 
     static bool TryGetIncludeMetadata(FieldType fieldType, [NotNullWhen(true)] out string[]? value)
     {
         if (fieldType.Metadata.TryGetValue("_EF_IncludeName", out var fieldNameObject))
         {
-            value = (string[])fieldNameObject!;
+            value = (string[]) fieldNameObject!;
             return true;
         }
 

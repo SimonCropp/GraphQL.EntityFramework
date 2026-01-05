@@ -131,7 +131,7 @@ partial class EfGraphQLService<TDbContext>
         bool idOnly)
         where TReturn : class
     {
-        Guard.AgainstWhiteSpace(nameof(name), name);
+        Ensure.NotWhiteSpace(nameof(name), name);
 
         graphType ??= GraphTypeFinder.FindGraphType<TReturn>(nullable);
 
@@ -141,7 +141,8 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = graphType,
-            Resolver = new FuncFieldResolver<TSource, TReturn?>(async context =>
+            Resolver = new FuncFieldResolver<TSource, TReturn?>(
+                async context =>
             {
                 var fieldContext = BuildContext(context);
 
