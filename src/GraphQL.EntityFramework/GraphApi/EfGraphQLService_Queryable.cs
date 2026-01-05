@@ -74,7 +74,7 @@ partial class EfGraphQLService<TDbContext>
         bool omitQueryArguments)
         where TReturn : class
     {
-        Guard.AgainstWhiteSpace(nameof(name), name);
+        Ensure.NotWhiteSpace(nameof(name), name);
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
         var fieldType = new FieldType

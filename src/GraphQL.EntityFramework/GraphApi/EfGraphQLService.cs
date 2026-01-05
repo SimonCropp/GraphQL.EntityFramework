@@ -26,7 +26,7 @@ public partial class EfGraphQLService<TDbContext> :
         includeAppender = new(Navigations, keyNames);
     }
 
-    public IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> Navigations { get; }
+    public IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> Navigations { get; }
 
     IncludeAppender includeAppender;
 

@@ -56,7 +56,7 @@ public static class Mapper<TDbContext>
 
             if (navigations is not null)
             {
-                list.AddRange(navigations.Select(_ => _.Name));
+                list.AddRange(navigations.Values.Select(_ => _.Name));
             }
 
             MapProperties(graph, type, list);
@@ -86,9 +86,9 @@ public static class Mapper<TDbContext>
         ComplexGraphType<TSource> graph,
         IEfGraphQLService<TDbContext> graphService,
         IReadOnlyList<string>? exclusions,
-        IReadOnlyList<Navigation> navigations)
+        IReadOnlyDictionary<string, Navigation> navigations)
     {
-        foreach (var navigation in navigations)
+        foreach (var navigation in navigations.Values)
         {
             if (ShouldIgnore(graph, navigation.Name, navigation.Type, exclusions))
             {

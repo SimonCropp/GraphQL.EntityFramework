@@ -3,6 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Description>Add EntityFramework Core IQueryable support to GraphQL</Description>
     <PolyNullability>true</PolyNullability>
+    <PolyEnsure>true</PolyEnsure>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

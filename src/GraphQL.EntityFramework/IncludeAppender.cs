@@ -1,5 +1,5 @@
 ﻿class IncludeAppender(
-    IReadOnlyDictionary<Type, IReadOnlyList<Navigation>> navigations,
+    IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames)
 {
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
@@ -36,7 +36,7 @@
 
     FieldProjectionInfo GetProjectionInfo(
         IResolveFieldContext context,
-        IReadOnlyList<Navigation>? navigationProperties,
+        IReadOnlyDictionary<string, Navigation>? navigationProperties,
         List<string> keys)
     {
         var scalarFields = new List<string>();
@@ -63,7 +63,7 @@
 
     void ProcessConnectionNodeFields(
         GraphQLSelectionSet? selectionSet,
-        IReadOnlyList<Navigation>? navigationProperties,
+        IReadOnlyDictionary<string, Navigation>? navigationProperties,
         List<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
@@ -98,7 +98,7 @@
     void ProcessProjectionField(
         string fieldName,
         (GraphQLField Field, FieldType FieldType) fieldInfo,
-        IReadOnlyList<Navigation>? navigationProperties,
+        IReadOnlyDictionary<string, Navigation>? navigationProperties,
         List<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
@@ -110,8 +110,8 @@
             var addedAny = false;
             foreach (var navName in includeNames)
             {
-                var navigation = navigationProperties?.FirstOrDefault(n =>
-                    n.Name.Equals(navName, StringComparison.OrdinalIgnoreCase));
+                Navigation? navigation = null;
+                navigationProperties?.TryGetValue(navName, out navigation);
 
                 if (navigation != null && !navProjections.ContainsKey(navigation.Name))
                 {
@@ -121,13 +121,13 @@
 
                     // Only the first (primary) navigation gets the nested projection from the query
                     // Other navigations get empty projections (select all their keys)
-                    var nestedProjection = !addedAny
-                        ? GetNestedProjection(
+                    var nestedProjection = addedAny
+                        ? new([], nestedKeys ?? [], [])
+                        : GetNestedProjection(
                             fieldInfo.Field.SelectionSet,
                             nestedNavProps,
                             nestedKeys ?? [],
-                            context)
-                        : new([], nestedKeys ?? [], []);
+                            context);
 
                     navProjections[navigation.Name] = new(
                         navType,
@@ -144,8 +144,8 @@
         }
 
         // Check if this field is a navigation property by name
-        var navByName = navigationProperties?.FirstOrDefault(n =>
-            n.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
+        Navigation? navByName = null;
+        navigationProperties?.TryGetValue(fieldName, out navByName);
 
         if (navByName != null)
         {
@@ -174,7 +174,7 @@
 
     FieldProjectionInfo GetNestedProjection(
         GraphQLSelectionSet? selectionSet,
-        IReadOnlyList<Navigation>? navigationProperties,
+        IReadOnlyDictionary<string, Navigation>? navigationProperties,
         List<string> keys,
         IResolveFieldContext context)
     {
@@ -229,16 +229,24 @@
     void ProcessNestedProjectionField(
         string fieldName,
         GraphQLField field,
-        IReadOnlyList<Navigation>? navigationProperties,
+        IReadOnlyDictionary<string, Navigation>? navigationProperties,
         List<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
         // Check if this field is a navigation property
-        var navigation = navigationProperties?.FirstOrDefault(n =>
-            n.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
+        Navigation? navigation = null;
+        navigationProperties?.TryGetValue(fieldName, out navigation);
 
-        if (navigation != null)
+        if (navigation == null)
+        {
+            // It's a scalar field - avoid duplicates
+            if (!scalarFields.Contains(fieldName, StringComparer.OrdinalIgnoreCase))
+            {
+                scalarFields.Add(fieldName);
+            }
+        }
+        else
         {
             // It's a navigation - build nested projection
             var navType = navigation.Type;
@@ -256,29 +264,16 @@
                 navigation.IsCollection,
                 nestedProjection);
         }
-        else
-        {
-            // It's a scalar field - avoid duplicates
-            if (!scalarFields.Contains(fieldName, StringComparer.OrdinalIgnoreCase))
-            {
-                scalarFields.Add(fieldName);
-            }
-        }
     }
 
-    IQueryable<T> AddIncludes<T>(IQueryable<T> query, IResolveFieldContext context, IReadOnlyList<Navigation> navigationProperties)
+    IQueryable<T> AddIncludes<T>(IQueryable<T> query, IResolveFieldContext context, IReadOnlyDictionary<string, Navigation> navigationProperties)
         where T : class
     {
         var paths = GetPaths(context, navigationProperties);
-        foreach (var path in paths)
-        {
-            query = query.Include(path);
-        }
-
-        return query;
+        return paths.Aggregate(query, (current, path) => current.Include(path));
     }
 
-    List<string> GetPaths(IResolveFieldContext context, IReadOnlyList<Navigation> navigationProperty)
+    List<string> GetPaths(IResolveFieldContext context, IReadOnlyDictionary<string, Navigation> navigationProperty)
     {
         var list = new List<string>();
 
@@ -287,9 +282,10 @@
         return list;
     }
 
-    void AddField(List<string> list, GraphQLField field, GraphQLSelectionSet selectionSet, string? parentPath, FieldType fieldType, IReadOnlyList<Navigation> parentNavigationProperties, IResolveFieldContext context, IComplexGraphType? graph = null)
+    void AddField(List<string> list, GraphQLField field, GraphQLSelectionSet selectionSet, string? parentPath, FieldType fieldType, IReadOnlyDictionary<string, Navigation> parentNavigationProperties, IResolveFieldContext context, IComplexGraphType? graph = null)
     {
-        if (graph == null && !fieldType.TryGetComplexGraph(out graph))
+        if (graph == null &&
+            !fieldType.TryGetComplexGraph(out graph))
         {
             return;
         }
@@ -309,7 +305,7 @@
             var name = fragmentSpread.FragmentName.Name;
             var fragmentDefinition = context.Document.Definitions
                 .OfType<GraphQLFragmentDefinition>()
-                .SingleOrDefault(x=>x.FragmentName.Name == name);
+                .SingleOrDefault(x => x.FragmentName.Name == name);
             if (fragmentDefinition is null)
             {
                 continue;
@@ -339,10 +335,7 @@
         }
 
         var paths = GetPaths(parentPath, includeNames).ToList();
-        foreach (var path in paths)
-        {
-            list.Add(path);
-        }
+        list.AddRange(paths);
 
         ProcessSubFields(list, paths.First(), subFields, graph, navigations[entityType], context);
     }
@@ -357,7 +350,7 @@
         return includeNames.Select(includeName => $"{parentPath}.{includeName}");
     }
 
-    void ProcessSubFields(List<string> list, string? parentPath, List<GraphQLField> subFields, IComplexGraphType graph, IReadOnlyList<Navigation> navigationProperties, IResolveFieldContext context)
+    void ProcessSubFields(List<string> list, string? parentPath, List<GraphQLField> subFields, IComplexGraphType graph, IReadOnlyDictionary<string, Navigation> navigationProperties, IResolveFieldContext context)
     {
         foreach (var subField in subFields)
         {
@@ -391,13 +384,13 @@
     }
 
     static string[] FieldNameToArray(string fieldName) =>
-        [ char.ToUpperInvariant(fieldName[0]) + fieldName[1..] ];
+        [char.ToUpperInvariant(fieldName[0]) + fieldName[1..]];
 
     static bool TryGetIncludeMetadata(FieldType fieldType, [NotNullWhen(true)] out string[]? value)
     {
         if (fieldType.Metadata.TryGetValue("_EF_IncludeName", out var fieldNameObject))
         {
-            value = (string[])fieldNameObject!;
+            value = (string[]) fieldNameObject!;
             return true;
         }
 
