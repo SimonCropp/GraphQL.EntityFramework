@@ -2756,7 +2756,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              baseEntities {
+              baseEntities(orderBy: {path: "property"}) {
                 property
               }
             }

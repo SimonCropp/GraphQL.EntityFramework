@@ -139,7 +139,7 @@
 
         AddQueryField(
             name: "baseEntities",
-            graphType: typeof(ListGraphType<BaseGraphType>),
+            graphType: typeof(BaseGraphType),
             resolve: _ => _.DbContext.BaseEntities);
 
         AddQueryField(
