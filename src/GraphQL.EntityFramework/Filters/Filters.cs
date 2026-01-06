@@ -256,7 +256,7 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
 
         // Extract IDs using reflection to maintain the correct type
         var idsListType = typeof(List<>).MakeGenericType(idProperty.PropertyType);
-        var idsList = (System.Collections.IList) Activator.CreateInstance(idsListType)!;
+        var idsList = (IList) Activator.CreateInstance(idsListType)!;
 
         foreach (var entity in typedEntities)
         {
