@@ -11,4 +11,7 @@ public class ReadOnlyEntity
 
     // Read-only expression-bodied property
     public bool IsAdult => Age >= 18;
+
+    // Read-only auto-property (simulates database computed column like User.DisplayName)
+    public string ComputedInDb { get; } = null!;
 }

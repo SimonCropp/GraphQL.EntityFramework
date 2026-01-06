@@ -521,6 +521,7 @@ type DerivedChildEdge {
 
 type ReadOnlyEntity {
   age: Int!
+  computedInDb: String!
   displayName: String!
   firstName: String
   id: ID!

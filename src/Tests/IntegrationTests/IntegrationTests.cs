@@ -2809,6 +2809,72 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Query_readonly_computed_property_should_work()
+    {
+        var query =
+            """
+            {
+              readOnlyEntities(orderBy: {path: "id"}) {
+                firstName
+                lastName
+                displayName
+              }
+            }
+            """;
+
+        var entity1 = new ReadOnlyEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            FirstName = "John",
+            LastName = "Doe",
+            Age = 30
+        };
+        var entity2 = new ReadOnlyEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            FirstName = "Jane",
+            LastName = "Smith",
+            Age = 25
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    [Fact]
+    public async Task Query_database_computed_column_readonly_property()
+    {
+        var query =
+            """
+            {
+              readOnlyEntities(orderBy: {path: "id"}) {
+                firstName
+                lastName
+                computedInDb
+              }
+            }
+            """;
+
+        var entity1 = new ReadOnlyEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            FirstName = "John",
+            LastName = "Doe",
+            Age = 30
+        };
+        var entity2 = new ReadOnlyEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            FirstName = "Jane",
+            LastName = "Smith",
+            Age = 25
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    [Fact]
     public async Task ManyToManyRightWhereAndInclude()
     {
         var query =
