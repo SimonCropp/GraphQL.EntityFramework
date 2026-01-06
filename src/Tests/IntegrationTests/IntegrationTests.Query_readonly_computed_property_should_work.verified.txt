@@ -1,0 +1,29 @@
+﻿{
+  target:
+{
+  "data": {
+    "readOnlyEntities": [
+      {
+        "firstName": "John",
+        "lastName": "Doe",
+        "displayName": "John Doe"
+      },
+      {
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "displayName": "Jane Smith"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   r.Id,
+         r.Age,
+         r.ComputedInDb,
+         r.FirstName,
+         r.LastName
+from     ReadOnlyEntities as r
+order by r.Id
+  }
+}

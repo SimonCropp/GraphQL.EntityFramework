@@ -123,7 +123,10 @@ partial class EfGraphQLService<TDbContext>
                         if (projection != null)
                         {
                             var selectExpr = SelectExpressionBuilder.Build<TReturn>(projection, keyNames);
-                            query = query.Select(selectExpr);
+                            if (selectExpr != null)
+                            {
+                                query = query.Select(selectExpr);
+                            }
                         }
                     }
 

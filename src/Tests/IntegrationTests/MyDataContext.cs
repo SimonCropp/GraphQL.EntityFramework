@@ -75,6 +75,8 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasMany(x=> x.ManyToManyShadowRightEntities)
             .WithMany(x=> x.ManyToManyShadowLeftEntities)
             .UsingEntity("ManyToManyShadowMiddleEntity");
-        modelBuilder.Entity<ReadOnlyEntity>();
+        modelBuilder.Entity<ReadOnlyEntity>()
+            .Property(_ => _.ComputedInDb)
+            .HasComputedColumnSql("Trim(Concat(Coalesce(FirstName, ''), ' ', Coalesce(LastName, '')))", stored: true);
     }
 }
