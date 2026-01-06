@@ -1,0 +1,37 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "property": "Parent1",
+        "children": [
+          {
+            "property": "Child1-ShouldInclude"
+          },
+          {
+            "property": "Child3-ShouldInclude"
+          }
+        ]
+      },
+      {
+        "property": "Parent2",
+        "children": []
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   p.Id,
+         p.Property,
+         c.Id,
+         c.ParentId,
+         c.Property
+from     ParentEntities as p
+         left outer join
+         ChildEntities as c
+         on p.Id = c.ParentId
+order by p.Id, c.Id
+  }
+}

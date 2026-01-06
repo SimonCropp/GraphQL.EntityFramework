@@ -3448,4 +3448,67 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
+
+    [Fact]
+    public async Task Projection_includes_foreign_keys_for_filters()
+    {
+        // This test verifies that foreign key properties are automatically included
+        // in projections even when not explicitly requested, so filters can access them
+        var query =
+            """
+            {
+              parentEntities {
+                property
+                children {
+                  property
+                }
+              }
+            }
+            """;
+
+        var parent1 = new ParentEntity
+        {
+            Id = Guid.NewGuid(),
+            Property = "Parent1"
+        };
+        var parent2 = new ParentEntity
+        {
+            Id = Guid.NewGuid(),
+            Property = "Parent2"
+        };
+        var child1 = new ChildEntity
+        {
+            Property = "Child1-ShouldInclude",
+            ParentId = parent1.Id,
+            Parent = parent1
+        };
+        var child2 = new ChildEntity
+        {
+            Property = "Child2-ShouldExclude",
+            ParentId = parent2.Id,
+            Parent = parent2
+        };
+        var child3 = new ChildEntity
+        {
+            Property = "Child3-ShouldInclude",
+            ParentId = parent1.Id,
+            Parent = parent1
+        };
+
+        parent1.Children.Add(child1);
+        parent1.Children.Add(child3);
+        parent2.Children.Add(child2);
+
+        // Filter that requires ParentId to be populated
+        var filters = new Filters<IntegrationDbContext>();
+        filters.Add<ChildEntity>((_, _, _, child) =>
+        {
+            // This filter accesses ParentId, which should be populated by the projection
+            // even though the GraphQL query only requests { property }
+            return child.ParentId == parent1.Id;
+        });
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, filters, false, [parent1, parent2, child1, child2, child3]);
+    }
 }
