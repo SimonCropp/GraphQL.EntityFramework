@@ -184,7 +184,7 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<Type, List<string>> keyNames,
         [NotNullWhen(true)] out List<MemberBinding>? bindings)
     {
-        bindings = new List<MemberBinding>();
+        bindings = [];
         var addedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         // Add key properties

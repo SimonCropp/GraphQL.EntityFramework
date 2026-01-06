@@ -121,7 +121,7 @@ public class QueryAnalysisBenchmark
     [GlobalCleanup]
     public void Cleanup()
     {
-        Console.WriteLine($"\n=== Query Analysis ===");
+        Console.WriteLine("\n=== Query Analysis ===");
         Console.WriteLine($"Total EF queries executed: {executedQueries.Count}");
         foreach (var q in executedQueries.Take(10))
         {
