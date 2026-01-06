@@ -50,6 +50,29 @@
         return SelectExpressionBuilder.TryBuild(projection, keyNames, out expression);
     }
 
+    public bool TryGetProjectionExpressionWithFilters<TItem>(
+        IResolveFieldContext context,
+        IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields,
+        [NotNullWhen(true)] out Expression<Func<TItem, TItem>>? expression)
+        where TItem : class
+    {
+        expression = null;
+        var projection = GetProjection<TItem>(context);
+
+        if (projection == null)
+        {
+            return false;
+        }
+
+        // Merge filter fields if provided (recursively for navigations)
+        if (allFilterFields is { Count: > 0 })
+        {
+            projection = projection.MergeAllFilterFields(allFilterFields, typeof(TItem));
+        }
+
+        return SelectExpressionBuilder.TryBuild(projection, keyNames, out expression);
+    }
+
     FieldProjectionInfo GetProjectionInfo(
         IResolveFieldContext context,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,

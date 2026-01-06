@@ -1,8 +1,15 @@
-﻿interface IFilterEntry<TDbContext>
+interface IFilterEntry<TDbContext>
     where TDbContext : DbContext
 {
     Type EntityType { get; }
-    Task<Dictionary<object, object>> QueryProjectedData(IEnumerable<object> entities, TDbContext data);
-    Task<object?> QueryProjectedDataForSingle(object entity, TDbContext data);
-    Task<bool> ShouldInclude(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, object item, Dictionary<(Type, object), object> projectedDataMap);
+
+    IReadOnlySet<string> GetRequiredPropertyNames();
+
+    Func<object, object> GetCompiledProjection();
+
+    Task<bool> ShouldIncludeWithProjection(
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal,
+        object entity);
 }

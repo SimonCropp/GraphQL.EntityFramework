@@ -119,7 +119,9 @@ partial class EfGraphQLService<TDbContext>
                     // Skip projection for abstract types as they cannot be instantiated
                     if (!typeof(TReturn).IsAbstract)
                     {
-                        if (includeAppender.TryGetProjectionExpression<TReturn>(context, out var selectExpr))
+                        // Get filter-required fields and merge into projection (for all entity types including navigations)
+                        var allFilterFields = fieldContext.Filters?.GetAllRequiredFilterProperties();
+                        if (includeAppender.TryGetProjectionExpressionWithFilters<TReturn>(context, allFilterFields, out var selectExpr))
                         {
                             query = query.Select(selectExpr);
                         }

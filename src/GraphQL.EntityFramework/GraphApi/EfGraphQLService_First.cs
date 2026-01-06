@@ -166,6 +166,18 @@ partial class EfGraphQLService<TDbContext>
                 query = includeAppender.AddIncludes(query, context);
                 query = query.ApplyGraphQlArguments(context, names, false, omitQueryArguments);
 
+                // Apply column projection based on requested GraphQL fields
+                // Skip projection for abstract types as they cannot be instantiated
+                if (!typeof(TReturn).IsAbstract)
+                {
+                    // Get filter-required fields and merge into projection (for all entity types including navigations)
+                    var allFilterFields = fieldContext.Filters?.GetAllRequiredFilterProperties();
+                    if (includeAppender.TryGetProjectionExpressionWithFilters<TReturn>(context, allFilterFields, out var selectExpr))
+                    {
+                        query = query.Select(selectExpr);
+                    }
+                }
+
                 QueryLogger.Write(query);
 
                 TReturn? first;
