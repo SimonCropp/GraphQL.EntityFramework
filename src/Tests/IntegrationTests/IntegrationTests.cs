@@ -3448,4 +3448,49 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
+
+    [Fact]
+    public async Task Filter_with_projection_accesses_foreign_key()
+    {
+        var query =
+            """
+            {
+              parentEntitiesConnection {
+                edges {
+                  node {
+                    property
+                    children {
+                      property
+                    }
+                  }
+                }
+              }
+            }
+            """;
+
+        var parent1 = new ParentEntity {Property = "Parent1"};
+        var parent2 = new ParentEntity {Property = "Parent2"};
+        var child1 = new ChildEntity {Property = "Child1", Parent = parent1};
+        var child2 = new ChildEntity {Property = "Child2", Parent = parent2};
+        parent1.Children.Add(child1);
+        parent2.Children.Add(child2);
+
+        // Create a filter that uses projection to access only the ParentId field
+        var filters = new Filters<IntegrationDbContext>();
+        filters.Add<ChildEntity, ChildFilterProjection>(
+            // Projection: only load Id and ParentId
+            projection: child => new ChildFilterProjection {Id = child.Id, ParentId = child.ParentId},
+            // Filter: check if ParentId matches parent1's Id
+            filter: (_, _, _, projected) => projected.ParentId == parent1.Id);
+
+        await using var database = await sqlInstance.Build();
+        // Should only include parent1 with child1 (child2 filtered out)
+        await RunQuery(database, query, null, filters, false, [parent1, parent2]);
+    }
+
+    class ChildFilterProjection
+    {
+        public Guid Id { get; set; }
+        public Guid? ParentId { get; set; }
+    }
 }

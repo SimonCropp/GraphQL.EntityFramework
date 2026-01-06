@@ -19,6 +19,45 @@ Notes:
 snippet: FiltersSignature
 
 
+## Filter Projections
+
+When filters need to access navigation properties or foreign keys that aren't included in the GraphQL query, the library provides projection-based filter overloads. These overloads allow specifying exactly which fields the filter needs, and the library will efficiently query only those fields from the database.
+
+### Why Use Projections?
+
+Without projections, filters receive the entity instance as loaded by the GraphQL query. If the query only selects a few fields (via EF projection), foreign keys and navigation properties may not be populated, making authorization decisions impossible.
+
+**Benefits:**
+
+* **Access to Foreign Keys**: Query foreign key properties even when not requested in the GraphQL query
+* **Performance**: Load only the fields needed for filtering, not the entire entity
+* **Explicit Dependencies**: Clearly declare what data the filter requires
+
+**Important Requirements:**
+
+* The projection type must have an `Id` property
+* The entity type must have an `Id` property
+* The projection is executed as a separate database query using the entity IDs
+
 ### Usage:
+
+snippet: projection-filter
+
+### How It Works:
+
+1. GraphQL query executes and loads entities based on requested fields
+2. For each entity, the library extracts the entity ID
+3. A separate database query fetches only the projected fields using those IDs:
+   ```sql
+   SELECT Id, ParentId
+   FROM ChildEntities
+   WHERE Id IN (...)
+   ```
+4. The projected data is passed to the filter function
+5. Entities that fail the filter are excluded from results
+
+### Standard (Non-Projection) Filters:
+
+For filters that only need fields already loaded by the GraphQL query:
 
 snippet: add-filter
