@@ -16,38 +16,16 @@
 
     public Type EntityType => typeof(TEntity);
 
-    public async Task<Dictionary<object, object>> QueryProjectedData(IEnumerable<object> entities, TDbContext data)
+    static PropertyInfo GetIdProperty() => typeof(TEntity).GetProperty("Id")!;
+
+    static (Type tupleType, LambdaExpression tupleProjection) BuildTupleProjection(
+        Expression<Func<TEntity, TProjection>> projection)
     {
-        var typedEntities = entities.Cast<TEntity>().ToList();
-        if (typedEntities.Count == 0)
-        {
-            return [];
-        }
-
-        var idProperty = typeof(TEntity).GetProperty("Id")!;
-
-        // Extract IDs using reflection to maintain the correct type
-        var idsListType = typeof(List<>).MakeGenericType(idProperty.PropertyType);
-        var idsList = (IList) Activator.CreateInstance(idsListType)!;
-
-        foreach (var entity in typedEntities)
-        {
-            var id = idProperty.GetValue(entity);
-            idsList.Add(id);
-        }
-
+        var idProperty = GetIdProperty();
         var parameter = Expression.Parameter(typeof(TEntity), "e");
         var propertyAccess = Expression.Property(parameter, idProperty);
 
-        // Build: e => ids.Contains(e.Id)
-        var idsConstant = Expression.Constant(idsList, idsListType);
-        var containsMethod = typeof(Enumerable).GetMethods()
-            .First(m => m.Name == "Contains" && m.GetParameters().Length == 2)
-            .MakeGenericMethod(idProperty.PropertyType);
-        var containsCall = Expression.Call(containsMethod, idsConstant, propertyAccess);
-        var wherePredicate = Expression.Lambda(containsCall, parameter);
-
-        // Build projection that includes both Id and user's projection: e => new { Id = e.Id, Data = projection(e) }
+        // Build projection that includes both Id and user's projection: e => (e.Id, projection(e))
         var tupleType = typeof(ValueTuple<,>).MakeGenericType(idProperty.PropertyType, typeof(TProjection));
         var tupleConstructor = tupleType.GetConstructor([idProperty.PropertyType, typeof(TProjection)])!;
 
@@ -58,10 +36,14 @@
             userProjectionInvoke);
         var tupleProjection = Expression.Lambda(tupleNew, parameter);
 
-        // Query: data.Set<TEntity>().Where(e => ids.Contains(e.Id)).Select(e => (e.Id, projection(e)))
-        var queryable = data.Set<TEntity>()
-            .Where((Expression<Func<TEntity, bool>>) wherePredicate);
+        return (tupleType, tupleProjection);
+    }
 
+    static async Task<Dictionary<object, object>> ExecuteTupleQuery(
+        IQueryable<TEntity> queryable,
+        Type tupleType,
+        LambdaExpression tupleProjection)
+    {
         var selectMethod = typeof(Queryable).GetMethods()
             .First(m => m.Name == "Select" && m.GetParameters().Length == 2)
             .MakeGenericMethod(typeof(TEntity), tupleType);
@@ -90,6 +72,70 @@
         }
 
         return map;
+    }
+
+    public async Task<Dictionary<object, object>> QueryProjectedData(IEnumerable<object> entities, TDbContext data)
+    {
+        var typedEntities = entities.Cast<TEntity>().ToList();
+        if (typedEntities.Count == 0)
+        {
+            return [];
+        }
+
+        var idProperty = GetIdProperty();
+
+        // Extract IDs using reflection to maintain the correct type
+        var idsListType = typeof(List<>).MakeGenericType(idProperty.PropertyType);
+        var idsList = (IList) Activator.CreateInstance(idsListType)!;
+
+        foreach (var entity in typedEntities)
+        {
+            var id = idProperty.GetValue(entity);
+            idsList.Add(id);
+        }
+
+        var parameter = Expression.Parameter(typeof(TEntity), "e");
+        var propertyAccess = Expression.Property(parameter, idProperty);
+
+        // Build: e => ids.Contains(e.Id)
+        var idsConstant = Expression.Constant(idsList, idsListType);
+        var containsMethod = typeof(Enumerable).GetMethods()
+            .First(m => m.Name == "Contains" && m.GetParameters().Length == 2)
+            .MakeGenericMethod(idProperty.PropertyType);
+        var containsCall = Expression.Call(containsMethod, idsConstant, propertyAccess);
+        var wherePredicate = Expression.Lambda(containsCall, parameter);
+
+        var (tupleType, tupleProjection) = BuildTupleProjection(projection);
+
+        // Query: data.Set<TEntity>().Where(e => ids.Contains(e.Id)).Select(e => (e.Id, projection(e)))
+        var queryable = data.Set<TEntity>()
+            .Where((Expression<Func<TEntity, bool>>) wherePredicate);
+
+        return await ExecuteTupleQuery(queryable, tupleType, tupleProjection);
+    }
+
+    public async Task<object?> QueryProjectedDataForSingle(object entity, TDbContext data)
+    {
+        var typedEntity = (TEntity) entity;
+        var idProperty = GetIdProperty();
+        var id = idProperty.GetValue(typedEntity)!;
+
+        var parameter = Expression.Parameter(typeof(TEntity), "e");
+        var propertyAccess = Expression.Property(parameter, idProperty);
+
+        // Build: e => e.Id == id
+        var idConstant = Expression.Constant(id, idProperty.PropertyType);
+        var equalExpression = Expression.Equal(propertyAccess, idConstant);
+        var wherePredicate = Expression.Lambda<Func<TEntity, bool>>(equalExpression, parameter);
+
+        var (tupleType, tupleProjection) = BuildTupleProjection(projection);
+
+        // Query: data.Set<TEntity>().Where(e => e.Id == id).Select(e => (e.Id, projection(e)))
+        var queryable = data.Set<TEntity>().Where(wherePredicate);
+
+        var map = await ExecuteTupleQuery(queryable, tupleType, tupleProjection);
+
+        return map.TryGetValue(id, out var projectedData) ? projectedData : null;
     }
 
     public async Task<bool> ShouldInclude(

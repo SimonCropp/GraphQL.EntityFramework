@@ -104,6 +104,28 @@ public class Filters<TDbContext>
         return projectedDataMap;
     }
 
+    static async Task<Dictionary<(Type, object), object>> QueryProjectedDataForSingle<TEntity>(
+        TEntity entity,
+        TDbContext data,
+        List<IFilterEntry<TDbContext>> filterEntries)
+        where TEntity : class
+    {
+        var projectedDataMap = new Dictionary<(Type, object), object>();
+        var idProperty = typeof(TEntity).GetProperty("Id")!;
+        var id = idProperty.GetValue(entity)!;
+
+        foreach (var filter in filterEntries)
+        {
+            var projectedItem = await filter.QueryProjectedDataForSingle(entity, data);
+            if (projectedItem != null)
+            {
+                projectedDataMap[(filter.EntityType, id)] = projectedItem;
+            }
+        }
+
+        return projectedDataMap;
+    }
+
     static async Task<bool> ShouldIncludeItem<TEntity>(
         object userContext,
         TDbContext data,
@@ -144,7 +166,7 @@ public class Filters<TDbContext>
         }
 
         // Query projected data if needed
-        var projectedDataMap = await QueryProjectedData([item], data, filterEntries);
+        var projectedDataMap = await QueryProjectedDataForSingle(item, data, filterEntries);
 
         return await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries, projectedDataMap);
     }
