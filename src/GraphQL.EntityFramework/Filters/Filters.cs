@@ -275,23 +275,46 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         var containsCall = Expression.Call(containsMethod, idsConstant, propertyAccess);
         var wherePredicate = Expression.Lambda(containsCall, parameter);
 
-        // Query: data.Set<TEntity>().Where(e => ids.Contains(e.Id)).Select(projection)
-        var query = data.Set<TEntity>()
-            .Where((Expression<Func<TEntity, bool>>) wherePredicate)
-            .Select(projection);
+        // Build projection that includes both Id and user's projection: e => new { Id = e.Id, Data = projection(e) }
+        var tupleType = typeof(ValueTuple<,>).MakeGenericType(idProperty.PropertyType, typeof(TProjection));
+        var tupleConstructor = tupleType.GetConstructor([idProperty.PropertyType, typeof(TProjection)])!;
 
-        var results = await query.ToListAsync();
+        var userProjectionInvoke = Expression.Invoke(projection, parameter);
+        var tupleNew = Expression.New(
+            tupleConstructor,
+            propertyAccess,
+            userProjectionInvoke);
+        var tupleProjection = Expression.Lambda(tupleNew, parameter);
 
-        // Map results by ID
+        // Query: data.Set<TEntity>().Where(e => ids.Contains(e.Id)).Select(e => (e.Id, projection(e)))
+        var queryable = data.Set<TEntity>()
+            .Where((Expression<Func<TEntity, bool>>) wherePredicate);
+
+        var selectMethod = typeof(Queryable).GetMethods()
+            .First(m => m.Name == "Select" && m.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(TEntity), tupleType);
+
+        var query = selectMethod.Invoke(null, [queryable, tupleProjection])!;
+
+        var toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions).GetMethod("ToListAsync")!
+            .MakeGenericMethod(tupleType);
+        var resultsTask = (Task) toListAsyncMethod.Invoke(null, [query, Cancel.None])!;
+        await resultsTask;
+
+        // Extract result from completed task
+        var resultProperty = resultsTask.GetType().GetProperty("Result")!;
+        var resultList = (IEnumerable) resultProperty.GetValue(resultsTask)!;
+
+        // Map results by ID - extract from tuple
         var map = new Dictionary<object, object>();
-        var projectedIdProperty = typeof(TProjection).GetProperty("Id")
-            ?? throw new($"Projection type must include an 'Id' property.");
+        var item1Property = tupleType.GetField("Item1")!;
+        var item2Property = tupleType.GetField("Item2")!;
 
-        foreach (var result in results)
+        foreach (var result in resultList)
         {
-            var id = projectedIdProperty.GetValue(result)
-                ?? throw new($"Projected Id was null for entity {typeof(TEntity).Name}");
-            map[id] = result;
+            var id = item1Property.GetValue(result)!;
+            var projectedData = item2Property.GetValue(result)!;
+            map[id] = projectedData;
         }
 
         return map;

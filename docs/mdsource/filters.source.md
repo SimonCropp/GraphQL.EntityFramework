@@ -35,9 +35,9 @@ Without projections, filters receive the entity instance as loaded by the GraphQ
 
 **Important Requirements:**
 
-* The projection type must have an `Id` property
 * The entity type must have an `Id` property
 * The projection is executed as a separate database query using the entity IDs
+* The `Id` is automatically included in the database query even if not in the projection
 
 ### Usage:
 

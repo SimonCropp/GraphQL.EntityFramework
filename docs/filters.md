@@ -55,9 +55,9 @@ Without projections, filters receive the entity instance as loaded by the GraphQ
 
 **Important Requirements:**
 
-* The projection type must have an `Id` property
 * The entity type must have an `Id` property
 * The projection is executed as a separate database query using the entity IDs
+* The `Id` is automatically included in the database query even if not in the projection
 
 ### Usage:
 
@@ -73,18 +73,16 @@ public class ChildEntity
 
 public class ChildFilterProjection
 {
-    public Guid Id { get; set; }
     public Guid? ParentId { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L31-L46' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L31-L45' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-projection-filter-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
 filters.Add<ChildEntity, ChildFilterProjection>(
     projection: child => new ChildFilterProjection
     {
-        Id = child.Id,
         ParentId = child.ParentId
     },
     filter: (userContext, data, userPrincipal, projected) =>
@@ -96,7 +94,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L50-L68' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L49-L66' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### How It Works:

@@ -39,7 +39,6 @@ public class GlobalFilterSnippets
 
     public class ChildFilterProjection
     {
-        public Guid Id { get; set; }
         public Guid? ParentId { get; set; }
     }
 
@@ -53,7 +52,6 @@ public class GlobalFilterSnippets
         filters.Add<ChildEntity, ChildFilterProjection>(
             projection: child => new ChildFilterProjection
             {
-                Id = child.Id,
                 ParentId = child.ParentId
             },
             filter: (userContext, data, userPrincipal, projected) =>
