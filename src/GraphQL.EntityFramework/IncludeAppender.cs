@@ -50,6 +50,39 @@
         return SelectExpressionBuilder.TryBuild(projection, keyNames, out expression);
     }
 
+    public bool TryGetProjectionExpressionWithFilters<TItem, TDbContext>(
+        IResolveFieldContext context,
+        Filters<TDbContext>? filters,
+        [NotNullWhen(true)] out Expression<Func<TItem, EntityWithFilterData<TItem>>>? expression)
+        where TItem : class
+        where TDbContext : DbContext
+    {
+        expression = null;
+
+        if (filters == null)
+        {
+            return false;
+        }
+
+        var projection = GetProjection<TItem>(context);
+        if (projection == null)
+        {
+            return false;
+        }
+
+        var applicableFilters = filters.GetFiltersForType(typeof(TItem)).ToList();
+        if (applicableFilters.Count == 0)
+        {
+            return false;
+        }
+
+        return SelectExpressionBuilder.TryBuildWithFilters<TItem, TDbContext>(
+            projection,
+            keyNames,
+            applicableFilters,
+            out expression);
+    }
+
     FieldProjectionInfo GetProjectionInfo(
         IResolveFieldContext context,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,

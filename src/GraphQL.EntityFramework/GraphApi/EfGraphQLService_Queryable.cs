@@ -117,7 +117,8 @@ partial class EfGraphQLService<TDbContext>
 
                     // Apply column projection based on requested GraphQL fields
                     // Skip projection for abstract types as they cannot be instantiated
-                    if (!typeof(TReturn).IsAbstract)
+                    // Skip projection when filters exist to ensure filter projections can access all fields
+                    if (!typeof(TReturn).IsAbstract && fieldContext.Filters == null)
                     {
                         if (includeAppender.TryGetProjectionExpression<TReturn>(context, out var selectExpr))
                         {
@@ -169,7 +170,8 @@ partial class EfGraphQLService<TDbContext>
                         return list;
                     }
 
-                    return await fieldContext.Filters.ApplyFilter(list, context.UserContext, fieldContext.DbContext, context.User);
+                    // Apply filters in-memory using compiled projection expressions
+                    return await fieldContext.Filters.ApplyFilterInMemory(list, context.UserContext, fieldContext.DbContext, context.User);
                 });
         }
 

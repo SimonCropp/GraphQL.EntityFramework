@@ -38,11 +38,11 @@ public class Filters<TDbContext>
         where TEntity : class
         where TProjection : class =>
         entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(
-            async (userContext, data, userPrincipal, item) =>
+            (userContext, data, userPrincipal, item) =>
             {
                 try
                 {
-                    return filter(userContext, data, userPrincipal, item);
+                    return Task.FromResult(filter(userContext, data, userPrincipal, item));
                 }
                 catch (Exception exception)
                 {
@@ -51,93 +51,61 @@ public class Filters<TDbContext>
             },
             projection);
 
-    delegate Task<bool> Filter(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, object input);
-
     Dictionary<Type, IFilterEntry<TDbContext>> entries = [];
 
-    internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext, TDbContext data, ClaimsPrincipal? userPrincipal)
+    internal IReadOnlyDictionary<Type, IFilterEntry<TDbContext>> Entries => entries;
+
+    internal IEnumerable<IFilterEntry<TDbContext>> GetFiltersForType(Type entityType) =>
+        entries
+            .Where(e => e.Key.IsAssignableFrom(entityType))
+            .Select(e => e.Value);
+
+    internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(
+        IEnumerable<EntityWithFilterData<TEntity>> results,
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal)
         where TEntity : class
     {
         if (entries.Count == 0)
         {
-            return result;
+            return results.Select(r => r.Entity);
         }
 
         var filterEntries = FindFilters<TEntity>().ToList();
         if (filterEntries.Count == 0)
         {
-            return result;
+            return results.Select(r => r.Entity);
         }
 
-        // Query projected data if any filters need it
-        var projectedDataMap = await QueryProjectedData(result, data, filterEntries);
-
         var list = new List<TEntity>();
-        foreach (var item in result)
+        foreach (var item in results)
         {
-            if (await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries, projectedDataMap))
+            if (await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries))
             {
-                list.Add(item);
+                list.Add(item.Entity);
             }
         }
 
         return list;
     }
 
-    static async Task<Dictionary<(Type, object), object>> QueryProjectedData<TEntity>(
-        IEnumerable<TEntity> entities,
-        TDbContext data,
-        List<IFilterEntry<TDbContext>> filterEntries)
-        where TEntity : class
-    {
-        var projectedDataMap = new Dictionary<(Type, object), object>();
-
-        foreach (var filter in filterEntries)
-        {
-            var projected = await filter.QueryProjectedData(entities, data);
-            foreach (var (id, projectedItem) in projected)
-            {
-                projectedDataMap[(filter.EntityType, id)] = projectedItem;
-            }
-        }
-
-        return projectedDataMap;
-    }
-
-    static async Task<Dictionary<(Type, object), object>> QueryProjectedDataForSingle<TEntity>(
-        TEntity entity,
-        TDbContext data,
-        List<IFilterEntry<TDbContext>> filterEntries)
-        where TEntity : class
-    {
-        var projectedDataMap = new Dictionary<(Type, object), object>();
-        var idProperty = typeof(TEntity).GetProperty("Id")!;
-        var id = idProperty.GetValue(entity)!;
-
-        foreach (var filter in filterEntries)
-        {
-            var projectedItem = await filter.QueryProjectedDataForSingle(entity, data);
-            if (projectedItem != null)
-            {
-                projectedDataMap[(filter.EntityType, id)] = projectedItem;
-            }
-        }
-
-        return projectedDataMap;
-    }
-
     static async Task<bool> ShouldIncludeItem<TEntity>(
         object userContext,
         TDbContext data,
         ClaimsPrincipal? userPrincipal,
-        TEntity item,
-        List<IFilterEntry<TDbContext>> filterEntries,
-        Dictionary<(Type, object), object> projectedDataMap)
+        EntityWithFilterData<TEntity> item,
+        List<IFilterEntry<TDbContext>> filterEntries)
         where TEntity : class
     {
         foreach (var entry in filterEntries)
         {
-            if (!await entry.ShouldInclude(userContext, data, userPrincipal, item, projectedDataMap))
+            if (!item.FilterData.TryGetValue(entry.EntityType, out var projectedData))
+            {
+                throw new($"Filter data not found for {entry.EntityType.Name}");
+            }
+
+            if (!await entry.ShouldInclude(userContext, data, userPrincipal, projectedData))
             {
                 return false;
             }
@@ -146,7 +114,11 @@ public class Filters<TDbContext>
         return true;
     }
 
-    internal virtual async Task<bool> ShouldInclude<TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity? item)
+    internal virtual async Task<bool> ShouldInclude<TEntity>(
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal,
+        EntityWithFilterData<TEntity>? item)
         where TEntity : class
     {
         if (item is null)
@@ -165,10 +137,7 @@ public class Filters<TDbContext>
             return true;
         }
 
-        // Query projected data if needed
-        var projectedDataMap = await QueryProjectedDataForSingle(item, data, filterEntries);
-
-        return await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries, projectedDataMap);
+        return await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries);
     }
 
     List<IFilterEntry<TDbContext>> FindFilters<TEntity>()
@@ -179,5 +148,164 @@ public class Filters<TDbContext>
             .Where(_ => _.Key.IsAssignableFrom(type))
             .Select(_ => _.Value)
             .ToList();
+    }
+
+    // Overload for in-memory filtering (e.g., navigation properties where data is already loaded)
+    internal virtual async Task<IEnumerable<TEntity>> ApplyFilterInMemory<TEntity>(
+        IEnumerable<TEntity> results,
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal)
+        where TEntity : class
+    {
+        if (entries.Count == 0)
+        {
+            return results;
+        }
+
+        var resultList = results.ToList();
+
+        // First, filter any collection navigation properties on each entity
+        foreach (var item in resultList)
+        {
+            await FilterNavigationProperties(item, userContext, data, userPrincipal);
+        }
+
+        // Then, filter the root entities themselves
+        var filterEntries = FindFilters<TEntity>().ToList();
+        if (filterEntries.Count == 0)
+        {
+            return resultList;
+        }
+
+        var list = new List<TEntity>();
+        foreach (var item in resultList)
+        {
+            // Compute filter data by invoking projections in-memory
+            var filterData = new Dictionary<Type, object>();
+            foreach (var entry in filterEntries)
+            {
+                var projectedData = entry.ProjectInMemory(item);
+                filterData[entry.EntityType] = projectedData;
+            }
+
+            var wrapped = new EntityWithFilterData<TEntity>
+            {
+                Entity = item,
+                FilterData = filterData
+            };
+
+            if (await ShouldIncludeItem(userContext, data, userPrincipal, wrapped, filterEntries))
+            {
+                list.Add(item);
+            }
+        }
+
+        return list;
+    }
+
+    async Task FilterNavigationProperties(
+        object entity,
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal)
+    {
+        var entityType = entity.GetType();
+        var properties = entityType.GetProperties();
+
+        foreach (var property in properties)
+        {
+            // Check if this is a collection property
+            if (!property.PropertyType.IsGenericType)
+            {
+                continue;
+            }
+
+            var genericDef = property.PropertyType.GetGenericTypeDefinition();
+            if (genericDef != typeof(ICollection<>) &&
+                genericDef != typeof(List<>) &&
+                genericDef != typeof(IList<>))
+            {
+                continue;
+            }
+
+            var elementType = property.PropertyType.GetGenericArguments()[0];
+
+            // Check if there's a filter for this element type
+            if (!entries.TryGetValue(elementType, out var filterEntry))
+            {
+                continue;
+            }
+
+            // Get the collection
+            var collection = property.GetValue(entity);
+            if (collection is null)
+            {
+                continue;
+            }
+
+            // Filter the collection
+            var filteredItems = new List<object>();
+            foreach (var item in (System.Collections.IEnumerable)collection)
+            {
+                var projectedData = filterEntry.ProjectInMemory(item);
+                if (await filterEntry.ShouldInclude(userContext, data, userPrincipal, projectedData))
+                {
+                    filteredItems.Add(item);
+                }
+            }
+
+            // Replace collection contents
+            var clearMethod = collection.GetType().GetMethod("Clear");
+            var addMethod = collection.GetType().GetMethod("Add");
+            if (clearMethod != null && addMethod != null)
+            {
+                clearMethod.Invoke(collection, null);
+                foreach (var item in filteredItems)
+                {
+                    addMethod.Invoke(collection, [item]);
+                }
+            }
+        }
+    }
+
+    internal virtual async Task<bool> ShouldIncludeInMemory<TEntity>(
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal,
+        TEntity? item)
+        where TEntity : class
+    {
+        if (item is null)
+        {
+            return false;
+        }
+
+        if (entries.Count == 0)
+        {
+            return true;
+        }
+
+        var filterEntries = FindFilters<TEntity>().ToList();
+        if (filterEntries.Count == 0)
+        {
+            return true;
+        }
+
+        // Compute filter data by invoking projections in-memory
+        var filterData = new Dictionary<Type, object>();
+        foreach (var entry in filterEntries)
+        {
+            var projectedData = entry.ProjectInMemory(item);
+            filterData[entry.EntityType] = projectedData;
+        }
+
+        var wrapped = new EntityWithFilterData<TEntity>
+        {
+            Entity = item,
+            FilterData = filterData
+        };
+
+        return await ShouldIncludeItem(userContext, data, userPrincipal, wrapped, filterEntries);
     }
 }

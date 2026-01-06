@@ -183,7 +183,7 @@
         IEnumerable<TItem> result = await page.ToListAsync(cancel);
         if (filters != null)
         {
-            result = await filters.ApplyFilter(result, context.UserContext, data, context.User);
+            result = await filters.ApplyFilterInMemory(result, context.UserContext, data, context.User);
         }
 
         cancel.ThrowIfCancellationRequested();

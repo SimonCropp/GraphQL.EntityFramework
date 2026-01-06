@@ -99,7 +99,7 @@ partial class EfGraphQLService<TDbContext>
                 enumerable = enumerable.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
                 if (efFieldContext.Filters != null)
                 {
-                    enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext, efFieldContext.DbContext, context.User);
+                    enumerable = await efFieldContext.Filters.ApplyFilterInMemory(enumerable, context.UserContext, efFieldContext.DbContext, context.User);
                 }
 
                 var page = enumerable.ToList();

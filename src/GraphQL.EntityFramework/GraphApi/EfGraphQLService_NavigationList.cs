@@ -41,7 +41,7 @@ partial class EfGraphQLService<TDbContext>
                     return result;
                 }
 
-                return await fieldContext.Filters.ApplyFilter(result, context.UserContext, fieldContext.DbContext, context.User);
+                return await fieldContext.Filters.ApplyFilterInMemory(result, context.UserContext, fieldContext.DbContext, context.User);
             });
         }
 

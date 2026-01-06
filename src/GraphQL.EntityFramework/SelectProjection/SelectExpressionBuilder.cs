@@ -3,6 +3,7 @@ namespace GraphQL.EntityFramework;
 static class SelectExpressionBuilder
 {
     static readonly ConcurrentDictionary<string, object> cache = new();
+    static readonly ConcurrentDictionary<string, object> cacheWithFilters = new();
 
     public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
@@ -17,6 +18,167 @@ static class SelectExpressionBuilder
 
         expression = result as Expression<Func<TEntity, TEntity>>;
         return expression != null;
+    }
+
+    public static bool TryBuildWithFilters<TEntity, TDbContext>(
+        FieldProjectionInfo projection,
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        IEnumerable<IFilterEntry<TDbContext>> filters,
+        [NotNullWhen(true)] out Expression<Func<TEntity, EntityWithFilterData<TEntity>>>? expression)
+        where TEntity : class
+        where TDbContext : DbContext
+    {
+        var filterList = filters.ToList();
+        if (filterList.Count == 0)
+        {
+            expression = null;
+            return false;
+        }
+
+        var cacheKey = BuildCacheKeyWithFilters<TEntity, TDbContext>(projection, filterList);
+        var result = cacheWithFilters.GetOrAdd(
+            cacheKey,
+            _ => BuildExpressionWithFilters<TEntity, TDbContext>(projection, keyNames, filterList)!);
+
+        expression = result as Expression<Func<TEntity, EntityWithFilterData<TEntity>>>;
+        return expression != null;
+    }
+
+    static Expression<Func<TEntity, EntityWithFilterData<TEntity>>>? BuildExpressionWithFilters<TEntity, TDbContext>(
+        FieldProjectionInfo projection,
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        List<IFilterEntry<TDbContext>> filters)
+        where TEntity : class
+        where TDbContext : DbContext
+    {
+        var entityType = typeof(TEntity);
+        var parameter = Expression.Parameter(entityType, "x");
+
+        // Build entity bindings (reuse existing logic)
+        if (!TryBuildEntityBindings(parameter, entityType, projection, keyNames, out var entityBindings))
+        {
+            return null;
+        }
+
+        var entityInit = Expression.MemberInit(Expression.New(entityType), entityBindings);
+
+        // Build filter data dictionary expression
+        // new Dictionary<Type, object> { { typeof(TEntity), filterProjection(x) }, ... }
+        var dictType = typeof(Dictionary<Type, object>);
+        var dictAddMethod = dictType.GetMethod("Add", [typeof(Type), typeof(object)])!;
+
+        var dictVariable = Expression.Variable(dictType, "filterData");
+        var dictNew = Expression.New(dictType);
+        var dictAssign = Expression.Assign(dictVariable, dictNew);
+
+        var statements = new List<Expression> { dictAssign };
+
+        foreach (var filter in filters)
+        {
+            var filterProjection = filter.GetProjectionExpression();
+            // Invoke the filter projection with our parameter
+            var filterInvoke = Expression.Invoke(filterProjection, parameter);
+            // Box the result to object
+            var boxed = Expression.Convert(filterInvoke, typeof(object));
+            // dict.Add(typeof(TEntity), projectedValue)
+            var typeConstant = Expression.Constant(filter.EntityType, typeof(Type));
+            var addCall = Expression.Call(dictVariable, dictAddMethod, typeConstant, boxed);
+            statements.Add(addCall);
+        }
+
+        // Build EntityWithFilterData<TEntity> initialization
+        var wrapperType = typeof(EntityWithFilterData<TEntity>);
+        var entityProperty = wrapperType.GetProperty("Entity")!;
+        var filterDataProperty = wrapperType.GetProperty("FilterData")!;
+
+        var wrapperInit = Expression.MemberInit(
+            Expression.New(wrapperType),
+            Expression.Bind(entityProperty, entityInit),
+            Expression.Bind(filterDataProperty, dictVariable));
+
+        statements.Add(wrapperInit);
+
+        var block = Expression.Block(
+            [dictVariable],
+            statements);
+
+        return Expression.Lambda<Func<TEntity, EntityWithFilterData<TEntity>>>(block, parameter);
+    }
+
+    static bool TryBuildEntityBindings(
+        ParameterExpression parameter,
+        Type entityType,
+        FieldProjectionInfo projection,
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        [NotNullWhen(true)] out List<MemberBinding>? bindings)
+    {
+        bindings = [];
+        var addedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // 1. Always include key properties
+        foreach (var keyName in projection.KeyNames)
+        {
+            if (TryGetProperty(entityType, keyName, out var prop) &&
+                prop.CanWrite &&
+                addedProperties.Add(prop.Name))
+            {
+                bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
+            }
+        }
+
+        // 2. Add requested scalar properties
+        foreach (var fieldName in projection.ScalarFields)
+        {
+            if (TryGetProperty(entityType, fieldName, out var prop) &&
+                addedProperties.Add(prop.Name))
+            {
+                if (!prop.CanWrite)
+                {
+                    bindings = null;
+                    return false;
+                }
+
+                bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
+            }
+        }
+
+        // 3. Add navigation properties with nested projections
+        foreach (var (navFieldName, navProjection) in projection.Navigations)
+        {
+            if (!TryGetProperty(entityType, navFieldName, out var prop) ||
+                !addedProperties.Add(prop.Name))
+            {
+                continue;
+            }
+
+            var binding = BuildNavigationBinding(parameter, prop, navProjection, keyNames);
+            if (binding == null)
+            {
+                bindings = null;
+                return false;
+            }
+            bindings.Add(binding);
+        }
+
+        return true;
+    }
+
+    static string BuildCacheKeyWithFilters<TEntity, TDbContext>(
+        FieldProjectionInfo projection,
+        IEnumerable<IFilterEntry<TDbContext>> filters)
+        where TDbContext : DbContext
+    {
+        var builder = new StringBuilder();
+        builder.Append(typeof(TEntity).FullName);
+        builder.Append('|');
+        BuildProjectionKey(builder, projection);
+        builder.Append("|filters:");
+        foreach (var filter in filters.OrderBy(f => f.EntityType.FullName))
+        {
+            builder.Append(filter.EntityType.FullName);
+            builder.Append(',');
+        }
+        return builder.ToString();
     }
 
     static Expression<Func<TEntity, TEntity>>? BuildExpression<TEntity>(
