@@ -160,14 +160,9 @@ partial class EfGraphQLService<TDbContext>
                     // Skip projection for abstract types as they cannot be instantiated
                     if (!typeof(TReturn).IsAbstract)
                     {
-                        var projection = includeAppender.GetProjection<TReturn>(context);
-                        if (projection != null)
+                        if (includeAppender.TryGetProjectionExpression<TReturn>(context, out var selectExpr))
                         {
-                            var selectExpr = SelectExpressionBuilder.Build<TReturn>(projection, keyNames);
-                            if (selectExpr != null)
-                            {
-                                query = query.Select(selectExpr);
-                            }
+                            query = query.Select(selectExpr);
                         }
                     }
 

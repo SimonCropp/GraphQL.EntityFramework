@@ -4,15 +4,19 @@ static class SelectExpressionBuilder
 {
     static readonly ConcurrentDictionary<string, object> cache = new();
 
-    public static Expression<Func<TEntity, TEntity>>? Build<TEntity>(
+    public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
-        IReadOnlyDictionary<Type, List<string>> keyNames)
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression)
         where TEntity : class
     {
         var cacheKey = BuildCacheKey<TEntity>(projection);
-        return (Expression<Func<TEntity, TEntity>>?)cache.GetOrAdd(
+        var result = cache.GetOrAdd(
             cacheKey,
             _ => BuildExpression<TEntity>(projection, keyNames)!);
+
+        expression = result as Expression<Func<TEntity, TEntity>>;
+        return expression != null;
     }
 
     static Expression<Func<TEntity, TEntity>>? BuildExpression<TEntity>(
@@ -94,8 +98,7 @@ static class SelectExpressionBuilder
         var navParam = Expression.Parameter(navType, "n");
 
         // Build the inner MemberInit for the navigation type
-        var innerBindings = BuildNavigationBindings(navParam, navType, navProjection.Projection, keyNames);
-        if (innerBindings == null)
+        if (!TryBuildNavigationBindings(navParam, navType, navProjection.Projection, keyNames, out var innerBindings))
         {
             // Can't project navigation - return null to load full entity
             return null;
@@ -158,8 +161,7 @@ static class SelectExpressionBuilder
         var nullCheck = Expression.Equal(navAccess, Expression.Constant(null, navType));
 
         // Build the MemberInit for the navigation type using navAccess as source
-        var innerBindings = BuildNavigationBindings(navAccess, navType, navProjection.Projection, keyNames);
-        if (innerBindings == null)
+        if (!TryBuildNavigationBindings(navAccess, navType, navProjection.Projection, keyNames, out var innerBindings))
         {
             // Can't project navigation - return null to load full entity
             return null;
@@ -175,13 +177,14 @@ static class SelectExpressionBuilder
         return Expression.Bind(prop, conditional);
     }
 
-    static List<MemberBinding>? BuildNavigationBindings(
+    static bool TryBuildNavigationBindings(
         Expression sourceExpression,
         Type entityType,
         FieldProjectionInfo projection,
-        IReadOnlyDictionary<Type, List<string>> keyNames)
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        [NotNullWhen(true)] out List<MemberBinding>? bindings)
     {
-        var bindings = new List<MemberBinding>();
+        bindings = new List<MemberBinding>();
         var addedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         // Add key properties
@@ -204,8 +207,9 @@ static class SelectExpressionBuilder
                 if (!prop.CanWrite)
                 {
                     // Read-only property (expression-bodied or database computed column)
-                    // Can't use projection - return null to load full entity
-                    return null;
+                    // Can't use projection - return false to load full entity
+                    bindings = null;
+                    return false;
                 }
 
                 bindings.Add(Expression.Bind(prop, Expression.Property(sourceExpression, prop)));
@@ -221,24 +225,26 @@ static class SelectExpressionBuilder
                 continue;
             }
 
-            var binding = BuildNestedNavigationBinding(sourceExpression, prop, nestedNavProjection, keyNames);
-            if (binding == null)
+            if (!TryBuildNestedNavigationBinding(sourceExpression, prop, nestedNavProjection, keyNames, out var binding))
             {
-                // Can't project navigation - return null to load full entity
-                return null;
+                // Can't project navigation - return false to load full entity
+                bindings = null;
+                return false;
             }
             bindings.Add(binding);
         }
 
-        return bindings;
+        return true;
     }
 
-    static MemberAssignment? BuildNestedNavigationBinding(
+    static bool TryBuildNestedNavigationBinding(
         Expression sourceExpression,
         PropertyInfo prop,
         NavigationProjectionInfo navProjection,
-        IReadOnlyDictionary<Type, List<string>> keyNames)
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        [NotNullWhen(true)] out MemberAssignment? binding)
     {
+        binding = null;
         var navType = navProjection.EntityType;
 
         if (navProjection.IsCollection)
@@ -248,11 +254,10 @@ static class SelectExpressionBuilder
             var navParam = Expression.Parameter(navType, "n");
 
             // Build the inner MemberInit
-            var innerBindings = BuildNavigationBindings(navParam, navType, navProjection.Projection, keyNames);
-            if (innerBindings == null)
+            if (!TryBuildNavigationBindings(navParam, navType, navProjection.Projection, keyNames, out var innerBindings))
             {
-                // Can't project navigation - return null to load full entity
-                return null;
+                // Can't project navigation - return false to load full entity
+                return false;
             }
             var innerMemberInit = Expression.MemberInit(Expression.New(navType), innerBindings);
             var innerLambda = Expression.Lambda(innerMemberInit, navParam);
@@ -291,7 +296,8 @@ static class SelectExpressionBuilder
 
             var toListCall = Expression.Call(null, toListMethod, selectCall);
 
-            return Expression.Bind(prop, toListCall);
+            binding = Expression.Bind(prop, toListCall);
+            return true;
         }
         else
         {
@@ -302,11 +308,10 @@ static class SelectExpressionBuilder
             var nullCheck = Expression.Equal(navAccess, Expression.Constant(null, navType));
 
             // Build the MemberInit
-            var innerBindings = BuildNavigationBindings(navAccess, navType, navProjection.Projection, keyNames);
-            if (innerBindings == null)
+            if (!TryBuildNavigationBindings(navAccess, navType, navProjection.Projection, keyNames, out var innerBindings))
             {
-                // Can't project navigation - return null to load full entity
-                return null;
+                // Can't project navigation - return false to load full entity
+                return false;
             }
             var memberInit = Expression.MemberInit(Expression.New(navType), innerBindings);
 
@@ -316,7 +321,8 @@ static class SelectExpressionBuilder
                 Expression.Constant(null, navType),
                 memberInit);
 
-            return Expression.Bind(prop, conditional);
+            binding = Expression.Bind(prop, conditional);
+            return true;
         }
     }
 
