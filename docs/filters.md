@@ -76,7 +76,7 @@ public class ChildFilterProjection
     public Guid? ParentId { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L31-L45' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L46-L60' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-projection-filter-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -94,14 +94,14 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L49-L66' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L64-L81' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### How It Works:
 
 1. GraphQL query executes and loads entities based on requested fields
 2. For each entity, the library extracts the entity ID
-3. A separate database query fetches only the projected fields using those IDs:
+3. A separate database query fetches the projected fields (including Id automatically) using those IDs:
    ```sql
    SELECT Id, ParentId
    FROM ChildEntities
@@ -110,27 +110,34 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
 4. The projected data is passed to the filter function
 5. Entities that fail the filter are excluded from results
 
-### Standard (Non-Projection) Filters:
+**Important**: The projection query ensures all needed fields are loaded from the database, regardless of what the GraphQL query selected. This is why projections are required - filters cannot rely on fields being available from the GraphQL query result.
 
-For filters that only need fields already loaded by the GraphQL query:
+### Filtering on Multiple Fields:
 
-<!-- snippet: add-filter -->
-<a id='snippet-add-filter'></a>
+To filter using multiple entity fields, explicitly list all fields in the projection:
+
+<!-- snippet: filter-all-fields -->
+<a id='snippet-filter-all-fields'></a>
 ```cs
-public class MyEntity
+public class MyEntityFilter
 {
     public string? Property { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L5-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter' title='Start of snippet'>anchor</a></sup>
-<a id='snippet-add-filter-1'></a>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L15-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-filter-all-fields' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-filter-all-fields-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
-filters.Add<MyEntity>(
-    (userContext, dbContext, userPrincipal, item) => item.Property != "Ignore");
+filters.Add<MyEntity, MyEntityFilter>(
+    projection: entity => new MyEntityFilter
+    {
+        Property = entity.Property
+    },
+    filter: async (userContext, dbContext, userPrincipal, projected) =>
+        projected.Property != "Ignore");
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L16-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L26-L40' title='Snippet source file'>snippet source</a> | <a href='#snippet-filter-all-fields-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->

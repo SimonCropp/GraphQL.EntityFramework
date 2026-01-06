@@ -13,38 +13,6 @@ public class Filters<TDbContext>
 
     #endregion
 
-    public void Add<TEntity>(Filter<TEntity> filter)
-        where TEntity : class =>
-        entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity>(
-            (userContext, data, userPrincipal, item) =>
-            {
-                try
-                {
-                    return Task.FromResult(filter(userContext, data, userPrincipal, item));
-                }
-                catch (Exception exception)
-                {
-                    throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
-                }
-            },
-            projection: null);
-
-    public void Add<TEntity>(AsyncFilter<TEntity> filter)
-        where TEntity : class =>
-        entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity>(
-            async (userContext, data, userPrincipal, item) =>
-            {
-                try
-                {
-                    return await filter(userContext, data, userPrincipal, item);
-                }
-                catch (Exception exception)
-                {
-                    throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
-                }
-            },
-            projection: null);
-
     public void Add<TEntity, TProjection>(
         Expression<Func<TEntity, TProjection>> projection,
         AsyncFilter<TProjection> filter)
@@ -124,7 +92,7 @@ public class Filters<TDbContext>
     {
         var projectedDataMap = new Dictionary<(Type, object), object>();
 
-        foreach (var entry in filterEntries.Where(_ => _.HasProjection))
+        foreach (var entry in filterEntries)
         {
             var projected = await entry.QueryProjectedData(entities, data);
             foreach (var (id, projectedItem) in projected)
@@ -196,33 +164,8 @@ interface IFilterEntry<TDbContext>
     where TDbContext : DbContext
 {
     Type EntityType { get; }
-    bool HasProjection { get; }
     Task<Dictionary<object, object>> QueryProjectedData(IEnumerable<object> entities, TDbContext data);
     Task<bool> ShouldInclude(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, object item, Dictionary<(Type, object), object> projectedDataMap);
-}
-
-class FilterEntry<TDbContext, TEntity> : IFilterEntry<TDbContext>
-    where TDbContext : DbContext
-    where TEntity : class
-{
-    readonly Func<object, TDbContext, ClaimsPrincipal?, TEntity, Task<bool>> filter;
-
-    public FilterEntry(Func<object, TDbContext, ClaimsPrincipal?, TEntity, Task<bool>> filter, object? projection) =>
-        this.filter = filter;
-
-    public Type EntityType => typeof(TEntity);
-    public bool HasProjection => false;
-
-    public Task<Dictionary<object, object>> QueryProjectedData(IEnumerable<object> entities, TDbContext data) =>
-        Task.FromResult(new Dictionary<object, object>());
-
-    public async Task<bool> ShouldInclude(
-        object userContext,
-        TDbContext data,
-        ClaimsPrincipal? userPrincipal,
-        object item,
-        Dictionary<(Type, object), object> projectedDataMap) =>
-        await filter(userContext, data, userPrincipal, (TEntity) item);
 }
 
 class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
@@ -242,7 +185,6 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
     }
 
     public Type EntityType => typeof(TEntity);
-    public bool HasProjection => true;
 
     public async Task<Dictionary<object, object>> QueryProjectedData(IEnumerable<object> entities, TDbContext data)
     {

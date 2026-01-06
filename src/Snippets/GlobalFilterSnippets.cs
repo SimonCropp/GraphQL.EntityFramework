@@ -6,6 +6,16 @@ public class GlobalFilterSnippets
 
     public class MyEntity
     {
+        public Guid Id { get; set; }
+        public string? Property { get; set; }
+    }
+
+    #endregion
+
+    #region filter-all-fields
+
+    public class MyEntityFilter
+    {
         public string? Property { get; set; }
     }
 
@@ -13,11 +23,16 @@ public class GlobalFilterSnippets
 
     public static void Add(ServiceCollection services)
     {
-        #region add-filter
+        #region filter-all-fields
 
         var filters = new Filters<MyDbContext>();
-        filters.Add<MyEntity>(
-            (userContext, dbContext, userPrincipal, item) => item.Property != "Ignore");
+        filters.Add<MyEntity, MyEntityFilter>(
+            projection: entity => new MyEntityFilter
+            {
+                Property = entity.Property
+            },
+            filter: async (userContext, dbContext, userPrincipal, projected) =>
+                projected.Property != "Ignore");
         EfGraphQLConventions.RegisterInContainer<MyDbContext>(
             services,
             resolveFilters: _ => filters);

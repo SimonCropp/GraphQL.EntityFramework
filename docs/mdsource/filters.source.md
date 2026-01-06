@@ -47,7 +47,7 @@ snippet: projection-filter
 
 1. GraphQL query executes and loads entities based on requested fields
 2. For each entity, the library extracts the entity ID
-3. A separate database query fetches only the projected fields using those IDs:
+3. A separate database query fetches the projected fields (including Id automatically) using those IDs:
    ```sql
    SELECT Id, ParentId
    FROM ChildEntities
@@ -56,8 +56,10 @@ snippet: projection-filter
 4. The projected data is passed to the filter function
 5. Entities that fail the filter are excluded from results
 
-### Standard (Non-Projection) Filters:
+**Important**: The projection query ensures all needed fields are loaded from the database, regardless of what the GraphQL query selected. This is why projections are required - filters cannot rely on fields being available from the GraphQL query result.
 
-For filters that only need fields already loaded by the GraphQL query:
+### Filtering on Multiple Fields:
 
-snippet: add-filter
+To filter using multiple entity fields, explicitly list all fields in the projection:
+
+snippet: filter-all-fields
