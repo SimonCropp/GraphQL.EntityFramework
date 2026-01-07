@@ -61,7 +61,7 @@ public class Filters<TDbContext>
 
         foreach (var entry in filterEntries)
         {
-            foreach (var prop in entry.GetRequiredPropertyNames())
+            foreach (var prop in entry.RequiredPropertyNames)
             {
                 result.Add(prop);
             }
@@ -76,7 +76,7 @@ public class Filters<TDbContext>
 
         foreach (var (entityType, entry) in entries)
         {
-            var props = entry.GetRequiredPropertyNames();
+            var props = entry.RequiredPropertyNames;
             if (props.Count > 0)
             {
                 result[entityType] = props;

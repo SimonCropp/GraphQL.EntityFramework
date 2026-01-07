@@ -1,11 +1,7 @@
 interface IFilterEntry<TDbContext>
     where TDbContext : DbContext
 {
-    Type EntityType { get; }
-
-    IReadOnlySet<string> GetRequiredPropertyNames();
-
-    Func<object, object> GetCompiledProjection();
+    IReadOnlySet<string> RequiredPropertyNames { get; }
 
     Task<bool> ShouldIncludeWithProjection(
         object userContext,

@@ -4,8 +4,7 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
     where TProjection : class
 {
     Func<object, TDbContext, ClaimsPrincipal?, TProjection, Task<bool>> filter;
-    Func<object, object> compiledProjection;
-    IReadOnlySet<string> requiredProperties;
+    Func<object, TProjection> compiledProjection;
 
     public FilterEntry(
         Func<object, TDbContext, ClaimsPrincipal?, TProjection, Task<bool>> filter,
@@ -14,16 +13,10 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         this.filter = filter;
         var compiled = projection.Compile();
         compiledProjection = entity => compiled((TEntity) entity);
-        requiredProperties = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
+        RequiredPropertyNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
     }
 
-    public Type EntityType => typeof(TEntity);
-
-    public IReadOnlySet<string> GetRequiredPropertyNames() =>
-        requiredProperties;
-
-    public Func<object, object> GetCompiledProjection() =>
-        compiledProjection;
+    public IReadOnlySet<string> RequiredPropertyNames { get; }
 
     public Task<bool> ShouldIncludeWithProjection(
         object userContext,
@@ -31,7 +24,7 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         ClaimsPrincipal? userPrincipal,
         object entity)
     {
-        var projectedData = (TProjection) compiledProjection(entity);
+        var projectedData = compiledProjection(entity);
         return filter(userContext, data, userPrincipal, projectedData);
     }
 }
