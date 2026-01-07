@@ -152,7 +152,7 @@ public class GlobalFilterSnippets
         // Filter nullable int - only include if has value and meets condition
         filters.Add<Order, int?>(
             projection: entity => entity.Quantity,
-            filter: (_, _, _, quantity) => quantity.HasValue && quantity.Value > 0);
+            filter: (_, _, _, quantity) => quantity is > 0);
 
         // Filter nullable bool - only include if explicitly approved
         filters.Add<Order, bool?>(

@@ -25,10 +25,12 @@ static class FilterProjectionAnalyzer
             }
 
             // Check if the root is a parameter of the entity type
-            if (current is ParameterExpression param && param.Type == entityType && path.Count > 0)
+            if (current is ParameterExpression param &&
+                param.Type == entityType &&
+                path.Count > 0)
             {
                 // Add the full path (e.g., "Parent.Name" or just "Name")
-                AccessedProperties.Add(string.Join(".", path));
+                AccessedProperties.Add(string.Join('.', path));
             }
 
             return base.VisitMember(node);

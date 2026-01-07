@@ -40,7 +40,7 @@ public partial class IntegrationTests
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, int?>(
             projection: e => e.NullableAge,
-            filter: (_, _, _, age) => age.HasValue && age.Value >= 18);
+            filter: (_, _, _, age) => age is >= 18);
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3]);
