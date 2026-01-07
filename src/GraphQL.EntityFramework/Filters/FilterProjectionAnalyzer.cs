@@ -1,5 +1,3 @@
-namespace GraphQL.EntityFramework;
-
 static class FilterProjectionAnalyzer
 {
     public static IReadOnlySet<string> ExtractRequiredProperties<TEntity, TProjection>(
