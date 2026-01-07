@@ -36,7 +36,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, string>(
-            projection: e => e.Property!,
+            projection: _ => _.Property!,
             filter: (_, _, _, property) => property != "IgnoreMe");
 
         await using var database = await sqlInstance.Build();
@@ -82,7 +82,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, int>(
-            projection: e => e.Age,
+            projection: _ => _.Age,
             filter: (_, _, _, age) => age >= 18);
 
         await using var database = await sqlInstance.Build();
@@ -128,7 +128,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, bool>(
-            projection: e => e.IsActive,
+            projection: _ => _.IsActive,
             filter: (_, _, _, isActive) => isActive);
 
         await using var database = await sqlInstance.Build();
@@ -162,13 +162,13 @@ public partial class IntegrationTests
         var entity2 = new FilterChildEntity
         {
             Property = "TooOld",
-            CreatedAt = new DateTime(2023, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            CreatedAt = new(2023, 6, 1, 0, 0, 0, DateTimeKind.Utc),
             Parent = entity1
         };
         var entity3 = new FilterChildEntity
         {
             Property = "Recent",
-            CreatedAt = new DateTime(2024, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            CreatedAt = new(2024, 6, 1, 0, 0, 0, DateTimeKind.Utc),
             Parent = entity1
         };
         entity1.Children.Add(entity2);
@@ -176,7 +176,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, DateTime>(
-            projection: e => e.CreatedAt,
+            projection: _ => _.CreatedAt,
             filter: (_, _, _, createdAt) => createdAt >= cutoffDate);
 
         await using var database = await sqlInstance.Build();
@@ -221,7 +221,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, Guid>(
-            projection: e => e.Id,
+            projection: _ => _.Id,
             filter: (_, _, _, id) => id == allowedId);
 
         await using var database = await sqlInstance.Build();

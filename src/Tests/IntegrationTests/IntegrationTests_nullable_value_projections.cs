@@ -39,7 +39,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, int?>(
-            projection: e => e.NullableAge,
+            projection: _ => _.NullableAge,
             filter: (_, _, _, age) => age is >= 18);
 
         await using var database = await sqlInstance.Build();
@@ -85,7 +85,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, int?>(
-            projection: e => e.NullableAge,
+            projection: _ => _.NullableAge,
             filter: (_, _, _, age) => !age.HasValue);
 
         await using var database = await sqlInstance.Build();
@@ -138,7 +138,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, bool?>(
-            projection: e => e.NullableIsActive,
+            projection: _ => _.NullableIsActive,
             filter: (_, _, _, isActive) => isActive == true);
 
         await using var database = await sqlInstance.Build();
@@ -193,7 +193,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, DateTime?>(
-            projection: e => e.NullableCreatedAt,
+            projection: _ => _.NullableCreatedAt,
             filter: (_, _, _, createdAt) => createdAt.HasValue && createdAt.Value >= cutoffDate);
 
         await using var database = await sqlInstance.Build();
@@ -236,7 +236,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterChildEntity, string?>(
-            projection: e => e.Property,
+            projection: _ => _.Property,
             filter: (_, _, _, property) => property != null);
 
         await using var database = await sqlInstance.Build();
