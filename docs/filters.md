@@ -217,3 +217,80 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
 * **Multiple fields**: Need to check multiple properties in combination
 * **Complex logic**: Filtering requires multiple related values
 * **Navigation properties**: Need to access foreign keys or related data
+
+
+## Nullable Value Type Projections
+
+Value type projections fully support nullable types, allowing filters to handle both null checks and value-based filtering.
+
+### Supported Nullable Types:
+
+* Nullable value types: `int?`, `bool?`, `decimal?`, `double?`, etc.
+* Nullable date/time types: `DateTime?`, `DateTimeOffset?`, `TimeSpan?`
+* Nullable reference types: `string?` (reference types are nullable by default)
+* Other nullable types: `Guid?`, nullable enums, nullable custom structs
+
+### Usage:
+
+<!-- snippet: nullable-value-type-projections -->
+<a id='snippet-nullable-value-type-projections'></a>
+```cs
+public class Order
+{
+    public Guid Id { get; set; }
+    public int? Quantity { get; set; }
+    public bool? IsApproved { get; set; }
+    public DateTime? ShippedAt { get; set; }
+    public string? Notes { get; set; }
+}
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L133-L144' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-nullable-value-type-projections-1'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+
+// Filter nullable int - only include if has value and meets condition
+filters.Add<Order, int?>(
+    projection: entity => entity.Quantity,
+    filter: (_, _, _, quantity) => quantity.HasValue && quantity.Value > 0);
+
+// Filter nullable bool - only include if explicitly approved
+filters.Add<Order, bool?>(
+    projection: entity => entity.IsApproved,
+    filter: (_, _, _, isApproved) => isApproved == true);
+
+// Filter nullable DateTime - only include if shipped after date
+filters.Add<Order, DateTime?>(
+    projection: entity => entity.ShippedAt,
+    filter: (_, _, _, shippedAt) =>
+        shippedAt.HasValue && shippedAt.Value >= new DateTime(2024, 1, 1));
+
+// Filter nullable string - only include non-null values
+filters.Add<Order, string?>(
+    projection: entity => entity.Notes,
+    filter: (_, _, _, notes) => notes != null);
+
+// Filter nullable int - only include null values
+filters.Add<Order, int?>(
+    projection: entity => entity.Quantity,
+    filter: (_, _, _, quantity) => !quantity.HasValue);
+
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L148-L182' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+### Common Patterns:
+
+* **Has value check**: `quantity.HasValue && quantity.Value > 0` - Filter items where nullable has a value meeting criteria
+* **Null check**: `!quantity.HasValue` - Filter items where value is null
+* **Exact match**: `isApproved == true` - Filter items where nullable bool is exactly true (not null or false)
+* **Null coalescing**: Can use null-conditional operators in filter logic
+
+### Benefits:
+
+* **Explicit null handling**: Clearly express intent for null vs non-null filtering
+* **Type safety**: Compiler ensures correct nullable handling
+* **Flexible filtering**: Can filter on presence/absence of values or the values themselves

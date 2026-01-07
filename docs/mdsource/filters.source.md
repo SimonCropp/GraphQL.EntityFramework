@@ -99,3 +99,32 @@ snippet: value-type-projections
 * **Multiple fields**: Need to check multiple properties in combination
 * **Complex logic**: Filtering requires multiple related values
 * **Navigation properties**: Need to access foreign keys or related data
+
+
+## Nullable Value Type Projections
+
+Value type projections fully support nullable types, allowing filters to handle both null checks and value-based filtering.
+
+### Supported Nullable Types:
+
+* Nullable value types: `int?`, `bool?`, `decimal?`, `double?`, etc.
+* Nullable date/time types: `DateTime?`, `DateTimeOffset?`, `TimeSpan?`
+* Nullable reference types: `string?` (reference types are nullable by default)
+* Other nullable types: `Guid?`, nullable enums, nullable custom structs
+
+### Usage:
+
+snippet: nullable-value-type-projections
+
+### Common Patterns:
+
+* **Has value check**: `quantity.HasValue && quantity.Value > 0` - Filter items where nullable has a value meeting criteria
+* **Null check**: `!quantity.HasValue` - Filter items where value is null
+* **Exact match**: `isApproved == true` - Filter items where nullable bool is exactly true (not null or false)
+* **Null coalescing**: Can use null-conditional operators in filter logic
+
+### Benefits:
+
+* **Explicit null handling**: Clearly express intent for null vs non-null filtering
+* **Type safety**: Compiler ensures correct nullable handling
+* **Flexible filtering**: Can filter on presence/absence of values or the values themselves

@@ -129,4 +129,56 @@ public class GlobalFilterSnippets
 
         #endregion
     }
+
+    #region nullable-value-type-projections
+
+    public class Order
+    {
+        public Guid Id { get; set; }
+        public int? Quantity { get; set; }
+        public bool? IsApproved { get; set; }
+        public DateTime? ShippedAt { get; set; }
+        public string? Notes { get; set; }
+    }
+
+    #endregion
+
+    public static void AddNullableValueTypeProjections(ServiceCollection services)
+    {
+        #region nullable-value-type-projections
+
+        var filters = new Filters<MyDbContext>();
+
+        // Filter nullable int - only include if has value and meets condition
+        filters.Add<Order, int?>(
+            projection: entity => entity.Quantity,
+            filter: (_, _, _, quantity) => quantity.HasValue && quantity.Value > 0);
+
+        // Filter nullable bool - only include if explicitly approved
+        filters.Add<Order, bool?>(
+            projection: entity => entity.IsApproved,
+            filter: (_, _, _, isApproved) => isApproved == true);
+
+        // Filter nullable DateTime - only include if shipped after date
+        filters.Add<Order, DateTime?>(
+            projection: entity => entity.ShippedAt,
+            filter: (_, _, _, shippedAt) =>
+                shippedAt.HasValue && shippedAt.Value >= new DateTime(2024, 1, 1));
+
+        // Filter nullable string - only include non-null values
+        filters.Add<Order, string?>(
+            projection: entity => entity.Notes,
+            filter: (_, _, _, notes) => notes != null);
+
+        // Filter nullable int - only include null values
+        filters.Add<Order, int?>(
+            projection: entity => entity.Quantity,
+            filter: (_, _, _, quantity) => !quantity.HasValue);
+
+        EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+            services,
+            resolveFilters: _ => filters);
+
+        #endregion
+    }
 }

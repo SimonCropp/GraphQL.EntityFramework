@@ -434,6 +434,9 @@ type FilterChild {
   createdAt: DateTime!
   id: ID!
   isActive: Boolean!
+  nullableAge: Int
+  nullableCreatedAt: DateTime
+  nullableIsActive: Boolean
   property: String
 }
 
