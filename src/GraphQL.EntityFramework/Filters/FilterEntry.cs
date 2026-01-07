@@ -3,33 +3,27 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
     where TEntity : class
     where TProjection : class
 {
-    readonly Func<object, TDbContext, ClaimsPrincipal?, TProjection, Task<bool>> filter;
-    readonly Expression<Func<TEntity, TProjection>> projection;
-
-    IReadOnlySet<string>? requiredProperties;
-    Func<TEntity, TProjection>? compiledProjection;
+    Func<object, TDbContext, ClaimsPrincipal?, TProjection, Task<bool>> filter;
+    Func<object, object> compiledProjection;
+    IReadOnlySet<string> requiredProperties;
 
     public FilterEntry(
         Func<object, TDbContext, ClaimsPrincipal?, TProjection, Task<bool>> filter,
         Expression<Func<TEntity, TProjection>> projection)
     {
         this.filter = filter;
-        this.projection = projection;
+        var compiled = projection.Compile();
+        compiledProjection = entity => compiled((TEntity) entity);
+        requiredProperties = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
     }
 
     public Type EntityType => typeof(TEntity);
 
-    public IReadOnlySet<string> GetRequiredPropertyNames()
-    {
-        requiredProperties ??= FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
-        return requiredProperties;
-    }
+    public IReadOnlySet<string> GetRequiredPropertyNames() =>
+        requiredProperties;
 
-    public Func<object, object> GetCompiledProjection()
-    {
-        compiledProjection ??= projection.Compile();
-        return entity => compiledProjection((TEntity) entity);
-    }
+    public Func<object, object> GetCompiledProjection() =>
+        compiledProjection;
 
     public Task<bool> ShouldIncludeWithProjection(
         object userContext,
@@ -37,8 +31,7 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         ClaimsPrincipal? userPrincipal,
         object entity)
     {
-        compiledProjection ??= projection.Compile();
-        var projectedData = compiledProjection((TEntity) entity);
+        var projectedData = (TProjection) compiledProjection(entity);
         return filter(userContext, data, userPrincipal, projectedData);
     }
 }
