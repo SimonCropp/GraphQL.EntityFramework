@@ -38,11 +38,11 @@ public class Filters<TDbContext>
         where TEntity : class
         where TProjection : class =>
         entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(
-            async (userContext, data, userPrincipal, item) =>
+            (userContext, data, userPrincipal, item) =>
             {
                 try
                 {
-                    return filter(userContext, data, userPrincipal, item);
+                    return Task.FromResult(filter(userContext, data, userPrincipal, item));
                 }
                 catch (Exception exception)
                 {

@@ -8,22 +8,22 @@
         {
           "cursor": "1",
           "node": {
-            "property": "Value2"
+            "property": "Value1"
           }
         },
         {
           "cursor": "2",
           "node": {
-            "property": "Value3"
+            "property": "Value2"
           }
         }
       ],
       "items": [
         {
-          "property": "Value2"
+          "property": "Value1"
         },
         {
-          "property": "Value3"
+          "property": "Value2"
         }
       ]
     }
@@ -40,7 +40,7 @@ from   ParentEntities as p
 select   p.Id,
          p.Property
 from     ParentEntities as p
-order by p.Id
+order by p.Property
 offset @p rows fetch next @p0 rows only,
       Parameters: {
         @p: 1,

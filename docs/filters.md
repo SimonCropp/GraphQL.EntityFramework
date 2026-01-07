@@ -81,7 +81,7 @@ public class ChildFilterProjection
 ```cs
 var filters = new Filters<MyDbContext>();
 filters.Add<ChildEntity, ChildFilterProjection>(
-    projection: child => new ChildFilterProjection
+    projection: child => new()
     {
         ParentId = child.ParentId
     },
@@ -129,11 +129,11 @@ public class MyEntityFilter
 ```cs
 var filters = new Filters<MyDbContext>();
 filters.Add<MyEntity, MyEntityFilter>(
-    projection: entity => new MyEntityFilter
+    projection: entity => new()
     {
         Property = entity.Property
     },
-    filter: async (userContext, dbContext, userPrincipal, projected) =>
+    filter: (userContext, dbContext, userPrincipal, projected) =>
         projected.Property != "Ignore");
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,

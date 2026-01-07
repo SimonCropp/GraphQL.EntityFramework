@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-
 class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
     where TDbContext : DbContext
     where TEntity : class
@@ -30,10 +28,10 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
     public Func<object, object> GetCompiledProjection()
     {
         compiledProjection ??= projection.Compile();
-        return entity => compiledProjection((TEntity) entity)!;
+        return entity => compiledProjection((TEntity) entity);
     }
 
-    public async Task<bool> ShouldIncludeWithProjection(
+    public Task<bool> ShouldIncludeWithProjection(
         object userContext,
         TDbContext data,
         ClaimsPrincipal? userPrincipal,
@@ -41,6 +39,6 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
     {
         compiledProjection ??= projection.Compile();
         var projectedData = compiledProjection((TEntity) entity);
-        return await filter(userContext, data, userPrincipal, projectedData);
+        return filter(userContext, data, userPrincipal, projectedData);
     }
 }

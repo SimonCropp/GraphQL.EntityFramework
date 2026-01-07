@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-
 namespace GraphQL.EntityFramework;
 
 static class FilterProjectionAnalyzer

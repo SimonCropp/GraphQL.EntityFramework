@@ -1,6 +1,9 @@
 public class IntegrationDbContext(DbContextOptions options) :
     DbContext(options)
 {
+    protected override void OnConfiguring(DbContextOptionsBuilder builder) =>
+        builder.UseDefaultOrderBy();
+
     public DbSet<ParentEntity> ParentEntities { get; set; } = null!;
     public DbSet<DateEntity> DateEntities { get; set; } = null!;
     public DbSet<EnumEntity> EnumEntities { get; set; } = null!;
@@ -42,8 +45,8 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<WithNullableEntity>();
         modelBuilder.Entity<FilterParentEntity>();
         modelBuilder.Entity<FilterChildEntity>();
-        modelBuilder.Entity<ParentEntity>();
-        modelBuilder.Entity<ChildEntity>();
+        modelBuilder.Entity<ParentEntity>().OrderBy(_ => _.Property);
+        modelBuilder.Entity<ChildEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<WithMisNamedQueryParentEntity>();
         modelBuilder.Entity<WithMisNamedQueryChildEntity>();
         modelBuilder.Entity<IncludeNonQueryableB>();
@@ -67,13 +70,13 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasForeignKey(_ => _.TypedParentId);
         modelBuilder.Entity<ManyToManyRightEntity>()
             .HasMany(_ => _.Lefts)
-            .WithMany(l => l.Rights)
+            .WithMany(_ => _.Rights)
             .UsingEntity<ManyToManyMiddleEntity>(
                 _ => _.HasOne(_ => _.ManyToManyLeftEntity).WithMany(),
                 _ => _.HasOne(_ => _.ManyToManyRightEntity).WithMany());
         modelBuilder.Entity<ManyToManyShadowLeftEntity>()
-            .HasMany(x=> x.ManyToManyShadowRightEntities)
-            .WithMany(x=> x.ManyToManyShadowLeftEntities)
+            .HasMany(_ => _.ManyToManyShadowRightEntities)
+            .WithMany(_ => _.ManyToManyShadowLeftEntities)
             .UsingEntity("ManyToManyShadowMiddleEntity");
         modelBuilder.Entity<ReadOnlyEntity>()
             .Property(_ => _.ComputedInDb)

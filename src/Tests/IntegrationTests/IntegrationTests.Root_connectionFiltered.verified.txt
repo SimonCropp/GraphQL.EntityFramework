@@ -31,7 +31,7 @@ from   FilterParentEntities as f
 select   f.Id,
          f.Property
 from     FilterParentEntities as f
-order by f.Id
+order by f.Property
 offset @p rows fetch next @p0 rows only,
       Parameters: {
         @p: 0,

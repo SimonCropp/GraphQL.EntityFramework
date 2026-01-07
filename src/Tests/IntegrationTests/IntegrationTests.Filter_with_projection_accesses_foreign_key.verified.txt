@@ -6,18 +6,18 @@
       "edges": [
         {
           "node": {
-            "property": "Parent2",
-            "children": []
-          }
-        },
-        {
-          "node": {
             "property": "Parent1",
             "children": [
               {
                 "property": "Child1"
               }
             ]
+          }
+        },
+        {
+          "node": {
+            "property": "Parent2",
+            "children": []
           }
         }
       ]
@@ -40,12 +40,12 @@ select   p0.Id,
 from     (select   p.Id,
                    p.Property
           from     ParentEntities as p
-          order by p.Id
+          order by p.Property
           offset @p rows fetch next @p0 rows only) as p0
          left outer join
          ChildEntities as c
          on p0.Id = c.ParentId
-order by p0.Id, c.Id,
+order by p0.Property, p0.Id, c.Id,
       Parameters: {
         @p: 0,
         @p0: 10

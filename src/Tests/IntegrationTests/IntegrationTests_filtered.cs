@@ -41,13 +41,16 @@
     {
         var filters = new Filters<IntegrationDbContext>();
         filters.Add<FilterParentEntity, FilterProjection>(
-            e => new FilterProjection { Id = e.Id, Property = e.Property },
+            e => new()
+                { Id = e.Id, Property = e.Property },
             (_, _, _, item) => item.Property != "Ignore");
         filters.Add<FilterChildEntity, FilterProjection>(
-            e => new FilterProjection { Id = e.Id, Property = e.Property },
+            e => new()
+                { Id = e.Id, Property = e.Property },
             (_, _, _, item) => item.Property != "Ignore");
         filters.Add<Level3Entity, FilterProjection>(
-            e => new FilterProjection { Id = e.Id, Property = e.Property },
+            e => new()
+                { Id = e.Id, Property = e.Property },
             (_, _, _, item) => item.Property != "Ignore");
         return filters;
     }
