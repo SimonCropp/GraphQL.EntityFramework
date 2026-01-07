@@ -29,13 +29,11 @@ Notes:
 public class Filters<TDbContext>
     where TDbContext : DbContext
 {
-    public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input)
-        where TEntity : class;
+    public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 
-    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input)
-        where TEntity : class;
+    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 ```
-<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L3-L14' title='Snippet source file'>snippet source</a> | <a href='#snippet-FiltersSignature' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-FiltersSignature' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -141,3 +139,81 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
 ```
 <sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L26-L40' title='Snippet source file'>snippet source</a> | <a href='#snippet-filter-all-fields-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+
+## Value Type Projections
+
+For filtering scenarios where only a single property value needs to be checked, projecting directly to a value type is an option instead of creating a dedicated projection class. This is useful for basic authorization rules or business logic that depends on a single field.
+
+### Supported Value Types:
+
+The filter projection system supports all value types including:
+
+* Primitive types: `string`, `int`, `bool`, `decimal`, `double`, etc.
+* Date/time types: `DateTime`, `DateTimeOffset`, `TimeSpan`
+* Other value types: `Guid`, enums, custom structs
+
+### Usage:
+
+<!-- snippet: value-type-projections -->
+<a id='snippet-value-type-projections'></a>
+```cs
+public class Product
+{
+    public Guid Id { get; set; }
+    public string? Name { get; set; }
+    public int Stock { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L87-L98' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-value-type-projections-1'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+
+// Filter using a string property
+filters.Add<Product, string>(
+    projection: entity => entity.Name!,
+    filter: (_, _, _, name) => name != "Discontinued");
+
+// Filter using an int property
+filters.Add<Product, int>(
+    projection: entity => entity.Stock,
+    filter: (_, _, _, stock) => stock > 0);
+
+// Filter using a bool property
+filters.Add<Product, bool>(
+    projection: entity => entity.IsActive,
+    filter: (_, _, _, isActive) => isActive);
+
+// Filter using a DateTime property
+filters.Add<Product, DateTime>(
+    projection: entity => entity.CreatedAt,
+    filter: (_, _, _, createdAt) => createdAt >= new DateTime(2024, 1, 1));
+
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L102-L130' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+### Benefits:
+
+* **Less code**: No need to create projection classes for single-field filters
+* **Type safety**: The filter function receives the strongly-typed value
+* **Same performance**: Uses the same efficient projection query mechanism
+* **Combines with object projections**: Value type and object projections can be mixed in the same filter collection
+
+### When to Use:
+
+* **Single field checks**: Filtering based on one property (status, age, type)
+* **Simple comparisons**: Equality, range checks, null checks
+* **Quick authorization**: Checking if a single field matches allowed values
+
+### When to Use Object Projections Instead:
+
+* **Multiple fields**: Need to check multiple properties in combination
+* **Complex logic**: Filtering requires multiple related values
+* **Navigation properties**: Need to access foreign keys or related data

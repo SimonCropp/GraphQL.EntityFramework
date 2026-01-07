@@ -63,3 +63,39 @@ snippet: projection-filter
 To filter using multiple entity fields, explicitly list all fields in the projection:
 
 snippet: filter-all-fields
+
+
+## Value Type Projections
+
+For filtering scenarios where only a single property value needs to be checked, projecting directly to a value type is an option instead of creating a dedicated projection class. This is useful for basic authorization rules or business logic that depends on a single field.
+
+### Supported Value Types:
+
+The filter projection system supports all value types including:
+
+* Primitive types: `string`, `int`, `bool`, `decimal`, `double`, etc.
+* Date/time types: `DateTime`, `DateTimeOffset`, `TimeSpan`
+* Other value types: `Guid`, enums, custom structs
+
+### Usage:
+
+snippet: value-type-projections
+
+### Benefits:
+
+* **Less code**: No need to create projection classes for single-field filters
+* **Type safety**: The filter function receives the strongly-typed value
+* **Same performance**: Uses the same efficient projection query mechanism
+* **Combines with object projections**: Value type and object projections can be mixed in the same filter collection
+
+### When to Use:
+
+* **Single field checks**: Filtering based on one property (status, age, type)
+* **Simple comparisons**: Equality, range checks, null checks
+* **Quick authorization**: Checking if a single field matches allowed values
+
+### When to Use Object Projections Instead:
+
+* **Multiple fields**: Need to check multiple properties in combination
+* **Complex logic**: Filtering requires multiple related values
+* **Navigation properties**: Need to access foreign keys or related data

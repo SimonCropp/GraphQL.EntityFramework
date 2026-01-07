@@ -83,4 +83,50 @@ public class GlobalFilterSnippets
 
     static Guid GetAllowedParentId(object userContext) =>
         Guid.Empty;
+
+    #region value-type-projections
+
+    public class Product
+    {
+        public Guid Id { get; set; }
+        public string? Name { get; set; }
+        public int Stock { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    #endregion
+
+    public static void AddValueTypeProjections(ServiceCollection services)
+    {
+        #region value-type-projections
+
+        var filters = new Filters<MyDbContext>();
+
+        // Filter using a string property
+        filters.Add<Product, string>(
+            projection: entity => entity.Name!,
+            filter: (_, _, _, name) => name != "Discontinued");
+
+        // Filter using an int property
+        filters.Add<Product, int>(
+            projection: entity => entity.Stock,
+            filter: (_, _, _, stock) => stock > 0);
+
+        // Filter using a bool property
+        filters.Add<Product, bool>(
+            projection: entity => entity.IsActive,
+            filter: (_, _, _, isActive) => isActive);
+
+        // Filter using a DateTime property
+        filters.Add<Product, DateTime>(
+            projection: entity => entity.CreatedAt,
+            filter: (_, _, _, createdAt) => createdAt >= new DateTime(2024, 1, 1));
+
+        EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+            services,
+            resolveFilters: _ => filters);
+
+        #endregion
+    }
 }

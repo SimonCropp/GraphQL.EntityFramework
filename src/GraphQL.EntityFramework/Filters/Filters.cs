@@ -5,19 +5,16 @@ namespace GraphQL.EntityFramework;
 public class Filters<TDbContext>
     where TDbContext : DbContext
 {
-    public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input)
-        where TEntity : class;
+    public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 
-    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input)
-        where TEntity : class;
+    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 
     #endregion
 
     public void Add<TEntity, TProjection>(
         Expression<Func<TEntity, TProjection>> projection,
         AsyncFilter<TProjection> filter)
-        where TEntity : class
-        where TProjection : class =>
+        where TEntity : class =>
         entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(
             async (userContext, data, userPrincipal, item) =>
             {
@@ -35,8 +32,7 @@ public class Filters<TDbContext>
     public void Add<TEntity, TProjection>(
         Expression<Func<TEntity, TProjection>> projection,
         Filter<TProjection> filter)
-        where TEntity : class
-        where TProjection : class =>
+        where TEntity : class =>
         entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(
             (userContext, data, userPrincipal, item) =>
             {

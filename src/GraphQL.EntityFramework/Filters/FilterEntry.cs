@@ -1,7 +1,6 @@
 class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
     where TDbContext : DbContext
     where TEntity : class
-    where TProjection : class
 {
     Func<object, TDbContext, ClaimsPrincipal?, TProjection, Task<bool>> filter;
     Func<object, TProjection> compiledProjection;

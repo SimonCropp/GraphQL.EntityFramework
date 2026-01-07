@@ -1,0 +1,31 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntitiesFiltered": [
+      {
+        "property": "Parent",
+        "children": [
+          {
+            "property": "Recent",
+            "createdAt": "2024-06-01T00:00:00"
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Property,
+         f0.Id,
+         f0.Property,
+         f0.CreatedAt
+from     FilterParentEntities as f
+         left outer join
+         FilterChildEntities as f0
+         on f.Id = f0.ParentId
+order by f.Id, f0.Id
+  }
+}
