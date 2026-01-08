@@ -1,0 +1,29 @@
+﻿{
+  target:
+{
+  "data": {
+    "simpleTypeFilterEntities": [
+      {
+        "name": "Entity1",
+        "intValue": 10
+      },
+      {
+        "name": "Entity2",
+        "intValue": 20
+      },
+      {
+        "name": "Entity3",
+        "intValue": 30
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   s.Id,
+         s.Name,
+         s.IntValue
+from     SimpleTypeFilterEntities as s
+order by s.Name
+  }
+}
