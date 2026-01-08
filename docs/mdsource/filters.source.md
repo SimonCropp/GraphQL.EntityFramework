@@ -23,6 +23,7 @@ snippet: FiltersSignature
 
 All filters are added using the `For<TEntity>()` fluent API, which automatically infers the projection type. This provides a consistent interface regardless of whether filtering on a single field, multiple fields with anonymous types, or using named projection classes.
 
+
 ### Basic Syntax:
 
 ```csharp
@@ -70,6 +71,7 @@ For reusable filter logic or complex projections, define a named projection clas
 snippet: projection-filter
 
 Named types are useful when:
+
 * The same projection is used in multiple filters
 * The projection includes nested objects or computed properties
 * A descriptive type name aids code documentation
@@ -82,6 +84,7 @@ Filters fully support nullable types for both value types and reference types:
 snippet: nullable-value-type-projections
 
 Common nullable patterns:
+
 * **Has value check**: `quantity.HasValue && quantity.Value > 0`
 * **Null check**: `!quantity.HasValue`
 * **Exact match**: `isApproved == true` (not null or false)
