@@ -46,7 +46,7 @@ public partial class IntegrationTests
             {
               baseEntities(orderBy: {path: "property"}) {
                 property
-                ... on DerivedWithNavigationEntity {
+                ... on DerivedWithNavigation {
                   children {
                     property
                   }

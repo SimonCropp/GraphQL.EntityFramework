@@ -1,0 +1,25 @@
+﻿{
+  target:
+{
+  "data": {
+    "baseEntities": [
+      {
+        "property": "Derived1",
+        "childrenFromBase": []
+      },
+      {
+        "property": "Derived2",
+        "childrenFromBase": []
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   b.Id,
+         b.Discriminator,
+         b.Property
+from     BaseEntities as b
+order by b.Property
+  }
+}
