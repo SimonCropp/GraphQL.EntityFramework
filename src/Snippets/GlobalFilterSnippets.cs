@@ -41,6 +41,14 @@ public class GlobalFilterSnippets
         DbContext
     {
         public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<UserPermission> UserPermissions { get; set; } = null!;
+    }
+
+    public class UserPermission
+    {
+        public Guid Id { get; set; }
+        public string UserId { get; set; } = null!;
+        public string Permission { get; set; } = null!;
     }
 
     #region projection-filter
@@ -239,6 +247,56 @@ public class GlobalFilterSnippets
         // filters.For<Product>().Add(
         //     projection: _ => _.IsActive,
         //     filter: (_, _, _, isActive) => isActive);
+
+        EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+            services,
+            resolveFilters: _ => filters);
+
+        #endregion
+    }
+
+    public static void AddFilterWithoutProjection(ServiceCollection services)
+    {
+        #region filter-without-projection
+
+        var filters = new Filters<MyDbContext>();
+
+        // Filter without projection - eg for authorization checks
+        filters.For<Product>().Add(
+            filter: (_, _, user) => user!.HasClaim("Permission", "ViewProducts"));
+
+        // Equivalent to:
+        // filters.For<Product>().Add(
+        //     projection: null,  // No projection needed
+        //     filter: (_, _, user, _) => user!.HasClaim("Permission", "ViewProducts"));
+
+        EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+            services,
+            resolveFilters: _ => filters);
+
+        #endregion
+    }
+
+    public static void AddAsyncFilterWithoutProjection(ServiceCollection services)
+    {
+        #region async-filter-without-projection
+
+        var filters = new Filters<MyDbContext>();
+
+        // Async filter without projection - eg for database permission checks
+        filters.For<Product>().Add(
+            filter: async (_, dbContext, user) =>
+            {
+                var userId = user?.FindFirst("UserId")?.Value;
+                if (userId == null)
+                    return false;
+
+                var permissions = await dbContext.UserPermissions
+                    .Where(_ => _.UserId == userId)
+                    .AnyAsync(_ => _.Permission == "ViewProducts");
+
+                return permissions;
+            });
 
         EfGraphQLConventions.RegisterInContainer<MyDbContext>(
             services,

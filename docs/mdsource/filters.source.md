@@ -117,3 +117,31 @@ This shorthand is useful when:
 * A concise syntax is preferred
 
 The expression `filter: _ => _.IsActive` is automatically expanded to use the boolean property as both the projection and the filter condition.
+
+
+## Filters Without Projection
+
+For filters that don't need entity data (such as authorization checks based only on user context), a projection-less syntax is available:
+
+snippet: filter-without-projection
+
+This overload is useful when:
+
+* Checking user permissions or claims
+* Applying access control based on user context
+* No entity data is needed for the filter decision
+
+The filter receives `userContext`, `dbContext`, and `userPrincipal` but does not receive any entity data.
+
+
+## Async Filters Without Projection
+
+Filters without projection can also be asynchronous for operations that require database lookups:
+
+snippet: async-filter-without-projection
+
+This is useful when:
+
+* User permissions are stored in the database
+* Filter logic requires async operations
+* Complex checks involve multiple data sources

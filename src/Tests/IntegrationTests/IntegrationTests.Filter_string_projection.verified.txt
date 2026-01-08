@@ -24,6 +24,6 @@ from     FilterParentEntities as f
          left outer join
          FilterChildEntities as f0
          on f.Id = f0.ParentId
-order by f.Id, f0.Id
+order by f.Property, f.Id, f0.Id
   }
 }

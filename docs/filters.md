@@ -83,7 +83,7 @@ public class Product
     public Guid CategoryId { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L82-L94' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L90-L102' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-value-type-projections-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -112,7 +112,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L98-L126' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L106-L134' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -159,7 +159,7 @@ public class ChildEntity
     public string? Property { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L46-L55' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L54-L63' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-projection-filter-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -177,7 +177,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L59-L76' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L67-L84' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Named types are useful when:
@@ -217,7 +217,7 @@ public class Category
     public bool IsVisible { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L129-L154' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L137-L162' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-nullable-value-type-projections-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -252,7 +252,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L158-L192' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L166-L200' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Common nullable patterns:
@@ -281,7 +281,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L197-L211' title='Snippet source file'>snippet source</a> | <a href='#snippet-async-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L205-L219' title='Snippet source file'>snippet source</a> | <a href='#snippet-async-filter' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -300,7 +300,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L216-L226' title='Snippet source file'>snippet source</a> | <a href='#snippet-navigation-property-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L224-L234' title='Snippet source file'>snippet source</a> | <a href='#snippet-navigation-property-filter' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -325,7 +325,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L231-L247' title='Snippet source file'>snippet source</a> | <a href='#snippet-boolean-expression-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L239-L255' title='Snippet source file'>snippet source</a> | <a href='#snippet-boolean-expression-filter' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 This shorthand is useful when:
@@ -335,3 +335,75 @@ This shorthand is useful when:
 * A concise syntax is preferred
 
 The expression `filter: _ => _.IsActive` is automatically expanded to use the boolean property as both the projection and the filter condition.
+
+
+## Filters Without Projection
+
+For filters that don't need entity data (such as authorization checks based only on user context), a projection-less syntax is available:
+
+<!-- snippet: filter-without-projection -->
+<a id='snippet-filter-without-projection'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+
+// Filter without projection - eg for authorization checks
+filters.For<Product>().Add(
+    filter: (_, _, user) => user!.HasClaim("Permission", "ViewProducts"));
+
+// Equivalent to:
+// filters.For<Product>().Add(
+//     projection: null,  // No projection needed
+//     filter: (_, _, user, _) => user!.HasClaim("Permission", "ViewProducts"));
+
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L260-L277' title='Snippet source file'>snippet source</a> | <a href='#snippet-filter-without-projection' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+This overload is useful when:
+
+* Checking user permissions or claims
+* Applying access control based on user context
+* No entity data is needed for the filter decision
+
+The filter receives `userContext`, `dbContext`, and `userPrincipal` but does not receive any entity data.
+
+
+## Async Filters Without Projection
+
+Filters without projection can also be asynchronous for operations that require database lookups:
+
+<!-- snippet: async-filter-without-projection -->
+<a id='snippet-async-filter-without-projection'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+
+// Async filter without projection - eg for database permission checks
+filters.For<Product>().Add(
+    filter: async (_, dbContext, user) =>
+    {
+        var userId = user?.FindFirst("UserId")?.Value;
+        if (userId == null)
+            return false;
+
+        var permissions = await dbContext.UserPermissions
+            .Where(_ => _.UserId == userId)
+            .AnyAsync(_ => _.Permission == "ViewProducts");
+
+        return permissions;
+    });
+
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L282-L305' title='Snippet source file'>snippet source</a> | <a href='#snippet-async-filter-without-projection' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+This is useful when:
+
+* User permissions are stored in the database
+* Filter logic requires async operations
+* Complex checks involve multiple data sources

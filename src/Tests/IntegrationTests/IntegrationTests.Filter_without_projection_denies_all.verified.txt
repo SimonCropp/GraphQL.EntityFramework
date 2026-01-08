@@ -1,0 +1,15 @@
+﻿{
+  target:
+{
+  "data": {
+    "simpleTypeFilterEntities": []
+  }
+},
+  sql: {
+    Text:
+select   s.Id,
+         s.Name
+from     SimpleTypeFilterEntities as s
+order by s.Name
+  }
+}

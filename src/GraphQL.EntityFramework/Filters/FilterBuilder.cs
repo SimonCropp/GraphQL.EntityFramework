@@ -75,4 +75,56 @@ public class FilterBuilder<TDbContext, TEntity>
     /// </remarks>
     public void Add(Expression<Func<TEntity, bool>> filter) =>
         filters.Add(filter, (_, _, _, value) => value);
+
+    /// <summary>
+    /// Add a synchronous filter that doesn't require entity data (e.g., filters based only on user context).
+    /// </summary>
+    /// <param name="filter">Synchronous filter function that only uses context/user, not entity data.</param>
+    /// <remarks>
+    /// This overload is useful for filters that only check user permissions or context:
+    /// <code>
+    /// // Simplified syntax (no projection needed)
+    /// filters.For&lt;Product&gt;().Add(
+    ///     filter: (_, _, user) => user!.HasPermission("ViewProducts"));
+    ///
+    /// // Equivalent to:
+    /// filters.For&lt;Product&gt;().Add(
+    ///     projection: _ => true,  // Projection not used
+    ///     filter: (_, _, user, _) => user!.HasPermission("ViewProducts"));
+    /// </code>
+    /// </remarks>
+    public void Add(Func<object, TDbContext, ClaimsPrincipal?, bool> filter) =>
+        filters.Add<TEntity, bool>(
+            null,
+            (userContext, dbContext, userPrincipal, _) => filter(userContext, dbContext, userPrincipal));
+
+    /// <summary>
+    /// Add an asynchronous filter that doesn't require entity data (e.g., filters based only on user context).
+    /// </summary>
+    /// <param name="filter">Asynchronous filter function that only uses context/user, not entity data.</param>
+    /// <remarks>
+    /// This overload is useful for filters that need async operations without entity data:
+    /// <code>
+    /// // Simplified syntax (no projection needed)
+    /// filters.For&lt;Product&gt;().Add(
+    ///     filter: async (_, dbContext, user) =>
+    ///     {
+    ///         var permissions = await dbContext.GetUserPermissionsAsync(user);
+    ///         return permissions.CanView("Products");
+    ///     });
+    ///
+    /// // Equivalent to:
+    /// filters.For&lt;Product&gt;().Add(
+    ///     projection: _ => true,  // Projection not used
+    ///     filter: async (_, dbContext, user, _) =>
+    ///     {
+    ///         var permissions = await dbContext.GetUserPermissionsAsync(user);
+    ///         return permissions.CanView("Products");
+    ///     });
+    /// </code>
+    /// </remarks>
+    public void Add(Func<object, TDbContext, ClaimsPrincipal?, Task<bool>> filter) =>
+        filters.Add<TEntity, bool>(
+            null,
+            (userContext, dbContext, userPrincipal, _) => filter(userContext, dbContext, userPrincipal));
 }
