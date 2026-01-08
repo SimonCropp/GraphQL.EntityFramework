@@ -147,6 +147,10 @@
             resolve: _ => _.DbContext.BaseEntities);
 
         AddQueryField(
+            name: "derivedChildEntities",
+            resolve: _ => _.DbContext.DerivedChildEntities);
+
+        AddQueryField(
             name: "readOnlyEntities",
             graphType: typeof(ReadOnlyEntityGraphType),
             resolve: _ => _.DbContext.ReadOnlyEntities);
