@@ -89,22 +89,10 @@ Common nullable patterns:
 
 Filters can be asynchronous when they need to perform database lookups or other async operations:
 
-```csharp
-filters.For<Product>().Add(
-    projection: _ => _.CategoryId,
-    filter: async (_, dbContext, _, categoryId) =>
-    {
-        var category = await dbContext.Categories.FindAsync(categoryId);
-        return category?.IsVisible == true;
-    });
-```
+snippet: async-filter
 
 ## Navigation Properties
 
 Filters can project through navigation properties to access related entity data:
 
-```csharp
-filters.For<Order>().Add(
-    projection: o => new { o.TotalAmount, o.Customer.IsActive },
-    filter: (_, _, _, x) => x.TotalAmount >= 100 && x.IsActive);
-```
+snippet: navigation-property-filter

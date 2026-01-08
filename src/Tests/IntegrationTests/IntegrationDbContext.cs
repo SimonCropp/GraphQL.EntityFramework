@@ -44,8 +44,8 @@ public class IntegrationDbContext(DbContextOptions options) :
             .Property(_ => _.Property).HasColumnName("Property");
         modelBuilder.Entity<CustomTypeEntity>();
         modelBuilder.Entity<WithNullableEntity>();
-        modelBuilder.Entity<FilterParentEntity>();
-        modelBuilder.Entity<FilterChildEntity>();
+        modelBuilder.Entity<FilterParentEntity>().OrderBy(_ => _.Property);
+        modelBuilder.Entity<FilterChildEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<SimpleTypeFilterEntity>().OrderBy(_ => _.Name);
         modelBuilder.Entity<ParentEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<ChildEntity>().OrderBy(_ => _.Property);

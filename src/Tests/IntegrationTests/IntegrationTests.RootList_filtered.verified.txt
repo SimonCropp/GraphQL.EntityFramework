@@ -11,8 +11,9 @@
 },
   sql: {
     Text:
-select f.Id,
-       f.Property
-from   FilterParentEntities as f
+select   f.Id,
+         f.Property
+from     FilterParentEntities as f
+order by f.Property
   }
 }

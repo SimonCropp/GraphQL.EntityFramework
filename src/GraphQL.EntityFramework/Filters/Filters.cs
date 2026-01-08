@@ -20,17 +20,17 @@ public partial class Filters<TDbContext>
     /// <code>
     /// // Single field
     /// filters.For&lt;Product&gt;().Add(
-    ///     projection: p => p.Quantity,
+    ///     projection: _ => _.Quantity,
     ///     filter: (_, _, _, qty) => qty > 0);
     ///
     /// // Anonymous type
     /// filters.For&lt;Product&gt;().Add(
-    ///     projection: p => new { p.Quantity, p.Price },
+    ///     projection: _ => new { _.Quantity, _.Price },
     ///     filter: (_, _, _, x) => x.Quantity > 0 &amp;&amp; x.Price >= 10);
     ///
     /// // Named type
     /// filters.For&lt;Product&gt;().Add(
-    ///     projection: p => new ProductProjection { Quantity = p.Quantity },
+    ///     projection: _ => new ProductProjection { Quantity = _.Quantity },
     ///     filter: (_, _, _, x) => x.Quantity > 0);
     /// </code>
     /// </example>

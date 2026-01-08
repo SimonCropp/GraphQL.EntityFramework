@@ -79,9 +79,10 @@ public class Product
     public int Stock { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
+    public Guid CategoryId { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L79-L90' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L82-L94' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-value-type-projections-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -110,7 +111,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L94-L122' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L98-L126' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -157,7 +158,7 @@ public class ChildEntity
     public string? Property { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L43-L52' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L46-L55' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-projection-filter-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -175,7 +176,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L56-L73' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L59-L76' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Named types are useful when:
@@ -197,9 +198,23 @@ public class Order
     public bool? IsApproved { get; set; }
     public DateTime? ShippedAt { get; set; }
     public string? Notes { get; set; }
+    public decimal TotalAmount { get; set; }
+    public Customer Customer { get; set; } = null!;
+}
+
+public class Customer
+{
+    public Guid Id { get; set; }
+    public bool IsActive { get; set; }
+}
+
+public class Category
+{
+    public Guid Id { get; set; }
+    public bool IsVisible { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L125-L136' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L129-L154' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-nullable-value-type-projections-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -234,7 +249,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L140-L174' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L158-L192' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Common nullable patterns:
@@ -246,7 +261,10 @@ Common nullable patterns:
 
 Filters can be asynchronous when they need to perform database lookups or other async operations:
 
-```csharp
+<!-- snippet: async-filter -->
+<a id='snippet-async-filter'></a>
+```cs
+var filters = new Filters<MyDbContext>();
 filters.For<Product>().Add(
     projection: _ => _.CategoryId,
     filter: async (_, dbContext, _, categoryId) =>
@@ -254,14 +272,27 @@ filters.For<Product>().Add(
         var category = await dbContext.Categories.FindAsync(categoryId);
         return category?.IsVisible == true;
     });
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
 ```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L197-L211' title='Snippet source file'>snippet source</a> | <a href='#snippet-async-filter' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 ## Navigation Properties
 
 Filters can project through navigation properties to access related entity data:
 
-```csharp
+<!-- snippet: navigation-property-filter -->
+<a id='snippet-navigation-property-filter'></a>
+```cs
+var filters = new Filters<MyDbContext>();
 filters.For<Order>().Add(
     projection: o => new { o.TotalAmount, o.Customer.IsActive },
     filter: (_, _, _, x) => x.TotalAmount >= 100 && x.IsActive);
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
 ```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L216-L226' title='Snippet source file'>snippet source</a> | <a href='#snippet-navigation-property-filter' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->

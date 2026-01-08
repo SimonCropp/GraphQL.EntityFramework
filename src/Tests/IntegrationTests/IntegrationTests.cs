@@ -3479,9 +3479,9 @@ public partial class IntegrationTests
         var filters = new Filters<IntegrationDbContext>();
         filters.For<ChildEntity>().Add(
             // Projection: only load ParentId (Id is automatically included)
-            projection: child => new
+            projection: _ => new
             {
-                child.ParentId
+                _.ParentId
             },
             // Filter: check if ParentId matches parent1's Id
             filter: (_, _, _, projected) => projected.ParentId == parent1.Id);

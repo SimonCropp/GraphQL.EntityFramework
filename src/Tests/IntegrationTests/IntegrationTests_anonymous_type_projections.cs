@@ -45,7 +45,7 @@ public partial class IntegrationTests
         // Using For<T>() to enable anonymous type projection
         // TProjection is inferred from the projection expression
         filters.For<SimpleTypeFilterEntity>().Add(
-            projection: e => new { e.IntValue, e.BoolValue },
+            projection: _ => new { _.IntValue, _.BoolValue },
             filter: (_, _, _, projected) =>
                 projected.IntValue >= 10 && projected.BoolValue);
 
@@ -93,7 +93,7 @@ public partial class IntegrationTests
 
         // Using For<T>() with async filter and anonymous type
         filters.For<SimpleTypeFilterEntity>().Add(
-            projection: e => new { e.IntValue, e.GuidValue },
+            projection: _ => new { _.IntValue, _.GuidValue },
             filter: async (_, _, _, projected) =>
             {
                 await Task.Delay(1); // Simulate async work
@@ -154,11 +154,11 @@ public partial class IntegrationTests
 
         // Anonymous type with three properties
         filters.For<SimpleTypeFilterEntity>().Add(
-            projection: e => new
+            projection: _ => new
             {
-                e.IntValue,
-                e.BoolValue,
-                e.DateTimeValue
+                _.IntValue,
+                _.BoolValue,
+                _.DateTimeValue
             },
             filter: (_, _, _, x) =>
                 x.IntValue >= 10 &&
@@ -236,16 +236,16 @@ public partial class IntegrationTests
         // Anonymous type with nested navigation property access
         // Filter child entities based on their own properties + parent's property
         filters.For<FilterChildEntity>().Add(
-            projection: c => new
+            projection: _ => new
             {
-                c.Age,
-                c.IsActive,
-                ParentProperty = c.Parent!.Property
+                _.Age,
+                _.IsActive,
+                ParentProperty = _.Parent!.Property
             },
-            filter: (_, _, _, x) =>
-                x.Age >= 30 &&
-                x.IsActive &&
-                x.ParentProperty == "AllowedParent");
+            filter: (_, _, _, projected) =>
+                projected.Age >= 30 &&
+                projected.IsActive &&
+                projected.ParentProperty == "AllowedParent");
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, filters, false, [parent1, parent2, child1, child2, child3, child4]);

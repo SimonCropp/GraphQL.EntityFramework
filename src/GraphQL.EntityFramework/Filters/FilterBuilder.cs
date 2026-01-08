@@ -25,7 +25,7 @@ public class FilterBuilder<TDbContext, TEntity>
     /// This overload allows using anonymous types for projections:
     /// <code>
     /// filters.For&lt;Product&gt;().Add(
-    ///     projection: p => new { p.Quantity, p.Price },
+    ///     projection: _ => new { _.Quantity, _.Price },
     ///     filter: (_, _, _, x) => x.Quantity > 0 &amp;&amp; x.Price >= 10);
     /// </code>
     /// </remarks>
@@ -44,7 +44,7 @@ public class FilterBuilder<TDbContext, TEntity>
     /// This overload allows using anonymous types for projections:
     /// <code>
     /// filters.For&lt;Product&gt;().Add(
-    ///     projection: p => new { p.CategoryId },
+    ///     projection: _ => new { _.CategoryId },
     ///     filter: async (_, dbContext, _, x) =>
     ///     {
     ///         var category = await dbContext.Categories.FindAsync(x.CategoryId);

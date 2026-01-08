@@ -13,10 +13,11 @@
 },
   sql: {
     Text:
-select s.Id,
-       s.Name,
-       s.IntValue,
-       s.GuidValue
-from   SimpleTypeFilterEntities as s
+select   s.Id,
+         s.Name,
+         s.IntValue,
+         s.GuidValue
+from     SimpleTypeFilterEntities as s
+order by s.Name
   }
 }
