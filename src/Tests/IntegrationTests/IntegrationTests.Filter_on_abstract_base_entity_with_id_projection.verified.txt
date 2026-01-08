@@ -1,0 +1,23 @@
+﻿{
+  target:
+{
+  "data": {
+    "baseEntities": [
+      {
+        "property": "Value1"
+      },
+      {
+        "property": "Value2"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   b.Id,
+         b.Discriminator,
+         b.Property
+from     BaseEntities as b
+order by b.Property
+  }
+}

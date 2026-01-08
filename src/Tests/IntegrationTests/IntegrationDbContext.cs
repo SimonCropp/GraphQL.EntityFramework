@@ -28,6 +28,7 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<Child2Entity> Child2Entities { get; set; } = null!;
     public DbSet<ParentEntityView> ParentEntityView { get; set; } = null!;
     public DbSet<BaseEntity> BaseEntities { get; set; } = null!;
+    public DbSet<DerivedChildEntity> DerivedChildEntities { get; set; } = null!;
     public DbSet<ManyToManyLeftEntity> ManyToManyLeftEntities { get; set; } = null!;
     public DbSet<ManyToManyRightEntity> ManyToManyRightEntities { get; set; } = null!;
     public DbSet<ManyToManyMiddleEntity> ManyToManyMiddleEntities { get; set; } = null!;
@@ -70,6 +71,10 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasMany(_ => _.Children)
             .WithOne(_ => _.TypedParent!)
             .HasForeignKey(_ => _.TypedParentId);
+        modelBuilder.Entity<DerivedChildEntity>()
+            .HasOne(_ => _.Parent)
+            .WithMany(_ => _.ChildrenFromBase)
+            .HasForeignKey(_ => _.ParentId);
         modelBuilder.Entity<ManyToManyRightEntity>()
             .HasMany(_ => _.Lefts)
             .WithMany(_ => _.Rights)

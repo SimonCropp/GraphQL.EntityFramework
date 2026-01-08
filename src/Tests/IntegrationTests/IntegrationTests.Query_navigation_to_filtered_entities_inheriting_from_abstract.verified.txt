@@ -1,0 +1,21 @@
+﻿{
+  target:
+{
+  "data": {
+    "baseEntities": [
+      {
+        "property": "Parent1",
+        "childrenFromBase": []
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   b.Id,
+         b.Discriminator,
+         b.Property
+from     BaseEntities as b
+order by b.Property
+  }
+}

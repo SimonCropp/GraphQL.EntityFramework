@@ -1,0 +1,18 @@
+﻿{
+  target:
+{
+  "data": {
+    "derivedChildEntities": [
+      {
+        "property": "Child"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select d.Id,
+       d.Property
+from   DerivedChildEntities as d
+  }
+}

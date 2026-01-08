@@ -72,6 +72,7 @@
     orderBy: [OrderBy!],
     ids: [ID!]): BaseConnection!
   baseEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [BaseEntity]!
+  derivedChildEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   readOnlyEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyEntity]!
   manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
   manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
@@ -516,6 +517,7 @@ interface BaseEntity {
 }
 
 type DerivedChild {
+  parent: BaseEntity
   id: ID!
   parentId: ID
   property: String
