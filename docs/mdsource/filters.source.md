@@ -123,6 +123,111 @@ snippet: nullable-value-type-projections
 * **Flexible filtering**: Can filter on presence/absence of values or the values themselves
 
 
+## Anonymous Type Projections
+
+When filtering based on multiple properties, anonymous types can be used instead of creating dedicated projection classes. This provides a concise way to project multiple fields without defining custom types.
+
+### The Challenge with Type Inference
+
+C# type inference has a limitation: when explicitly specifying one generic type parameter, all parameters must be specified. The following code will not compile:
+
+```csharp
+// This won't compile - TProjection cannot be inferred when TEntity is specified
+filters.Add<Product>(
+    projection: p => new { p.Quantity, p.Price },
+    filter: (_, _, _, x) => x.Quantity > 0 && x.Price >= 10);
+```
+
+### The Solution: For<TEntity>()
+
+The `For<TEntity>()` method provides a fluent API that separates entity type specification from projection type inference:
+
+```csharp
+var filters = new Filters<MyDbContext>();
+
+// Using For<TEntity>() to enable anonymous type projection
+filters.For<Product>().Add(
+    projection: p => new { p.Quantity, p.Price, p.IsActive },
+    filter: (_, _, _, x) => x.Quantity > 0 && x.Price >= 10 && x.IsActive);
+```
+
+### How It Works:
+
+1. `For<Product>()` captures the entity type explicitly
+2. Returns a `FilterBuilder<TDbContext, Product>` instance
+3. The builder's `Add()` method only has `TProjection` as a type parameter
+4. The compiler can infer `TProjection` from the projection expression (including anonymous types)
+
+### Examples:
+
+**Multiple properties with synchronous filter:**
+```csharp
+filters.For<Order>().Add(
+    projection: o => new { o.Status, o.TotalAmount, o.CustomerId },
+    filter: (userContext, _, _, x) =>
+    {
+        if (x.Status == OrderStatus.Cancelled)
+            return false;
+
+        if (x.TotalAmount < 100)
+            return x.CustomerId == (Guid)userContext;
+
+        return true;
+    });
+```
+
+**Async filter with database lookup:**
+```csharp
+filters.For<Product>().Add(
+    projection: p => new { p.CategoryId, p.IsActive },
+    filter: async (_, dbContext, _, x) =>
+    {
+        if (!x.IsActive)
+            return false;
+
+        var category = await dbContext.Categories.FindAsync(x.CategoryId);
+        return category?.IsVisible == true;
+    });
+```
+
+**Three properties with date comparison:**
+```csharp
+var cutoffDate = DateTime.UtcNow.AddDays(-30);
+
+filters.For<Article>().Add(
+    projection: a => new { a.IsPublished, a.PublishedDate, a.AuthorId },
+    filter: (userContext, _, userPrincipal, x) =>
+    {
+        if (userPrincipal?.HasClaim("Role", "Admin") == true)
+            return true;
+
+        return x.IsPublished &&
+               x.PublishedDate >= cutoffDate &&
+               x.AuthorId == (Guid)userContext;
+    });
+```
+
+### Benefits:
+
+* **No projection classes needed**: Avoid creating dedicated types for multi-field filters
+* **Type safety**: Full IntelliSense and compile-time checking on projected properties
+* **Flexible**: Works with any number of properties
+* **Same mechanism**: Uses the same in-memory projection compilation as named types
+* **Supports async**: Both `Filter<T>` and `AsyncFilter<T>` delegates work with anonymous types
+
+### When to Use:
+
+* **Multiple field checks**: Need to check 2+ properties in combination
+* **One-off filters**: Filter logic specific to one scenario, doesn't justify a dedicated class
+* **Rapid development**: Quickly add filters without defining projection types
+
+### When to Use Named Projection Classes Instead:
+
+* **Reusable logic**: Same projection used in multiple places
+* **Complex types**: Projection includes nested objects or computed properties
+* **Documentation**: A named type better documents the intent
+
+
 ## Convenience Overloads for Common Types
 
 For commonly-used primitive and value types, convenience overloads are available that automatically infer the projection type, reducing verbosity when adding filters.
