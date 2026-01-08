@@ -2,7 +2,7 @@ namespace GraphQL.EntityFramework;
 
 #region FiltersSignature
 
-public class Filters<TDbContext>
+public partial class Filters<TDbContext>
     where TDbContext : DbContext
 {
     public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);

@@ -6,6 +6,7 @@
     {
         RegisterTypeMapping(typeof(FilterChildEntity), typeof(FilterChildGraphType));
         RegisterTypeMapping(typeof(FilterParentEntity), typeof(FilterParentGraphType));
+        RegisterTypeMapping(typeof(SimpleTypeFilterEntity), typeof(SimpleTypeFilterGraphType));
         RegisterTypeMapping(typeof(WithManyChildrenEntity), typeof(WithManyChildrenGraphType));
         RegisterTypeMapping(typeof(CustomTypeEntity), typeof(CustomTypeGraphType));
         RegisterTypeMapping(typeof(Child1Entity), typeof(Child1GraphType));

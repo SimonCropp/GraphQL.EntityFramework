@@ -11,6 +11,7 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<TimeEntity> TimeEntities { get; set; } = null!;
     public DbSet<FilterParentEntity> FilterParentEntities { get; set; } = null!;
     public DbSet<FilterChildEntity> FilterChildEntities { get; set; } = null!;
+    public DbSet<SimpleTypeFilterEntity> SimpleTypeFilterEntities { get; set; } = null!;
     public DbSet<ChildEntity> ChildEntities { get; set; } = null!;
     public DbSet<WithMisNamedQueryChildEntity> WithMisNamedQueryChildEntities { get; set; } = null!;
     public DbSet<WithMisNamedQueryParentEntity> WithMisNamedQueryParentEntities { get; set; } = null!;
@@ -45,6 +46,7 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<WithNullableEntity>();
         modelBuilder.Entity<FilterParentEntity>();
         modelBuilder.Entity<FilterChildEntity>();
+        modelBuilder.Entity<SimpleTypeFilterEntity>();
         modelBuilder.Entity<ParentEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<ChildEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<WithMisNamedQueryParentEntity>();

@@ -91,6 +91,10 @@
                 resolve: _ => _.DbContext.FilterParentEntities.OrderBy(_ => _.Property))
             .PageSize(10);
 
+        AddQueryField(
+            name: "simpleTypeFilterEntities",
+            resolve: _ => _.DbContext.SimpleTypeFilterEntities);
+
         AddSingleField(
             name: "parentEntity",
             resolve: _ => _.DbContext.ParentEntities);

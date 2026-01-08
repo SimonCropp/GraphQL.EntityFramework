@@ -128,3 +128,97 @@ snippet: nullable-value-type-projections
 * **Explicit null handling**: Clearly express intent for null vs non-null filtering
 * **Type safety**: Compiler ensures correct nullable handling
 * **Flexible filtering**: Can filter on presence/absence of values or the values themselves
+
+
+## Convenience Overloads for Common Types
+
+For commonly-used primitive and value types, convenience overloads are available that automatically infer the projection type, reducing verbosity when adding filters.
+
+### Supported Types:
+
+**Value types** (both nullable and non-nullable):
+* Numeric: `bool`, `byte`, `sbyte`, `char`, `decimal`, `double`, `float`, `int`, `uint`, `nint`, `nuint`, `long`, `ulong`, `short`, `ushort`
+* Date/Time: `DateTime`, `DateTimeOffset`, `TimeOnly`, `DateOnly`, `TimeSpan`
+* Identifier: `Guid`
+
+**Reference types** (nullable):
+* `string?`
+
+### Usage:
+
+**Before** (explicit type parameter):
+```csharp
+filters.Add<ChildEntity, int>(
+    projection: _ => _.Age,
+    filter: (_, _, _, age) => age >= 18);
+```
+
+**After** (inferred type parameter):
+```csharp
+filters.Add<ChildEntity>(
+    projection: _ => _.Age,
+    filter: (_, _, _, age) => age >= 18);
+```
+
+### Examples:
+
+**Integer filter:**
+```csharp
+filters.Add<Product>(
+    projection: _ => _.Quantity,
+    filter: (_, _, _, qty) => qty > 0);
+```
+
+**Nullable integer filter:**
+```csharp
+filters.Add<Order>(
+    projection: _ => _.DiscountPercent,
+    filter: (_, _, _, discount) => discount.HasValue && discount.Value >= 10);
+```
+
+**String filter:**
+```csharp
+filters.Add<User>(
+    projection: _ => _.Status,
+    filter: (_, _, _, status) => status != "Suspended");
+```
+
+**DateTime filter:**
+```csharp
+filters.Add<Article>(
+    projection: _ => _.PublishedDate,
+    filter: (_, _, _, date) => date >= DateTime.UtcNow.AddDays(-30));
+```
+
+**Boolean filter:**
+```csharp
+filters.Add<Account>(
+    projection: _ => _.IsActive,
+    filter: (_, _, _, isActive) => isActive);
+```
+
+**Guid filter:**
+```csharp
+filters.Add<Document>(
+    projection: _ => _.OwnerId,
+    filter: (userContext, _, _, ownerId) => ownerId == (Guid)userContext);
+```
+
+**Async filter:**
+```csharp
+filters.Add<Product>(
+    projection: _ => _.CategoryId,
+    filter: async (_, dbContext, _, categoryId) =>
+    {
+        var category = await dbContext.Categories.FindAsync(categoryId);
+        return category?.IsVisible == true;
+    });
+```
+
+### Benefits:
+
+* **Less typing**: No need to specify `TProjection` type parameter
+* **Cleaner code**: Reduced visual clutter in filter registration
+* **Type safety**: Full type inference maintains compile-time safety
+* **Same performance**: Zero overhead - delegates to existing generic methods
+* **Works with async**: Both `Filter<T>` and `AsyncFilter<T>` delegates supported
