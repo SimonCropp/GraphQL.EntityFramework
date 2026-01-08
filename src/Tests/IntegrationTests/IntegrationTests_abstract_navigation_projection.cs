@@ -1,8 +1,6 @@
 public partial class IntegrationTests
 {
     /// <summary>
-    /// This test replicates the EXACT bug scenario from LegislationApi:
-    ///
     /// Setup:
     /// - BaseEntity is abstract with TPH inheritance (Discriminator)
     /// - DerivedChildEntity has navigation property Parent that references BaseEntity (abstract)
