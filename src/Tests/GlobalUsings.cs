@@ -2,3 +2,4 @@
 global using System.Text.RegularExpressions;
 global using EfOrderBy;
 global using Polyfills;
+global using VerifyTests.DiffPlex;
