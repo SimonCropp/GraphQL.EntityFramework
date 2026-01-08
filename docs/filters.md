@@ -89,22 +89,22 @@ var filters = new Filters<MyDbContext>();
 
 // Filter using a string property
 filters.For<Product>().Add(
-    projection: entity => entity.Name!,
+    projection: _ => _.Name!,
     filter: (_, _, _, name) => name != "Discontinued");
 
 // Filter using an int property
 filters.For<Product>().Add(
-    projection: entity => entity.Stock,
+    projection: _ => _.Stock,
     filter: (_, _, _, stock) => stock > 0);
 
 // Filter using a bool property
 filters.For<Product>().Add(
-    projection: entity => entity.IsActive,
+    projection: _ => _.IsActive,
     filter: (_, _, _, isActive) => isActive);
 
 // Filter using a DateTime property
 filters.For<Product>().Add(
-    projection: entity => entity.CreatedAt,
+    projection: _ => _.CreatedAt,
     filter: (_, _, _, createdAt) => createdAt >= new DateTime(2024, 1, 1));
 
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
@@ -124,11 +124,11 @@ For filtering based on multiple fields, use anonymous types without needing to d
 ```cs
 var filters = new Filters<MyDbContext>();
 filters.For<MyEntity>().Add(
-    projection: entity => new
+    projection: _ => new
     {
-        entity.Property,
-        entity.Quantity,
-        entity.IsActive
+        _.Property,
+        _.Quantity,
+        _.IsActive
     },
     filter: (userContext, dbContext, userPrincipal, projected) =>
         projected.Property != "Ignore" &&
@@ -163,9 +163,9 @@ public class ChildEntity
 ```cs
 var filters = new Filters<MyDbContext>();
 filters.For<ChildEntity>().Add(
-    projection: child => new
+    projection: _ => new
     {
-        child.ParentId
+        _.ParentId
     },
     filter: (userContext, data, userPrincipal, projected) =>
     {
@@ -221,28 +221,28 @@ var filters = new Filters<MyDbContext>();
 
 // Filter nullable int - only include if has value and meets condition
 filters.For<Order>().Add(
-    projection: entity => entity.Quantity,
+    projection: _ => _.Quantity,
     filter: (_, _, _, quantity) => quantity is > 0);
 
 // Filter nullable bool - only include if explicitly approved
 filters.For<Order>().Add(
-    projection: entity => entity.IsApproved,
+    projection: _ => _.IsApproved,
     filter: (_, _, _, isApproved) => isApproved == true);
 
 // Filter nullable DateTime - only include if shipped after date
 filters.For<Order>().Add(
-    projection: entity => entity.ShippedAt,
+    projection: _ => _.ShippedAt,
     filter: (_, _, _, shippedAt) =>
         shippedAt.HasValue && shippedAt.Value >= new DateTime(2024, 1, 1));
 
 // Filter nullable string - only include non-null values
 filters.For<Order>().Add(
-    projection: entity => entity.Notes,
+    projection: _ => _.Notes,
     filter: (_, _, _, notes) => notes != null);
 
 // Filter nullable int - only include null values
 filters.For<Order>().Add(
-    projection: entity => entity.Quantity,
+    projection: _ => _.Quantity,
     filter: (_, _, _, quantity) => !quantity.HasValue);
 
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
