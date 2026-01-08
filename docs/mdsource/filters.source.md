@@ -74,6 +74,7 @@ Named types are useful when:
 * The projection includes nested objects or computed properties
 * A descriptive type name aids code documentation
 
+
 ## Nullable Types
 
 Filters fully support nullable types for both value types and reference types:
@@ -85,11 +86,13 @@ Common nullable patterns:
 * **Null check**: `!quantity.HasValue`
 * **Exact match**: `isApproved == true` (not null or false)
 
+
 ## Async Filters
 
 Filters can be asynchronous when they need to perform database lookups or other async operations:
 
 snippet: async-filter
+
 
 ## Navigation Properties
 
