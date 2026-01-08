@@ -1,0 +1,20 @@
+﻿{
+  target:
+{
+  "data": {
+    "simpleTypeFilterEntities": [
+      {
+        "name": "HasAllowedValue",
+        "nullableGuidValue": "Guid_1"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select s.Id,
+       s.Name,
+       s.NullableGuidValue
+from   SimpleTypeFilterEntities as s
+  }
+}

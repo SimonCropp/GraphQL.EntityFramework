@@ -1,0 +1,20 @@
+﻿{
+  target:
+{
+  "data": {
+    "simpleTypeFilterEntities": [
+      {
+        "name": "IsTrue",
+        "nullableBoolValue": true
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select s.Id,
+       s.Name,
+       s.NullableBoolValue
+from   SimpleTypeFilterEntities as s
+  }
+}

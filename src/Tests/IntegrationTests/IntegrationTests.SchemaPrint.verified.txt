@@ -50,6 +50,7 @@
     where: [WhereExpression!],
     orderBy: [OrderBy!],
     ids: [ID!]): FilterParentConnection!
+  simpleTypeFilterEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SimpleTypeFilter!]!
   parentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
   parentEntityFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
   parentEntityWithNoArgs: Parent!
@@ -461,6 +462,19 @@ type FilterParentEdge {
   cursor: String!
   "The item at the end of the edge"
   node: FilterParent!
+}
+
+type SimpleTypeFilter {
+  boolValue: Boolean!
+  dateTimeValue: DateTime!
+  guidValue: ID!
+  id: ID!
+  intValue: Int!
+  name: String
+  nullableBoolValue: Boolean
+  nullableDateTimeValue: DateTime
+  nullableGuidValue: ID
+  nullableIntValue: Int
 }
 
 "A connection from an object to a list of objects of type `Base`."
