@@ -41,6 +41,7 @@ public partial class Filters<TDbContext>
 
 All filters are added using the `For<TEntity>()` fluent API, which automatically infers the projection type. This provides a consistent interface regardless of whether filtering on a single field, multiple fields with anonymous types, or using named projection classes.
 
+
 ### Basic Syntax:
 
 ```csharp
@@ -180,6 +181,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
 <!-- endSnippet -->
 
 Named types are useful when:
+
 * The same projection is used in multiple filters
 * The projection includes nested objects or computed properties
 * A descriptive type name aids code documentation
@@ -254,6 +256,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
 <!-- endSnippet -->
 
 Common nullable patterns:
+
 * **Has value check**: `quantity.HasValue && quantity.Value > 0`
 * **Null check**: `!quantity.HasValue`
 * **Exact match**: `isApproved == true` (not null or false)
