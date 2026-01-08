@@ -56,4 +56,23 @@ public class FilterBuilder<TDbContext, TEntity>
         Expression<Func<TEntity, TProjection>> projection,
         Filters<TDbContext>.AsyncFilter<TProjection> filter) =>
         filters.Add(projection, filter);
+
+    /// <summary>
+    /// Add a filter using a boolean expression.
+    /// </summary>
+    /// <param name="filter">Expression that projects to a boolean value and determines if the entity should be included.</param>
+    /// <remarks>
+    /// This is a simplified overload for boolean properties. The following are equivalent:
+    /// <code>
+    /// // Simplified syntax
+    /// filters.For&lt;Product&gt;().Add(filter: _ => _.IsActive);
+    ///
+    /// // Explicit syntax
+    /// filters.For&lt;Product&gt;().Add(
+    ///     projection: _ => _.IsActive,
+    ///     filter: (_, _, _, isActive) => isActive);
+    /// </code>
+    /// </remarks>
+    public void Add(Expression<Func<TEntity, bool>> filter) =>
+        filters.Add(filter, (_, _, _, value) => value);
 }

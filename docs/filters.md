@@ -184,6 +184,7 @@ Named types are useful when:
 * The projection includes nested objects or computed properties
 * A descriptive type name aids code documentation
 
+
 ## Nullable Types
 
 Filters fully support nullable types for both value types and reference types:
@@ -257,6 +258,7 @@ Common nullable patterns:
 * **Null check**: `!quantity.HasValue`
 * **Exact match**: `isApproved == true` (not null or false)
 
+
 ## Async Filters
 
 Filters can be asynchronous when they need to perform database lookups or other async operations:
@@ -279,6 +281,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
 <sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L197-L211' title='Snippet source file'>snippet source</a> | <a href='#snippet-async-filter' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
+
 ## Navigation Properties
 
 Filters can project through navigation properties to access related entity data:
@@ -296,3 +299,36 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
 ```
 <sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L216-L226' title='Snippet source file'>snippet source</a> | <a href='#snippet-navigation-property-filter' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+
+## Boolean Expression Shorthand
+
+For boolean properties, a simplified syntax is available where only the filter expression is needed:
+
+<!-- snippet: boolean-expression-filter -->
+<a id='snippet-boolean-expression-filter'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+
+// Simplified syntax for boolean properties
+filters.For<Product>().Add(filter: _ => _.IsActive);
+
+// Equivalent to:
+// filters.For<Product>().Add(
+//     projection: _ => _.IsActive,
+//     filter: (_, _, _, isActive) => isActive);
+
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L231-L247' title='Snippet source file'>snippet source</a> | <a href='#snippet-boolean-expression-filter' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+This shorthand is useful when:
+
+* Filtering on a single boolean property
+* The filter condition checks if the property is true
+* A concise syntax is preferred
+
+The expression `filter: _ => _.IsActive` is automatically expanded to use the boolean property as both the projection and the filter condition.

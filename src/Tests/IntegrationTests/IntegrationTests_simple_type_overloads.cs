@@ -407,4 +407,42 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3]);
     }
+
+    [Fact]
+    public async Task Filter_using_boolean_expression_shorthand()
+    {
+        var query =
+            """
+            {
+              simpleTypeFilterEntities
+              {
+                name
+                boolValue
+              }
+            }
+            """;
+
+        var entity1 = new SimpleTypeFilterEntity
+        {
+            Name = "Active",
+            BoolValue = true
+        };
+        var entity2 = new SimpleTypeFilterEntity
+        {
+            Name = "Inactive",
+            BoolValue = false
+        };
+        var entity3 = new SimpleTypeFilterEntity
+        {
+            Name = "AlsoActive",
+            BoolValue = true
+        };
+
+        var filters = new Filters<IntegrationDbContext>();
+        // Using simplified boolean expression syntax
+        filters.For<SimpleTypeFilterEntity>().Add(filter: _ => _.BoolValue);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3]);
+    }
 }

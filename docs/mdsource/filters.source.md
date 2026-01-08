@@ -99,3 +99,18 @@ snippet: async-filter
 Filters can project through navigation properties to access related entity data:
 
 snippet: navigation-property-filter
+
+
+## Boolean Expression Shorthand
+
+For boolean properties, a simplified syntax is available where only the filter expression is needed:
+
+snippet: boolean-expression-filter
+
+This shorthand is useful when:
+
+* Filtering on a single boolean property
+* The filter condition checks if the property is true
+* A concise syntax is preferred
+
+The expression `filter: _ => _.IsActive` is automatically expanded to use the boolean property as both the projection and the filter condition.

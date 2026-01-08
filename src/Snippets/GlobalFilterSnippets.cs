@@ -225,4 +225,25 @@ public class GlobalFilterSnippets
 
         #endregion
     }
+
+    public static void AddBooleanExpressionFilter(ServiceCollection services)
+    {
+        #region boolean-expression-filter
+
+        var filters = new Filters<MyDbContext>();
+
+        // Simplified syntax for boolean properties
+        filters.For<Product>().Add(filter: _ => _.IsActive);
+
+        // Equivalent to:
+        // filters.For<Product>().Add(
+        //     projection: _ => _.IsActive,
+        //     filter: (_, _, _, isActive) => isActive);
+
+        EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+            services,
+            resolveFilters: _ => filters);
+
+        #endregion
+    }
 }

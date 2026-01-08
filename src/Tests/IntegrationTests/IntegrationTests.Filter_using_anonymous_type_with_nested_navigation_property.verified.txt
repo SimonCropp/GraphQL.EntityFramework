@@ -4,6 +4,10 @@
   "data": {
     "parentEntitiesFiltered": [
       {
+        "property": "BlockedParent",
+        "children": []
+      },
+      {
         "property": "AllowedParent",
         "children": [
           {
@@ -12,10 +16,6 @@
             "isActive": true
           }
         ]
-      },
-      {
-        "property": "BlockedParent",
-        "children": []
       }
     ]
   }
