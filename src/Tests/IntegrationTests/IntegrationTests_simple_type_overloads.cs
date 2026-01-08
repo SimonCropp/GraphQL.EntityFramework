@@ -31,8 +31,8 @@ public partial class IntegrationTests
         };
 
         var filters = new Filters<IntegrationDbContext>();
-        // Using simple type overload - TProjection is inferred
-        filters.Add<SimpleTypeFilterEntity>(
+        // Using For<T>() - TProjection is inferred
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.IntValue,
             filter: (_, _, _, value) => value is >= 10 and <= 50);
 
@@ -71,8 +71,8 @@ public partial class IntegrationTests
         };
 
         var filters = new Filters<IntegrationDbContext>();
-        // Using simple type overload for nullable int
-        filters.Add<SimpleTypeFilterEntity>(
+        // Using For<T>() for nullable int
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.NullableIntValue,
             filter: (_, _, _, value) => value is >= 20);
 
@@ -114,7 +114,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Using simple type overload for DateTime
-        filters.Add<SimpleTypeFilterEntity>(
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.DateTimeValue,
             filter: (_, _, _, value) => value >= cutoffDate);
 
@@ -156,7 +156,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Using simple type overload for nullable DateTime
-        filters.Add<SimpleTypeFilterEntity>(
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.NullableDateTimeValue,
             filter: (_, _, _, value) => value.HasValue && value.Value >= cutoffDate);
 
@@ -196,7 +196,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Using simple type overload for bool
-        filters.Add<SimpleTypeFilterEntity>(
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.BoolValue,
             filter: (_, _, _, value) => value);
 
@@ -236,7 +236,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Using simple type overload for nullable bool
-        filters.Add<SimpleTypeFilterEntity>(
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.NullableBoolValue,
             filter: (_, _, _, value) => value == true);
 
@@ -278,7 +278,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Using simple type overload for Guid
-        filters.Add<SimpleTypeFilterEntity>(
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.GuidValue,
             filter: (_, _, _, value) => value == allowedGuid);
 
@@ -320,7 +320,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Using simple type overload for nullable Guid
-        filters.Add<SimpleTypeFilterEntity>(
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.NullableGuidValue,
             filter: (_, _, _, value) => value.HasValue && value.Value == allowedGuid);
 
@@ -356,7 +356,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Using simple type overload for string?
-        filters.Add<SimpleTypeFilterEntity>(
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.Name,
             filter: (_, _, _, value) => value != "Beta");
 
@@ -396,7 +396,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Using simple type overload with AsyncFilter - demonstrates async filter usage
-        filters.Add<SimpleTypeFilterEntity>(
+        filters.For<SimpleTypeFilterEntity>().Add(
             projection: _ => _.IntValue,
             filter: async (_, _, _, value) =>
             {

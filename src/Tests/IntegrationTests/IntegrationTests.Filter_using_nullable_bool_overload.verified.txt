@@ -12,9 +12,10 @@
 },
   sql: {
     Text:
-select s.Id,
-       s.Name,
-       s.NullableBoolValue
-from   SimpleTypeFilterEntities as s
+select   s.Id,
+         s.Name,
+         s.NullableBoolValue
+from     SimpleTypeFilterEntities as s
+order by s.Name
   }
 }

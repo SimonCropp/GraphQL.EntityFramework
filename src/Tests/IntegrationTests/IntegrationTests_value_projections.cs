@@ -35,7 +35,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity3);
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, string>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.Property!,
             filter: (_, _, _, property) => property != "IgnoreMe");
 
@@ -81,7 +81,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity3);
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, int>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.Age,
             filter: (_, _, _, age) => age >= 18);
 
@@ -127,7 +127,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity3);
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, bool>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.IsActive,
             filter: (_, _, _, isActive) => isActive);
 
@@ -175,7 +175,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity3);
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, DateTime>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.CreatedAt,
             filter: (_, _, _, createdAt) => createdAt >= cutoffDate);
 
@@ -220,7 +220,7 @@ public partial class IntegrationTests
         var allowedId = entity3.Id;
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, Guid>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.Id,
             filter: (_, _, _, id) => id == allowedId);
 

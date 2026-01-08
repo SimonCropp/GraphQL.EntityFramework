@@ -13,22 +13,32 @@ public partial class Filters<TDbContext>
 
     /// <summary>
     /// Create a filter builder for the specified entity type.
-    /// This allows using anonymous types for projections without specifying TProjection explicitly.
     /// </summary>
     /// <typeparam name="TEntity">The entity type to filter.</typeparam>
-    /// <returns>A filter builder that infers projection types.</returns>
+    /// <returns>A filter builder that supports type inference for projections.</returns>
     /// <example>
     /// <code>
+    /// // Single field
     /// filters.For&lt;Product&gt;().Add(
-    ///     projection: p => new { p.Quantity, p.Price, p.IsActive },
-    ///     filter: (_, _, _, x) => x.Quantity > 0 &amp;&amp; x.Price >= 10 &amp;&amp; x.IsActive);
+    ///     projection: p => p.Quantity,
+    ///     filter: (_, _, _, qty) => qty > 0);
+    ///
+    /// // Anonymous type
+    /// filters.For&lt;Product&gt;().Add(
+    ///     projection: p => new { p.Quantity, p.Price },
+    ///     filter: (_, _, _, x) => x.Quantity > 0 &amp;&amp; x.Price >= 10);
+    ///
+    /// // Named type
+    /// filters.For&lt;Product&gt;().Add(
+    ///     projection: p => new ProductProjection { Quantity = p.Quantity },
+    ///     filter: (_, _, _, x) => x.Quantity > 0);
     /// </code>
     /// </example>
     public FilterBuilder<TDbContext, TEntity> For<TEntity>()
         where TEntity : class =>
         new(this);
 
-    public void Add<TEntity, TProjection>(
+    internal void Add<TEntity, TProjection>(
         Expression<Func<TEntity, TProjection>> projection,
         AsyncFilter<TProjection> filter)
         where TEntity : class =>
@@ -46,7 +56,7 @@ public partial class Filters<TDbContext>
             },
             projection);
 
-    public void Add<TEntity, TProjection>(
+    internal void Add<TEntity, TProjection>(
         Expression<Func<TEntity, TProjection>> projection,
         Filter<TProjection> filter)
         where TEntity : class =>

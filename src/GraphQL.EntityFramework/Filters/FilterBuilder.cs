@@ -1,7 +1,3 @@
-using System.Linq.Expressions;
-using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-
 namespace GraphQL.EntityFramework;
 
 /// <summary>

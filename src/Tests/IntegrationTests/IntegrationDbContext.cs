@@ -46,7 +46,7 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<WithNullableEntity>();
         modelBuilder.Entity<FilterParentEntity>();
         modelBuilder.Entity<FilterChildEntity>();
-        modelBuilder.Entity<SimpleTypeFilterEntity>();
+        modelBuilder.Entity<SimpleTypeFilterEntity>().OrderBy(_ => _.Name);
         modelBuilder.Entity<ParentEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<ChildEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<WithMisNamedQueryParentEntity>();

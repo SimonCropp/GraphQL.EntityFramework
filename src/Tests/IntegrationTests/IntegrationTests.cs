@@ -3477,11 +3477,11 @@ public partial class IntegrationTests
 
         // Create a filter that uses projection to access only the ParentId field
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<ChildEntity, ChildFilterProjection>(
+        filters.For<ChildEntity>().Add(
             // Projection: only load ParentId (Id is automatically included)
-            projection: child => new()
+            projection: child => new
             {
-                ParentId = child.ParentId
+                child.ParentId
             },
             // Filter: check if ParentId matches parent1's Id
             filter: (_, _, _, projected) => projected.ParentId == parent1.Id);
@@ -3489,10 +3489,5 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         // Should only include parent1 with child1 (child2 filtered out)
         await RunQuery(database, query, null, filters, false, [parent1, parent2]);
-    }
-
-    class ChildFilterProjection
-    {
-        public Guid? ParentId { get; set; }
     }
 }

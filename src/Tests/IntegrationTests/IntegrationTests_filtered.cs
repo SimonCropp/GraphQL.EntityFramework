@@ -40,16 +40,16 @@
     static Filters<IntegrationDbContext> BuildFilters()
     {
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterParentEntity, FilterProjection>(
-            e => new()
+        filters.For<FilterParentEntity>().Add(
+            e => new FilterProjection
                 { Id = e.Id, Property = e.Property },
             (_, _, _, item) => item.Property != "Ignore");
-        filters.Add<FilterChildEntity, FilterProjection>(
-            e => new()
+        filters.For<FilterChildEntity>().Add(
+            e => new FilterProjection
                 { Id = e.Id, Property = e.Property },
             (_, _, _, item) => item.Property != "Ignore");
-        filters.Add<Level3Entity, FilterProjection>(
-            e => new()
+        filters.For<Level3Entity>().Add(
+            e => new FilterProjection
                 { Id = e.Id, Property = e.Property },
             (_, _, _, item) => item.Property != "Ignore");
         return filters;

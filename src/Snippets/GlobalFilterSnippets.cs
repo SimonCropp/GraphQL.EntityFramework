@@ -12,24 +12,15 @@ public class GlobalFilterSnippets
 
     #endregion
 
-    #region filter-all-fields
-
-    public class MyEntityFilter
-    {
-        public string? Property { get; set; }
-    }
-
-    #endregion
-
     public static void Add(ServiceCollection services)
     {
         #region filter-all-fields
 
         var filters = new Filters<MyDbContext>();
-        filters.Add<MyEntity, MyEntityFilter>(
-            projection: entity => new()
+        filters.For<MyEntity>().Add(
+            projection: entity => new
             {
-                Property = entity.Property
+                entity.Property
             },
             filter: (userContext, dbContext, userPrincipal, projected) =>
                 projected.Property != "Ignore");
@@ -52,11 +43,6 @@ public class GlobalFilterSnippets
         public string? Property { get; set; }
     }
 
-    public class ChildFilterProjection
-    {
-        public Guid? ParentId { get; set; }
-    }
-
     #endregion
 
     public static void AddProjectionFilter(ServiceCollection services)
@@ -64,10 +50,10 @@ public class GlobalFilterSnippets
         #region projection-filter
 
         var filters = new Filters<MyDbContext>();
-        filters.Add<ChildEntity, ChildFilterProjection>(
-            projection: child => new()
+        filters.For<ChildEntity>().Add(
+            projection: child => new
             {
-                ParentId = child.ParentId
+                child.ParentId
             },
             filter: (userContext, data, userPrincipal, projected) =>
             {
@@ -104,22 +90,22 @@ public class GlobalFilterSnippets
         var filters = new Filters<MyDbContext>();
 
         // Filter using a string property
-        filters.Add<Product, string>(
+        filters.For<Product>().Add(
             projection: entity => entity.Name!,
             filter: (_, _, _, name) => name != "Discontinued");
 
         // Filter using an int property
-        filters.Add<Product, int>(
+        filters.For<Product>().Add(
             projection: entity => entity.Stock,
             filter: (_, _, _, stock) => stock > 0);
 
         // Filter using a bool property
-        filters.Add<Product, bool>(
+        filters.For<Product>().Add(
             projection: entity => entity.IsActive,
             filter: (_, _, _, isActive) => isActive);
 
         // Filter using a DateTime property
-        filters.Add<Product, DateTime>(
+        filters.For<Product>().Add(
             projection: entity => entity.CreatedAt,
             filter: (_, _, _, createdAt) => createdAt >= new DateTime(2024, 1, 1));
 
@@ -150,28 +136,28 @@ public class GlobalFilterSnippets
         var filters = new Filters<MyDbContext>();
 
         // Filter nullable int - only include if has value and meets condition
-        filters.Add<Order, int?>(
+        filters.For<Order>().Add(
             projection: entity => entity.Quantity,
             filter: (_, _, _, quantity) => quantity is > 0);
 
         // Filter nullable bool - only include if explicitly approved
-        filters.Add<Order, bool?>(
+        filters.For<Order>().Add(
             projection: entity => entity.IsApproved,
             filter: (_, _, _, isApproved) => isApproved == true);
 
         // Filter nullable DateTime - only include if shipped after date
-        filters.Add<Order, DateTime?>(
+        filters.For<Order>().Add(
             projection: entity => entity.ShippedAt,
             filter: (_, _, _, shippedAt) =>
                 shippedAt.HasValue && shippedAt.Value >= new DateTime(2024, 1, 1));
 
         // Filter nullable string - only include non-null values
-        filters.Add<Order, string?>(
+        filters.For<Order>().Add(
             projection: entity => entity.Notes,
             filter: (_, _, _, notes) => notes != null);
 
         // Filter nullable int - only include null values
-        filters.Add<Order, int?>(
+        filters.For<Order>().Add(
             projection: entity => entity.Quantity,
             filter: (_, _, _, quantity) => !quantity.HasValue);
 

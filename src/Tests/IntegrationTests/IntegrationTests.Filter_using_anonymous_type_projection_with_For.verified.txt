@@ -4,7 +4,13 @@
   "data": {
     "simpleTypeFilterEntities": [
       {
-        "name": "IsTrue",
+        "name": "AlsoPassesBoth",
+        "intValue": 30,
+        "boolValue": true
+      },
+      {
+        "name": "PassesBoth",
+        "intValue": 20,
         "boolValue": true
       }
     ]
@@ -14,6 +20,7 @@
     Text:
 select   s.Id,
          s.Name,
+         s.IntValue,
          s.BoolValue
 from     SimpleTypeFilterEntities as s
 order by s.Name

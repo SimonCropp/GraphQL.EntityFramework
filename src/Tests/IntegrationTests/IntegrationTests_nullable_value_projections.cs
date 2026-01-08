@@ -38,7 +38,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity3);
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, int?>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.NullableAge,
             filter: (_, _, _, age) => age is >= 18);
 
@@ -84,7 +84,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity3);
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, int?>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.NullableAge,
             filter: (_, _, _, age) => !age.HasValue);
 
@@ -137,7 +137,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity4);
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, bool?>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.NullableIsActive,
             filter: (_, _, _, isActive) => isActive == true);
 
@@ -192,7 +192,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity4);
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, DateTime?>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.NullableCreatedAt,
             filter: (_, _, _, createdAt) => createdAt.HasValue && createdAt.Value >= cutoffDate);
 
@@ -235,7 +235,7 @@ public partial class IntegrationTests
         entity1.Children.Add(entity3);
 
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterChildEntity, string?>(
+        filters.For<FilterChildEntity>().Add(
             projection: _ => _.Property,
             filter: (_, _, _, property) => property != null);
 
