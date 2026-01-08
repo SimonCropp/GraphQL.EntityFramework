@@ -1,6 +1,6 @@
 # Filters
 
-Sometimes, in the context of constructing an EF query, it is not possible to know if any given item should be returned in the results. For example when performing authorization where the rules rules are pulled from a different system, and that information does not exist in the database.
+Sometimes, in the context of constructing an EF query, it is not possible to know if any given item should be returned in the results. For example when performing authorization where the rules are pulled from a different system, and that information does not exist in the database.
 
 `Filters` allows a custom function to be executed after the EF query execution and determine if any given node should be included in the result.
 
@@ -21,23 +21,21 @@ snippet: FiltersSignature
 
 ## Filter Projections
 
-When filters need to access navigation properties or foreign keys that aren't included in the GraphQL query, the library provides projection-based filter overloads. These overloads allow specifying exactly which fields the filter needs, and the library will efficiently query only those fields from the database.
+Filter projections transform entity data before passing it to the filter function. This is useful when filtering based on specific properties or computed values.
 
 ### Why Use Projections?
 
-Without projections, filters receive the entity instance as loaded by the GraphQL query. If the query only selects a few fields (via EF projection), foreign keys and navigation properties may not be populated, making authorization decisions impossible.
+Projections serve two purposes:
+
+1. **Transform Data**: Project entities to custom types containing only the fields needed for filtering
+2. **Declare Dependencies**: The library analyzes the projection expression to identify which entity properties are accessed
 
 **Benefits:**
 
-* **Access to Foreign Keys**: Query foreign key properties even when not requested in the GraphQL query
-* **Performance**: Load only the fields needed for filtering, not the entire entity
+* **Cleaner Filter Logic**: Filter functions receive only the data they need, not entire entities
+* **Type Safety**: Projection types clearly define what data filters depend on
+* **Flexible Filtering**: Can project to custom objects, value types, or computed values
 * **Explicit Dependencies**: Clearly declare what data the filter requires
-
-**Important Requirements:**
-
-* The entity type must have an `Id` property
-* The projection is executed as a separate database query using the entity IDs
-* The `Id` is automatically included in the database query even if not in the projection
 
 ### Usage:
 
@@ -45,18 +43,13 @@ snippet: projection-filter
 
 ### How It Works:
 
-1. GraphQL query executes and loads entities based on requested fields
-2. For each entity, the library extracts the entity ID
-3. A separate database query fetches the projected fields (including Id automatically) using those IDs:
-   ```sql
-   SELECT Id, ParentId
-   FROM ChildEntities
-   WHERE Id IN (...)
-   ```
+1. Filter projection expression is analyzed to extract accessed property names
+2. GraphQL query executes and loads entities (including properties needed by the filter)
+3. For each loaded entity, the projection expression is compiled and executed in-memory
 4. The projected data is passed to the filter function
 5. Entities that fail the filter are excluded from results
 
-**Important**: The projection query ensures all needed fields are loaded from the database, regardless of what the GraphQL query selected. This is why projections are required - filters cannot rely on fields being available from the GraphQL query result.
+**Note**: The projection is executed in-memory on entities that have already been loaded from the database by the GraphQL query. It is not a separate database query.
 
 ### Filtering on Multiple Fields:
 
@@ -85,7 +78,7 @@ snippet: value-type-projections
 
 * **Less code**: No need to create projection classes for single-field filters
 * **Type safety**: The filter function receives the strongly-typed value
-* **Same performance**: Uses the same efficient projection query mechanism
+* **Same mechanism**: Uses the same in-memory projection compilation as object projections
 * **Combines with object projections**: Value type and object projections can be mixed in the same filter collection
 
 ### When to Use:
