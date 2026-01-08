@@ -8,6 +8,8 @@ public class GlobalFilterSnippets
     {
         public Guid Id { get; set; }
         public string? Property { get; set; }
+        public int Quantity { get; set; }
+        public bool IsActive { get; set; }
     }
 
     #endregion
@@ -20,10 +22,14 @@ public class GlobalFilterSnippets
         filters.For<MyEntity>().Add(
             projection: entity => new
             {
-                entity.Property
+                entity.Property,
+                entity.Quantity,
+                entity.IsActive
             },
             filter: (userContext, dbContext, userPrincipal, projected) =>
-                projected.Property != "Ignore");
+                projected.Property != "Ignore" &&
+                projected.Quantity > 0 &&
+                projected.IsActive);
         EfGraphQLConventions.RegisterInContainer<MyDbContext>(
             services,
             resolveFilters: _ => filters);

@@ -81,7 +81,7 @@ public class Product
     public DateTime CreatedAt { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L73-L84' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L79-L90' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-value-type-projections-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -110,7 +110,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L88-L116' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L94-L122' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -125,15 +125,19 @@ var filters = new Filters<MyDbContext>();
 filters.For<MyEntity>().Add(
     projection: entity => new
     {
-        entity.Property
+        entity.Property,
+        entity.Quantity,
+        entity.IsActive
     },
     filter: (userContext, dbContext, userPrincipal, projected) =>
-        projected.Property != "Ignore");
+        projected.Property != "Ignore" &&
+        projected.Quantity > 0 &&
+        projected.IsActive);
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L17-L31' title='Snippet source file'>snippet source</a> | <a href='#snippet-filter-all-fields' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L19-L37' title='Snippet source file'>snippet source</a> | <a href='#snippet-filter-all-fields' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Anonymous types provide a concise way to combine multiple fields for filtering logic.
@@ -153,7 +157,7 @@ public class ChildEntity
     public string? Property { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L37-L46' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L43-L52' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-projection-filter-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -171,7 +175,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L50-L67' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L56-L73' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Named types are useful when:
@@ -195,7 +199,7 @@ public class Order
     public string? Notes { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L119-L130' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L125-L136' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-nullable-value-type-projections-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -230,7 +234,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L134-L168' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L140-L174' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Common nullable patterns:
