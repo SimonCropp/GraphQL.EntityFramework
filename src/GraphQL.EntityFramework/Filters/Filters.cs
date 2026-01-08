@@ -39,7 +39,7 @@ public partial class Filters<TDbContext>
         new(this);
 
     internal void Add<TEntity, TProjection>(
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TEntity, TProjection>>? projection,
         AsyncFilter<TProjection> filter)
         where TEntity : class =>
         entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(
@@ -57,7 +57,7 @@ public partial class Filters<TDbContext>
             projection);
 
     internal void Add<TEntity, TProjection>(
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TEntity, TProjection>>? projection,
         Filter<TProjection> filter)
         where TEntity : class =>
         entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(

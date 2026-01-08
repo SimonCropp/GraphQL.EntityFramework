@@ -352,7 +352,7 @@ filters.For<Product>().Add(
 
 // Equivalent to:
 // filters.For<Product>().Add(
-//     projection: _ => true,  // Dummy projection, not used
+//     projection: null,  // No projection needed
 //     filter: (_, _, user, _) => user!.HasClaim("Permission", "ViewProducts"));
 
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(

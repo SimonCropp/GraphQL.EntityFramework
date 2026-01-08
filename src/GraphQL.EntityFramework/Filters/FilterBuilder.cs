@@ -89,13 +89,13 @@ public class FilterBuilder<TDbContext, TEntity>
     ///
     /// // Equivalent to:
     /// filters.For&lt;Product&gt;().Add(
-    ///     projection: _ => true,  // Dummy projection, not used
+    ///     projection: _ => true,  // Projection not used
     ///     filter: (_, _, user, _) => user!.HasPermission("ViewProducts"));
     /// </code>
     /// </remarks>
     public void Add(Func<object, TDbContext, ClaimsPrincipal?, bool> filter) =>
-        filters.Add(
-            Expression.Lambda<Func<TEntity, bool>>(Expression.Constant(true), Expression.Parameter(typeof(TEntity), "_")),
+        filters.Add<TEntity, bool>(
+            null,
             (userContext, dbContext, userPrincipal, _) => filter(userContext, dbContext, userPrincipal));
 
     /// <summary>
@@ -115,7 +115,7 @@ public class FilterBuilder<TDbContext, TEntity>
     ///
     /// // Equivalent to:
     /// filters.For&lt;Product&gt;().Add(
-    ///     projection: _ => true,  // Dummy projection, not used
+    ///     projection: _ => true,  // Projection not used
     ///     filter: async (_, dbContext, user, _) =>
     ///     {
     ///         var permissions = await dbContext.GetUserPermissionsAsync(user);
@@ -124,7 +124,7 @@ public class FilterBuilder<TDbContext, TEntity>
     /// </code>
     /// </remarks>
     public void Add(Func<object, TDbContext, ClaimsPrincipal?, Task<bool>> filter) =>
-        filters.Add(
-            Expression.Lambda<Func<TEntity, bool>>(Expression.Constant(true), Expression.Parameter(typeof(TEntity), "_")),
+        filters.Add<TEntity, bool>(
+            null,
             (userContext, dbContext, userPrincipal, _) => filter(userContext, dbContext, userPrincipal));
 }
