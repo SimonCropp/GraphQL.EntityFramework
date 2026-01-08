@@ -95,6 +95,13 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<Type, List<string>> keyNames)
     {
         var navType = navProjection.EntityType;
+
+        // Can't create NewExpression for abstract types
+        if (navType.IsAbstract)
+        {
+            return null;
+        }
+
         var navParam = Expression.Parameter(navType, "n");
 
         // Build the inner MemberInit for the navigation type
@@ -153,6 +160,12 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<Type, List<string>> keyNames)
     {
         var navType = navProjection.EntityType;
+
+        // Can't create NewExpression for abstract types
+        if (navType.IsAbstract)
+        {
+            return null;
+        }
 
         // x.Parent
         var navAccess = Expression.Property(parameter, prop);
@@ -246,6 +259,12 @@ static class SelectExpressionBuilder
     {
         binding = null;
         var navType = navProjection.EntityType;
+
+        // Can't create NewExpression for abstract types
+        if (navType.IsAbstract)
+        {
+            return false;
+        }
 
         if (navProjection.IsCollection)
         {
