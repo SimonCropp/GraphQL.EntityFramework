@@ -50,6 +50,7 @@
     where: [WhereExpression!],
     orderBy: [OrderBy!],
     ids: [ID!]): FilterParentConnection!
+  simpleTypeFilterEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SimpleTypeFilter!]!
   parentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
   parentEntityFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
   parentEntityWithNoArgs: Parent!
@@ -430,9 +431,18 @@ type FilterChildEdge {
 
 type FilterChild {
   parent: FilterParent
+  age: Int!
+  createdAt: DateTime!
   id: ID!
+  isActive: Boolean!
+  nullableAge: Int
+  nullableCreatedAt: DateTime
+  nullableIsActive: Boolean
   property: String
 }
+
+"The `DateTime` scalar type represents a date and time. `DateTime` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard."
+scalar DateTime
 
 "A connection from an object to a list of objects of type `FilterParent`."
 type FilterParentConnection {
@@ -452,6 +462,19 @@ type FilterParentEdge {
   cursor: String!
   "The item at the end of the edge"
   node: FilterParent!
+}
+
+type SimpleTypeFilter {
+  boolValue: Boolean!
+  dateTimeValue: DateTime!
+  guidValue: ID!
+  id: ID!
+  intValue: Int!
+  name: String
+  nullableBoolValue: Boolean
+  nullableDateTimeValue: DateTime
+  nullableGuidValue: ID
+  nullableIntValue: Int
 }
 
 "A connection from an object to a list of objects of type `Base`."

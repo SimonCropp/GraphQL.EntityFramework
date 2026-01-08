@@ -1,0 +1,31 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntitiesFiltered": [
+      {
+        "property": "Parent",
+        "children": [
+          {
+            "property": "HasNullAge",
+            "nullableAge": null
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Property,
+         f0.Id,
+         f0.Property,
+         f0.NullableAge
+from     FilterParentEntities as f
+         left outer join
+         FilterChildEntities as f0
+         on f.Id = f0.ParentId
+order by f.Id, f0.Id
+  }
+}

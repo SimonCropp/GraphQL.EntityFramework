@@ -7,7 +7,7 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 # Filters
 
-Sometimes, in the context of constructing an EF query, it is not possible to know if any given item should be returned in the results. For example when performing authorization where the rules rules are pulled from a different system, and that information does not exist in the database.
+Sometimes, in the context of constructing an EF query, it is not possible to know if any given item should be returned in the results. For example when performing authorization where the rules are pulled from a different system, and that information does not exist in the database.
 
 `Filters` allows a custom function to be executed after the EF query execution and determine if any given node should be included in the result.
 
@@ -26,38 +26,312 @@ Notes:
 <!-- snippet: FiltersSignature -->
 <a id='snippet-FiltersSignature'></a>
 ```cs
-public class Filters<TDbContext>
+public partial class Filters<TDbContext>
     where TDbContext : DbContext
 {
-    public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input)
-        where TEntity : class;
+    public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 
-    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input)
-        where TEntity : class;
+    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 ```
-<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L3-L14' title='Snippet source file'>snippet source</a> | <a href='#snippet-FiltersSignature' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-FiltersSignature' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
-### Usage:
+## Adding Filters
 
-<!-- snippet: add-filter -->
-<a id='snippet-add-filter'></a>
+All filters are added using the `For<TEntity>()` fluent API, which automatically infers the projection type. This provides a consistent interface regardless of whether filtering on a single field, multiple fields with anonymous types, or using named projection classes.
+
+
+### Basic Syntax:
+
+```csharp
+var filters = new Filters<MyDbContext>();
+
+filters.For<EntityType>().Add(
+    projection: entity => /* projection expression */,
+    filter: (userContext, dbContext, userPrincipal, projected) => /* filter logic */);
+```
+
+### How It Works:
+
+1. Call `For<TEntity>()` to specify the entity type
+2. Call `Add()` with a projection expression and filter function
+3. The compiler automatically infers the projection type from the expression
+4. Filter projection expression is analyzed to extract accessed property names
+5. GraphQL query executes and loads entities (including properties needed by the filter)
+6. For each loaded entity, the projection expression is compiled and executed in-memory
+7. The projected data is passed to the filter function
+8. Entities that fail the filter are excluded from results
+
+**Note**: The projection is executed in-memory on entities that have already been loaded from the database by the GraphQL query. It is not a separate database query.
+
+
+## Single Field Filters
+
+For filtering based on a single property value, project directly to that property:
+
+<!-- snippet: value-type-projections -->
+<a id='snippet-value-type-projections'></a>
 ```cs
-public class MyEntity
+public class Product
 {
-    public string? Property { get; set; }
+    public Guid Id { get; set; }
+    public string? Name { get; set; }
+    public int Stock { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public Guid CategoryId { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L5-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter' title='Start of snippet'>anchor</a></sup>
-<a id='snippet-add-filter-1'></a>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L82-L94' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-value-type-projections-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
-filters.Add<MyEntity>(
-    (userContext, dbContext, userPrincipal, item) => item.Property != "Ignore");
+
+// Filter using a string property
+filters.For<Product>().Add(
+    projection: _ => _.Name!,
+    filter: (_, _, _, name) => name != "Discontinued");
+
+// Filter using an int property
+filters.For<Product>().Add(
+    projection: _ => _.Stock,
+    filter: (_, _, _, stock) => stock > 0);
+
+// Filter using a bool property
+filters.For<Product>().Add(
+    projection: _ => _.IsActive,
+    filter: (_, _, _, isActive) => isActive);
+
+// Filter using a DateTime property
+filters.For<Product>().Add(
+    projection: _ => _.CreatedAt,
+    filter: (_, _, _, createdAt) => createdAt >= new DateTime(2024, 1, 1));
+
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L16-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-add-filter-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L98-L126' title='Snippet source file'>snippet source</a> | <a href='#snippet-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+
+## Multi-Field Filters with Anonymous Types
+
+For filtering based on multiple fields, use anonymous types without needing to define projection classes:
+
+<!-- snippet: filter-all-fields -->
+<a id='snippet-filter-all-fields'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+filters.For<MyEntity>().Add(
+    projection: _ => new
+    {
+        _.Property,
+        _.Quantity,
+        _.IsActive
+    },
+    filter: (userContext, dbContext, userPrincipal, projected) =>
+        projected.Property != "Ignore" &&
+        projected.Quantity > 0 &&
+        projected.IsActive);
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L19-L37' title='Snippet source file'>snippet source</a> | <a href='#snippet-filter-all-fields' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Anonymous types provide a concise way to combine multiple fields for filtering logic.
+
+
+## Named Projection Types
+
+For reusable filter logic or complex projections, define a named projection class:
+
+<!-- snippet: projection-filter -->
+<a id='snippet-projection-filter'></a>
+```cs
+public class ChildEntity
+{
+    public Guid Id { get; set; }
+    public Guid? ParentId { get; set; }
+    public string? Property { get; set; }
+}
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L46-L55' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-projection-filter-1'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+filters.For<ChildEntity>().Add(
+    projection: _ => new
+    {
+        _.ParentId
+    },
+    filter: (userContext, data, userPrincipal, projected) =>
+    {
+        var allowedParentId = GetAllowedParentId(userContext);
+        return projected.ParentId == allowedParentId;
+    });
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L59-L76' title='Snippet source file'>snippet source</a> | <a href='#snippet-projection-filter-1' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Named types are useful when:
+
+* The same projection is used in multiple filters
+* The projection includes nested objects or computed properties
+* A descriptive type name aids code documentation
+
+
+## Nullable Types
+
+Filters fully support nullable types for both value types and reference types:
+
+<!-- snippet: nullable-value-type-projections -->
+<a id='snippet-nullable-value-type-projections'></a>
+```cs
+public class Order
+{
+    public Guid Id { get; set; }
+    public int? Quantity { get; set; }
+    public bool? IsApproved { get; set; }
+    public DateTime? ShippedAt { get; set; }
+    public string? Notes { get; set; }
+    public decimal TotalAmount { get; set; }
+    public Customer Customer { get; set; } = null!;
+}
+
+public class Customer
+{
+    public Guid Id { get; set; }
+    public bool IsActive { get; set; }
+}
+
+public class Category
+{
+    public Guid Id { get; set; }
+    public bool IsVisible { get; set; }
+}
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L129-L154' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-nullable-value-type-projections-1'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+
+// Filter nullable int - only include if has value and meets condition
+filters.For<Order>().Add(
+    projection: _ => _.Quantity,
+    filter: (_, _, _, quantity) => quantity is > 0);
+
+// Filter nullable bool - only include if explicitly approved
+filters.For<Order>().Add(
+    projection: _ => _.IsApproved,
+    filter: (_, _, _, isApproved) => isApproved == true);
+
+// Filter nullable DateTime - only include if shipped after date
+filters.For<Order>().Add(
+    projection: _ => _.ShippedAt,
+    filter: (_, _, _, shippedAt) =>
+        shippedAt.HasValue && shippedAt.Value >= new DateTime(2024, 1, 1));
+
+// Filter nullable string - only include non-null values
+filters.For<Order>().Add(
+    projection: _ => _.Notes,
+    filter: (_, _, _, notes) => notes != null);
+
+// Filter nullable int - only include null values
+filters.For<Order>().Add(
+    projection: _ => _.Quantity,
+    filter: (_, _, _, quantity) => !quantity.HasValue);
+
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L158-L192' title='Snippet source file'>snippet source</a> | <a href='#snippet-nullable-value-type-projections-1' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Common nullable patterns:
+
+* **Has value check**: `quantity.HasValue && quantity.Value > 0`
+* **Null check**: `!quantity.HasValue`
+* **Exact match**: `isApproved == true` (not null or false)
+
+
+## Async Filters
+
+Filters can be asynchronous when they need to perform database lookups or other async operations:
+
+<!-- snippet: async-filter -->
+<a id='snippet-async-filter'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+filters.For<Product>().Add(
+    projection: _ => _.CategoryId,
+    filter: async (_, dbContext, _, categoryId) =>
+    {
+        var category = await dbContext.Categories.FindAsync(categoryId);
+        return category?.IsVisible == true;
+    });
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L197-L211' title='Snippet source file'>snippet source</a> | <a href='#snippet-async-filter' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
+## Navigation Properties
+
+Filters can project through navigation properties to access related entity data:
+
+<!-- snippet: navigation-property-filter -->
+<a id='snippet-navigation-property-filter'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+filters.For<Order>().Add(
+    projection: o => new { o.TotalAmount, o.Customer.IsActive },
+    filter: (_, _, _, x) => x.TotalAmount >= 100 && x.IsActive);
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L216-L226' title='Snippet source file'>snippet source</a> | <a href='#snippet-navigation-property-filter' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
+## Boolean Expression Shorthand
+
+For boolean properties, a simplified syntax is available where only the filter expression is needed:
+
+<!-- snippet: boolean-expression-filter -->
+<a id='snippet-boolean-expression-filter'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+
+// Simplified syntax for boolean properties
+filters.For<Product>().Add(filter: _ => _.IsActive);
+
+// Equivalent to:
+// filters.For<Product>().Add(
+//     projection: _ => _.IsActive,
+//     filter: (_, _, _, isActive) => isActive);
+
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L231-L247' title='Snippet source file'>snippet source</a> | <a href='#snippet-boolean-expression-filter' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+This shorthand is useful when:
+
+* Filtering on a single boolean property
+* The filter condition checks if the property is true
+* A concise syntax is preferred
+
+The expression `filter: _ => _.IsActive` is automatically expanded to use the boolean property as both the projection and the filter condition.

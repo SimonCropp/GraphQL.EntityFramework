@@ -1,6 +1,6 @@
 # Filters
 
-Sometimes, in the context of constructing an EF query, it is not possible to know if any given item should be returned in the results. For example when performing authorization where the rules rules are pulled from a different system, and that information does not exist in the database.
+Sometimes, in the context of constructing an EF query, it is not possible to know if any given item should be returned in the results. For example when performing authorization where the rules are pulled from a different system, and that information does not exist in the database.
 
 `Filters` allows a custom function to be executed after the EF query execution and determine if any given node should be included in the result.
 
@@ -19,6 +19,101 @@ Notes:
 snippet: FiltersSignature
 
 
-### Usage:
+## Adding Filters
 
-snippet: add-filter
+All filters are added using the `For<TEntity>()` fluent API, which automatically infers the projection type. This provides a consistent interface regardless of whether filtering on a single field, multiple fields with anonymous types, or using named projection classes.
+
+
+### Basic Syntax:
+
+```csharp
+var filters = new Filters<MyDbContext>();
+
+filters.For<EntityType>().Add(
+    projection: entity => /* projection expression */,
+    filter: (userContext, dbContext, userPrincipal, projected) => /* filter logic */);
+```
+
+### How It Works:
+
+1. Call `For<TEntity>()` to specify the entity type
+2. Call `Add()` with a projection expression and filter function
+3. The compiler automatically infers the projection type from the expression
+4. Filter projection expression is analyzed to extract accessed property names
+5. GraphQL query executes and loads entities (including properties needed by the filter)
+6. For each loaded entity, the projection expression is compiled and executed in-memory
+7. The projected data is passed to the filter function
+8. Entities that fail the filter are excluded from results
+
+**Note**: The projection is executed in-memory on entities that have already been loaded from the database by the GraphQL query. It is not a separate database query.
+
+
+## Single Field Filters
+
+For filtering based on a single property value, project directly to that property:
+
+snippet: value-type-projections
+
+
+## Multi-Field Filters with Anonymous Types
+
+For filtering based on multiple fields, use anonymous types without needing to define projection classes:
+
+snippet: filter-all-fields
+
+Anonymous types provide a concise way to combine multiple fields for filtering logic.
+
+
+## Named Projection Types
+
+For reusable filter logic or complex projections, define a named projection class:
+
+snippet: projection-filter
+
+Named types are useful when:
+
+* The same projection is used in multiple filters
+* The projection includes nested objects or computed properties
+* A descriptive type name aids code documentation
+
+
+## Nullable Types
+
+Filters fully support nullable types for both value types and reference types:
+
+snippet: nullable-value-type-projections
+
+Common nullable patterns:
+
+* **Has value check**: `quantity.HasValue && quantity.Value > 0`
+* **Null check**: `!quantity.HasValue`
+* **Exact match**: `isApproved == true` (not null or false)
+
+
+## Async Filters
+
+Filters can be asynchronous when they need to perform database lookups or other async operations:
+
+snippet: async-filter
+
+
+## Navigation Properties
+
+Filters can project through navigation properties to access related entity data:
+
+snippet: navigation-property-filter
+
+
+## Boolean Expression Shorthand
+
+For boolean properties, a simplified syntax is available where only the filter expression is needed:
+
+snippet: boolean-expression-filter
+
+This shorthand is useful when:
+
+* Filtering on a single boolean property
+* The filter condition checks if the property is true
+* A concise syntax is preferred
+
+The expression `filter: _ => _.IsActive` is automatically expanded to use the boolean property as both the projection and the filter condition.

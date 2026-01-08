@@ -11,9 +11,10 @@
 },
   sql: {
     Text:
-select p.Id,
-       p.Property
-from   ParentEntities as p
-where  p.Property = N'value2'
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+where    p.Property = N'value2'
+order by p.Property
   }
 }

@@ -30,7 +30,7 @@ public class Query :
 
         AddQueryConnectionField(
             name: "companiesConnection",
-            resolve: _ => _.DbContext.Companies.OrderBy(_=>_.Id));
+            resolve: _ => _.DbContext.Companies.OrderBy(_ => _.Id));
 
         AddQueryField(
             name: "employees",

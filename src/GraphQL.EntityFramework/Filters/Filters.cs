@@ -1,62 +1,128 @@
-﻿namespace GraphQL.EntityFramework;
+namespace GraphQL.EntityFramework;
 
 #region FiltersSignature
 
-public class Filters<TDbContext>
+public partial class Filters<TDbContext>
     where TDbContext : DbContext
 {
-    public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input)
-        where TEntity : class;
+    public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 
-    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input)
-        where TEntity : class;
+    public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 
     #endregion
 
-    public void Add<TEntity>(Filter<TEntity> filter)
+    /// <summary>
+    /// Create a filter builder for the specified entity type.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type to filter.</typeparam>
+    /// <returns>A filter builder that supports type inference for projections.</returns>
+    /// <example>
+    /// <code>
+    /// // Single field
+    /// filters.For&lt;Product&gt;().Add(
+    ///     projection: _ => _.Quantity,
+    ///     filter: (_, _, _, qty) => qty > 0);
+    ///
+    /// // Anonymous type
+    /// filters.For&lt;Product&gt;().Add(
+    ///     projection: _ => new { _.Quantity, _.Price },
+    ///     filter: (_, _, _, x) => x.Quantity > 0 &amp;&amp; x.Price >= 10);
+    ///
+    /// // Named type
+    /// filters.For&lt;Product&gt;().Add(
+    ///     projection: _ => new ProductProjection { Quantity = _.Quantity },
+    ///     filter: (_, _, _, x) => x.Quantity > 0);
+    /// </code>
+    /// </example>
+    public FilterBuilder<TDbContext, TEntity> For<TEntity>()
         where TEntity : class =>
-        funcs[typeof(TEntity)] =
-            (userContext, data, userPrincipal, item) =>
-            {
-                try
-                {
-                    return Task.FromResult(filter(userContext, data, userPrincipal, (TEntity) item));
-                }
-                catch (Exception exception)
-                {
-                    throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
-                }
-            };
+        new(this);
 
-    public void Add<TEntity>(AsyncFilter<TEntity> filter)
+    internal void Add<TEntity, TProjection>(
+        Expression<Func<TEntity, TProjection>> projection,
+        AsyncFilter<TProjection> filter)
         where TEntity : class =>
-        funcs[typeof(TEntity)] =
+        entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(
             async (userContext, data, userPrincipal, item) =>
             {
                 try
                 {
-                    return await filter(userContext, data, userPrincipal, (TEntity) item);
+                    return await filter(userContext, data, userPrincipal, item);
                 }
                 catch (Exception exception)
                 {
                     throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                 }
-            };
+            },
+            projection);
 
-    delegate Task<bool> Filter(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, object input);
+    internal void Add<TEntity, TProjection>(
+        Expression<Func<TEntity, TProjection>> projection,
+        Filter<TProjection> filter)
+        where TEntity : class =>
+        entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(
+            (userContext, data, userPrincipal, item) =>
+            {
+                try
+                {
+                    return Task.FromResult(filter(userContext, data, userPrincipal, item));
+                }
+                catch (Exception exception)
+                {
+                    throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
+                }
+            },
+            projection);
 
-    Dictionary<Type, Filter> funcs = [];
+    Dictionary<Type, IFilterEntry<TDbContext>> entries = [];
 
-    internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(IEnumerable<TEntity> result, object userContext, TDbContext data, ClaimsPrincipal? userPrincipal)
+    public IReadOnlySet<string> GetRequiredFilterProperties<TEntity>()
         where TEntity : class
     {
-        if (funcs.Count == 0)
+        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var filterEntries = FindFilters<TEntity>();
+
+        foreach (var entry in filterEntries)
+        {
+            foreach (var prop in entry.RequiredPropertyNames)
+            {
+                result.Add(prop);
+            }
+        }
+
+        return result;
+    }
+
+    public IReadOnlyDictionary<Type, IReadOnlySet<string>> GetAllRequiredFilterProperties()
+    {
+        var result = new Dictionary<Type, IReadOnlySet<string>>();
+
+        foreach (var (entityType, entry) in entries)
+        {
+            var props = entry.RequiredPropertyNames;
+            if (props.Count > 0)
+            {
+                result[entityType] = props;
+            }
+        }
+
+        return result;
+    }
+
+    internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(
+        IEnumerable<TEntity> result,
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal)
+        where TEntity : class
+    {
+        if (entries.Count == 0)
         {
             return result;
         }
 
-        var filters = FindFilters<TEntity>().ToList();
-        if (filters.Count == 0)
+        var filterEntries = FindFilters<TEntity>().ToList();
+        if (filterEntries.Count == 0)
         {
             return result;
         }
@@ -64,7 +130,7 @@ public class Filters<TDbContext>
         var list = new List<TEntity>();
         foreach (var item in result)
         {
-            if (await ShouldInclude(userContext, data, userPrincipal, item, filters))
+            if (await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries))
             {
                 list.Add(item);
             }
@@ -73,12 +139,17 @@ public class Filters<TDbContext>
         return list;
     }
 
-    static async Task<bool> ShouldInclude<TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity item, List<AsyncFilter<TEntity>> filters)
+    static async Task<bool> ShouldIncludeItem<TEntity>(
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal,
+        TEntity item,
+        List<IFilterEntry<TDbContext>> filterEntries)
         where TEntity : class
     {
-        foreach (var func in filters)
+        foreach (var entry in filterEntries)
         {
-            if (!await func(userContext, data, userPrincipal, item))
+            if (!await entry.ShouldIncludeWithProjection(userContext, data, userPrincipal, item))
             {
                 return false;
             }
@@ -87,7 +158,11 @@ public class Filters<TDbContext>
         return true;
     }
 
-    internal virtual async Task<bool> ShouldInclude<TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity? item)
+    internal virtual async Task<bool> ShouldInclude<TEntity>(
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal,
+        TEntity? item)
         where TEntity : class
     {
         if (item is null)
@@ -95,29 +170,27 @@ public class Filters<TDbContext>
             return false;
         }
 
-        if (funcs.Count == 0)
+        if (entries.Count == 0)
         {
             return true;
         }
 
-        foreach (var func in FindFilters<TEntity>())
+        var filterEntries = FindFilters<TEntity>().ToList();
+        if (filterEntries.Count == 0)
         {
-            if (!await func(userContext, data, userPrincipal, item))
-            {
-                return false;
-            }
+            return true;
         }
 
-        return true;
+        return await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries);
     }
 
-    IEnumerable<AsyncFilter<TEntity>> FindFilters<TEntity>()
+    List<IFilterEntry<TDbContext>> FindFilters<TEntity>()
         where TEntity : class
     {
         var type = typeof(TEntity);
-        foreach (var pair in funcs.Where(_ => _.Key.IsAssignableFrom(type)))
-        {
-            yield return (context, data, user, item) => pair.Value(context, data, user, item);
-        }
+        return entries
+            .Where(_ => _.Key.IsAssignableFrom(type))
+            .Select(_ => _.Value)
+            .ToList();
     }
 }

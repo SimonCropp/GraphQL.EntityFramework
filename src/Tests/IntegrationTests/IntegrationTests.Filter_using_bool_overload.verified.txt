@@ -1,0 +1,21 @@
+﻿{
+  target:
+{
+  "data": {
+    "simpleTypeFilterEntities": [
+      {
+        "name": "IsTrue",
+        "boolValue": true
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   s.Id,
+         s.Name,
+         s.BoolValue
+from     SimpleTypeFilterEntities as s
+order by s.Name
+  }
+}

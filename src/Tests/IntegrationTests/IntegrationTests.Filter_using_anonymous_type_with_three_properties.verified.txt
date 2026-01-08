@@ -1,0 +1,24 @@
+﻿{
+  target:
+{
+  "data": {
+    "simpleTypeFilterEntities": [
+      {
+        "name": "Perfect",
+        "intValue": 25,
+        "boolValue": true
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   s.Id,
+         s.Name,
+         s.IntValue,
+         s.BoolValue,
+         s.DateTimeValue
+from     SimpleTypeFilterEntities as s
+order by s.Name
+  }
+}

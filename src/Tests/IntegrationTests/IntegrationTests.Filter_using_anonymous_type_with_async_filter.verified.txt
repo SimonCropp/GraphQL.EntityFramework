@@ -1,0 +1,23 @@
+﻿{
+  target:
+{
+  "data": {
+    "simpleTypeFilterEntities": [
+      {
+        "name": "PassesBoth",
+        "intValue": 25,
+        "guidValue": "Guid_1"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   s.Id,
+         s.Name,
+         s.IntValue,
+         s.GuidValue
+from     SimpleTypeFilterEntities as s
+order by s.Name
+  }
+}

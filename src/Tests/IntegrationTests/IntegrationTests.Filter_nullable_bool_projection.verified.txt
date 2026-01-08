@@ -1,0 +1,31 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntitiesFiltered": [
+      {
+        "property": "Parent",
+        "children": [
+          {
+            "property": "Active",
+            "nullableIsActive": true
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Property,
+         f0.Id,
+         f0.Property,
+         f0.NullableIsActive
+from     FilterParentEntities as f
+         left outer join
+         FilterChildEntities as f0
+         on f.Id = f0.ParentId
+order by f.Id, f0.Id
+  }
+}

@@ -40,10 +40,25 @@
     static Filters<IntegrationDbContext> BuildFilters()
     {
         var filters = new Filters<IntegrationDbContext>();
-        filters.Add<FilterParentEntity>((_, _, _, item) => item.Property != "Ignore");
-        filters.Add<FilterChildEntity>((_, _, _, item) => item.Property != "Ignore");
-        filters.Add<Level3Entity>((_, _, _, item) => item.Property != "Ignore");
+        filters.For<FilterParentEntity>().Add(
+            e => new FilterProjection
+                { Id = e.Id, Property = e.Property },
+            (_, _, _, item) => item.Property != "Ignore");
+        filters.For<FilterChildEntity>().Add(
+            e => new FilterProjection
+                { Id = e.Id, Property = e.Property },
+            (_, _, _, item) => item.Property != "Ignore");
+        filters.For<Level3Entity>().Add(
+            e => new FilterProjection
+                { Id = e.Id, Property = e.Property },
+            (_, _, _, item) => item.Property != "Ignore");
         return filters;
+    }
+
+    class FilterProjection
+    {
+        public Guid Id { get; set; }
+        public string? Property { get; set; }
     }
 
     [Fact]

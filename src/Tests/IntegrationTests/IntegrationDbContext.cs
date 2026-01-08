@@ -1,6 +1,9 @@
 public class IntegrationDbContext(DbContextOptions options) :
     DbContext(options)
 {
+    protected override void OnConfiguring(DbContextOptionsBuilder builder) =>
+        builder.UseDefaultOrderBy();
+
     public DbSet<ParentEntity> ParentEntities { get; set; } = null!;
     public DbSet<DateEntity> DateEntities { get; set; } = null!;
     public DbSet<EnumEntity> EnumEntities { get; set; } = null!;
@@ -8,6 +11,7 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<TimeEntity> TimeEntities { get; set; } = null!;
     public DbSet<FilterParentEntity> FilterParentEntities { get; set; } = null!;
     public DbSet<FilterChildEntity> FilterChildEntities { get; set; } = null!;
+    public DbSet<SimpleTypeFilterEntity> SimpleTypeFilterEntities { get; set; } = null!;
     public DbSet<ChildEntity> ChildEntities { get; set; } = null!;
     public DbSet<WithMisNamedQueryChildEntity> WithMisNamedQueryChildEntities { get; set; } = null!;
     public DbSet<WithMisNamedQueryParentEntity> WithMisNamedQueryParentEntities { get; set; } = null!;
@@ -40,10 +44,11 @@ public class IntegrationDbContext(DbContextOptions options) :
             .Property(_ => _.Property).HasColumnName("Property");
         modelBuilder.Entity<CustomTypeEntity>();
         modelBuilder.Entity<WithNullableEntity>();
-        modelBuilder.Entity<FilterParentEntity>();
-        modelBuilder.Entity<FilterChildEntity>();
-        modelBuilder.Entity<ParentEntity>();
-        modelBuilder.Entity<ChildEntity>();
+        modelBuilder.Entity<FilterParentEntity>().OrderBy(_ => _.Property);
+        modelBuilder.Entity<FilterChildEntity>().OrderBy(_ => _.Property);
+        modelBuilder.Entity<SimpleTypeFilterEntity>().OrderBy(_ => _.Name);
+        modelBuilder.Entity<ParentEntity>().OrderBy(_ => _.Property);
+        modelBuilder.Entity<ChildEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<WithMisNamedQueryParentEntity>();
         modelBuilder.Entity<WithMisNamedQueryChildEntity>();
         modelBuilder.Entity<IncludeNonQueryableB>();
@@ -67,13 +72,13 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasForeignKey(_ => _.TypedParentId);
         modelBuilder.Entity<ManyToManyRightEntity>()
             .HasMany(_ => _.Lefts)
-            .WithMany(l => l.Rights)
+            .WithMany(_ => _.Rights)
             .UsingEntity<ManyToManyMiddleEntity>(
                 _ => _.HasOne(_ => _.ManyToManyLeftEntity).WithMany(),
                 _ => _.HasOne(_ => _.ManyToManyRightEntity).WithMany());
         modelBuilder.Entity<ManyToManyShadowLeftEntity>()
-            .HasMany(x=> x.ManyToManyShadowRightEntities)
-            .WithMany(x=> x.ManyToManyShadowLeftEntities)
+            .HasMany(_ => _.ManyToManyShadowRightEntities)
+            .WithMany(_ => _.ManyToManyShadowLeftEntities)
             .UsingEntity("ManyToManyShadowMiddleEntity");
         modelBuilder.Entity<ReadOnlyEntity>()
             .Property(_ => _.ComputedInDb)

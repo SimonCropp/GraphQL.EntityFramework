@@ -1,0 +1,22 @@
+﻿{
+  target:
+{
+  "data": {
+    "simpleTypeFilterEntities": [
+      {
+        "name": "Alpha"
+      },
+      {
+        "name": "Gamma"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   s.Id,
+         s.Name
+from     SimpleTypeFilterEntities as s
+order by s.Name
+  }
+}

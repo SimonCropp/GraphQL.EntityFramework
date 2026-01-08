@@ -11,8 +11,9 @@
 },
   sql: {
     Text:
-select p.Id
-from   ParentEntities as p
-where  p.Property is not null
+select   p.Id
+from     ParentEntities as p
+where    p.Property is not null
+order by p.Property
   }
 }

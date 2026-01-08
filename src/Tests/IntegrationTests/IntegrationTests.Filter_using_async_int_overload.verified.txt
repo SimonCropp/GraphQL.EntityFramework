@@ -1,0 +1,21 @@
+﻿{
+  target:
+{
+  "data": {
+    "simpleTypeFilterEntities": [
+      {
+        "name": "JustRight",
+        "intValue": 15
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   s.Id,
+         s.Name,
+         s.IntValue
+from     SimpleTypeFilterEntities as s
+order by s.Name
+  }
+}
