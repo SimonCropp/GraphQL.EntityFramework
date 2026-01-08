@@ -28,7 +28,7 @@ select   b.Id,
          d.TypedParentId
 from     BaseEntities as b
          left outer join
-         DerivedChildEntity as d
+         DerivedChildEntities as d
          on b.Id = d.TypedParentId
 order by b.Property, b.Id
   }
