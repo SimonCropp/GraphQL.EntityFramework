@@ -6,6 +6,7 @@ static class SelectExpressionBuilder
     static readonly ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
     record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding? Binding);
+
     record EntityTypeMetadata(
         ParameterExpression Parameter,
         IReadOnlyDictionary<string, PropertyMetadata> Properties,
@@ -57,7 +58,7 @@ static class SelectExpressionBuilder
         {
             if (properties.TryGetValue(keyName, out var metadata) &&
                 metadata.CanWrite &&
-                addedProperties.Add(metadata.Property.Name))
+                addedProperties.Add(keyName))
             {
                 bindings.Add(metadata.Binding!);
             }
@@ -68,7 +69,7 @@ static class SelectExpressionBuilder
         {
             if (properties.TryGetValue(fkName, out var metadata) &&
                 metadata.CanWrite &&
-                addedProperties.Add(metadata.Property.Name))
+                addedProperties.Add(fkName))
             {
                 bindings.Add(metadata.Binding!);
             }
@@ -78,7 +79,7 @@ static class SelectExpressionBuilder
         foreach (var fieldName in projection.ScalarFields)
         {
             if (properties.TryGetValue(fieldName, out var metadata) &&
-                addedProperties.Add(metadata.Property.Name))
+                addedProperties.Add(fieldName))
             {
                 if (!metadata.CanWrite)
                 {
@@ -95,7 +96,7 @@ static class SelectExpressionBuilder
         foreach (var (navFieldName, navProjection) in projection.Navigations)
         {
             if (!properties.TryGetValue(navFieldName, out var metadata) ||
-                !addedProperties.Add(metadata.Property.Name))
+                !addedProperties.Add(navFieldName))
             {
                 continue;
             }
@@ -220,7 +221,7 @@ static class SelectExpressionBuilder
         {
             if (properties.TryGetValue(keyName, out var metadata) &&
                 metadata.CanWrite &&
-                addedProperties.Add(metadata.Property.Name))
+                addedProperties.Add(keyName))
             {
                 bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
             }
@@ -230,7 +231,7 @@ static class SelectExpressionBuilder
         foreach (var fieldName in projection.ScalarFields)
         {
             if (properties.TryGetValue(fieldName, out var metadata) &&
-                addedProperties.Add(metadata.Property.Name))
+                addedProperties.Add(fieldName))
             {
                 if (!metadata.CanWrite)
                 {
@@ -248,7 +249,7 @@ static class SelectExpressionBuilder
         foreach (var (navFieldName, nestedNavProjection) in projection.Navigations)
         {
             if (!properties.TryGetValue(navFieldName, out var metadata) ||
-                !addedProperties.Add(metadata.Property.Name))
+                !addedProperties.Add(navFieldName))
             {
                 continue;
             }
