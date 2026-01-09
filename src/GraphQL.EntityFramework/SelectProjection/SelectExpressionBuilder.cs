@@ -3,9 +3,10 @@ namespace GraphQL.EntityFramework;
 static class SelectExpressionBuilder
 {
     static readonly ConcurrentDictionary<string, object> cache = new();
-    static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, PropertyMetadata>> propertyCache = new();
+    static readonly ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
-    record PropertyMetadata(PropertyInfo Property, bool CanWrite);
+    record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess);
+    record EntityTypeMetadata(ParameterExpression Parameter, IReadOnlyDictionary<string, PropertyMetadata> Properties);
 
     public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
@@ -28,10 +29,11 @@ static class SelectExpressionBuilder
         where TEntity : class
     {
         var entityType = typeof(TEntity);
-        var parameter = Expression.Parameter(entityType, "x");
+        var entityMetadata = GetEntityMetadata(entityType);
+        var parameter = entityMetadata.Parameter;
+        var properties = entityMetadata.Properties;
         var bindings = new List<MemberBinding>();
         var addedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var properties = GetPropertiesForType(entityType);
 
         // 1. Always include key properties
         foreach (var keyName in projection.KeyNames)
@@ -40,7 +42,7 @@ static class SelectExpressionBuilder
                 metadata.CanWrite &&
                 addedProperties.Add(metadata.Property.Name))
             {
-                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(parameter, metadata.Property)));
+                bindings.Add(Expression.Bind(metadata.Property, metadata.PropertyAccess));
             }
         }
 
@@ -51,7 +53,7 @@ static class SelectExpressionBuilder
                 metadata.CanWrite &&
                 addedProperties.Add(metadata.Property.Name))
             {
-                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(parameter, metadata.Property)));
+                bindings.Add(Expression.Bind(metadata.Property, metadata.PropertyAccess));
             }
         }
 
@@ -68,7 +70,7 @@ static class SelectExpressionBuilder
                     return null;
                 }
 
-                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(parameter, metadata.Property)));
+                bindings.Add(Expression.Bind(metadata.Property, metadata.PropertyAccess));
             }
         }
 
@@ -135,9 +137,9 @@ static class SelectExpressionBuilder
         Expression orderedCollection = navAccess;
         if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
         {
-            var properties = GetPropertiesForType(navType);
+            var navMetadata = GetEntityMetadata(navType);
             var orderParam = Expression.Parameter(navType, "o");
-            if (properties.TryGetValue(keys[0], out var keyMetadata))
+            if (navMetadata.Properties.TryGetValue(keys[0], out var keyMetadata))
             {
                 var keyAccess = Expression.Property(orderParam, keyMetadata.Property);
                 var keyLambda = Expression.Lambda(keyAccess, orderParam);
@@ -215,7 +217,7 @@ static class SelectExpressionBuilder
     {
         bindings = [];
         var addedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var properties = GetPropertiesForType(entityType);
+        var properties = GetEntityMetadata(entityType).Properties;
 
         // Add key properties
         foreach (var keyName in projection.KeyNames)
@@ -302,9 +304,9 @@ static class SelectExpressionBuilder
             Expression orderedCollection = navAccess;
             if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
             {
-                var properties = GetPropertiesForType(navType);
+                var navMetadata = GetEntityMetadata(navType);
                 var orderParam = Expression.Parameter(navType, "o");
-                if (properties.TryGetValue(keys[0], out var keyMetadata))
+                if (navMetadata.Properties.TryGetValue(keys[0], out var keyMetadata))
                 {
                     var keyAccess = Expression.Property(orderParam, keyMetadata.Property);
                     var keyLambda = Expression.Lambda(keyAccess, orderParam);
@@ -363,26 +365,28 @@ static class SelectExpressionBuilder
         }
     }
 
-    static IReadOnlyDictionary<string, PropertyMetadata> GetPropertiesForType(Type type) =>
-        propertyCache.GetOrAdd(type, t =>
+    static EntityTypeMetadata GetEntityMetadata(Type type) =>
+        entityMetadataCache.GetOrAdd(type, t =>
         {
+            var parameter = Expression.Parameter(t, "x");
             var properties = t.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var dict = new Dictionary<string, PropertyMetadata>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var prop in properties)
             {
-                dict[prop.Name] = new(prop, prop.CanWrite);
+                var propertyAccess = Expression.Property(parameter, prop);
+                dict[prop.Name] = new(prop, prop.CanWrite, propertyAccess);
             }
 
-            return dict;
+            return new(parameter, dict);
         });
 
     static bool TryGetProperty(Type type, string name, [NotNullWhen(true)] out PropertyInfo? property)
     {
-        var properties = GetPropertiesForType(type);
-        if (properties.TryGetValue(name, out var metadata))
+        var metadata = GetEntityMetadata(type);
+        if (metadata.Properties.TryGetValue(name, out var propertyMetadata))
         {
-            property = metadata.Property;
+            property = propertyMetadata.Property;
             return true;
         }
 
