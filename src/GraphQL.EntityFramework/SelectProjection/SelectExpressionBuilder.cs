@@ -5,26 +5,14 @@ static class SelectExpressionBuilder
     static readonly ConcurrentDictionary<string, object> cache = new();
     static readonly ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
-    record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding? Binding);
+    record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding? Binding, MethodInfo OrderByMethod);
 
     record EntityTypeMetadata(
         ParameterExpression Parameter,
         IReadOnlyDictionary<string, PropertyMetadata> Properties,
         NewExpression NewInstance,
         MethodInfo SelectMethod,
-        MethodInfo ToListMethod,
-        Type EntityType)
-    {
-        readonly ConcurrentDictionary<Type, MethodInfo> orderByMethodCache = new();
-
-        public MethodInfo GetOrderByMethod(Type keyPropertyType) =>
-            orderByMethodCache.GetOrAdd(
-                keyPropertyType,
-                keyType => EnumerableMethodCache.MakeGenericMethod(
-                    EnumerableMethodCache.OrderByMethod,
-                    EntityType,
-                    keyType));
-    };
+        MethodInfo ToListMethod);
 
     public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
@@ -155,9 +143,8 @@ static class SelectExpressionBuilder
             {
                 var keyAccess = Expression.Property(navParam, keyMetadata.Property);
                 var keyLambda = Expression.Lambda(keyAccess, navParam);
-                var orderByMethod = navMetadata.GetOrderByMethod(keyMetadata.Property.PropertyType);
 
-                orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
+                orderedCollection = Expression.Call(null, keyMetadata.OrderByMethod, navAccess, keyLambda);
             }
         }
 
@@ -268,7 +255,7 @@ static class SelectExpressionBuilder
 
     static bool TryBuildNestedNavigationBinding(
         Expression sourceExpression,
-        PropertyInfo prop,
+        PropertyInfo property,
         NavigationProjectionInfo navProjection,
         IReadOnlyDictionary<Type, List<string>> keyNames,
         [NotNullWhen(true)] out MemberAssignment? binding)
@@ -288,7 +275,7 @@ static class SelectExpressionBuilder
             var navParam = Expression.Parameter(navType, "n");
 
             // sourceExpression.Children
-            var navAccess = Expression.Property(sourceExpression, prop);
+            var navAccess = Expression.Property(sourceExpression, property);
 
             // Build the inner MemberInit
             if (!TryBuildNavigationBindings(navParam, navType, navProjection.Projection, keyNames, out var innerBindings))
@@ -307,9 +294,8 @@ static class SelectExpressionBuilder
                 {
                     var keyAccess = Expression.Property(navParam, keyMetadata.Property);
                     var keyLambda = Expression.Lambda(keyAccess, navParam);
-                    var orderByMethod = navMetadata.GetOrderByMethod(keyMetadata.Property.PropertyType);
 
-                    orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
+                    orderedCollection = Expression.Call(null, keyMetadata.OrderByMethod, navAccess, keyLambda);
                 }
             }
 
@@ -319,7 +305,7 @@ static class SelectExpressionBuilder
             // .ToList()
             var toListCall = Expression.Call(null, navMetadata.ToListMethod, selectCall);
 
-            binding = Expression.Bind(prop, toListCall);
+            binding = Expression.Bind(property, toListCall);
             return true;
         }
         else
@@ -327,7 +313,7 @@ static class SelectExpressionBuilder
             var navMetadata = GetEntityMetadata(navType);
 
             // sourceExpression.Parent
-            var navAccess = Expression.Property(sourceExpression, prop);
+            var navAccess = Expression.Property(sourceExpression, property);
 
             // sourceExpression.Parent == null
             var nullCheck = Expression.Equal(navAccess, Expression.Constant(null, navType));
@@ -346,7 +332,7 @@ static class SelectExpressionBuilder
                 Expression.Constant(null, navType),
                 memberInit);
 
-            binding = Expression.Bind(prop, conditional);
+            binding = Expression.Bind(property, conditional);
             return true;
         }
     }
@@ -362,14 +348,18 @@ static class SelectExpressionBuilder
             {
                 var propertyAccess = Expression.Property(parameter, property);
                 var binding = property.CanWrite ? Expression.Bind(property, propertyAccess) : null;
-                dictionary[property.Name] = new(property, property.CanWrite, propertyAccess, binding);
+                var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
+                    EnumerableMethodCache.OrderByMethod,
+                    type,
+                    property.PropertyType);
+                dictionary[property.Name] = new(property, property.CanWrite, propertyAccess, binding, orderByMethod);
             }
 
             var newInstance = Expression.New(type);
             var selectMethod = EnumerableMethodCache.MakeGenericMethod(EnumerableMethodCache.SelectMethod, type, type);
             var toListMethod = EnumerableMethodCache.MakeGenericMethod(EnumerableMethodCache.ToListMethod, type);
 
-            return new(parameter, dictionary, newInstance, selectMethod, toListMethod, type);
+            return new(parameter, dictionary, newInstance, selectMethod, toListMethod);
         });
 
 
