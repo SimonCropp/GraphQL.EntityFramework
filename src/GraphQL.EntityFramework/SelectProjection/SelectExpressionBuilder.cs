@@ -27,7 +27,8 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<string, PropertyMetadata> Properties,
         NewExpression NewInstance,
         MethodInfo SelectMethod,
-        MethodInfo ToListMethod);
+        MethodInfo ToListMethod,
+        ConstantExpression NullConstant);
 
     public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
@@ -53,8 +54,12 @@ static class SelectExpressionBuilder
         var entityMetadata = GetEntityMetadata(entityType);
         var parameter = entityMetadata.Parameter;
         var properties = entityMetadata.Properties;
-        var bindings = new List<MemberBinding>();
-        var addedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Pre-size collections to avoid reallocations
+        var capacity = projection.KeyNames.Count + projection.ForeignKeyNames.Count +
+                      projection.ScalarFields.Count + projection.Navigations.Count;
+        var bindings = new List<MemberBinding>(capacity);
+        var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
 
         // 1. Always include key properties
         foreach (var keyName in projection.KeyNames)
@@ -190,7 +195,7 @@ static class SelectExpressionBuilder
         var navMetadata = GetEntityMetadata(navType);
 
         // x.Parent == null
-        var nullCheck = Expression.Equal(navAccess, Expression.Constant(null, navType));
+        var nullCheck = Expression.Equal(navAccess, navMetadata.NullConstant);
 
         // Build the MemberInit for the navigation type using navAccess as source
         if (!TryBuildNavigationBindings(navAccess, navType, navProjection.Projection, keyNames, out var innerBindings))
@@ -204,7 +209,7 @@ static class SelectExpressionBuilder
         // x.Parent == null ? null : new Parent { ... }
         var conditional = Expression.Condition(
             nullCheck,
-            Expression.Constant(null, navType),
+            navMetadata.NullConstant,
             memberInit);
 
         return Expression.Bind(navAccess.Member, conditional);
@@ -217,8 +222,10 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<Type, List<string>> keyNames,
         [NotNullWhen(true)] out List<MemberBinding>? bindings)
     {
-        bindings = [];
-        var addedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        // Pre-size collections to avoid reallocations
+        var capacity = projection.KeyNames.Count + projection.ScalarFields.Count + projection.Navigations.Count;
+        bindings = new List<MemberBinding>(capacity);
+        var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
         var properties = GetEntityMetadata(entityType).Properties;
 
         // Add key properties
@@ -336,7 +343,7 @@ static class SelectExpressionBuilder
             var navAccess = Expression.Property(sourceExpression, property);
 
             // sourceExpression.Parent == null
-            var nullCheck = Expression.Equal(navAccess, Expression.Constant(null, navType));
+            var nullCheck = Expression.Equal(navAccess, navMetadata.NullConstant);
 
             // Build the MemberInit
             if (!TryBuildNavigationBindings(navAccess, navType, navProjection.Projection, keyNames, out var innerBindings))
@@ -350,7 +357,7 @@ static class SelectExpressionBuilder
             // sourceExpression.Parent == null ? null : new Parent { ... }
             var conditional = Expression.Condition(
                 nullCheck,
-                Expression.Constant(null, navType),
+                navMetadata.NullConstant,
                 memberInit);
 
             binding = Expression.Bind(property, conditional);
@@ -376,8 +383,9 @@ static class SelectExpressionBuilder
             var newInstance = Expression.New(type);
             var selectMethod = SelectExpressionBuilder.selectMethod.MakeGenericMethod(type, type);
             var toListMethod = SelectExpressionBuilder.toListMethod.MakeGenericMethod(type);
+            var nullConstant = Expression.Constant(null, type);
 
-            return new(parameter, dictionary, newInstance, selectMethod, toListMethod);
+            return new(parameter, dictionary, newInstance, selectMethod, toListMethod, nullConstant);
         });
 
     static string BuildCacheKey<TEntity>(FieldProjectionInfo projection)
