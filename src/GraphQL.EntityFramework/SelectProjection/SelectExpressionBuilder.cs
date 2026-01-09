@@ -75,13 +75,13 @@ static class SelectExpressionBuilder
         // 4. Add navigation properties with nested projections
         foreach (var (navFieldName, navProjection) in projection.Navigations)
         {
-            if (!TryGetProperty(entityType, navFieldName, out var prop) ||
-                !addedProperties.Add(prop.Name))
+            if (!properties.TryGetValue(navFieldName, out var metadata) ||
+                !addedProperties.Add(metadata.Property.Name))
             {
                 continue;
             }
 
-            var binding = BuildNavigationBinding(parameter, prop, navProjection, keyNames);
+            var binding = BuildNavigationBinding(parameter, metadata.Property, navProjection, keyNames);
             if (binding == null)
             {
                 // Can't project navigation - return null to load full entity
@@ -248,13 +248,13 @@ static class SelectExpressionBuilder
         // Add nested navigations recursively
         foreach (var (navFieldName, nestedNavProjection) in projection.Navigations)
         {
-            if (!TryGetProperty(entityType, navFieldName, out var prop) ||
-                !addedProperties.Add(prop.Name))
+            if (!properties.TryGetValue(navFieldName, out var metadata) ||
+                !addedProperties.Add(metadata.Property.Name))
             {
                 continue;
             }
 
-            if (!TryBuildNestedNavigationBinding(sourceExpression, prop, nestedNavProjection, keyNames, out var binding))
+            if (!TryBuildNestedNavigationBinding(sourceExpression, metadata.Property, nestedNavProjection, keyNames, out var binding))
             {
                 // Can't project navigation - return false to load full entity
                 bindings = null;
