@@ -33,7 +33,7 @@
         keyNames.TryGetValue(type, out var keys);
         foreignKeys.TryGetValue(type, out var fks);
 
-        return GetProjectionInfo(context, navigationProperties, keys ?? [], fks ?? new HashSet<string>());
+        return GetProjectionInfo(context, navigationProperties, keys, fks);
     }
 
     public bool TryGetProjectionExpression<TItem>(
@@ -78,8 +78,8 @@
     FieldProjectionInfo GetProjectionInfo(
         IResolveFieldContext context,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        List<string> keys,
-        IReadOnlySet<string> foreignKeyNames)
+        List<string>? keys,
+        IReadOnlySet<string>? foreignKeyNames)
     {
         var scalarFields = new List<string>();
         var navProjections = new Dictionary<string, NavigationProjectionInfo>();
@@ -100,7 +100,7 @@
             }
         }
 
-        return new(scalarFields, keys, foreignKeyNames, navProjections);
+        return new(scalarFields, keys ?? [], foreignKeyNames ?? new HashSet<string>(), navProjections);
     }
 
     void ProcessConnectionNodeFields(
@@ -169,8 +169,8 @@
                         : GetNestedProjection(
                             fieldInfo.Field.SelectionSet,
                             nestedNavProps,
-                            nestedKeys ?? [],
-                            nestedFks ?? new HashSet<string>(),
+                            nestedKeys,
+                            nestedFks,
                             context);
 
                     navProjections[navigation.Name] = new(
@@ -202,8 +202,8 @@
             var nestedProjection = GetNestedProjection(
                 fieldInfo.Field.SelectionSet,
                 nestedNavProps,
-                nestedKeys ?? [],
-                nestedFks ?? new HashSet<string>(),
+                nestedKeys,
+                nestedFks,
                 context);
 
             navProjections[navByName.Name] = new(
@@ -221,8 +221,8 @@
     FieldProjectionInfo GetNestedProjection(
         GraphQLSelectionSet? selectionSet,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        List<string> keys,
-        IReadOnlySet<string> foreignKeyNames,
+        List<string>? keys,
+        IReadOnlySet<string>? foreignKeyNames,
         IResolveFieldContext context)
     {
         var scalarFields = new List<string>();
@@ -230,7 +230,7 @@
 
         if (selectionSet?.Selections is null)
         {
-            return new(scalarFields, keys, foreignKeyNames, navProjections);
+            return new(scalarFields, keys ?? [], foreignKeyNames ?? new HashSet<string>(), navProjections);
         }
 
         // Process direct fields
@@ -270,7 +270,7 @@
             }
         }
 
-        return new(scalarFields, keys, foreignKeyNames, navProjections);
+        return new(scalarFields, keys ?? [], foreignKeyNames ?? new HashSet<string>(), navProjections);
     }
 
     void ProcessNestedProjectionField(
@@ -304,8 +304,8 @@
             var nestedProjection = GetNestedProjection(
                 field.SelectionSet,
                 nestedNavProps,
-                nestedKeys ?? [],
-                nestedFks ?? new HashSet<string>(),
+                nestedKeys,
+                nestedFks,
                 context);
 
             navProjections[navigation.Name] = new(
