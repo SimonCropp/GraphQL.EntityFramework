@@ -1,5 +1,5 @@
 /// <summary>
-/// Caches MethodInfo for common Enumerable methods to avoid repeated reflection
+/// Holds MethodInfo for common Enumerable methods to avoid repeated reflection
 /// </summary>
 static class EnumerableMethodCache
 {
@@ -24,12 +24,6 @@ static class EnumerableMethodCache
         .First(_ => _.Name == "Any" &&
                     _.GetParameters().Length == 2);
 
-    // Cache for generic method instances
-    static ConcurrentDictionary<(MethodInfo, Type[]), MethodInfo> genericMethodCache = new();
-
-    public static MethodInfo MakeGenericMethod(MethodInfo baseMethod, params Type[] typeArguments)
-    {
-        var key = (baseMethod, typeArguments);
-        return genericMethodCache.GetOrAdd(key, _ => _.Item1.MakeGenericMethod(_.Item2));
-    }
+    public static MethodInfo MakeGenericMethod(MethodInfo baseMethod, params Type[] typeArguments) =>
+        baseMethod.MakeGenericMethod(typeArguments);
 }
