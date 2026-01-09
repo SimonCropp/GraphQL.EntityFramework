@@ -66,17 +66,13 @@ public class Query :
                     query = query.Where(predicate);
                 }
 
-                return from q in query
-                    group q by new
+                return query
+                    .GroupBy(_ => _.CompanyId)
+                    .Select(_ => new EmployeeSummary
                     {
-                        q.CompanyId
-                    }
-                    into g
-                    select new EmployeeSummary
-                    {
-                        CompanyId = g.Key.CompanyId,
-                        AverageAge = g.Average(_ => _.Age),
-                    };
+                        CompanyId = _.Key,
+                        AverageAge = _.Average(_ => _.Age),
+                    });
             });
 
         #endregion

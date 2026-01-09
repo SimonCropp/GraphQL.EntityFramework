@@ -56,7 +56,7 @@ GraphQL.EntityFramework automatically optimizes Entity Framework queries by usin
 
 ### How Projections Work
 
-When querying entities through GraphQL, the library analyzes the incoming query and builds a projection expression that includes only:
+When querying entities through GraphQL, the incoming query is analyzed and a projection expression is built that includes:
 
 1. **Primary Keys** - Always included (e.g., `Id`)
 2. **Foreign Keys** - Always included automatically (e.g., `ParentId`, `CategoryId`)
@@ -116,7 +116,7 @@ Note that `TotalAmount` and `InternalNotes` are **not** loaded from the database
 
 ### Foreign Keys in Custom Resolvers
 
-The automatic inclusion of foreign keys is particularly useful when writing custom field resolvers. Since foreign keys are always available in the projected entity, it is safe to use them without worrying about whether they were explicitly requested:
+The automatic inclusion of foreign keys is useful when writing custom field resolvers. Since foreign keys are always available in the projected entity, it is safe to use them without worrying about whether they were explicitly requested:
 
 <!-- snippet: ProjectionCustomResolver -->
 <a id='snippet-ProjectionCustomResolver'></a>
@@ -442,20 +442,16 @@ Field<ListGraphType<EmployeeSummaryGraphType>>("employeeSummary")
             query = query.Where(predicate);
         }
 
-        return from q in query
-            group q by new
+        return query
+            .GroupBy(_ => _.CompanyId)
+            .Select(_ => new EmployeeSummary
             {
-                q.CompanyId
-            }
-            into g
-            select new EmployeeSummary
-            {
-                CompanyId = g.Key.CompanyId,
-                AverageAge = g.Average(_ => _.Age),
-            };
+                CompanyId = _.Key,
+                AverageAge = _.Average(_ => _.Age),
+            });
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L52-L82' title='Snippet source file'>snippet source</a> | <a href='#snippet-ManuallyApplyWhere' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L52-L78' title='Snippet source file'>snippet source</a> | <a href='#snippet-ManuallyApplyWhere' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
