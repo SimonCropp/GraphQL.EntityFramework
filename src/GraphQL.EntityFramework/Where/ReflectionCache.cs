@@ -27,12 +27,15 @@
     public static MethodInfo StringIndexOf = typeof(string).GetMethod("IndexOf", [typeof(string)])!;
     public static MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", [typeof(string)])!;
 
+    static FrozenDictionary<Type, MethodInfo> listContainsCache;
+
     static ReflectionCache()
     {
         StringAny = typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
             .Single(_ => _.Name == "Any" &&
                          _.GetParameters().Length == 2)
             .MakeGenericMethod(typeof(string));
+
         guidListContains = GetContains<Guid>();
         guidNullableListContains = GetContains<Guid?>();
         boolListContains = GetContains<bool>();
@@ -53,6 +56,29 @@
         dateTimeNullableListContains = GetContains<DateTime?>();
         dateTimeOffsetListContains = GetContains<DateTimeOffset>();
         dateTimeOffsetNullableListContains = GetContains<DateTimeOffset?>();
+
+        // Build FrozenDictionary for O(1) lookups
+        listContainsCache = FrozenDictionary.Create(
+            new KeyValuePair<Type, MethodInfo>(typeof(Guid), guidListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(Guid?), guidNullableListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(bool), boolListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(bool?), boolNullableListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(int), intListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(int?), intNullableListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(short), shortListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(short?), shortNullableListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(long), longListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(long?), longNullableListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(uint), uintListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(uint?), uintNullableListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(ushort), ushortListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(ushort?), ushortNullableListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(ulong), ulongListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(ulong?), ulongNullableListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(DateTime), dateTimeListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(DateTime?), dateTimeNullableListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(DateTimeOffset), dateTimeOffsetListContains),
+            new KeyValuePair<Type, MethodInfo>(typeof(DateTimeOffset?), dateTimeOffsetNullableListContains));
     }
 
     public static MethodInfo? GetListContains(Type type)
@@ -62,104 +88,10 @@
             return null;
         }
 
-        if (type == typeof(Guid))
+        // Try FrozenDictionary lookup first - O(1) for common types
+        if (listContainsCache.TryGetValue(type, out var method))
         {
-            return guidListContains;
-        }
-
-        if (type == typeof(Guid?))
-        {
-            return guidNullableListContains;
-        }
-
-        if (type == typeof(bool))
-        {
-            return boolListContains;
-        }
-
-        if (type == typeof(bool?))
-        {
-            return boolNullableListContains;
-        }
-
-        if (type == typeof(int))
-        {
-            return intListContains;
-        }
-
-        if (type == typeof(int?))
-        {
-            return intNullableListContains;
-        }
-
-        if (type == typeof(short))
-        {
-            return shortListContains;
-        }
-
-        if (type == typeof(short?))
-        {
-            return shortNullableListContains;
-        }
-
-        if (type == typeof(long))
-        {
-            return longListContains;
-        }
-
-        if (type == typeof(long?))
-        {
-            return longNullableListContains;
-        }
-
-        if (type == typeof(uint))
-        {
-            return uintListContains;
-        }
-
-        if (type == typeof(uint?))
-        {
-            return uintNullableListContains;
-        }
-
-        if (type == typeof(ushort))
-        {
-            return ushortListContains;
-        }
-
-        if (type == typeof(ushort?))
-        {
-            return ushortNullableListContains;
-        }
-
-        if (type == typeof(ulong))
-        {
-            return ulongListContains;
-        }
-
-        if (type == typeof(ulong?))
-        {
-            return ulongNullableListContains;
-        }
-
-        if (type == typeof(DateTime))
-        {
-            return dateTimeListContains;
-        }
-
-        if (type == typeof(DateTime?))
-        {
-            return dateTimeNullableListContains;
-        }
-
-        if (type == typeof(DateTimeOffset))
-        {
-            return dateTimeOffsetListContains;
-        }
-
-        if (type == typeof(DateTimeOffset?))
-        {
-            return dateTimeOffsetNullableListContains;
+            return method;
         }
 
         if (IsEnumType(type))
