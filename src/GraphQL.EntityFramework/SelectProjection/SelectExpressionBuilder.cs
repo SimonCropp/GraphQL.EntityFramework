@@ -135,16 +135,17 @@ static class SelectExpressionBuilder
         Expression orderedCollection = navAccess;
         if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
         {
+            var properties = GetPropertiesForType(navType);
             var orderParam = Expression.Parameter(navType, "o");
-            if (TryGetProperty(navType, keys[0], out var keyProp))
+            if (properties.TryGetValue(keys[0], out var keyMetadata))
             {
-                var keyAccess = Expression.Property(orderParam, keyProp);
+                var keyAccess = Expression.Property(orderParam, keyMetadata.Property);
                 var keyLambda = Expression.Lambda(keyAccess, orderParam);
 
                 var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
                     EnumerableMethodCache.OrderByMethod,
                     navType,
-                    keyProp.PropertyType);
+                    keyMetadata.Property.PropertyType);
 
                 orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
             }
@@ -301,16 +302,17 @@ static class SelectExpressionBuilder
             Expression orderedCollection = navAccess;
             if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
             {
+                var properties = GetPropertiesForType(navType);
                 var orderParam = Expression.Parameter(navType, "o");
-                if (TryGetProperty(navType, keys[0], out var keyProp))
+                if (properties.TryGetValue(keys[0], out var keyMetadata))
                 {
-                    var keyAccess = Expression.Property(orderParam, keyProp);
+                    var keyAccess = Expression.Property(orderParam, keyMetadata.Property);
                     var keyLambda = Expression.Lambda(keyAccess, orderParam);
 
                     var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
                         EnumerableMethodCache.OrderByMethod,
                         navType,
-                        keyProp.PropertyType);
+                        keyMetadata.Property.PropertyType);
 
                     orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
                 }
