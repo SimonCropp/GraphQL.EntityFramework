@@ -49,7 +49,7 @@ GraphQL.EntityFramework automatically optimizes Entity Framework queries by usin
 
 ### How Projections Work
 
-When you query entities through GraphQL, the library analyzes the incoming query and builds a projection expression that includes only:
+When querying entities through GraphQL, the library analyzes the incoming query and builds a projection expression that includes only:
 
 1. **Primary Keys** - Always included (e.g., `Id`)
 2. **Foreign Keys** - Always included automatically (e.g., `ParentId`, `CategoryId`)
@@ -80,7 +80,7 @@ Note that `TotalAmount` and `InternalNotes` are **not** loaded from the database
 
 ### Foreign Keys in Custom Resolvers
 
-The automatic inclusion of foreign keys is particularly useful when writing custom field resolvers. Since foreign keys are always available in the projected entity, you can safely use them without worrying about whether they were explicitly requested:
+The automatic inclusion of foreign keys is particularly useful when writing custom field resolvers. Since foreign keys are always available in the projected entity, it is safe to use them without worrying about whether they were explicitly requested:
 
 snippet: ProjectionCustomResolver
 

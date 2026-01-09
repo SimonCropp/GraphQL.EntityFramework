@@ -1,3 +1,5 @@
+using StringGraphType = GraphQL.Types.StringGraphType;
+
 class ProjectionSnippets
 {
     #region ProjectionEntity
@@ -16,29 +18,31 @@ class ProjectionSnippets
 
     #region ProjectionExpression
 
-    static void ProjectionExample(MyDbContext context)
-    {
+    static void ProjectionExample(MyDbContext context) =>
         _ = context.Orders.Select(o => new Order
         {
-            Id = o.Id,                  // Requested (and primary key)
-            CustomerId = o.CustomerId,  // Automatically included (foreign key)
-            OrderNumber = o.OrderNumber // Requested
+            // Requested (and primary key)
+            Id = o.Id,
+            // Automatically included (foreign key)
+            CustomerId = o.CustomerId,
+            // Requested
+            OrderNumber = o.OrderNumber
         });
-    }
 
     #endregion
 
     #region ProjectionCustomResolver
 
-    public class OrderGraph : EfObjectGraphType<MyDbContext, Order>
+    public class OrderGraph :
+        EfObjectGraphType<MyDbContext, Order>
     {
-        public OrderGraph(IEfGraphQLService<MyDbContext> graphQlService) : base(graphQlService)
-        {
+        public OrderGraph(IEfGraphQLService<MyDbContext> graphQlService) :
+            base(graphQlService) =>
             // Custom field that uses the foreign key
             Field<StringGraphType>("customerName")
                 .ResolveAsync(async context =>
                 {
-                    var data = context.DataContext();
+                    var data = base.ResolveDbContext(context);
                     // CustomerId is available even though it wasn't in the GraphQL query
                     var customer = await data.Customers
                         .Where(c => c.Id == context.Source.CustomerId)
@@ -46,7 +50,6 @@ class ProjectionSnippets
                         .SingleAsync();
                     return customer;
                 });
-        }
     }
 
     #endregion

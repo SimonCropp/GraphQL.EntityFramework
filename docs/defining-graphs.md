@@ -78,7 +78,7 @@ public class Order
     public string InternalNotes { get; set; } = null!;
 }
 ```
-<sup><a href='/src/Snippets/ProjectionSnippets.cs#L3-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionEntity' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L5-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionEntity' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 And this GraphQL query:
@@ -97,17 +97,18 @@ The library will generate an EF query that projects to:
 <!-- snippet: ProjectionExpression -->
 <a id='snippet-ProjectionExpression'></a>
 ```cs
-static void ProjectionExample(MyDbContext context)
-{
+static void ProjectionExample(MyDbContext context) =>
     _ = context.Orders.Select(o => new Order
     {
-        Id = o.Id,                  // Requested (and primary key)
-        CustomerId = o.CustomerId,  // Automatically included (foreign key)
-        OrderNumber = o.OrderNumber // Requested
+        // Requested (and primary key)
+        Id = o.Id,
+        // Automatically included (foreign key)
+        CustomerId = o.CustomerId,
+        // Requested
+        OrderNumber = o.OrderNumber
     });
-}
 ```
-<sup><a href='/src/Snippets/ProjectionSnippets.cs#L17-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionExpression' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L19-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionExpression' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Note that `TotalAmount` and `InternalNotes` are **not** loaded from the database since they weren't requested.
@@ -120,15 +121,16 @@ The automatic inclusion of foreign keys is particularly useful when writing cust
 <!-- snippet: ProjectionCustomResolver -->
 <a id='snippet-ProjectionCustomResolver'></a>
 ```cs
-public class OrderGraph : EfObjectGraphType<MyDbContext, Order>
+public class OrderGraph :
+    EfObjectGraphType<MyDbContext, Order>
 {
-    public OrderGraph(IEfGraphQLService<MyDbContext> graphQlService) : base(graphQlService)
-    {
+    public OrderGraph(IEfGraphQLService<MyDbContext> graphQlService) :
+        base(graphQlService) =>
         // Custom field that uses the foreign key
         Field<StringGraphType>("customerName")
             .ResolveAsync(async context =>
             {
-                var data = context.DataContext();
+                var data = base.ResolveDbContext(context);
                 // CustomerId is available even though it wasn't in the GraphQL query
                 var customer = await data.Customers
                     .Where(c => c.Id == context.Source.CustomerId)
@@ -136,10 +138,9 @@ public class OrderGraph : EfObjectGraphType<MyDbContext, Order>
                     .SingleAsync();
                 return customer;
             });
-    }
 }
 ```
-<sup><a href='/src/Snippets/ProjectionSnippets.cs#L31-L52' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionCustomResolver' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L34-L55' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionCustomResolver' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0` (or `Guid.Empty` for Guid keys) if `customerId` wasn't explicitly requested in the GraphQL query, causing the query to fail.
@@ -476,8 +477,8 @@ public class Query :
             .Resolve(context =>
             {
                 // uses the base QueryGraphType to resolve the db context
-                var dbContext = ResolveDbContext(context);
-                return dbContext.Companies.Where(_ => _.Age > 10);
+                var data = ResolveDbContext(context);
+                return data.Companies.Where(_ => _.Age > 10);
             });
 }
 ```
