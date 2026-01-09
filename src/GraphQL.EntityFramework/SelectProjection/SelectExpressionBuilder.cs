@@ -17,7 +17,6 @@ static class SelectExpressionBuilder
     static MethodInfo toListMethod = enumerableType
         .GetMethod("ToList", BindingFlags.Static | BindingFlags.Public)!;
 
-    static ConcurrentDictionary<string, object> cache = new();
     static ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
     record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding? Binding, MethodInfo OrderByMethod);
@@ -36,12 +35,7 @@ static class SelectExpressionBuilder
         [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression)
         where TEntity : class
     {
-        var cacheKey = BuildCacheKey<TEntity>(projection);
-        var result = cache.GetOrAdd(
-            cacheKey,
-            _ => BuildExpression<TEntity>(projection, keyNames)!);
-
-        expression = result as Expression<Func<TEntity, TEntity>>;
+        expression = BuildExpression<TEntity>(projection, keyNames);
         return expression != null;
     }
 
@@ -224,7 +218,7 @@ static class SelectExpressionBuilder
     {
         // Pre-size collections to avoid reallocations
         var capacity = projection.KeyNames.Count + projection.ScalarFields.Count + projection.Navigations.Count;
-        bindings = new List<MemberBinding>(capacity);
+        bindings = new(capacity);
         var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
         var properties = GetEntityMetadata(entityType).Properties;
 
@@ -387,37 +381,4 @@ static class SelectExpressionBuilder
 
             return new(parameter, dictionary, newInstance, selectMethod, toListMethod, nullConstant);
         });
-
-    static string BuildCacheKey<TEntity>(FieldProjectionInfo projection)
-    {
-        var builder = new StringBuilder();
-        builder.Append(typeof(TEntity).FullName);
-        builder.Append('|');
-        BuildProjectionKey(builder, projection);
-        return builder.ToString();
-    }
-
-    static void BuildProjectionKey(StringBuilder builder, FieldProjectionInfo projection)
-    {
-        // Sort scalar fields for consistent cache key
-        var sortedScalars = projection.ScalarFields.OrderBy(_ => _, StringComparer.OrdinalIgnoreCase);
-        builder.Append(string.Join(',', sortedScalars));
-
-        if (projection.Navigations.Count <= 0)
-        {
-            return;
-        }
-
-        builder.Append('{');
-        var sortedNavs = projection.Navigations.OrderBy(_ => _.Key, StringComparer.OrdinalIgnoreCase);
-        foreach (var (navName, navProjection) in sortedNavs)
-        {
-            builder.Append(navName);
-            builder.Append(':');
-            BuildProjectionKey(builder, navProjection.Projection);
-            builder.Append(';');
-        }
-
-        builder.Append('}');
-    }
 }
