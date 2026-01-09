@@ -36,22 +36,6 @@
         return GetProjectionInfo(context, navigationProperties, keys, fks);
     }
 
-    public bool TryGetProjectionExpression<TItem>(
-        IResolveFieldContext context,
-        [NotNullWhen(true)] out Expression<Func<TItem, TItem>>? expression)
-        where TItem : class
-    {
-        expression = null;
-        var projection = GetProjection<TItem>(context);
-
-        if (projection == null)
-        {
-            return false;
-        }
-
-        return SelectExpressionBuilder.TryBuild(projection, keyNames, out expression);
-    }
-
     public bool TryGetProjectionExpressionWithFilters<TItem>(
         IResolveFieldContext context,
         IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields,

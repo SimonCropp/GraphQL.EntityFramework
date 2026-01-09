@@ -4,25 +4,6 @@ record FieldProjectionInfo(
     IReadOnlySet<string> ForeignKeyNames,
     Dictionary<string, NavigationProjectionInfo> Navigations)
 {
-    public FieldProjectionInfo MergeFilterFields(IReadOnlySet<string> filterFields)
-    {
-        var mergedScalars = new List<string>(ScalarFields);
-
-        foreach (var field in filterFields)
-        {
-            // Only merge simple property names (not navigation paths like "Parent.Name")
-            // Navigation paths require the navigation to already be in the GraphQL query
-            if (!field.Contains('.') &&
-                !mergedScalars.Contains(field, StringComparer.OrdinalIgnoreCase) &&
-                !KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase))
-            {
-                mergedScalars.Add(field);
-            }
-        }
-
-        return new(mergedScalars, KeyNames, ForeignKeyNames, Navigations);
-    }
-
     public FieldProjectionInfo MergeAllFilterFields(IReadOnlyDictionary<Type, IReadOnlySet<string>> allFilterFields, Type entityType)
     {
         // Merge filter fields for this entity type
