@@ -6,7 +6,7 @@ static class SelectExpressionBuilder
     static readonly ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
     record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding? Binding);
-    record EntityTypeMetadata(ParameterExpression Parameter, IReadOnlyDictionary<string, PropertyMetadata> Properties);
+    record EntityTypeMetadata(ParameterExpression Parameter, IReadOnlyDictionary<string, PropertyMetadata> Properties, NewExpression NewInstance);
 
     public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
@@ -92,7 +92,7 @@ static class SelectExpressionBuilder
             bindings.Add(binding);
         }
 
-        var memberInit = Expression.MemberInit(Expression.New(entityType), bindings);
+        var memberInit = Expression.MemberInit(entityMetadata.NewInstance, bindings);
         return Expression.Lambda<Func<TEntity, TEntity>>(memberInit, parameter);
     }
 
@@ -117,6 +117,7 @@ static class SelectExpressionBuilder
             return null;
         }
 
+        var navMetadata = GetEntityMetadata(navType);
         var navParam = Expression.Parameter(navType, "n");
 
         // Build the inner MemberInit for the navigation type
@@ -125,14 +126,13 @@ static class SelectExpressionBuilder
             // Can't project navigation - return null to load full entity
             return null;
         }
-        var innerMemberInit = Expression.MemberInit(Expression.New(navType), innerBindings);
+        var innerMemberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
         var innerLambda = Expression.Lambda(innerMemberInit, navParam);
 
         // Build: x.Children.OrderBy(n => n.Key) to ensure deterministic ordering
         Expression orderedCollection = navAccess;
         if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
         {
-            var navMetadata = GetEntityMetadata(navType);
             var orderParam = Expression.Parameter(navType, "o");
             if (navMetadata.Properties.TryGetValue(keys[0], out var keyMetadata))
             {
@@ -179,6 +179,8 @@ static class SelectExpressionBuilder
             return null;
         }
 
+        var navMetadata = GetEntityMetadata(navType);
+
         // x.Parent == null
         var nullCheck = Expression.Equal(navAccess, Expression.Constant(null, navType));
 
@@ -188,7 +190,7 @@ static class SelectExpressionBuilder
             // Can't project navigation - return null to load full entity
             return null;
         }
-        var memberInit = Expression.MemberInit(Expression.New(navType), innerBindings);
+        var memberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
 
         // x.Parent == null ? null : new Parent { ... }
         var conditional = Expression.Condition(
@@ -278,6 +280,8 @@ static class SelectExpressionBuilder
 
         if (navProjection.IsCollection)
         {
+            var navMetadata = GetEntityMetadata(navType);
+
             // sourceExpression.Children
             var navAccess = Expression.Property(sourceExpression, prop);
             var navParam = Expression.Parameter(navType, "n");
@@ -288,14 +292,13 @@ static class SelectExpressionBuilder
                 // Can't project navigation - return false to load full entity
                 return false;
             }
-            var innerMemberInit = Expression.MemberInit(Expression.New(navType), innerBindings);
+            var innerMemberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
             var innerLambda = Expression.Lambda(innerMemberInit, navParam);
 
             // .OrderBy(o => o.Key) to ensure deterministic ordering
             Expression orderedCollection = navAccess;
             if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
             {
-                var navMetadata = GetEntityMetadata(navType);
                 var orderParam = Expression.Parameter(navType, "o");
                 if (navMetadata.Properties.TryGetValue(keys[0], out var keyMetadata))
                 {
@@ -331,6 +334,8 @@ static class SelectExpressionBuilder
         }
         else
         {
+            var navMetadata = GetEntityMetadata(navType);
+
             // sourceExpression.Parent
             var navAccess = Expression.Property(sourceExpression, prop);
 
@@ -343,7 +348,7 @@ static class SelectExpressionBuilder
                 // Can't project navigation - return false to load full entity
                 return false;
             }
-            var memberInit = Expression.MemberInit(Expression.New(navType), innerBindings);
+            var memberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
 
             // sourceExpression.Parent == null ? null : new Parent { ... }
             var conditional = Expression.Condition(
@@ -370,7 +375,8 @@ static class SelectExpressionBuilder
                 dict[prop.Name] = new(prop, prop.CanWrite, propertyAccess, binding);
             }
 
-            return new(parameter, dict);
+            var newInstance = Expression.New(t);
+            return new(parameter, dict, newInstance);
         });
 
     static bool TryGetProperty(Type type, string name, [NotNullWhen(true)] out PropertyInfo? property)
