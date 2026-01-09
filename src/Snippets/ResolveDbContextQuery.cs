@@ -13,8 +13,8 @@ class ResolveDbContextQuery
                 .Resolve(context =>
                 {
                     // uses the base QueryGraphType to resolve the db context
-                    var dbContext = ResolveDbContext(context);
-                    return dbContext.Companies.Where(_ => _.Age > 10);
+                    var data = ResolveDbContext(context);
+                    return data.Companies.Where(_ => _.Age > 10);
                 });
     }
 
@@ -31,12 +31,6 @@ class ResolveDbContextQuery
         public int Age { get; set; }
     }
 
-    class CompanyGraph:
-        EfObjectGraphType<MyDbContext,Company>
-    {
-        public CompanyGraph(IEfGraphQLService<MyDbContext> efGraphQlService) :
-            base(efGraphQlService)
-        {
-        }
-    }
+    class CompanyGraph(IEfGraphQLService<MyDbContext> efGraphQlService) :
+        EfObjectGraphType<MyDbContext, Company>(efGraphQlService);
 }

@@ -11,8 +11,11 @@
 },
   sql: {
     Text:
-select d.Id,
-       d.Property
-from   DerivedChildEntities as d
+select   d.Id,
+         d.ParentId,
+         d.TypedParentId,
+         d.Property
+from     DerivedChildEntities as d
+order by d.Property
   }
 }

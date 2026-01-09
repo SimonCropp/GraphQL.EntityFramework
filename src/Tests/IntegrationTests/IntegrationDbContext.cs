@@ -71,10 +71,12 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasMany(_ => _.Children)
             .WithOne(_ => _.TypedParent!)
             .HasForeignKey(_ => _.TypedParentId);
-        modelBuilder.Entity<DerivedChildEntity>()
+        var derivedChildEntity = modelBuilder.Entity<DerivedChildEntity>();
+        derivedChildEntity
             .HasOne(_ => _.Parent)
             .WithMany(_ => _.ChildrenFromBase)
             .HasForeignKey(_ => _.ParentId);
+        derivedChildEntity.OrderBy(_ => _.Property);
         modelBuilder.Entity<ManyToManyRightEntity>()
             .HasMany(_ => _.Lefts)
             .WithMany(_ => _.Rights)

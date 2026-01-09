@@ -42,6 +42,72 @@ context.Heros
 The string for the include is taken from the field name when using `AddNavigationField` or `AddNavigationConnectionField` with the first character upper cased. This value can be overridden using the optional parameter `includeNames` . Note that `includeNames` is an `IEnumerable<string>` so that multiple navigation properties can optionally be included for a single node.
 
 
+## Projections
+
+GraphQL.EntityFramework automatically optimizes Entity Framework queries by using projections. When a GraphQL query is executed, only the fields explicitly requested in the query are loaded from the database, rather than loading entire entity objects.
+
+
+### How Projections Work
+
+When querying entities through GraphQL, the incoming query is analyzed and a projection expression is built that includes:
+
+1. **Primary Keys** - Always included (e.g., `Id`)
+2. **Foreign Keys** - Always included automatically (e.g., `ParentId`, `CategoryId`)
+3. **Requested Scalar Fields** - Fields explicitly requested in the GraphQL query
+4. **Navigation Properties** - With their own nested projections
+
+For example, given this entity:
+
+snippet: ProjectionEntity
+
+And this GraphQL query:
+
+```graphql
+{
+  order(id: "1") {
+    id
+    orderNumber
+  }
+}
+```
+
+The library will generate an EF query that projects to:
+
+snippet: ProjectionExpression
+
+Note that `TotalAmount` and `InternalNotes` are **not** loaded from the database since they weren't requested.
+
+
+### Foreign Keys in Custom Resolvers
+
+The automatic inclusion of foreign keys is useful when writing custom field resolvers. Since foreign keys are always available in the projected entity, it is safe to use them without worrying about whether they were explicitly requested:
+
+snippet: ProjectionCustomResolver
+
+Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0` (or `Guid.Empty` for Guid keys) if `customerId` wasn't explicitly requested in the GraphQL query, causing the query to fail.
+
+
+### When Projections Are Not Used
+
+Projections are bypassed and the full entity is loaded in these cases:
+
+1. **Read-only computed properties** - When any property has no setter or is expression-bodied (at any level, including nested navigations)
+2. **Abstract entity types** - When the root entity type or any navigation property type is abstract
+
+In these cases, the query falls back to loading the complete entity with all its properties.
+
+
+### Performance Benefits
+
+Projections provide significant performance improvements:
+
+- **Reduced database load** - Only requested columns are retrieved from the database
+- **Less data transferred** - Smaller result sets from database to application
+- **Lower memory usage** - Smaller objects in memory
+
+For queries that request only a few fields from entities with many properties, the performance improvement can be substantial.
+
+
 ## Fields
 
 Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet.github.io/docs/getting-started/introduction#queries). Fields can be mapped to Entity Framework by using `IEfGraphQLService`. `IEfGraphQLService` can be used in either a root query or a nested query via dependency injection. Alternatively convenience methods are exposed on the types `EfObjectGraphType` or `EfObjectGraphType<TSource>` for root or nested graphs respectively. The below samples all use the base type approach as it results in slightly less code.

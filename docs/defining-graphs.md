@@ -49,6 +49,124 @@ context.Heros
 The string for the include is taken from the field name when using `AddNavigationField` or `AddNavigationConnectionField` with the first character upper cased. This value can be overridden using the optional parameter `includeNames` . Note that `includeNames` is an `IEnumerable<string>` so that multiple navigation properties can optionally be included for a single node.
 
 
+## Projections
+
+GraphQL.EntityFramework automatically optimizes Entity Framework queries by using projections. When a GraphQL query is executed, only the fields explicitly requested in the query are loaded from the database, rather than loading entire entity objects.
+
+
+### How Projections Work
+
+When querying entities through GraphQL, the incoming query is analyzed and a projection expression is built that includes:
+
+1. **Primary Keys** - Always included (e.g., `Id`)
+2. **Foreign Keys** - Always included automatically (e.g., `ParentId`, `CategoryId`)
+3. **Requested Scalar Fields** - Fields explicitly requested in the GraphQL query
+4. **Navigation Properties** - With their own nested projections
+
+For example, given this entity:
+
+<!-- snippet: ProjectionEntity -->
+<a id='snippet-ProjectionEntity'></a>
+```cs
+public class Order
+{
+    public int Id { get; set; }                    // Primary key
+    public int CustomerId { get; set; }            // Foreign key
+    public Customer Customer { get; set; } = null!;         // Navigation property
+    public string OrderNumber { get; set; } = null!;
+    public decimal TotalAmount { get; set; }
+    public string InternalNotes { get; set; } = null!;
+}
+```
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L5-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionEntity' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+And this GraphQL query:
+
+```graphql
+{
+  order(id: "1") {
+    id
+    orderNumber
+  }
+}
+```
+
+The library will generate an EF query that projects to:
+
+<!-- snippet: ProjectionExpression -->
+<a id='snippet-ProjectionExpression'></a>
+```cs
+static void ProjectionExample(MyDbContext context) =>
+    _ = context.Orders.Select(o => new Order
+    {
+        // Requested (and primary key)
+        Id = o.Id,
+        // Automatically included (foreign key)
+        CustomerId = o.CustomerId,
+        // Requested
+        OrderNumber = o.OrderNumber
+    });
+```
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L19-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionExpression' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Note that `TotalAmount` and `InternalNotes` are **not** loaded from the database since they weren't requested.
+
+
+### Foreign Keys in Custom Resolvers
+
+The automatic inclusion of foreign keys is useful when writing custom field resolvers. Since foreign keys are always available in the projected entity, it is safe to use them without worrying about whether they were explicitly requested:
+
+<!-- snippet: ProjectionCustomResolver -->
+<a id='snippet-ProjectionCustomResolver'></a>
+```cs
+public class OrderGraph :
+    EfObjectGraphType<MyDbContext, Order>
+{
+    public OrderGraph(IEfGraphQLService<MyDbContext> graphQlService) :
+        base(graphQlService) =>
+        // Custom field that uses the foreign key
+        Field<StringGraphType>("customerName")
+            .ResolveAsync(async context =>
+            {
+                var data = base.ResolveDbContext(context);
+                // CustomerId is available even though it wasn't in the GraphQL query
+                var customer = await data.Customers
+                    .Where(c => c.Id == context.Source.CustomerId)
+                    .Select(c => c.Name)
+                    .SingleAsync();
+                return customer;
+            });
+}
+```
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L34-L55' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionCustomResolver' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0` (or `Guid.Empty` for Guid keys) if `customerId` wasn't explicitly requested in the GraphQL query, causing the query to fail.
+
+
+### When Projections Are Not Used
+
+Projections are bypassed and the full entity is loaded in these cases:
+
+1. **Read-only computed properties** - When any property has no setter or is expression-bodied (at any level, including nested navigations)
+2. **Abstract entity types** - When the root entity type or any navigation property type is abstract
+
+In these cases, the query falls back to loading the complete entity with all its properties.
+
+
+### Performance Benefits
+
+Projections provide significant performance improvements:
+
+- **Reduced database load** - Only requested columns are retrieved from the database
+- **Less data transferred** - Smaller result sets from database to application
+- **Lower memory usage** - Smaller objects in memory
+
+For queries that request only a few fields from entities with many properties, the performance improvement can be substantial.
+
+
 ## Fields
 
 Queries in GraphQL.net are defined using the [Fields API](https://graphql-dotnet.github.io/docs/getting-started/introduction#queries). Fields can be mapped to Entity Framework by using `IEfGraphQLService`. `IEfGraphQLService` can be used in either a root query or a nested query via dependency injection. Alternatively convenience methods are exposed on the types `EfObjectGraphType` or `EfObjectGraphType<TSource>` for root or nested graphs respectively. The below samples all use the base type approach as it results in slightly less code.
@@ -324,20 +442,16 @@ Field<ListGraphType<EmployeeSummaryGraphType>>("employeeSummary")
             query = query.Where(predicate);
         }
 
-        return from q in query
-            group q by new
+        return query
+            .GroupBy(_ => _.CompanyId)
+            .Select(_ => new EmployeeSummary
             {
-                q.CompanyId
-            }
-            into g
-            select new EmployeeSummary
-            {
-                CompanyId = g.Key.CompanyId,
-                AverageAge = g.Average(_ => _.Age),
-            };
+                CompanyId = _.Key,
+                AverageAge = _.Average(_ => _.Age),
+            });
     });
 ```
-<sup><a href='/src/SampleWeb/Query.cs#L52-L82' title='Snippet source file'>snippet source</a> | <a href='#snippet-ManuallyApplyWhere' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb/Query.cs#L52-L78' title='Snippet source file'>snippet source</a> | <a href='#snippet-ManuallyApplyWhere' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -357,8 +471,8 @@ public class Query :
             .Resolve(context =>
             {
                 // uses the base QueryGraphType to resolve the db context
-                var dbContext = ResolveDbContext(context);
-                return dbContext.Companies.Where(_ => _.Age > 10);
+                var data = ResolveDbContext(context);
+                return data.Companies.Where(_ => _.Age > 10);
             });
 }
 ```

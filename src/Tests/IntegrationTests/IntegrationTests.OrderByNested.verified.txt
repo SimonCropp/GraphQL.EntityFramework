@@ -15,6 +15,7 @@
   sql: {
     Text:
 select   c.Id,
+         c.ParentId,
          c.Property
 from     ChildEntities as c
          left outer join
