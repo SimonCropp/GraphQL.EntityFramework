@@ -3,6 +3,9 @@ namespace GraphQL.EntityFramework;
 static class SelectExpressionBuilder
 {
     static readonly ConcurrentDictionary<string, object> cache = new();
+    static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, PropertyMetadata>> propertyCache = new();
+
+    record PropertyMetadata(PropertyInfo Property, bool CanWrite);
 
     public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
@@ -32,8 +35,7 @@ static class SelectExpressionBuilder
         // 1. Always include key properties
         foreach (var keyName in projection.KeyNames)
         {
-            if (TryGetProperty(entityType, keyName, out var prop) &&
-                prop.CanWrite &&
+            if (TryGetWritableProperty(entityType, keyName, out var prop) &&
                 addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
@@ -43,8 +45,7 @@ static class SelectExpressionBuilder
         // 2. Always include foreign key properties
         foreach (var fkName in projection.ForeignKeyNames)
         {
-            if (TryGetProperty(entityType, fkName, out var prop) &&
-                prop.CanWrite &&
+            if (TryGetWritableProperty(entityType, fkName, out var prop) &&
                 addedProperties.Add(prop.Name))
             {
                 bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
@@ -52,19 +53,20 @@ static class SelectExpressionBuilder
         }
 
         // 3. Add requested scalar properties
+        var properties = GetPropertiesForType(entityType);
         foreach (var fieldName in projection.ScalarFields)
         {
-            if (TryGetProperty(entityType, fieldName, out var prop) &&
-                addedProperties.Add(prop.Name))
+            if (properties.TryGetValue(fieldName, out var metadata) &&
+                addedProperties.Add(metadata.Property.Name))
             {
-                if (!prop.CanWrite)
+                if (!metadata.CanWrite)
                 {
                     // Read-only property (expression-bodied or database computed column)
                     // Can't use projection - return null to load full entity
                     return null;
                 }
 
-                bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
+                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(parameter, metadata.Property)));
             }
         }
 
@@ -210,25 +212,26 @@ static class SelectExpressionBuilder
     {
         bindings = [];
         var addedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var properties = GetPropertiesForType(entityType);
 
         // Add key properties
         foreach (var keyName in projection.KeyNames)
         {
-            if (TryGetProperty(entityType, keyName, out var prop) &&
-                prop.CanWrite &&
-                addedProperties.Add(prop.Name))
+            if (properties.TryGetValue(keyName, out var metadata) &&
+                metadata.CanWrite &&
+                addedProperties.Add(metadata.Property.Name))
             {
-                bindings.Add(Expression.Bind(prop, Expression.Property(sourceExpression, prop)));
+                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
             }
         }
 
         // Add scalar properties
         foreach (var fieldName in projection.ScalarFields)
         {
-            if (TryGetProperty(entityType, fieldName, out var prop) &&
-                addedProperties.Add(prop.Name))
+            if (properties.TryGetValue(fieldName, out var metadata) &&
+                addedProperties.Add(metadata.Property.Name))
             {
-                if (!prop.CanWrite)
+                if (!metadata.CanWrite)
                 {
                     // Read-only property (expression-bodied or database computed column)
                     // Can't use projection - return false to load full entity
@@ -236,7 +239,7 @@ static class SelectExpressionBuilder
                     return false;
                 }
 
-                bindings.Add(Expression.Bind(prop, Expression.Property(sourceExpression, prop)));
+                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
             }
         }
 
@@ -356,10 +359,44 @@ static class SelectExpressionBuilder
         }
     }
 
+    static IReadOnlyDictionary<string, PropertyMetadata> GetPropertiesForType(Type type) =>
+        propertyCache.GetOrAdd(type, t =>
+        {
+            var properties = t.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var dict = new Dictionary<string, PropertyMetadata>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var prop in properties)
+            {
+                dict[prop.Name] = new(prop, prop.CanWrite);
+            }
+
+            return dict;
+        });
+
     static bool TryGetProperty(Type type, string name, [NotNullWhen(true)] out PropertyInfo? property)
     {
-        property = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-        return property != null;
+        var properties = GetPropertiesForType(type);
+        if (properties.TryGetValue(name, out var metadata))
+        {
+            property = metadata.Property;
+            return true;
+        }
+
+        property = null;
+        return false;
+    }
+
+    static bool TryGetWritableProperty(Type type, string name, [NotNullWhen(true)] out PropertyInfo? property)
+    {
+        var properties = GetPropertiesForType(type);
+        if (properties.TryGetValue(name, out var metadata) && metadata.CanWrite)
+        {
+            property = metadata.Property;
+            return true;
+        }
+
+        property = null;
+        return false;
     }
 
     static string BuildCacheKey<TEntity>(FieldProjectionInfo projection)
