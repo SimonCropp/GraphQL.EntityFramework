@@ -280,10 +280,10 @@ static class SelectExpressionBuilder
         if (navProjection.IsCollection)
         {
             var navMetadata = GetEntityMetadata(navType);
+            var navParam = Expression.Parameter(navType, "n");
 
             // sourceExpression.Children
             var navAccess = Expression.Property(sourceExpression, prop);
-            var navParam = Expression.Parameter(navType, "n");
 
             // Build the inner MemberInit
             if (!TryBuildNavigationBindings(navParam, navType, navProjection.Projection, keyNames, out var innerBindings))
