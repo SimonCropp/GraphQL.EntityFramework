@@ -31,29 +31,31 @@ static class SelectExpressionBuilder
         var parameter = Expression.Parameter(entityType, "x");
         var bindings = new List<MemberBinding>();
         var addedProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var properties = GetPropertiesForType(entityType);
 
         // 1. Always include key properties
         foreach (var keyName in projection.KeyNames)
         {
-            if (TryGetWritableProperty(entityType, keyName, out var prop) &&
-                addedProperties.Add(prop.Name))
+            if (properties.TryGetValue(keyName, out var metadata) &&
+                metadata.CanWrite &&
+                addedProperties.Add(metadata.Property.Name))
             {
-                bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
+                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(parameter, metadata.Property)));
             }
         }
 
         // 2. Always include foreign key properties
         foreach (var fkName in projection.ForeignKeyNames)
         {
-            if (TryGetWritableProperty(entityType, fkName, out var prop) &&
-                addedProperties.Add(prop.Name))
+            if (properties.TryGetValue(fkName, out var metadata) &&
+                metadata.CanWrite &&
+                addedProperties.Add(metadata.Property.Name))
             {
-                bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
+                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(parameter, metadata.Property)));
             }
         }
 
         // 3. Add requested scalar properties
-        var properties = GetPropertiesForType(entityType);
         foreach (var fieldName in projection.ScalarFields)
         {
             if (properties.TryGetValue(fieldName, out var metadata) &&
@@ -377,19 +379,6 @@ static class SelectExpressionBuilder
     {
         var properties = GetPropertiesForType(type);
         if (properties.TryGetValue(name, out var metadata))
-        {
-            property = metadata.Property;
-            return true;
-        }
-
-        property = null;
-        return false;
-    }
-
-    static bool TryGetWritableProperty(Type type, string name, [NotNullWhen(true)] out PropertyInfo? property)
-    {
-        var properties = GetPropertiesForType(type);
-        if (properties.TryGetValue(name, out var metadata) && metadata.CanWrite)
         {
             property = metadata.Property;
             return true;
