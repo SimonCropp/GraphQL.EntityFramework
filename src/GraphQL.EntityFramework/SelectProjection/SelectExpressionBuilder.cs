@@ -5,7 +5,7 @@ static class SelectExpressionBuilder
     static readonly ConcurrentDictionary<string, object> cache = new();
     static readonly ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
-    record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding Binding);
+    record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding? Binding);
     record EntityTypeMetadata(ParameterExpression Parameter, IReadOnlyDictionary<string, PropertyMetadata> Properties);
 
     public static bool TryBuild<TEntity>(
@@ -42,7 +42,7 @@ static class SelectExpressionBuilder
                 metadata.CanWrite &&
                 addedProperties.Add(metadata.Property.Name))
             {
-                bindings.Add(metadata.Binding);
+                bindings.Add(metadata.Binding!);
             }
         }
 
@@ -53,7 +53,7 @@ static class SelectExpressionBuilder
                 metadata.CanWrite &&
                 addedProperties.Add(metadata.Property.Name))
             {
-                bindings.Add(metadata.Binding);
+                bindings.Add(metadata.Binding!);
             }
         }
 
@@ -70,7 +70,7 @@ static class SelectExpressionBuilder
                     return null;
                 }
 
-                bindings.Add(metadata.Binding);
+                bindings.Add(metadata.Binding!);
             }
         }
 
@@ -83,7 +83,7 @@ static class SelectExpressionBuilder
                 continue;
             }
 
-            var binding = BuildNavigationBinding(parameter, metadata.Property, navProjection, keyNames);
+            var binding = BuildNavigationBinding(metadata.PropertyAccess, navProjection, keyNames);
             if (binding == null)
             {
                 // Can't project navigation - return null to load full entity
@@ -97,17 +97,15 @@ static class SelectExpressionBuilder
     }
 
     static MemberBinding? BuildNavigationBinding(
-        ParameterExpression parameter,
-        PropertyInfo prop,
+        MemberExpression navAccess,
         NavigationProjectionInfo navProjection,
         IReadOnlyDictionary<Type, List<string>> keyNames) =>
         navProjection.IsCollection
-            ? BuildCollectionNavigationBinding(parameter, prop, navProjection, keyNames)
-            : BuildSingleNavigationBinding(parameter, prop, navProjection, keyNames);
+            ? BuildCollectionNavigationBinding(navAccess, navProjection, keyNames)
+            : BuildSingleNavigationBinding(navAccess, navProjection, keyNames);
 
     static MemberAssignment? BuildCollectionNavigationBinding(
-        ParameterExpression parameter,
-        PropertyInfo prop,
+        MemberExpression navAccess,
         NavigationProjectionInfo navProjection,
         IReadOnlyDictionary<Type, List<string>> keyNames)
     {
@@ -129,9 +127,6 @@ static class SelectExpressionBuilder
         }
         var innerMemberInit = Expression.MemberInit(Expression.New(navType), innerBindings);
         var innerLambda = Expression.Lambda(innerMemberInit, navParam);
-
-        // x.Children
-        var navAccess = Expression.Property(parameter, prop);
 
         // Build: x.Children.OrderBy(n => n.Key) to ensure deterministic ordering
         Expression orderedCollection = navAccess;
@@ -168,12 +163,11 @@ static class SelectExpressionBuilder
 
         var toListCall = Expression.Call(null, toListMethod, selectCall);
 
-        return Expression.Bind(prop, toListCall);
+        return Expression.Bind(navAccess.Member, toListCall);
     }
 
     static MemberBinding? BuildSingleNavigationBinding(
-        ParameterExpression parameter,
-        PropertyInfo prop,
+        MemberExpression navAccess,
         NavigationProjectionInfo navProjection,
         IReadOnlyDictionary<Type, List<string>> keyNames)
     {
@@ -184,9 +178,6 @@ static class SelectExpressionBuilder
         {
             return null;
         }
-
-        // x.Parent
-        var navAccess = Expression.Property(parameter, prop);
 
         // x.Parent == null
         var nullCheck = Expression.Equal(navAccess, Expression.Constant(null, navType));
@@ -205,7 +196,7 @@ static class SelectExpressionBuilder
             Expression.Constant(null, navType),
             memberInit);
 
-        return Expression.Bind(prop, conditional);
+        return Expression.Bind(navAccess.Member, conditional);
     }
 
     static bool TryBuildNavigationBindings(
@@ -375,7 +366,7 @@ static class SelectExpressionBuilder
             foreach (var prop in properties)
             {
                 var propertyAccess = Expression.Property(parameter, prop);
-                var binding = Expression.Bind(prop, propertyAccess);
+                var binding = prop.CanWrite ? Expression.Bind(prop, propertyAccess) : null;
                 dict[prop.Name] = new(prop, prop.CanWrite, propertyAccess, binding);
             }
 
