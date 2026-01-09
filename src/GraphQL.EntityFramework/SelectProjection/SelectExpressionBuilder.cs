@@ -2,6 +2,22 @@ namespace GraphQL.EntityFramework;
 
 static class SelectExpressionBuilder
 {
+    static Type enumerableType = typeof(Enumerable);
+
+    // Base MethodInfo instances (before MakeGenericMethod)
+    public static readonly MethodInfo OrderByMethod = enumerableType
+        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+        .First(_ => _.Name == "OrderBy" &&
+                    _.GetParameters().Length == 2);
+
+    public static readonly MethodInfo SelectMethod = enumerableType
+        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+        .First(_ => _.Name == "Select" &&
+                    _.GetParameters().Length == 2);
+
+    public static readonly MethodInfo ToListMethod = enumerableType
+        .GetMethod("ToList", BindingFlags.Static | BindingFlags.Public)!;
+
     static readonly ConcurrentDictionary<string, object> cache = new();
     static readonly ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
@@ -95,6 +111,7 @@ static class SelectExpressionBuilder
                 // Can't project navigation - return null to load full entity
                 return null;
             }
+
             bindings.Add(binding);
         }
 
@@ -132,6 +149,7 @@ static class SelectExpressionBuilder
             // Can't project navigation - return null to load full entity
             return null;
         }
+
         var innerMemberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
         var innerLambda = Expression.Lambda(innerMemberInit, navParam);
 
@@ -181,6 +199,7 @@ static class SelectExpressionBuilder
             // Can't project navigation - return null to load full entity
             return null;
         }
+
         var memberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
 
         // x.Parent == null ? null : new Parent { ... }
@@ -247,6 +266,7 @@ static class SelectExpressionBuilder
                 bindings = null;
                 return false;
             }
+
             bindings.Add(binding);
         }
 
@@ -283,6 +303,7 @@ static class SelectExpressionBuilder
                 // Can't project navigation - return false to load full entity
                 return false;
             }
+
             var innerMemberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
             var innerLambda = Expression.Lambda(innerMemberInit, navParam);
 
@@ -324,6 +345,7 @@ static class SelectExpressionBuilder
                 // Can't project navigation - return false to load full entity
                 return false;
             }
+
             var memberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
 
             // sourceExpression.Parent == null ? null : new Parent { ... }
@@ -348,20 +370,16 @@ static class SelectExpressionBuilder
             {
                 var propertyAccess = Expression.Property(parameter, property);
                 var binding = property.CanWrite ? Expression.Bind(property, propertyAccess) : null;
-                var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
-                    EnumerableMethodCache.OrderByMethod,
-                    type,
-                    property.PropertyType);
+                var orderByMethod = OrderByMethod.MakeGenericMethod(type, property.PropertyType);
                 dictionary[property.Name] = new(property, property.CanWrite, propertyAccess, binding, orderByMethod);
             }
 
             var newInstance = Expression.New(type);
-            var selectMethod = EnumerableMethodCache.MakeGenericMethod(EnumerableMethodCache.SelectMethod, type, type);
-            var toListMethod = EnumerableMethodCache.MakeGenericMethod(EnumerableMethodCache.ToListMethod, type);
+            var selectMethod = SelectMethod.MakeGenericMethod(type, type);
+            var toListMethod = ToListMethod.MakeGenericMethod(type);
 
             return new(parameter, dictionary, newInstance, selectMethod, toListMethod);
         });
-
 
     static string BuildCacheKey<TEntity>(FieldProjectionInfo projection)
     {
@@ -392,6 +410,7 @@ static class SelectExpressionBuilder
             BuildProjectionKey(builder, navProjection.Projection);
             builder.Append(';');
         }
+
         builder.Append('}');
     }
 }
