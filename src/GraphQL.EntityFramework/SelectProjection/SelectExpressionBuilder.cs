@@ -6,7 +6,24 @@ static class SelectExpressionBuilder
     static readonly ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
     record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding? Binding);
-    record EntityTypeMetadata(ParameterExpression Parameter, IReadOnlyDictionary<string, PropertyMetadata> Properties, NewExpression NewInstance);
+    record EntityTypeMetadata(
+        ParameterExpression Parameter,
+        IReadOnlyDictionary<string, PropertyMetadata> Properties,
+        NewExpression NewInstance,
+        MethodInfo SelectMethod,
+        MethodInfo ToListMethod,
+        Type EntityType)
+    {
+        readonly ConcurrentDictionary<Type, MethodInfo> orderByMethodCache = new();
+
+        public MethodInfo GetOrderByMethod(Type keyPropertyType) =>
+            orderByMethodCache.GetOrAdd(
+                keyPropertyType,
+                keyType => EnumerableMethodCache.MakeGenericMethod(
+                    EnumerableMethodCache.OrderByMethod,
+                    EntityType,
+                    keyType));
+    };
 
     public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
@@ -137,30 +154,17 @@ static class SelectExpressionBuilder
             {
                 var keyAccess = Expression.Property(navParam, keyMetadata.Property);
                 var keyLambda = Expression.Lambda(keyAccess, navParam);
-
-                var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
-                    EnumerableMethodCache.OrderByMethod,
-                    navType,
-                    keyMetadata.Property.PropertyType);
+                var orderByMethod = navMetadata.GetOrderByMethod(keyMetadata.Property.PropertyType);
 
                 orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
             }
         }
 
         // Build: x.Children.OrderBy(...).Select(n => new Child { ... })
-        var selectMethod = EnumerableMethodCache.MakeGenericMethod(
-            EnumerableMethodCache.SelectMethod,
-            navType,
-            navType);
-
-        var selectCall = Expression.Call(null, selectMethod, orderedCollection, innerLambda);
+        var selectCall = Expression.Call(null, navMetadata.SelectMethod, orderedCollection, innerLambda);
 
         // Build: .ToList()
-        var toListMethod = EnumerableMethodCache.MakeGenericMethod(
-            EnumerableMethodCache.ToListMethod,
-            navType);
-
-        var toListCall = Expression.Call(null, toListMethod, selectCall);
+        var toListCall = Expression.Call(null, navMetadata.ToListMethod, selectCall);
 
         return Expression.Bind(navAccess.Member, toListCall);
     }
@@ -302,30 +306,17 @@ static class SelectExpressionBuilder
                 {
                     var keyAccess = Expression.Property(navParam, keyMetadata.Property);
                     var keyLambda = Expression.Lambda(keyAccess, navParam);
-
-                    var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
-                        EnumerableMethodCache.OrderByMethod,
-                        navType,
-                        keyMetadata.Property.PropertyType);
+                    var orderByMethod = navMetadata.GetOrderByMethod(keyMetadata.Property.PropertyType);
 
                     orderedCollection = Expression.Call(null, orderByMethod, navAccess, keyLambda);
                 }
             }
 
             // .Select(n => new Child { ... })
-            var selectMethod = EnumerableMethodCache.MakeGenericMethod(
-                EnumerableMethodCache.SelectMethod,
-                navType,
-                navType);
-
-            var selectCall = Expression.Call(null, selectMethod, orderedCollection, innerLambda);
+            var selectCall = Expression.Call(null, navMetadata.SelectMethod, orderedCollection, innerLambda);
 
             // .ToList()
-            var toListMethod = EnumerableMethodCache.MakeGenericMethod(
-                EnumerableMethodCache.ToListMethod,
-                navType);
-
-            var toListCall = Expression.Call(null, toListMethod, selectCall);
+            var toListCall = Expression.Call(null, navMetadata.ToListMethod, selectCall);
 
             binding = Expression.Bind(prop, toListCall);
             return true;
@@ -360,21 +351,24 @@ static class SelectExpressionBuilder
     }
 
     static EntityTypeMetadata GetEntityMetadata(Type type) =>
-        entityMetadataCache.GetOrAdd(type, t =>
+        entityMetadataCache.GetOrAdd(type, type =>
         {
-            var parameter = Expression.Parameter(t, "x");
-            var properties = t.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            var dict = new Dictionary<string, PropertyMetadata>(StringComparer.OrdinalIgnoreCase);
+            var parameter = Expression.Parameter(type, "x");
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var dictionary = new Dictionary<string, PropertyMetadata>(properties.Length, StringComparer.OrdinalIgnoreCase);
 
-            foreach (var prop in properties)
+            foreach (var property in properties)
             {
-                var propertyAccess = Expression.Property(parameter, prop);
-                var binding = prop.CanWrite ? Expression.Bind(prop, propertyAccess) : null;
-                dict[prop.Name] = new(prop, prop.CanWrite, propertyAccess, binding);
+                var propertyAccess = Expression.Property(parameter, property);
+                var binding = property.CanWrite ? Expression.Bind(property, propertyAccess) : null;
+                dictionary[property.Name] = new(property, property.CanWrite, propertyAccess, binding);
             }
 
-            var newInstance = Expression.New(t);
-            return new(parameter, dict, newInstance);
+            var newInstance = Expression.New(type);
+            var selectMethod = EnumerableMethodCache.MakeGenericMethod(EnumerableMethodCache.SelectMethod, type, type);
+            var toListMethod = EnumerableMethodCache.MakeGenericMethod(EnumerableMethodCache.ToListMethod, type);
+
+            return new(parameter, dictionary, newInstance, selectMethod, toListMethod, type);
         });
 
 
