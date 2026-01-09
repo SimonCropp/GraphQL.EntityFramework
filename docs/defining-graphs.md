@@ -150,9 +150,8 @@ Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0
 
 Projections are bypassed and the full entity is loaded in these cases:
 
-1. **Read-only computed properties** - Properties with no setter or expression-bodied properties
-2. **Abstract entity types** - Cannot create projection expressions for abstract types
-3. **Projection build failures** - If the projection expression cannot be built for any reason
+1. **Read-only computed properties** - When any property has no setter or is expression-bodied (at any level, including nested navigations)
+2. **Abstract entity types** - When the root entity type or any navigation property type is abstract
 
 In these cases, the query falls back to loading the complete entity with all its properties.
 
@@ -161,10 +160,9 @@ In these cases, the query falls back to loading the complete entity with all its
 
 Projections provide significant performance improvements:
 
-- **Reduced database load** - Only requested columns are retrieved
-- **Smaller result sets** - Less data transferred over the network
+- **Reduced database load** - Only requested columns are retrieved from the database
+- **Less data transferred** - Smaller result sets from database to application
 - **Lower memory usage** - Smaller objects in memory
-- **Faster serialization** - Fewer fields to serialize to JSON
 
 For queries that request only a few fields from entities with many properties, the performance improvement can be substantial.
 

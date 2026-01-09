@@ -49,7 +49,7 @@ GraphQL.EntityFramework automatically optimizes Entity Framework queries by usin
 
 ### How Projections Work
 
-When querying entities through GraphQL, the library analyzes the incoming query and builds a projection expression that includes only:
+When querying entities through GraphQL, the incoming query is analyzed and a projection expression is built that includes:
 
 1. **Primary Keys** - Always included (e.g., `Id`)
 2. **Foreign Keys** - Always included automatically (e.g., `ParentId`, `CategoryId`)
@@ -80,7 +80,7 @@ Note that `TotalAmount` and `InternalNotes` are **not** loaded from the database
 
 ### Foreign Keys in Custom Resolvers
 
-The automatic inclusion of foreign keys is particularly useful when writing custom field resolvers. Since foreign keys are always available in the projected entity, it is safe to use them without worrying about whether they were explicitly requested:
+The automatic inclusion of foreign keys is useful when writing custom field resolvers. Since foreign keys are always available in the projected entity, it is safe to use them without worrying about whether they were explicitly requested:
 
 snippet: ProjectionCustomResolver
 
@@ -91,9 +91,8 @@ Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0
 
 Projections are bypassed and the full entity is loaded in these cases:
 
-1. **Read-only computed properties** - Properties with no setter or expression-bodied properties
-2. **Abstract entity types** - Cannot create projection expressions for abstract types
-3. **Projection build failures** - If the projection expression cannot be built for any reason
+1. **Read-only computed properties** - When any property has no setter or is expression-bodied (at any level, including nested navigations)
+2. **Abstract entity types** - When the root entity type or any navigation property type is abstract
 
 In these cases, the query falls back to loading the complete entity with all its properties.
 
@@ -102,10 +101,9 @@ In these cases, the query falls back to loading the complete entity with all its
 
 Projections provide significant performance improvements:
 
-- **Reduced database load** - Only requested columns are retrieved
-- **Smaller result sets** - Less data transferred over the network
+- **Reduced database load** - Only requested columns are retrieved from the database
+- **Less data transferred** - Smaller result sets from database to application
 - **Lower memory usage** - Smaller objects in memory
-- **Faster serialization** - Fewer fields to serialize to JSON
 
 For queries that request only a few fields from entities with many properties, the performance improvement can be substantial.
 
