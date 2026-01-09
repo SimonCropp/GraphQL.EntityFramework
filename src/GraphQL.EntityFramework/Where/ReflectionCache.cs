@@ -210,9 +210,9 @@
             var newPropertyInfos = typeProperties
                 .Where(_ => !propertyInfos.Contains(_));
 
-            propertyInfos.InsertRange(0, newPropertyInfos);
+            propertyInfos.AddRange(newPropertyInfos);
         }
 
-        return propertyInfos.ToArray();
+        return propertyInfos;
     }
 }
