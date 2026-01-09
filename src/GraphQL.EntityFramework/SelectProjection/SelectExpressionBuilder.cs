@@ -133,11 +133,10 @@ static class SelectExpressionBuilder
         Expression orderedCollection = navAccess;
         if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
         {
-            var orderParam = Expression.Parameter(navType, "o");
             if (navMetadata.Properties.TryGetValue(keys[0], out var keyMetadata))
             {
-                var keyAccess = Expression.Property(orderParam, keyMetadata.Property);
-                var keyLambda = Expression.Lambda(keyAccess, orderParam);
+                var keyAccess = Expression.Property(navParam, keyMetadata.Property);
+                var keyLambda = Expression.Lambda(keyAccess, navParam);
 
                 var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
                     EnumerableMethodCache.OrderByMethod,
@@ -299,11 +298,10 @@ static class SelectExpressionBuilder
             Expression orderedCollection = navAccess;
             if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
             {
-                var orderParam = Expression.Parameter(navType, "o");
                 if (navMetadata.Properties.TryGetValue(keys[0], out var keyMetadata))
                 {
-                    var keyAccess = Expression.Property(orderParam, keyMetadata.Property);
-                    var keyLambda = Expression.Lambda(keyAccess, orderParam);
+                    var keyAccess = Expression.Property(navParam, keyMetadata.Property);
+                    var keyLambda = Expression.Lambda(keyAccess, navParam);
 
                     var orderByMethod = EnumerableMethodCache.MakeGenericMethod(
                         EnumerableMethodCache.OrderByMethod,
@@ -379,18 +377,6 @@ static class SelectExpressionBuilder
             return new(parameter, dict, newInstance);
         });
 
-    static bool TryGetProperty(Type type, string name, [NotNullWhen(true)] out PropertyInfo? property)
-    {
-        var metadata = GetEntityMetadata(type);
-        if (metadata.Properties.TryGetValue(name, out var propertyMetadata))
-        {
-            property = propertyMetadata.Property;
-            return true;
-        }
-
-        property = null;
-        return false;
-    }
 
     static string BuildCacheKey<TEntity>(FieldProjectionInfo projection)
     {
