@@ -4,22 +4,21 @@ static class SelectExpressionBuilder
 {
     static Type enumerableType = typeof(Enumerable);
 
-    // Base MethodInfo instances (before MakeGenericMethod)
-    public static readonly MethodInfo OrderByMethod = enumerableType
+    static MethodInfo orderByMethod = enumerableType
         .GetMethods(BindingFlags.Static | BindingFlags.Public)
         .First(_ => _.Name == "OrderBy" &&
                     _.GetParameters().Length == 2);
 
-    public static readonly MethodInfo SelectMethod = enumerableType
+    static MethodInfo selectMethod = enumerableType
         .GetMethods(BindingFlags.Static | BindingFlags.Public)
         .First(_ => _.Name == "Select" &&
                     _.GetParameters().Length == 2);
 
-    public static readonly MethodInfo ToListMethod = enumerableType
+    static MethodInfo toListMethod = enumerableType
         .GetMethod("ToList", BindingFlags.Static | BindingFlags.Public)!;
 
-    static readonly ConcurrentDictionary<string, object> cache = new();
-    static readonly ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
+    static ConcurrentDictionary<string, object> cache = new();
+    static ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
     record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding? Binding, MethodInfo OrderByMethod);
 
@@ -370,13 +369,13 @@ static class SelectExpressionBuilder
             {
                 var propertyAccess = Expression.Property(parameter, property);
                 var binding = property.CanWrite ? Expression.Bind(property, propertyAccess) : null;
-                var orderByMethod = OrderByMethod.MakeGenericMethod(type, property.PropertyType);
+                var orderByMethod = SelectExpressionBuilder.orderByMethod.MakeGenericMethod(type, property.PropertyType);
                 dictionary[property.Name] = new(property, property.CanWrite, propertyAccess, binding, orderByMethod);
             }
 
             var newInstance = Expression.New(type);
-            var selectMethod = SelectMethod.MakeGenericMethod(type, type);
-            var toListMethod = ToListMethod.MakeGenericMethod(type);
+            var selectMethod = SelectExpressionBuilder.selectMethod.MakeGenericMethod(type, type);
+            var toListMethod = SelectExpressionBuilder.toListMethod.MakeGenericMethod(type);
 
             return new(parameter, dictionary, newInstance, selectMethod, toListMethod);
         });
