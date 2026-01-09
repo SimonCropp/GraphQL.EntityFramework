@@ -12,6 +12,8 @@
   sql: {
     Text:
 select d.Id,
+       d.ParentId,
+       d.TypedParentId,
        d.Property
 from   DerivedChildEntities as d
   }

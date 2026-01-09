@@ -63,6 +63,7 @@
   sql: {
     Text:
 select   c.Id,
+         c.ParentId,
          c.Property,
          case when p.Id is null then cast (1 as bit) else cast (0 as bit) end,
          p.Id,

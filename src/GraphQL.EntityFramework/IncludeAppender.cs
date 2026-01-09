@@ -1,6 +1,7 @@
 ﻿class IncludeAppender(
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
-    IReadOnlyDictionary<Type, List<string>> keyNames)
+    IReadOnlyDictionary<Type, List<string>> keyNames,
+    IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys)
 {
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class
@@ -30,8 +31,9 @@
         var type = typeof(TItem);
         navigations.TryGetValue(type, out var navigationProperties);
         keyNames.TryGetValue(type, out var keys);
+        foreignKeys.TryGetValue(type, out var fks);
 
-        return GetProjectionInfo(context, navigationProperties, keys ?? []);
+        return GetProjectionInfo(context, navigationProperties, keys ?? [], fks ?? new HashSet<string>());
     }
 
     public bool TryGetProjectionExpression<TItem>(
@@ -76,7 +78,8 @@
     FieldProjectionInfo GetProjectionInfo(
         IResolveFieldContext context,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        List<string> keys)
+        List<string> keys,
+        IReadOnlySet<string> foreignKeyNames)
     {
         var scalarFields = new List<string>();
         var navProjections = new Dictionary<string, NavigationProjectionInfo>();
@@ -97,7 +100,7 @@
             }
         }
 
-        return new(scalarFields, keys, navProjections);
+        return new(scalarFields, keys, foreignKeyNames, navProjections);
     }
 
     void ProcessConnectionNodeFields(
@@ -157,15 +160,17 @@
                     var navType = navigation.Type;
                     navigations.TryGetValue(navType, out var nestedNavProps);
                     keyNames.TryGetValue(navType, out var nestedKeys);
+                    foreignKeys.TryGetValue(navType, out var nestedFks);
 
                     // Only the first (primary) navigation gets the nested projection from the query
-                    // Other navigations get empty projections (select all their keys)
+                    // Other navigations get empty projections (select all their keys and foreign keys)
                     var nestedProjection = addedAny
-                        ? new([], nestedKeys ?? [], [])
+                        ? new([], nestedKeys ?? [], nestedFks ?? new HashSet<string>(), [])
                         : GetNestedProjection(
                             fieldInfo.Field.SelectionSet,
                             nestedNavProps,
                             nestedKeys ?? [],
+                            nestedFks ?? new HashSet<string>(),
                             context);
 
                     navProjections[navigation.Name] = new(
@@ -192,11 +197,13 @@
             var navType = navByName.Type;
             navigations.TryGetValue(navType, out var nestedNavProps);
             keyNames.TryGetValue(navType, out var nestedKeys);
+            foreignKeys.TryGetValue(navType, out var nestedFks);
 
             var nestedProjection = GetNestedProjection(
                 fieldInfo.Field.SelectionSet,
                 nestedNavProps,
                 nestedKeys ?? [],
+                nestedFks ?? new HashSet<string>(),
                 context);
 
             navProjections[navByName.Name] = new(
@@ -215,6 +222,7 @@
         GraphQLSelectionSet? selectionSet,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
         List<string> keys,
+        IReadOnlySet<string> foreignKeyNames,
         IResolveFieldContext context)
     {
         var scalarFields = new List<string>();
@@ -222,7 +230,7 @@
 
         if (selectionSet?.Selections is null)
         {
-            return new(scalarFields, keys, navProjections);
+            return new(scalarFields, keys, foreignKeyNames, navProjections);
         }
 
         // Process direct fields
@@ -262,7 +270,7 @@
             }
         }
 
-        return new(scalarFields, keys, navProjections);
+        return new(scalarFields, keys, foreignKeyNames, navProjections);
     }
 
     void ProcessNestedProjectionField(
@@ -291,11 +299,13 @@
             var navType = navigation.Type;
             navigations.TryGetValue(navType, out var nestedNavProps);
             keyNames.TryGetValue(navType, out var nestedKeys);
+            foreignKeys.TryGetValue(navType, out var nestedFks);
 
             var nestedProjection = GetNestedProjection(
                 field.SelectionSet,
                 nestedNavProps,
                 nestedKeys ?? [],
+                nestedFks ?? new HashSet<string>(),
                 context);
 
             navProjections[navigation.Name] = new(

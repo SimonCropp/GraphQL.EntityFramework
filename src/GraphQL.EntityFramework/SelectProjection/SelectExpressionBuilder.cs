@@ -40,7 +40,18 @@ static class SelectExpressionBuilder
             }
         }
 
-        // 2. Add requested scalar properties
+        // 2. Always include foreign key properties
+        foreach (var fkName in projection.ForeignKeyNames)
+        {
+            if (TryGetProperty(entityType, fkName, out var prop) &&
+                prop.CanWrite &&
+                addedProperties.Add(prop.Name))
+            {
+                bindings.Add(Expression.Bind(prop, Expression.Property(parameter, prop)));
+            }
+        }
+
+        // 3. Add requested scalar properties
         foreach (var fieldName in projection.ScalarFields)
         {
             if (TryGetProperty(entityType, fieldName, out var prop) &&
@@ -57,7 +68,7 @@ static class SelectExpressionBuilder
             }
         }
 
-        // 3. Add navigation properties with nested projections
+        // 4. Add navigation properties with nested projections
         foreach (var (navFieldName, navProjection) in projection.Navigations)
         {
             if (!TryGetProperty(entityType, navFieldName, out var prop) ||

@@ -1,6 +1,7 @@
 record FieldProjectionInfo(
     List<string> ScalarFields,
     List<string> KeyNames,
+    IReadOnlySet<string> ForeignKeyNames,
     Dictionary<string, NavigationProjectionInfo> Navigations)
 {
     public FieldProjectionInfo MergeFilterFields(IReadOnlySet<string> filterFields)
@@ -19,7 +20,7 @@ record FieldProjectionInfo(
             }
         }
 
-        return new(mergedScalars, KeyNames, Navigations);
+        return new(mergedScalars, KeyNames, ForeignKeyNames, Navigations);
     }
 
     public FieldProjectionInfo MergeAllFilterFields(IReadOnlyDictionary<Type, IReadOnlySet<string>> allFilterFields, Type entityType)
@@ -48,6 +49,6 @@ record FieldProjectionInfo(
             mergedNavigations[navName] = navProjection with { Projection = mergedNavProjection };
         }
 
-        return new(mergedScalars, KeyNames, mergedNavigations);
+        return new(mergedScalars, KeyNames, ForeignKeyNames, mergedNavigations);
     }
 }
