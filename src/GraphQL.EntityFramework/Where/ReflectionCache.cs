@@ -196,11 +196,12 @@
             var subType = queue.Dequeue();
             foreach (var subInterface in subType.GetInterfaces())
             {
-                if (!considered.Add(subInterface)) // Add returns false if already present
+                if (considered.Contains(subInterface))
                 {
                     continue;
                 }
 
+                considered.Add(subInterface);
                 queue.Enqueue(subInterface);
             }
 
