@@ -5,7 +5,7 @@ static class SelectExpressionBuilder
     static readonly ConcurrentDictionary<string, object> cache = new();
     static readonly ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
-    record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess);
+    record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding Binding);
     record EntityTypeMetadata(ParameterExpression Parameter, IReadOnlyDictionary<string, PropertyMetadata> Properties);
 
     public static bool TryBuild<TEntity>(
@@ -42,7 +42,7 @@ static class SelectExpressionBuilder
                 metadata.CanWrite &&
                 addedProperties.Add(metadata.Property.Name))
             {
-                bindings.Add(Expression.Bind(metadata.Property, metadata.PropertyAccess));
+                bindings.Add(metadata.Binding);
             }
         }
 
@@ -53,7 +53,7 @@ static class SelectExpressionBuilder
                 metadata.CanWrite &&
                 addedProperties.Add(metadata.Property.Name))
             {
-                bindings.Add(Expression.Bind(metadata.Property, metadata.PropertyAccess));
+                bindings.Add(metadata.Binding);
             }
         }
 
@@ -70,7 +70,7 @@ static class SelectExpressionBuilder
                     return null;
                 }
 
-                bindings.Add(Expression.Bind(metadata.Property, metadata.PropertyAccess));
+                bindings.Add(metadata.Binding);
             }
         }
 
@@ -375,7 +375,8 @@ static class SelectExpressionBuilder
             foreach (var prop in properties)
             {
                 var propertyAccess = Expression.Property(parameter, prop);
-                dict[prop.Name] = new(prop, prop.CanWrite, propertyAccess);
+                var binding = Expression.Bind(prop, propertyAccess);
+                dict[prop.Name] = new(prop, prop.CanWrite, propertyAccess, binding);
             }
 
             return new(parameter, dict);
