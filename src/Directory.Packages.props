@@ -6,8 +6,8 @@
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="ConfigureAwait.Fody" Version="3.3.2" />
-    <PackageVersion Include="EfLocalDb" Version="22.0.0" />
-    <PackageVersion Include="EfOrderBy" Version="0.1.5" />
+    <PackageVersion Include="EfLocalDb" Version="23.0.0" />
+    <PackageVersion Include="EfOrderBy" Version="0.1.6" />
     <PackageVersion Include="Fody" Version="6.9.3" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
     <PackageVersion Include="GraphQL" Version="8.8.3" />
@@ -21,7 +21,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.5" />
-    <PackageVersion Include="Polyfill" Version="9.6.0" />
+    <PackageVersion Include="Polyfill" Version="9.7.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.170" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="10.0.1" />
     <PackageVersion Include="Verify.DiffPlex" Version="3.1.2" />
