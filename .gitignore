@@ -8,5 +8,5 @@ obj/
 *.received.*
 nugets/
 nul
-.claude/settings.local.json
+*claude*
 /src/Benchmarks/BenchmarkDotNet.Artifacts
