@@ -70,7 +70,7 @@
         AddProjectedNavigationField<ParentEntity, string, string>(
             name: "anonymousProjection",
             resolve: _ => _.Source,
-            projection: entity => entity.Id.ToString() + "|" + (entity.Property ?? "null"),
+            projection: entity => entity.Id + "|" + (entity.Property ?? "null"),
             transform: data => data,
             includeNames: ["Property"]);
 

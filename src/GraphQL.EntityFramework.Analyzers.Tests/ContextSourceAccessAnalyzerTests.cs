@@ -1,11 +1,3 @@
-using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Xunit;
-
-namespace GraphQL.EntityFramework.Analyzers.Tests;
-
 public class ContextSourceAccessAnalyzerTests
 {
     [Fact]
@@ -397,7 +389,7 @@ public class ContextSourceAccessAnalyzerTests
             typeof(Console).Assembly, // System.Console
             typeof(IEfGraphQLService<>).Assembly, // GraphQL.EntityFramework
             typeof(Microsoft.EntityFrameworkCore.DbContext).Assembly, // EF Core
-            typeof(Types.ObjectGraphType).Assembly, // GraphQL
+            typeof(ObjectGraphType).Assembly, // GraphQL
             typeof(IQueryable<>).Assembly, // System.Linq.Expressions
         };
 
