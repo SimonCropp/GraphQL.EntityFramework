@@ -1,0 +1,16 @@
+﻿{
+  target:
+{
+  "data": {
+    "projectedParents": [
+      "test"
+    ]
+  }
+},
+  sql: {
+    Text:
+select   case when p.Property is not null then LOWER(p.Property) else N'empty' end
+from     ParentEntities as p
+order by p.Property
+  }
+}

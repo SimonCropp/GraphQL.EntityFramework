@@ -1,0 +1,16 @@
+﻿{
+  target: {
+    Type: NullReferenceException,
+    Message: Object reference not set to an instance of an object.
+  },
+  sql: {
+    Text:
+select l.Id,
+       case when l0.Id is null then cast (1 as bit) else cast (0 as bit) end,
+       l0.Id
+from   Level1Entities as l
+       left outer join
+       Level2Entities as l0
+       on l.Level2EntityId1 = l0.Id
+  }
+}

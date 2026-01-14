@@ -1,6 +1,7 @@
 ﻿type Query {
   customType(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [CustomType!]!
   skipLevel(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SkipLevelGraph]!
+  projectedParents: [String]
   queryFieldWithInclude(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [IncludeNonQueryableA!]!
   manyChildren(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithManyChildren!]!
   level1Entities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Level1!]!
@@ -238,6 +239,7 @@ type Child2 {
 }
 
 type Level1 {
+  level2Property: String!
   level2Entity: Level2
   id: ID!
   level2EntityId: Int
@@ -290,6 +292,11 @@ type Parent {
     where: [WhereExpression!],
     orderBy: [OrderBy!],
     ids: [ID!]): ChildConnection!
+  propertyUpper: String!
+  propertyUpperAsync: String!
+  propertyWithContext: String!
+  childrenProperties(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
+  anonymousProjection: String!
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   id: ID!
   property: String
