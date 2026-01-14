@@ -16,12 +16,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (_, proj) => Task.FromResult(transform(proj));
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => Task.FromResult(transform(proj));
         var field = BuildProjectedNavigationField(name, resolve, projection, asyncTransform, graphType, includeNames);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -38,12 +33,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (_, proj) => transform(proj);
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => transform(proj);
         var field = BuildProjectedNavigationField(name, resolve, projection, asyncTransform, graphType, includeNames);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -60,12 +50,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (ctx, proj) => Task.FromResult(transform(ctx, proj));
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> ctx, TProjection proj) => Task.FromResult(transform(ctx, proj));
         var field = BuildProjectedNavigationField(name, resolve, projection, asyncTransform, graphType, includeNames);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -91,7 +76,7 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
         Expression<Func<TEntity, TProjection>> projection,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? transform,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? graphType,
         IEnumerable<string>? includeNames)
         where TEntity : class
@@ -110,7 +95,7 @@ partial class EfGraphQLService<TDbContext>
 
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
-        if (resolve is not null && transform is not null)
+        if (resolve is not null)
         {
             field.Resolver = new FuncFieldResolver<TSource, TReturn>(
                 async context =>
@@ -172,12 +157,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (_, proj) => Task.FromResult(transform(proj));
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => Task.FromResult(transform(proj));
         var field = BuildProjectedNavigationListField(name, resolve, projection, asyncTransform, itemGraphType, includeNames, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -195,12 +175,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (_, proj) => transform(proj);
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => transform(proj);
         var field = BuildProjectedNavigationListField(name, resolve, projection, asyncTransform, itemGraphType, includeNames, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -218,12 +193,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (ctx, proj) => Task.FromResult(transform(ctx, proj));
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> ctx, TProjection proj) => Task.FromResult(transform(ctx, proj));
         var field = BuildProjectedNavigationListField(name, resolve, projection, asyncTransform, itemGraphType, includeNames, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -250,7 +220,7 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
         Expression<Func<TEntity, TProjection>> projection,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? transform,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? itemGraphType,
         IEnumerable<string>? includeNames,
         bool omitQueryArguments)
@@ -277,7 +247,7 @@ partial class EfGraphQLService<TDbContext>
 
         var compiledProjection = projection.Compile();
 
-        if (resolve is not null && transform is not null)
+        if (resolve is not null)
         {
             field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
                 async context =>
@@ -358,12 +328,7 @@ partial class EfGraphQLService<TDbContext>
             asyncResolve = ctx => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
         }
 
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (_, proj) => Task.FromResult(transform(proj));
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => Task.FromResult(transform(proj));
         var field = BuildProjectedField(name, asyncResolve, projection, asyncTransform, graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -385,12 +350,7 @@ partial class EfGraphQLService<TDbContext>
             asyncResolve = ctx => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
         }
 
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (_, proj) => transform(proj);
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => transform(proj);
         var field = BuildProjectedField(name, asyncResolve, projection, asyncTransform, graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -412,12 +372,7 @@ partial class EfGraphQLService<TDbContext>
             asyncResolve = ctx => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
         }
 
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (ctx, proj) => Task.FromResult(transform(ctx, proj));
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> ctx, TProjection proj) => Task.FromResult(transform(ctx, proj));
         var field = BuildProjectedField(name, asyncResolve, projection, asyncTransform, graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -454,12 +409,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (_, proj) => Task.FromResult(transform(proj));
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => Task.FromResult(transform(proj));
         var field = BuildProjectedField(name, resolve, projection, asyncTransform, graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -475,12 +425,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (_, proj) => transform(proj);
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => transform(proj);
         var field = BuildProjectedField(name, resolve, projection, asyncTransform, graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -496,12 +441,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? asyncTransform = null;
-        if (transform is not null)
-        {
-            asyncTransform = (ctx, proj) => Task.FromResult(transform(ctx, proj));
-        }
-
+        var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> ctx, TProjection proj) => Task.FromResult(transform(ctx, proj));
         var field = BuildProjectedField(name, resolve, projection, asyncTransform, graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -616,7 +556,7 @@ partial class EfGraphQLService<TDbContext>
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?>? resolve,
         Expression<Func<TEntity, TProjection>> projection,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>>? transform,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? graphType)
         where TEntity : class
         where TReturn : class
@@ -634,7 +574,7 @@ partial class EfGraphQLService<TDbContext>
             Resolver = new FuncFieldResolver<TSource, TReturn>(
                 async context =>
                 {
-                    if (resolve is null || transform is null)
+                    if (resolve is null)
                     {
                         return default;
                     }

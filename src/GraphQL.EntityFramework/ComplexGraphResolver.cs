@@ -99,7 +99,7 @@
 
     internal static IComplexGraphType GetComplexGraph(this FieldType fieldType)
     {
-        if (TryGetComplexGraph(fieldType, out var complex))
+        if (fieldType.TryGetComplexGraph(out var complex))
         {
             return complex;
         }

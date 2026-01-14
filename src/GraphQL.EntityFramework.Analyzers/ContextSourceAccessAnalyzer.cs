@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,7 +10,7 @@ namespace GraphQL.EntityFramework.Analyzers;
 public class ContextSourceAccessAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(DiagnosticDescriptors.ProblematicContextSourceAccess);
+        [DiagnosticDescriptors.ProblematicContextSourceAccess];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -20,7 +19,7 @@ public class ContextSourceAccessAnalyzer : DiagnosticAnalyzer
         context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
     }
 
-    void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
+    static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
@@ -68,7 +67,7 @@ public class ContextSourceAccessAnalyzer : DiagnosticAnalyzer
 
     static bool IsFieldAdditionMethod(InvocationExpressionSyntax invocation)
     {
-        string methodName = null;
+        string methodName;
 
         // Check if it's a member access (e.g., this.AddNavigationField)
         if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
@@ -167,8 +166,8 @@ public class ContextSourceAccessAnalyzer : DiagnosticAnalyzer
         var propertyName = memberAccess.Name.Identifier.Text;
 
         // Skip if property is "Id" or ends with "Id" (foreign keys)
-        if (propertyName.Equals("Id", System.StringComparison.OrdinalIgnoreCase) ||
-            propertyName.EndsWith("Id", System.StringComparison.OrdinalIgnoreCase))
+        if (propertyName.Equals("Id", StringComparison.OrdinalIgnoreCase) ||
+            propertyName.EndsWith("Id", StringComparison.OrdinalIgnoreCase))
         {
             return;
         }

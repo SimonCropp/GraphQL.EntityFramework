@@ -397,8 +397,8 @@ public class ContextSourceAccessAnalyzerTests
             typeof(Console).Assembly, // System.Console
             typeof(IEfGraphQLService<>).Assembly, // GraphQL.EntityFramework
             typeof(Microsoft.EntityFrameworkCore.DbContext).Assembly, // EF Core
-            typeof(GraphQL.Types.ObjectGraphType).Assembly, // GraphQL
-            typeof(System.Linq.IQueryable<>).Assembly, // System.Linq.Expressions
+            typeof(Types.ObjectGraphType).Assembly, // GraphQL
+            typeof(IQueryable<>).Assembly, // System.Linq.Expressions
         };
 
         foreach (var assembly in requiredAssemblies)
@@ -434,15 +434,15 @@ public class ContextSourceAccessAnalyzerTests
 
         var compilation = CSharpCompilation.Create(
             "TestAssembly",
-            syntaxTrees: new[] { syntaxTree },
+            syntaxTrees: [syntaxTree],
             references: references,
-            options: new CSharpCompilationOptions(
+            options: new(
                 OutputKind.DynamicallyLinkedLibrary,
                 nullableContextOptions: NullableContextOptions.Enable));
 
         var analyzer = new ContextSourceAccessAnalyzer();
         var compilationWithAnalyzers = compilation.WithAnalyzers(
-            ImmutableArray.Create<DiagnosticAnalyzer>(analyzer));
+            [analyzer]);
 
         var allDiagnostics = await compilationWithAnalyzers.GetAllDiagnosticsAsync();
 
@@ -451,7 +451,7 @@ public class ContextSourceAccessAnalyzerTests
         if (compilationErrors.Length > 0)
         {
             var errorMessages = string.Join("\n", compilationErrors.Select(e => $"{e.Id}: {e.GetMessage()}"));
-            throw new Exception($"Compilation errors:\n{errorMessages}");
+            throw new($"Compilation errors:\n{errorMessages}");
         }
 
         // Filter to only GQLEF001 diagnostics (ignore debug diagnostics and compilation warnings)
