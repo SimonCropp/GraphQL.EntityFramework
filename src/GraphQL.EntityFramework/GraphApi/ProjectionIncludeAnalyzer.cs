@@ -1,8 +1,3 @@
-using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Metadata;
-
-namespace GraphQL.EntityFramework;
-
 static class ProjectionIncludeAnalyzer
 {
     public static IReadOnlySet<string> ExtractNavigationIncludes<TEntity, TProjection>(
