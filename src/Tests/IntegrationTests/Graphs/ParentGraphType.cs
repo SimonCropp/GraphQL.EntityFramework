@@ -14,7 +14,8 @@
             includeNames: [ "Children" ],
             omitQueryArguments: true);
 
-        // Projected navigation field tests - simple transform
+        #region ProjectedFieldBasicTransform
+
         AddProjectedNavigationField<ParentEntity, string?, string>(
             name: "propertyUpper",
             resolve: _ => _.Source,
@@ -22,7 +23,10 @@
             transform: property => property?.ToUpper() ?? "",
             includeNames: ["Property"]);
 
-        // Projected navigation field tests - async transform
+        #endregion
+
+        #region ProjectedFieldAsyncTransform
+
         AddProjectedNavigationField<ParentEntity, string?, string>(
             name: "propertyUpperAsync",
             resolve: _ => _.Source,
@@ -34,7 +38,10 @@
             },
             includeNames: ["Property"]);
 
-        // Projected navigation field tests - context-aware transform
+        #endregion
+
+        #region ProjectedFieldContextAwareTransform
+
         AddProjectedNavigationField<ParentEntity, string?, string>(
             name: "propertyWithContext",
             resolve: _ => _.Source,
@@ -46,13 +53,18 @@
             },
             includeNames: ["Property"]);
 
-        // Projected navigation list field tests
+        #endregion
+
+        #region ProjectedFieldListField
+
         AddProjectedNavigationListField<ChildEntity, string?, string>(
             name: "childrenProperties",
             resolve: _ => _.Source.Children,
             projection: child => child.Property,
             transform: property => property ?? "empty",
             includeNames: ["Children", "Children.Property"]);
+
+        #endregion
 
         // Projected field with complex projection
         AddProjectedNavigationField<ParentEntity, string, string>(

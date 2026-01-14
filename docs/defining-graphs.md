@@ -240,70 +240,90 @@ The ProjectedField API provides a way to explicitly project and transform entity
 
 ### Basic Transform
 
-```csharp
+<!-- snippet: ProjectedFieldBasicTransform -->
+<a id='snippet-ProjectedFieldBasicTransform'></a>
+```cs
 AddProjectedNavigationField<ParentEntity, string?, string>(
     name: "propertyUpper",
-    resolve: context => context.Source,
+    resolve: _ => _.Source,
     projection: entity => entity.Property,
     transform: property => property?.ToUpper() ?? "",
     includeNames: ["Property"]);
 ```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L17-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldBasicTransform' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ### Async Transform
 
-```csharp
+<!-- snippet: ProjectedFieldAsyncTransform -->
+<a id='snippet-ProjectedFieldAsyncTransform'></a>
+```cs
 AddProjectedNavigationField<ParentEntity, string?, string>(
-    name: "enrichedProperty",
-    resolve: context => context.Source,
+    name: "propertyUpperAsync",
+    resolve: _ => _.Source,
     projection: entity => entity.Property,
     transform: async property =>
     {
-        var enriched = await _externalService.EnrichAsync(property);
-        return enriched ?? "";
+        await Task.Yield();
+        return property?.ToUpper() ?? "";
     },
     includeNames: ["Property"]);
 ```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L28-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldAsyncTransform' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ### Context-Aware Transform
 
-```csharp
+<!-- snippet: ProjectedFieldContextAwareTransform -->
+<a id='snippet-ProjectedFieldContextAwareTransform'></a>
+```cs
 AddProjectedNavigationField<ParentEntity, string?, string>(
     name: "propertyWithContext",
-    resolve: context => context.Source,
+    resolve: _ => _.Source,
     projection: entity => entity.Property,
     transform: (context, property) =>
     {
-        var userId = context.User?.FindFirst("sub")?.Value;
-        return $"{userId}: {property ?? "null"}";
+        var prefix = context.Source.Id.ToString()[..8];
+        return $"{prefix}: {property ?? "null"}";
     },
     includeNames: ["Property"]);
 ```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L43-L56' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldContextAwareTransform' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ### List Field
 
-```csharp
+<!-- snippet: ProjectedFieldListField -->
+<a id='snippet-ProjectedFieldListField'></a>
+```cs
 AddProjectedNavigationListField<ChildEntity, string?, string>(
     name: "childrenProperties",
-    resolve: context => context.Source.Children,
+    resolve: _ => _.Source.Children,
     projection: child => child.Property,
     transform: property => property ?? "empty",
     includeNames: ["Children", "Children.Property"]);
 ```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L58-L67' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldListField' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ### Nested Navigation
 
-```csharp
+<!-- snippet: ProjectedFieldNestedNavigation -->
+<a id='snippet-ProjectedFieldNestedNavigation'></a>
+```cs
 AddProjectedNavigationField<Level2Entity, string?, string>(
     name: "level2Property",
-    resolve: context => context.Source.Level2Entity,
-    projection: level2 => level2.Level3Entity.Property,
+    resolve: _ => _.Source.Level2Entity,
+    projection: level2 => level2.Level3Entity!.Property,
     transform: property => property ?? "none",
     includeNames: ["Level2Entity", "Level2Entity.Level3Entity", "Level2Entity.Level3Entity.Property"]);
 ```
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Levels/Level1GraphType.cs#L7-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldNestedNavigation' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 The `includeNames` parameter is critical - it tells Entity Framework which properties and navigation properties to load. Without it, the properties may not be available when the projection executes.
 

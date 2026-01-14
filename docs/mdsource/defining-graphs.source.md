@@ -141,70 +141,27 @@ The ProjectedField API provides a way to explicitly project and transform entity
 
 ### Basic Transform
 
-```csharp
-AddProjectedNavigationField<ParentEntity, string?, string>(
-    name: "propertyUpper",
-    resolve: context => context.Source,
-    projection: entity => entity.Property,
-    transform: property => property?.ToUpper() ?? "",
-    includeNames: ["Property"]);
-```
+snippet: ProjectedFieldBasicTransform
 
 
 ### Async Transform
 
-```csharp
-AddProjectedNavigationField<ParentEntity, string?, string>(
-    name: "enrichedProperty",
-    resolve: context => context.Source,
-    projection: entity => entity.Property,
-    transform: async property =>
-    {
-        var enriched = await _externalService.EnrichAsync(property);
-        return enriched ?? "";
-    },
-    includeNames: ["Property"]);
-```
+snippet: ProjectedFieldAsyncTransform
 
 
 ### Context-Aware Transform
 
-```csharp
-AddProjectedNavigationField<ParentEntity, string?, string>(
-    name: "propertyWithContext",
-    resolve: context => context.Source,
-    projection: entity => entity.Property,
-    transform: (context, property) =>
-    {
-        var userId = context.User?.FindFirst("sub")?.Value;
-        return $"{userId}: {property ?? "null"}";
-    },
-    includeNames: ["Property"]);
-```
+snippet: ProjectedFieldContextAwareTransform
 
 
 ### List Field
 
-```csharp
-AddProjectedNavigationListField<ChildEntity, string?, string>(
-    name: "childrenProperties",
-    resolve: context => context.Source.Children,
-    projection: child => child.Property,
-    transform: property => property ?? "empty",
-    includeNames: ["Children", "Children.Property"]);
-```
+snippet: ProjectedFieldListField
 
 
 ### Nested Navigation
 
-```csharp
-AddProjectedNavigationField<Level2Entity, string?, string>(
-    name: "level2Property",
-    resolve: context => context.Source.Level2Entity,
-    projection: level2 => level2.Level3Entity.Property,
-    transform: property => property ?? "none",
-    includeNames: ["Level2Entity", "Level2Entity.Level3Entity", "Level2Entity.Level3Entity.Property"]);
-```
+snippet: ProjectedFieldNestedNavigation
 
 The `includeNames` parameter is critical - it tells Entity Framework which properties and navigation properties to load. Without it, the properties may not be available when the projection executes.
 
