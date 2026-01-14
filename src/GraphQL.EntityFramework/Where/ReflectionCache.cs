@@ -1,85 +1,56 @@
 ﻿static class ReflectionCache
 {
-    public static MethodInfo StringAny;
-    static MethodInfo guidListContains;
-    static MethodInfo guidNullableListContains;
-    static MethodInfo intListContains;
-    static MethodInfo intNullableListContains;
-    static MethodInfo boolListContains;
-    static MethodInfo boolNullableListContains;
-    static MethodInfo shortListContains;
-    static MethodInfo shortNullableListContains;
-    static MethodInfo longListContains;
-    static MethodInfo longNullableListContains;
-    static MethodInfo uintListContains;
-    static MethodInfo uintNullableListContains;
-    static MethodInfo ushortListContains;
-    static MethodInfo ushortNullableListContains;
-    static MethodInfo ulongListContains;
-    static MethodInfo ulongNullableListContains;
-    static MethodInfo dateTimeListContains;
-    static MethodInfo dateTimeNullableListContains;
-    static MethodInfo dateTimeOffsetListContains;
-    static MethodInfo dateTimeOffsetNullableListContains;
-    public static MethodInfo StringLike = typeof(DbFunctionsExtensions).GetMethod("Like", [typeof(DbFunctions), typeof(string), typeof(string)])!;
-    public static MethodInfo StringEqual = typeof(string).GetMethod("Equals", [typeof(string), typeof(string)])!;
-    public static MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", [typeof(string)])!;
-    public static MethodInfo StringIndexOf = typeof(string).GetMethod("IndexOf", [typeof(string)])!;
-    public static MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", [typeof(string)])!;
-
-    static FrozenDictionary<Type, MethodInfo> listContainsCache;
-
-    static ReflectionCache()
-    {
-        StringAny = typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
+    public static MethodInfo StringAny =
+        typeof(Enumerable)
+            .GetMethods(BindingFlags.Static | BindingFlags.Public)
             .Single(_ => _.Name == "Any" &&
                          _.GetParameters().Length == 2)
             .MakeGenericMethod(typeof(string));
 
-        guidListContains = GetContains<Guid>();
-        guidNullableListContains = GetContains<Guid?>();
-        boolListContains = GetContains<bool>();
-        boolNullableListContains = GetContains<bool?>();
-        intListContains = GetContains<int>();
-        intNullableListContains = GetContains<int?>();
-        shortListContains = GetContains<short>();
-        shortNullableListContains = GetContains<short?>();
-        longListContains = GetContains<long>();
-        longNullableListContains = GetContains<long?>();
-        uintListContains = GetContains<uint>();
-        uintNullableListContains = GetContains<uint?>();
-        ushortListContains = GetContains<ushort>();
-        ushortNullableListContains = GetContains<ushort?>();
-        ulongListContains = GetContains<ulong>();
-        ulongNullableListContains = GetContains<ulong?>();
-        dateTimeListContains = GetContains<DateTime>();
-        dateTimeNullableListContains = GetContains<DateTime?>();
-        dateTimeOffsetListContains = GetContains<DateTimeOffset>();
-        dateTimeOffsetNullableListContains = GetContains<DateTimeOffset?>();
+    public static MethodInfo StringLike =
+        typeof(DbFunctionsExtensions)
+            .GetMethod("Like", [typeof(DbFunctions), typeof(string), typeof(string)])!;
 
-        // Build FrozenDictionary for O(1) lookups
+    public static MethodInfo StringEqual =
+        typeof(string)
+            .GetMethod("Equals", [typeof(string), typeof(string)])!;
+
+    public static MethodInfo StringStartsWith =
+        typeof(string)
+            .GetMethod("StartsWith", [typeof(string)])!;
+
+    public static MethodInfo StringIndexOf =
+        typeof(string)
+            .GetMethod("IndexOf", [typeof(string)])!;
+
+    public static MethodInfo StringEndsWith =
+        typeof(string)
+            .GetMethod("EndsWith", [typeof(string)])!;
+
+    static FrozenDictionary<Type, MethodInfo> listContainsCache;
+
+    static ReflectionCache() =>
         listContainsCache = FrozenDictionary.Create(
-            new KeyValuePair<Type, MethodInfo>(typeof(Guid), guidListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(Guid?), guidNullableListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(bool), boolListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(bool?), boolNullableListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(int), intListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(int?), intNullableListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(short), shortListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(short?), shortNullableListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(long), longListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(long?), longNullableListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(uint), uintListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(uint?), uintNullableListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(ushort), ushortListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(ushort?), ushortNullableListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(ulong), ulongListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(ulong?), ulongNullableListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(DateTime), dateTimeListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(DateTime?), dateTimeNullableListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(DateTimeOffset), dateTimeOffsetListContains),
-            new KeyValuePair<Type, MethodInfo>(typeof(DateTimeOffset?), dateTimeOffsetNullableListContains));
-    }
+            new KeyValuePair<Type, MethodInfo>(typeof(Guid), GetContains<Guid>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(Guid?), GetContains<Guid?>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(bool), GetContains<bool>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(bool?), GetContains<bool?>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(int), GetContains<int>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(int?), GetContains<int?>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(short), GetContains<short>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(short?), GetContains<short?>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(long), GetContains<long>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(long?), GetContains<long?>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(uint), GetContains<uint>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(uint?), GetContains<uint?>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(ushort), GetContains<ushort>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(ushort?), GetContains<ushort?>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(ulong), GetContains<ulong>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(ulong?), GetContains<ulong?>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(DateTime), GetContains<DateTime>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(DateTime?), GetContains<DateTime?>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(DateTimeOffset), GetContains<DateTimeOffset>()),
+            new KeyValuePair<Type, MethodInfo>(typeof(DateTimeOffset?), GetContains<DateTimeOffset?>()));
 
     public static MethodInfo? GetListContains(Type type)
     {
