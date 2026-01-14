@@ -90,7 +90,10 @@ partial class EfGraphQLService<TDbContext>
             Type = graphType
         };
 
-        IncludeAppender.SetIncludeMetadata(field, name, includeNames);
+        // Extract navigation includes from projection and merge with user-provided includes
+        var autoIncludes = ProjectionIncludeAnalyzer.ExtractNavigationIncludes(projection, model);
+        var mergedIncludes = MergeIncludes(autoIncludes, includeNames);
+        IncludeAppender.SetIncludeMetadata(field, name, mergedIncludes);
 
         field.Resolver = new FuncFieldResolver<TSource, TReturn>(
             async context =>
@@ -234,7 +237,10 @@ partial class EfGraphQLService<TDbContext>
             field.Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false, omitQueryArguments);
         }
 
-        IncludeAppender.SetIncludeMetadata(field, name, includeNames);
+        // Extract navigation includes from projection and merge with user-provided includes
+        var autoIncludes = ProjectionIncludeAnalyzer.ExtractNavigationIncludes(projection, model);
+        var mergedIncludes = MergeIncludes(autoIncludes, includeNames);
+        IncludeAppender.SetIncludeMetadata(field, name, mergedIncludes);
 
         var compiledProjection = projection.Compile();
 
@@ -554,11 +560,22 @@ partial class EfGraphQLService<TDbContext>
 
         var compiledProjection = projection.Compile();
 
+        // Extract navigation includes from projection
+        var autoIncludes = ProjectionIncludeAnalyzer.ExtractNavigationIncludes(projection, model);
+
         var fieldType = new FieldType
         {
             Name = name,
-            Type = graphType,
-            Resolver = new FuncFieldResolver<TSource, TReturn>(
+            Type = graphType
+        };
+
+        // Set metadata for auto-detected includes
+        if (autoIncludes.Count > 0)
+        {
+            IncludeAppender.SetIncludeMetadata(fieldType, name, autoIncludes);
+        }
+
+        fieldType.Resolver = new FuncFieldResolver<TSource, TReturn>(
                 async context =>
                 {
                     var fieldContext = BuildContext(context);
@@ -637,11 +654,45 @@ partial class EfGraphQLService<TDbContext>
                              """,
                             exception);
                     }
-                })
-        };
+                });
 
         return fieldType;
     }
 
     #endregion
+
+    static IEnumerable<string>? MergeIncludes(IReadOnlySet<string> autoIncludes, IEnumerable<string>? userIncludes)
+    {
+        if (autoIncludes.Count == 0 && userIncludes == null)
+        {
+            return null;
+        }
+
+        if (autoIncludes.Count == 0)
+        {
+            return userIncludes;
+        }
+
+        if (userIncludes == null)
+        {
+            // No user includes - just use auto-detected navigations
+            return autoIncludes;
+        }
+
+        // Get the base navigation path from userIncludes (first entry)
+        var baseNavigationPath = userIncludes.FirstOrDefault();
+
+        if (baseNavigationPath == null)
+        {
+            // Empty user includes - just use auto-detected navigations
+            return autoIncludes;
+        }
+
+        // Prefix auto-detected navigations with the base navigation path
+        var prefixedAutoIncludes = autoIncludes
+            .Select(include => $"{baseNavigationPath}.{include}");
+
+        // Combine user includes with prefixed auto includes and deduplicate
+        return userIncludes.Concat(prefixedAutoIncludes).Distinct();
+    }
 }

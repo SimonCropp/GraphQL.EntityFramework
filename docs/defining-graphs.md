@@ -286,10 +286,9 @@ AddProjectedNavigationField<ParentEntity, string?, string>(
     name: "propertyUpper",
     resolve: _ => _.Source,
     projection: entity => entity.Property,
-    transform: property => property?.ToUpper() ?? "",
-    includeNames: ["Property"]);
+    transform: property => property?.ToUpper() ?? "");
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L17-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldBasicTransform' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L17-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldBasicTransform' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -306,10 +305,9 @@ AddProjectedNavigationField<ParentEntity, string?, string>(
     {
         await Task.Yield();
         return property?.ToUpper() ?? "";
-    },
-    includeNames: ["Property"]);
+    });
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L28-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldAsyncTransform' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L27-L39' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldAsyncTransform' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -326,10 +324,9 @@ AddProjectedNavigationField<ParentEntity, string?, string>(
     {
         var prefix = context.Source.Id.ToString()[..8];
         return $"{prefix}: {property ?? "null"}";
-    },
-    includeNames: ["Property"]);
+    });
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L43-L56' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldContextAwareTransform' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L41-L53' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldContextAwareTransform' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -343,9 +340,9 @@ AddProjectedNavigationListField<ChildEntity, string?, string>(
     resolve: _ => _.Source.Children,
     projection: child => child.Property,
     transform: property => property ?? "empty",
-    includeNames: ["Children", "Children.Property"]);
+    includeNames: ["Children"]);
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L58-L67' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldListField' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L55-L64' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldListField' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -359,12 +356,21 @@ AddProjectedNavigationField<Level2Entity, string?, string>(
     resolve: _ => _.Source.Level2Entity,
     projection: level2 => level2.Level3Entity!.Property,
     transform: property => property ?? "none",
-    includeNames: ["Level2Entity", "Level2Entity.Level3Entity", "Level2Entity.Level3Entity.Property"]);
+    includeNames: ["Level2Entity"]);
 ```
 <sup><a href='/src/Tests/IntegrationTests/Graphs/Levels/Level1GraphType.cs#L7-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldNestedNavigation' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-The `includeNames` parameter is critical - it tells Entity Framework which properties and navigation properties to load. Without it, the properties may not be available when the projection executes.
+**Automatic Include Detection:**
+
+The `includeNames` parameter only needs to specify the base navigation path (e.g., "Level2Entity"). Navigation properties accessed within the `projection` expression are automatically detected and added to the includes.
+
+In the example above:
+- `includeNames: ["Level2Entity"]` - tells EF to load the Level2Entity navigation
+- `projection: level2 => level2.Level3Entity.Property` - automatically detects Level3Entity and adds "Level2Entity.Level3Entity" to includes
+- Final includes: `["Level2Entity", "Level2Entity.Level3Entity"]`
+
+This automatic detection ensures all required navigation properties are eager-loaded without manual specification of nested paths.
 
 
 ## Connections

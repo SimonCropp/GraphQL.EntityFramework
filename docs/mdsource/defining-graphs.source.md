@@ -202,7 +202,16 @@ snippet: ProjectedFieldListField
 
 snippet: ProjectedFieldNestedNavigation
 
-The `includeNames` parameter is critical - it tells Entity Framework which properties and navigation properties to load. Without it, the properties may not be available when the projection executes.
+**Automatic Include Detection:**
+
+The `includeNames` parameter only needs to specify the base navigation path (e.g., "Level2Entity"). Navigation properties accessed within the `projection` expression are automatically detected and added to the includes.
+
+In the example above:
+- `includeNames: ["Level2Entity"]` - tells EF to load the Level2Entity navigation
+- `projection: level2 => level2.Level3Entity.Property` - automatically detects Level3Entity and adds "Level2Entity.Level3Entity" to includes
+- Final includes: `["Level2Entity", "Level2Entity.Level3Entity"]`
+
+This automatic detection ensures all required navigation properties are eager-loaded without manual specification of nested paths.
 
 
 ## Connections

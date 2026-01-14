@@ -8,6 +8,7 @@ public partial class EfGraphQLService<TDbContext> :
     bool disableTracking;
     ResolveDbContext<TDbContext> resolveDbContext;
     IReadOnlyDictionary<Type, List<string>> keyNames;
+    IModel model;
 
     /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
     public EfGraphQLService(
@@ -16,6 +17,7 @@ public partial class EfGraphQLService<TDbContext> :
         ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false)
     {
+        this.model = model;
         this.resolveFilters = resolveFilters;
         this.disableTracking = disableTracking;
         this.resolveDbContext = resolveDbContext;
