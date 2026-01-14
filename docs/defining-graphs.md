@@ -286,10 +286,9 @@ AddProjectedNavigationField<ParentEntity, string?, string>(
     name: "propertyUpper",
     resolve: _ => _.Source,
     projection: entity => entity.Property,
-    transform: property => property?.ToUpper() ?? "",
-    includeNames: ["Property"]);
+    transform: property => property?.ToUpper() ?? "");
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L17-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldBasicTransform' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L17-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldBasicTransform' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -306,10 +305,9 @@ AddProjectedNavigationField<ParentEntity, string?, string>(
     {
         await Task.Yield();
         return property?.ToUpper() ?? "";
-    },
-    includeNames: ["Property"]);
+    });
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L28-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldAsyncTransform' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L27-L39' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldAsyncTransform' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -326,10 +324,9 @@ AddProjectedNavigationField<ParentEntity, string?, string>(
     {
         var prefix = context.Source.Id.ToString()[..8];
         return $"{prefix}: {property ?? "null"}";
-    },
-    includeNames: ["Property"]);
+    });
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L43-L56' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldContextAwareTransform' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L41-L53' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldContextAwareTransform' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -343,9 +340,9 @@ AddProjectedNavigationListField<ChildEntity, string?, string>(
     resolve: _ => _.Source.Children,
     projection: child => child.Property,
     transform: property => property ?? "empty",
-    includeNames: ["Children", "Children.Property"]);
+    includeNames: ["Children"]);
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L58-L67' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldListField' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/ParentGraphType.cs#L55-L64' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectedFieldListField' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
