@@ -16,20 +16,18 @@
 
         #region ProjectedFieldBasicTransform
 
-        AddProjectedNavigationField<ParentEntity, string?, string>(
+        AddProjectedNavigationField<string?, string>(
             name: "propertyUpper",
-            resolve: _ => _.Source,
-            projection: entity => entity.Property,
+            projection: source => source.Property,
             transform: property => property?.ToUpper() ?? "");
 
         #endregion
 
         #region ProjectedFieldAsyncTransform
 
-        AddProjectedNavigationField<ParentEntity, string?, string>(
+        AddProjectedNavigationField<string?, string>(
             name: "propertyUpperAsync",
-            resolve: _ => _.Source,
-            projection: entity => entity.Property,
+            projection: source => source.Property,
             transform: async property =>
             {
                 await Task.Yield();
@@ -40,10 +38,9 @@
 
         #region ProjectedFieldContextAwareTransform
 
-        AddProjectedNavigationField<ParentEntity, string?, string>(
+        AddProjectedNavigationField<string?, string>(
             name: "propertyWithContext",
-            resolve: _ => _.Source,
-            projection: entity => entity.Property,
+            projection: source => source.Property,
             transform: (context, property) =>
             {
                 var prefix = context.Source.Id.ToString()[..8];
@@ -56,18 +53,16 @@
 
         AddProjectedNavigationListField<ChildEntity, string?, string>(
             name: "childrenProperties",
-            resolve: _ => _.Source.Children,
+            navigation: source => source.Children,
             projection: child => child.Property,
-            transform: property => property ?? "empty",
-            includeNames: ["Children"]);
+            transform: property => property ?? "empty");
 
         #endregion
 
         // Projected field with complex projection
-        AddProjectedNavigationField<ParentEntity, string, string>(
+        AddProjectedNavigationField<string, string>(
             name: "anonymousProjection",
-            resolve: _ => _.Source,
-            projection: entity => entity.Id + "|" + (entity.Property ?? "null"),
+            projection: source => source.Id + "|" + (source.Property ?? "null"),
             transform: data => data);
 
         AutoMap();

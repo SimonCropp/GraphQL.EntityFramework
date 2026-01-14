@@ -5,51 +5,43 @@ public partial interface IEfGraphQLService<TDbContext>
     #region AddProjectedNavigationField
 
     // Simple transform (sync)
-    FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
+    FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<TProjection, TReturn> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
+        where TSource : class
         where TReturn : class;
 
     // Simple transform (async)
-    FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
+    FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
+        where TSource : class
         where TReturn : class;
 
     // Context-aware transform (sync)
-    FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
+    FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
+        where TSource : class
         where TReturn : class;
 
     // Context-aware transform (async)
-    FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
+    FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
+        where TSource : class
         where TReturn : class;
 
     #endregion
@@ -60,12 +52,12 @@ public partial interface IEfGraphQLService<TDbContext>
     FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, TReturn> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
+        where TSource : class
         where TEntity : class
         where TReturn : class;
 
@@ -73,12 +65,12 @@ public partial interface IEfGraphQLService<TDbContext>
     FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
+        where TSource : class
         where TEntity : class
         where TReturn : class;
 
@@ -86,12 +78,12 @@ public partial interface IEfGraphQLService<TDbContext>
     FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
+        where TSource : class
         where TEntity : class
         where TReturn : class;
 
@@ -99,12 +91,12 @@ public partial interface IEfGraphQLService<TDbContext>
     FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
+        where TSource : class
         where TEntity : class
         where TReturn : class;
 

@@ -5,78 +5,68 @@ partial class EfGraphQLService<TDbContext>
 {
     #region AddProjectedNavigationField
 
-    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<TProjection, TReturn> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
+        where TSource : class
         where TReturn : class
     {
-        var field = BuildProjectedNavigationField(name, resolve, projection, (_, proj) => Task.FromResult(transform(proj)), graphType, includeNames);
+        var field = BuildProjectedNavigationField(name, projection, (_, proj) => Task.FromResult(transform(proj)), graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
-    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
+        where TSource : class
         where TReturn : class
     {
-        var field = BuildProjectedNavigationField(name, resolve, projection, (_, proj) => transform(proj), graphType, includeNames);
+        var field = BuildProjectedNavigationField(name, projection, (_, proj) => transform(proj), graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
-    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
+        where TSource : class
         where TReturn : class
     {
-        var field = BuildProjectedNavigationField(name, resolve, projection, (ctx, proj) => Task.FromResult(transform(ctx, proj)), graphType, includeNames);
+        var field = BuildProjectedNavigationField(name, projection, (ctx, proj) => Task.FromResult(transform(ctx, proj)), graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
-    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
+        where TSource : class
         where TReturn : class
     {
-        var field = BuildProjectedNavigationField(name, resolve, projection, transform, graphType, includeNames);
+        var field = BuildProjectedNavigationField(name, projection, transform, graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
-    FieldType BuildProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
+    FieldType BuildProjectedNavigationField<TSource, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
-        Type? graphType,
-        IEnumerable<string>? includeNames)
-        where TEntity : class
+        Type? graphType)
+        where TSource : class
         where TReturn : class
     {
         Ensure.NotWhiteSpace(nameof(name), name);
@@ -90,47 +80,22 @@ partial class EfGraphQLService<TDbContext>
             Type = graphType
         };
 
-        // Extract navigation includes from projection and merge with user-provided includes
+        // Extract navigation includes from projection
         var autoIncludes = ProjectionIncludeAnalyzer.ExtractNavigationIncludes(projection, model);
-        var mergedIncludes = MergeIncludes(autoIncludes, includeNames);
-        IncludeAppender.SetIncludeMetadata(field, name, mergedIncludes);
+        IncludeAppender.SetIncludeMetadata(field, name, autoIncludes);
 
         field.Resolver = new FuncFieldResolver<TSource, TReturn>(
             async context =>
             {
                 var fieldContext = BuildContext(context);
 
-                TEntity? entity;
-                try
-                {
-                    entity = resolve(fieldContext);
-                }
-                catch (Exception exception)
-                {
-                    throw new(
-                        $"""
-                        Failed to execute navigation resolve for projected field `{name}`
-                        GraphType: {graphType.FullName}
-                        TSource: {typeof(TSource).FullName}
-                        TEntity: {typeof(TEntity).FullName}
-                        TProjection: {typeof(TProjection).FullName}
-                        TReturn: {typeof(TReturn).FullName}
-                        """,
-                        exception);
-                }
-
-                if (entity is null)
-                {
-                    return default;
-                }
-
                 if (fieldContext.Filters is not null &&
-                    !await fieldContext.Filters.ShouldInclude(context.UserContext, fieldContext.DbContext, context.User, entity))
+                    !await fieldContext.Filters.ShouldInclude(context.UserContext, fieldContext.DbContext, context.User, context.Source))
                 {
                     return default;
                 }
 
-                var projectedData = compiledProjection(entity);
+                var projectedData = compiledProjection(context.Source);
                 var result = await transform(fieldContext, projectedData);
                 return result;
             });
@@ -145,16 +110,16 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, TReturn> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
+        where TSource : class
         where TEntity : class
         where TReturn : class
     {
-        var field = BuildProjectedNavigationListField(name, resolve, projection, (_, proj) => Task.FromResult(transform(proj)), itemGraphType, includeNames, omitQueryArguments);
+        var field = BuildProjectedNavigationListField(name, navigation, projection, (_, proj) => Task.FromResult(transform(proj)), itemGraphType, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
@@ -162,16 +127,16 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
+        where TSource : class
         where TEntity : class
         where TReturn : class
     {
-        var field = BuildProjectedNavigationListField(name, resolve, projection, (_, proj) => transform(proj), itemGraphType, includeNames, omitQueryArguments);
+        var field = BuildProjectedNavigationListField(name, navigation, projection, (_, proj) => transform(proj), itemGraphType, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
@@ -179,16 +144,16 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
+        where TSource : class
         where TEntity : class
         where TReturn : class
     {
-        var field = BuildProjectedNavigationListField(name, resolve, projection, (ctx, proj) => Task.FromResult(transform(ctx, proj)), itemGraphType, includeNames, omitQueryArguments);
+        var field = BuildProjectedNavigationListField(name, navigation, projection, (ctx, proj) => Task.FromResult(transform(ctx, proj)), itemGraphType, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
@@ -196,28 +161,28 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
+        where TSource : class
         where TEntity : class
         where TReturn : class
     {
-        var field = BuildProjectedNavigationListField(name, resolve, projection, transform, itemGraphType, includeNames, omitQueryArguments);
+        var field = BuildProjectedNavigationListField(name, navigation, projection, transform, itemGraphType, omitQueryArguments);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
 
     FieldType BuildProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? itemGraphType,
-        IEnumerable<string>? includeNames,
         bool omitQueryArguments)
+        where TSource : class
         where TEntity : class
         where TReturn : class
     {
@@ -237,18 +202,24 @@ partial class EfGraphQLService<TDbContext>
             field.Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false, omitQueryArguments);
         }
 
-        // Extract navigation includes from projection and merge with user-provided includes
-        var autoIncludes = ProjectionIncludeAnalyzer.ExtractNavigationIncludes(projection, model);
-        var mergedIncludes = MergeIncludes(autoIncludes, includeNames);
+        // Extract navigation includes from navigation expression
+        var navigationIncludes = ProjectionIncludeAnalyzer.ExtractNavigationIncludes(navigation, model);
+
+        // Extract nested navigation includes from projection expression
+        var nestedIncludes = ProjectionIncludeAnalyzer.ExtractNavigationIncludes(projection, model);
+
+        // Merge: navigation includes + prefixed nested includes
+        var mergedIncludes = MergeIncludes(nestedIncludes, navigationIncludes);
         IncludeAppender.SetIncludeMetadata(field, name, mergedIncludes);
 
+        var compiledNavigation = navigation.Compile();
         var compiledProjection = projection.Compile();
 
         field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
             async context =>
             {
                 var fieldContext = BuildContext(context);
-                var entities = resolve(fieldContext);
+                var entities = compiledNavigation(context.Source);
 
                 if (entities is IQueryable)
                 {

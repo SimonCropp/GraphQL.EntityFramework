@@ -139,21 +139,18 @@ The ProjectedField API provides a way to explicitly project and transform entity
 **Note:** The Roslyn analyzer (GQLEF001) will warn when accessing `context.Source.PropertyName` directly, suggesting use of ProjectedField methods instead.
 
 
-### Understanding the Three Parameters
+### Understanding the Two Parameters
 
-ProjectedField methods accept three key parameters that work together to safely access entity properties:
+ProjectedField methods accept two key parameters that work together to safely access entity properties:
 
-**1. `resolve`** - Gets the entity or entities from the GraphQL context
-- For navigation fields: Returns a single entity (e.g., `context.Source`)
-- For list fields: Returns a collection (e.g., `context.Source.Children`)
-- For query fields: Returns an IQueryable (e.g., `context.DbContext.ParentEntities`)
-
-**2. `projection`** - Specifies which properties to extract from the entity
-- An Expression that tells Entity Framework which properties to SELECT from the database
+**1. `projection`** - Specifies the complete path to the data
+- An Expression showing the full navigation path from `source` to the target data
+- For navigation fields: `source => source.Property` or `source => source.Navigation.Property`
+- For list fields: Uses a `navigation` expression to get the collection, then a `projection` for each item
+- Automatically detects and includes all navigation properties in the path
 - Gets compiled once at registration time for efficiency
-- Applied to each entity to extract only the needed data
 
-**3. `transform`** - Transforms the projected data into the final GraphQL field value
+**2. `transform`** - Transforms the projected data into the final GraphQL field value
 - Receives the projected data (not the full entity)
 - Can perform calculations, formatting, async operations, etc.
 - Can optionally access the GraphQL context for context-aware transformations
@@ -161,21 +158,18 @@ ProjectedField methods accept three key parameters that work together to safely 
 **Execution flow:**
 
 ```csharp
-// 1. RESOLVE - Get the entity
-entity = resolve(fieldContext);  // e.g., returns ParentEntity
+// 1. PROJECTION - Extract needed data from source (navigations auto-included)
+var projectedData = compiledProjection(context.Source);  // e.g., extracts source.Property
 
 // 2. Apply filters (if any)
-if (!ShouldInclude(entity)) return default;
+if (!ShouldInclude(context.Source)) return default;
 
-// 3. PROJECTION - Extract needed properties
-var projectedData = compiledProjection(entity);  // e.g., extracts Property field
-
-// 4. TRANSFORM - Create final value
+// 3. TRANSFORM - Create final value
 var result = await transform(fieldContext, projectedData);  // e.g., ToUpper()
 return result;
 ```
 
-This separation ensures that the required properties are always loaded from the database before the transform runs, solving the problem where `context.Source.PropertyName` may be null if not included in the GraphQL query projection.
+This approach ensures that all required navigation properties are automatically eager-loaded from the database before the transform runs, solving the problem where `context.Source.PropertyName` may be null if not included in the GraphQL query projection.
 
 
 ### Basic Transform
@@ -204,14 +198,15 @@ snippet: ProjectedFieldNestedNavigation
 
 **Automatic Include Detection:**
 
-The `includeNames` parameter only needs to specify the base navigation path (e.g., "Level2Entity"). Navigation properties accessed within the `projection` expression are automatically detected and added to the includes.
+The projection expression automatically detects and includes all navigation properties in the path. No manual specification is required.
 
 In the example above:
-- `includeNames: ["Level2Entity"]` - tells EF to load the Level2Entity navigation
-- `projection: level2 => level2.Level3Entity.Property` - automatically detects Level3Entity and adds "Level2Entity.Level3Entity" to includes
-- Final includes: `["Level2Entity", "Level2Entity.Level3Entity"]`
+- `projection: source => source.Level2Entity.Level3Entity.Property`
+- Automatically detects: `Level2Entity` and `Level3Entity`
+- Automatically adds includes: `["Level2Entity", "Level2Entity.Level3Entity"]`
+- EF Core eager-loads both navigations before the projection executes
 
-This automatic detection ensures all required navigation properties are eager-loaded without manual specification of nested paths.
+This automatic detection ensures all required navigation properties are eager-loaded without any manual configuration.
 
 
 ## Connections

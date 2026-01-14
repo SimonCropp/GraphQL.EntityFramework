@@ -3,6 +3,7 @@ namespace GraphQL.EntityFramework;
 public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext> graphQlService) :
     ObjectGraphType<TSource>
     where TDbContext : DbContext
+    where TSource : class
 {
     public IEfGraphQLService<TDbContext> GraphQlService { get; } = graphQlService;
 
@@ -118,49 +119,37 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     #region AddProjectedNavigationField
 
-    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TEntity, TProjection, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<TProjection, TReturn> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationField(this, name, resolve, projection, transform, graphType, includeNames);
+        GraphQlService.AddProjectedNavigationField(this, name, projection, transform, graphType);
 
-    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TEntity, TProjection, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationField(this, name, resolve, projection, transform, graphType, includeNames);
+        GraphQlService.AddProjectedNavigationField(this, name, projection, transform, graphType);
 
-    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TEntity, TProjection, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationField(this, name, resolve, projection, transform, graphType, includeNames);
+        GraphQlService.AddProjectedNavigationField(this, name, projection, transform, graphType);
 
-    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TEntity, TProjection, TReturn>(
+    public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
-        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TSource, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TEntity : class
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationField(this, name, resolve, projection, transform, graphType, includeNames);
+        GraphQlService.AddProjectedNavigationField(this, name, projection, transform, graphType);
 
     #endregion
 
@@ -168,51 +157,47 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, TReturn> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
         where TEntity : class
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationListField(this, name, resolve, projection, transform, itemGraphType, includeNames, omitQueryArguments);
+        GraphQlService.AddProjectedNavigationListField(this, name, navigation, projection, transform, itemGraphType, omitQueryArguments);
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
         where TEntity : class
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationListField(this, name, resolve, projection, transform, itemGraphType, includeNames, omitQueryArguments);
+        GraphQlService.AddProjectedNavigationListField(this, name, navigation, projection, transform, itemGraphType, omitQueryArguments);
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
         where TEntity : class
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationListField(this, name, resolve, projection, transform, itemGraphType, includeNames, omitQueryArguments);
+        GraphQlService.AddProjectedNavigationListField(this, name, navigation, projection, transform, itemGraphType, omitQueryArguments);
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
+        Expression<Func<TSource, IEnumerable<TEntity>>> navigation,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
         where TEntity : class
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationListField(this, name, resolve, projection, transform, itemGraphType, includeNames, omitQueryArguments);
+        GraphQlService.AddProjectedNavigationListField(this, name, navigation, projection, transform, itemGraphType, omitQueryArguments);
 
     #endregion
 
