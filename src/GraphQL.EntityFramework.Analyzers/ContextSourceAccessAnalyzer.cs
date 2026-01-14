@@ -24,14 +24,14 @@ public class ContextSourceAccessAnalyzer : DiagnosticAnalyzer
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
-        // Check if we're in an EF graph type class
-        if (!IsInEfGraphType(context))
+        // Check if this is a field addition method
+        if (!IsFieldAdditionMethod(invocation))
         {
             return;
         }
 
-        // Check if this is a field addition method
-        if (!IsFieldAdditionMethod(invocation))
+        // Check if we're in an EF graph type class
+        if (!IsInEfGraphType(context))
         {
             return;
         }
@@ -68,13 +68,22 @@ public class ContextSourceAccessAnalyzer : DiagnosticAnalyzer
 
     static bool IsFieldAdditionMethod(InvocationExpressionSyntax invocation)
     {
-        var memberAccess = invocation.Expression as MemberAccessExpressionSyntax;
-        if (memberAccess == null)
+        string methodName = null;
+
+        // Check if it's a member access (e.g., this.AddNavigationField)
+        if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
+        {
+            methodName = memberAccess.Name.Identifier.Text;
+        }
+        // Check if it's a simple identifier (e.g., AddNavigationField without this.)
+        else if (invocation.Expression is IdentifierNameSyntax identifier)
+        {
+            methodName = identifier.Identifier.Text;
+        }
+        else
         {
             return false;
         }
-
-        var methodName = memberAccess.Name.Identifier.Text;
 
         return methodName is "AddNavigationField" or
             "AddNavigationListField" or
@@ -82,7 +91,8 @@ public class ContextSourceAccessAnalyzer : DiagnosticAnalyzer
             "AddQueryField" or
             "AddQueryConnectionField" or
             "AddSingleField" or
-            "AddFirstField";
+            "AddFirstField" or
+            "Field"; // Also check standard GraphQL Field() calls
     }
 
     static void AnalyzeLambdaArguments(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocation)
@@ -122,6 +132,13 @@ public class ContextSourceAccessAnalyzer : DiagnosticAnalyzer
             }
 
             // Walk the lambda body to find context.Source.PropertyName patterns
+            // Check the lambda body itself first if it's a member access
+            if (lambdaBody is MemberAccessExpressionSyntax bodyMemberAccess)
+            {
+                AnalyzeMemberAccess(context, bodyMemberAccess, parameterName);
+            }
+
+            // Then check all descendant nodes
             var descendantNodes = lambdaBody.DescendantNodes().OfType<MemberAccessExpressionSyntax>();
             foreach (var memberAccess in descendantNodes)
             {

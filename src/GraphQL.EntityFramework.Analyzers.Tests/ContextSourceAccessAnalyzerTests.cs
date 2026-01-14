@@ -1,91 +1,464 @@
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
 namespace GraphQL.EntityFramework.Analyzers.Tests;
 
-/// <summary>
-/// Tests for the ContextSourceAccessAnalyzer (GQLEF001)
-///
-/// The analyzer should detect problematic context.Source property access patterns
-/// in EfObjectGraphType, EfInterfaceGraphType, and QueryGraphType classes.
-///
-/// Note: These tests use a simplified approach and document expected behavior.
-/// Full Roslyn analyzer testing infrastructure would use Microsoft.CodeAnalysis.Testing
-/// </summary>
 public class ContextSourceAccessAnalyzerTests
 {
-    /// <summary>
-    /// Should detect: context.Source.NavigationProperty (e.g., context.Source.Parent)
-    /// Should suggest: Using AddProjectedNavigationField or accessing ParentId instead
-    /// </summary>
-    [Fact(Skip = "Roslyn analyzer testing requires updated testing infrastructure")]
-    public void DetectsNavigationPropertyAccess()
+    [Fact]
+    public async Task DetectsNavigationPropertyAccess()
     {
-        // Test case: AddNavigationField with context.Source.Parent access
-        // Expected: Diagnostic GQLEF001 suggesting to use ProjectedField or ParentId
+        var source = """
+            #nullable enable
+            using GraphQL.EntityFramework;
+
+            namespace Test
+            {
+                public class TestEntity
+                {
+                    public int Id { get; set; }
+                    public ParentEntity? Parent { get; set; }
+                    public int ParentId { get; set; }
+                }
+
+                public class ParentEntity
+                {
+                    public int Id { get; set; }
+                    public string Name { get; set; } = "";
+                }
+
+                public class TestDbContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+                public class TestGraph : EfObjectGraphType<TestDbContext, TestEntity>
+                {
+                    public TestGraph(IEfGraphQLService<TestDbContext> service) : base(service)
+                    {
+                        AddNavigationField(
+                            name: "parent",
+                            resolve: context => context.Source.Parent);
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        var warning = Assert.Single(diagnostics, d => d.Id == "GQLEF001");
+        Assert.Contains("Parent", warning.GetMessage());
+        Assert.Contains("ParentId", warning.GetMessage());
     }
 
-    /// <summary>
-    /// Should detect: context.Source.ScalarProperty (e.g., context.Source.Status)
-    /// Should suggest: Using AddProjectedNavigationField
-    /// </summary>
-    [Fact(Skip = "Roslyn analyzer testing requires updated testing infrastructure")]
-    public void DetectsScalarPropertyAccess()
+    [Fact]
+    public async Task DetectsScalarPropertyAccess()
     {
-        // Test case: Custom field with context.Source.Status access
-        // Expected: Diagnostic GQLEF001
+        var source = """
+            using GraphQL.EntityFramework;
+
+            namespace Test
+            {
+                public class TestEntity
+                {
+                    public int Id { get; set; }
+                    public string? Status { get; set; }
+                }
+
+                public class TestDbContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+                public class TestGraph : EfObjectGraphType<TestDbContext, TestEntity>
+                {
+                    public TestGraph(IEfGraphQLService<TestDbContext> service) : base(service)
+                    {
+                        AddNavigationField(
+                            name: "customField",
+                            resolve: context => {
+                                var status = context.Source.Status;
+                                return status ?? "none";
+                            });
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        var warning = Assert.Single(diagnostics, d => d.Id == "GQLEF001");
+        Assert.Contains("Status", warning.GetMessage());
     }
 
-    /// <summary>
-    /// Should allow: context.Source.Id
-    /// ID properties should not trigger warnings
-    /// </summary>
-    [Fact(Skip = "Roslyn analyzer testing requires updated testing infrastructure")]
-    public void AllowsIdPropertyAccess()
+    [Fact]
+    public async Task AllowsIdPropertyAccess()
     {
-        // Test case: Field accessing context.Source.Id
-        // Expected: No diagnostic
+        var source = """
+            using GraphQL.EntityFramework;
+
+            namespace Test
+            {
+                public class TestEntity
+                {
+                    public int Id { get; set; }
+                    public string Name { get; set; } = "";
+                }
+
+                public class TestDbContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+                public class TestGraph : EfObjectGraphType<TestDbContext, TestEntity>
+                {
+                    public TestGraph(IEfGraphQLService<TestDbContext> service) : base(service)
+                    {
+                        AddNavigationField(
+                            name: "customField",
+                            resolve: context => {
+                                var id = context.Source.Id;
+                                return id.ToString();
+                            });
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        Assert.DoesNotContain(diagnostics, d => d.Id == "GQLEF001");
     }
 
-    /// <summary>
-    /// Should allow: context.Source.ParentId (or any property ending with "Id")
-    /// Foreign key properties should not trigger warnings
-    /// </summary>
-    [Fact(Skip = "Roslyn analyzer testing requires updated testing infrastructure")]
-    public void AllowsForeignKeyPropertyAccess()
+    [Fact]
+    public async Task AllowsForeignKeyPropertyAccess()
     {
-        // Test case: Field accessing context.Source.ParentId
-        // Expected: No diagnostic
+        var source = """
+            using GraphQL.EntityFramework;
+
+            namespace Test
+            {
+                public class TestEntity
+                {
+                    public int Id { get; set; }
+                    public int ParentId { get; set; }
+                    public string Name { get; set; } = "";
+                }
+
+                public class TestDbContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+                public class TestGraph : EfObjectGraphType<TestDbContext, TestEntity>
+                {
+                    public TestGraph(IEfGraphQLService<TestDbContext> service) : base(service)
+                    {
+                        AddNavigationField(
+                            name: "customField",
+                            resolve: context => {
+                                var parentId = context.Source.ParentId;
+                                return parentId.ToString();
+                            });
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        Assert.DoesNotContain(diagnostics, d => d.Id == "GQLEF001");
     }
 
-    /// <summary>
-    /// Should ignore: Regular classes not inheriting from EfObjectGraphType/EfInterfaceGraphType/QueryGraphType
-    /// </summary>
-    [Fact(Skip = "Roslyn analyzer testing requires updated testing infrastructure")]
-    public void IgnoresNonEfGraphTypeClasses()
+    [Fact]
+    public async Task IgnoresNonEfGraphTypeClasses()
     {
-        // Test case: Regular class accessing entity.Property
-        // Expected: No diagnostic
+        var source = """
+            namespace Test
+            {
+                public class TestEntity
+                {
+                    public int Id { get; set; }
+                    public string Name { get; set; } = "";
+                }
+
+                public class RegularClass
+                {
+                    public void Method()
+                    {
+                        var entity = new TestEntity();
+                        var name = entity.Name;
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        Assert.DoesNotContain(diagnostics, d => d.Id == "GQLEF001");
     }
 
-    /// <summary>
-    /// Should detect multiple problematic accesses in same method
-    /// </summary>
-    [Fact(Skip = "Roslyn analyzer testing requires updated testing infrastructure")]
-    public void DetectsMultiplePropertyAccesses()
+    [Fact]
+    public async Task DetectsMultiplePropertyAccesses()
     {
-        // Test case: Field accessing both context.Source.Name and context.Source.Status
-        // Expected: Two GQLEF001 diagnostics
+        var source = """
+            using GraphQL.EntityFramework;
+
+            namespace Test
+            {
+                public class TestEntity
+                {
+                    public int Id { get; set; }
+                    public string? Name { get; set; }
+                    public string? Status { get; set; }
+                }
+
+                public class TestDbContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+                public class TestGraph : EfObjectGraphType<TestDbContext, TestEntity>
+                {
+                    public TestGraph(IEfGraphQLService<TestDbContext> service) : base(service)
+                    {
+                        AddNavigationField(
+                            name: "customField",
+                            resolve: context => {
+                                var name = context.Source.Name;
+                                var status = context.Source.Status;
+                                return (name ?? "") + (status ?? "");
+                            });
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        var warnings = diagnostics.Where(d => d.Id == "GQLEF001").ToArray();
+        Assert.Equal(2, warnings.Length);
+        Assert.Contains(warnings, w => w.GetMessage().Contains("Name"));
+        Assert.Contains(warnings, w => w.GetMessage().Contains("Status"));
     }
 
-    /// <summary>
-    /// Manual test: Verify analyzer works in real codebase
-    /// Check if WithManyChildrenGraphType.cs lines 11-12 trigger warnings
-    /// </summary>
-    [Fact(Skip = "Manual verification required")]
-    public void ManualTest_VerifyAnalyzerWorksInRealCode()
+    [Fact(Skip = "Fluent API pattern (Field().Resolve()) not yet supported by analyzer")]
+    public async Task WorksWithEfInterfaceGraphType()
     {
-        // Manual test: Open src/Tests/IntegrationTests/Graphs/WithManyChildrenGraphType.cs
-        // Lines 11-12 access context.Source.Child1 and context.Source.Child2
-        // These should show GQLEF001 warnings in IDE with analyzer enabled
+        var source = """
+            using GraphQL.EntityFramework;
+            using GraphQL.Types;
+
+            namespace Test
+            {
+                public interface ITestEntity
+                {
+                    int Id { get; set; }
+                    string Name { get; set; }
+                }
+
+                public class TestDbContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+                public class TestGraph : EfInterfaceGraphType<TestDbContext, ITestEntity>
+                {
+                    public TestGraph(IEfGraphQLService<TestDbContext> service) : base(service)
+                    {
+                        Field<StringGraphType>("customField")
+                            .Resolve(context => {
+                                var name = context.Source.Name;
+                                return name;
+                            });
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        var warning = Assert.Single(diagnostics, d => d.Id == "GQLEF001");
+        Assert.Contains("Name", warning.GetMessage());
+    }
+
+    [Fact(Skip = "Fluent API pattern (Field().Resolve()) not yet supported by analyzer")]
+    public async Task WorksWithQueryGraphType()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using GraphQL.Types;
+
+            namespace Test
+            {
+                public class TestEntity
+                {
+                    public int Id { get; set; }
+                    public string Name { get; set; } = "";
+                }
+
+                public class TestDbContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+                public class TestQuery : QueryGraphType<TestDbContext>
+                {
+                    public TestQuery(IEfGraphQLService<TestDbContext> service) : base(service)
+                    {
+                        Field<StringGraphType>("customField")
+                            .Resolve(context => {
+                                var entity = new TestEntity { Name = "test" };
+                                var name = entity.Name;
+                                return name;
+                            });
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        var warning = Assert.Single(diagnostics, d => d.Id == "GQLEF001");
+        Assert.Contains("Name", warning.GetMessage());
+    }
+
+    [Fact]
+    public async Task AllowsNestedIdAccess()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+
+            namespace Test
+            {
+                public class TestEntity
+                {
+                    public int Id { get; set; }
+                    public ParentEntity? Parent { get; set; }
+                }
+
+                public class ParentEntity
+                {
+                    public int Id { get; set; }
+                }
+
+                public class TestDbContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+                public class TestGraph : EfObjectGraphType<TestDbContext, TestEntity>
+                {
+                    public TestGraph(IEfGraphQLService<TestDbContext> service) : base(service)
+                    {
+                        AddNavigationField(
+                            name: "customField",
+                            resolve: context => {
+                                var parentId = context.Source.Parent?.Id;
+                                return parentId?.ToString() ?? "none";
+                            });
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        // Should warn on Parent access, but not on Id
+        var warning = Assert.Single(diagnostics, d => d.Id == "GQLEF001");
+        Assert.Contains("Parent", warning.GetMessage());
+    }
+
+    [Fact]
+    public async Task AllowsCaseSensitiveId()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+
+            namespace Test
+            {
+                public class TestEntity
+                {
+                    public int ID { get; set; }
+                    public string Name { get; set; } = "";
+                }
+
+                public class TestDbContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+                public class TestGraph : EfObjectGraphType<TestDbContext, TestEntity>
+                {
+                    public TestGraph(IEfGraphQLService<TestDbContext> service) : base(service)
+                    {
+                        AddNavigationField(
+                            name: "customField",
+                            resolve: context => {
+                                var id = context.Source.ID;
+                                return id.ToString();
+                            });
+                    }
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+
+        Assert.DoesNotContain(diagnostics, d => d.Id == "GQLEF001");
+    }
+
+    private static async Task<IEnumerable<Diagnostic>> GetDiagnosticsAsync(string source)
+    {
+        var syntaxTree = CSharpSyntaxTree.ParseText(source);
+
+        var references = new List<MetadataReference>();
+
+        // Add specific assemblies we need, avoiding conflicts
+        var requiredAssemblies = new[]
+        {
+            typeof(object).Assembly, // System.Private.CoreLib
+            typeof(Console).Assembly, // System.Console
+            typeof(IEfGraphQLService<>).Assembly, // GraphQL.EntityFramework
+            typeof(Microsoft.EntityFrameworkCore.DbContext).Assembly, // EF Core
+            typeof(GraphQL.Types.ObjectGraphType).Assembly, // GraphQL
+            typeof(System.Linq.IQueryable<>).Assembly, // System.Linq.Expressions
+        };
+
+        foreach (var assembly in requiredAssemblies)
+        {
+            if (!string.IsNullOrEmpty(assembly.Location))
+            {
+                references.Add(MetadataReference.CreateFromFile(assembly.Location));
+            }
+        }
+
+        // Add all System.* and Microsoft.* assemblies except those that conflict
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            if (!assembly.IsDynamic &&
+                !string.IsNullOrEmpty(assembly.Location) &&
+                !references.Any(r => r.Display == assembly.Location))
+            {
+                var name = assembly.GetName().Name ?? "";
+                if ((name.StartsWith("System.") || name.StartsWith("Microsoft.")) &&
+                    !name.Contains("xunit", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        references.Add(MetadataReference.CreateFromFile(assembly.Location));
+                    }
+                    catch
+                    {
+                        // Ignore assemblies that can't be referenced
+                    }
+                }
+            }
+        }
+
+        var compilation = CSharpCompilation.Create(
+            "TestAssembly",
+            syntaxTrees: new[] { syntaxTree },
+            references: references,
+            options: new CSharpCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                nullableContextOptions: NullableContextOptions.Enable));
+
+        var analyzer = new ContextSourceAccessAnalyzer();
+        var compilationWithAnalyzers = compilation.WithAnalyzers(
+            ImmutableArray.Create<DiagnosticAnalyzer>(analyzer));
+
+        var allDiagnostics = await compilationWithAnalyzers.GetAllDiagnosticsAsync();
+
+        // Debug: Check for compilation errors
+        var compilationErrors = allDiagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+        if (compilationErrors.Length > 0)
+        {
+            var errorMessages = string.Join("\n", compilationErrors.Select(e => $"{e.Id}: {e.GetMessage()}"));
+            throw new Exception($"Compilation errors:\n{errorMessages}");
+        }
+
+        // Filter to only GQLEF001 diagnostics (ignore debug diagnostics and compilation warnings)
+        var gqlef001Diagnostics = allDiagnostics
+            .Where(d => d.Id == "GQLEF001")
+            .ToArray();
+
+        return gqlef001Diagnostics;
     }
 }
