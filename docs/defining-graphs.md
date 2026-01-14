@@ -238,6 +238,45 @@ The ProjectedField API provides a way to explicitly project and transform entity
 **Note:** The Roslyn analyzer (GQLEF001) will warn when accessing `context.Source.PropertyName` directly, suggesting use of ProjectedField methods instead.
 
 
+### Understanding the Three Parameters
+
+ProjectedField methods accept three key parameters that work together to safely access entity properties:
+
+**1. `resolve`** - Gets the entity or entities from the GraphQL context
+- For navigation fields: Returns a single entity (e.g., `context.Source`)
+- For list fields: Returns a collection (e.g., `context.Source.Children`)
+- For query fields: Returns an IQueryable (e.g., `context.DbContext.ParentEntities`)
+
+**2. `projection`** - Specifies which properties to extract from the entity
+- An Expression that tells Entity Framework which properties to SELECT from the database
+- Gets compiled once at registration time for efficiency
+- Applied to each entity to extract only the needed data
+
+**3. `transform`** - Transforms the projected data into the final GraphQL field value
+- Receives the projected data (not the full entity)
+- Can perform calculations, formatting, async operations, etc.
+- Can optionally access the GraphQL context for context-aware transformations
+
+**Execution flow:**
+
+```csharp
+// 1. RESOLVE - Get the entity
+entity = resolve(fieldContext);  // e.g., returns ParentEntity
+
+// 2. Apply filters (if any)
+if (!ShouldInclude(entity)) return default;
+
+// 3. PROJECTION - Extract needed properties
+var projectedData = compiledProjection(entity);  // e.g., extracts Property field
+
+// 4. TRANSFORM - Create final value
+var result = await transform(fieldContext, projectedData);  // e.g., ToUpper()
+return result;
+```
+
+This separation ensures that the required properties are always loaded from the database before the transform runs, solving the problem where `context.Source.PropertyName` may be null if not included in the GraphQL query projection.
+
+
 ### Basic Transform
 
 <!-- snippet: ProjectedFieldBasicTransform -->
