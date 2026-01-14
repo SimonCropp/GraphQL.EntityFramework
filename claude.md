@@ -72,6 +72,29 @@ The README.md and docs/*.md files are auto-generated from source files using [Ma
 - Executed after EF query to determine if nodes should be included in results
 - Useful when filter criteria don't exist in the database
 
+**ProjectedField API** (`src/GraphQL.EntityFramework/GraphApi/EfGraphQLService_Projected.cs`)
+- Provides methods for fields that project and transform entity properties
+- Three main methods:
+  - `AddProjectedField` - For query-level projected fields
+  - `AddProjectedNavigationField` - For single navigation property projections
+  - `AddProjectedNavigationListField` - For collection navigation property projections
+- Each accepts:
+  - `projection` - Expression that selects required properties from entity
+  - `transform` - Function that transforms projected data to final result
+  - Supports both sync and async transforms
+  - Supports context-aware transforms that receive ResolveEfFieldContext
+- Use `includeNames` parameter to specify which properties/navigations to load
+- Note: Current implementation has limitations with scalar property projection on source entities
+
+**Roslyn Analyzer** (`src/GraphQL.EntityFramework.Analyzers/`)
+- Compile-time code analyzer packaged with the library
+- Diagnostic ID: GQLEF001
+- Detects problematic `context.Source.PropertyName` access patterns
+- Only analyzes code in EfObjectGraphType, EfInterfaceGraphType, and QueryGraphType classes
+- Allows `Id` and `*Id` properties (primary keys and foreign keys)
+- Warns on other property access, suggesting use of ProjectedField API
+- Packaged in NuGet at `analyzers/dotnet/cs` directory
+
 ### Include Resolution
 
 The library automatically determines EF includes by interrogating the incoming GraphQL query. When a navigation property is requested in a GraphQL query, the corresponding EF Include is automatically added to the query. This is handled by:
@@ -135,6 +158,58 @@ Arguments are processed in order: ids → where → orderBy → skip → take
 ### Projection Support
 
 The library supports EF projections where you can use `Select()` to project to DTOs or anonymous types before applying GraphQL field resolution.
+
+### ProjectedField Usage
+
+The ProjectedField API provides a way to explicitly project and transform entity properties:
+
+**Simple Transform:**
+```csharp
+AddProjectedNavigationField<ParentEntity, string?, string>(
+    name: "propertyUpper",
+    resolve: _ => _.Source,
+    projection: entity => entity.Property,
+    transform: property => property?.ToUpper() ?? "",
+    includeNames: ["Property"]);
+```
+
+**Context-Aware Transform:**
+```csharp
+AddProjectedNavigationField<ParentEntity, string?, string>(
+    name: "propertyWithContext",
+    resolve: _ => _.Source,
+    projection: entity => entity.Property,
+    transform: (context, property) => {
+        var userId = context.User?.FindFirst("sub")?.Value;
+        return $"{userId}: {property ?? "null"}";
+    },
+    includeNames: ["Property"]);
+```
+
+**Async Transform:**
+```csharp
+AddProjectedNavigationField<ParentEntity, string?, string>(
+    name: "enrichedProperty",
+    resolve: _ => _.Source,
+    projection: entity => entity.Property,
+    transform: async property => {
+        var result = await _externalService.EnrichAsync(property);
+        return result;
+    },
+    includeNames: ["Property"]);
+```
+
+**List Field:**
+```csharp
+AddProjectedNavigationListField<ChildEntity, string?, string>(
+    name: "childrenProperties",
+    resolve: _ => _.Source.Children,
+    projection: child => child.Property,
+    transform: property => property ?? "empty",
+    includeNames: ["Children", "Children.Property"]);
+```
+
+**Note:** The `includeNames` parameter is critical for ensuring EF loads the required properties/navigations.
 
 ## Testing
 

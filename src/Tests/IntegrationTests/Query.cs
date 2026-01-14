@@ -14,6 +14,16 @@
             resolve: _ => _.DbContext.Level1Entities,
             graphType: typeof(SkipLevelGraph));
 
+        // Projected query field test - returns list of projected values
+        Field<ListGraphType<StringGraphType>>("projectedParents")
+            .Resolve(context =>
+            {
+                var dbContext = context.RequestServices!.GetRequiredService<IntegrationDbContext>();
+                return dbContext.ParentEntities
+                    .Select(entity => entity.Property != null ? entity.Property.ToLower() : "empty")
+                    .ToList();
+            });
+
         AddQueryField(
             name: "queryFieldWithInclude",
             resolve: context =>
