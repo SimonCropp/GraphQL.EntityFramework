@@ -120,7 +120,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, TReturn> transform,
         Type? graphType = null,
@@ -131,7 +131,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
         Type? graphType = null,
@@ -142,7 +142,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
         Type? graphType = null,
@@ -153,7 +153,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? graphType = null,
@@ -168,7 +168,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, TReturn> transform,
         Type? itemGraphType = null,
@@ -180,7 +180,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,
@@ -192,7 +192,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
         Type? itemGraphType = null,
@@ -204,7 +204,7 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,

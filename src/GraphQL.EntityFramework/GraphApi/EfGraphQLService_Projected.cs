@@ -8,7 +8,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, TReturn> transform,
         Type? graphType = null,
@@ -25,7 +25,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
         Type? graphType = null,
@@ -42,7 +42,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
         Type? graphType = null,
@@ -59,7 +59,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? graphType = null,
@@ -74,7 +74,7 @@ partial class EfGraphQLService<TDbContext>
 
     FieldType BuildProjectedNavigationField<TSource, TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TEntity?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? graphType,
@@ -95,48 +95,45 @@ partial class EfGraphQLService<TDbContext>
 
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
-        if (resolve is not null)
-        {
-            field.Resolver = new FuncFieldResolver<TSource, TReturn>(
-                async context =>
+        field.Resolver = new FuncFieldResolver<TSource, TReturn>(
+            async context =>
+            {
+                var fieldContext = BuildContext(context);
+
+                TEntity? entity;
+                try
                 {
-                    var fieldContext = BuildContext(context);
+                    entity = resolve(fieldContext);
+                }
+                catch (Exception exception)
+                {
+                    throw new(
+                        $"""
+                        Failed to execute navigation resolve for projected field `{name}`
+                        GraphType: {graphType.FullName}
+                        TSource: {typeof(TSource).FullName}
+                        TEntity: {typeof(TEntity).FullName}
+                        TProjection: {typeof(TProjection).FullName}
+                        TReturn: {typeof(TReturn).FullName}
+                        """,
+                        exception);
+                }
 
-                    TEntity? entity;
-                    try
-                    {
-                        entity = resolve(fieldContext);
-                    }
-                    catch (Exception exception)
-                    {
-                        throw new(
-                            $"""
-                            Failed to execute navigation resolve for projected field `{name}`
-                            GraphType: {graphType.FullName}
-                            TSource: {typeof(TSource).FullName}
-                            TEntity: {typeof(TEntity).FullName}
-                            TProjection: {typeof(TProjection).FullName}
-                            TReturn: {typeof(TReturn).FullName}
-                            """,
-                            exception);
-                    }
+                if (entity is null)
+                {
+                    return default;
+                }
 
-                    if (entity is null)
-                    {
-                        return default;
-                    }
+                if (fieldContext.Filters is not null &&
+                    !await fieldContext.Filters.ShouldInclude(context.UserContext, fieldContext.DbContext, context.User, entity))
+                {
+                    return default;
+                }
 
-                    if (fieldContext.Filters is not null &&
-                        !await fieldContext.Filters.ShouldInclude(context.UserContext, fieldContext.DbContext, context.User, entity))
-                    {
-                        return default;
-                    }
-
-                    var projectedData = compiledProjection(entity);
-                    var result = await transform(fieldContext, projectedData);
-                    return result;
-                });
-        }
+                var projectedData = compiledProjection(entity);
+                var result = await transform(fieldContext, projectedData);
+                return result;
+            });
 
         return field;
     }
@@ -148,7 +145,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, TReturn> transform,
         Type? itemGraphType = null,
@@ -166,7 +163,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,
@@ -184,7 +181,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
         Type? itemGraphType = null,
@@ -202,7 +199,7 @@ partial class EfGraphQLService<TDbContext>
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? itemGraphType = null,
@@ -218,7 +215,7 @@ partial class EfGraphQLService<TDbContext>
 
     FieldType BuildProjectedNavigationListField<TSource, TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TEntity>> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? itemGraphType,
@@ -247,61 +244,58 @@ partial class EfGraphQLService<TDbContext>
 
         var compiledProjection = projection.Compile();
 
-        if (resolve is not null)
-        {
-            field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
-                async context =>
+        field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
+            async context =>
+            {
+                var fieldContext = BuildContext(context);
+                var entities = resolve(fieldContext);
+
+                if (entities is IQueryable)
                 {
-                    var fieldContext = BuildContext(context);
-                    var entities = resolve(fieldContext);
+                    throw new("AddProjectedNavigationListField expects IEnumerable, not IQueryable. Use AddProjectedField instead.");
+                }
 
-                    if (entities is IQueryable)
+                entities = entities.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
+
+                if (fieldContext.Filters is not null)
+                {
+                    entities = await fieldContext.Filters.ApplyFilter(entities, context.UserContext, fieldContext.DbContext, context.User);
+                }
+
+                var results = new List<TReturn>();
+                foreach (var entity in entities)
+                {
+                    try
                     {
-                        throw new("AddProjectedNavigationListField expects IEnumerable, not IQueryable. Use AddProjectedField instead.");
+                        var projectedData = compiledProjection(entity);
+                        var transformed = await transform(fieldContext, projectedData);
+                        results.Add(transformed);
                     }
-
-                    entities = entities.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
-
-                    if (fieldContext.Filters is not null)
+                    catch (TaskCanceledException)
                     {
-                        entities = await fieldContext.Filters.ApplyFilter(entities, context.UserContext, fieldContext.DbContext, context.User);
+                        throw;
                     }
-
-                    var results = new List<TReturn>();
-                    foreach (var entity in entities)
+                    catch (OperationCanceledException)
                     {
-                        try
-                        {
-                            var projectedData = compiledProjection(entity);
-                            var transformed = await transform(fieldContext, projectedData);
-                            results.Add(transformed);
-                        }
-                        catch (TaskCanceledException)
-                        {
-                            throw;
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            throw;
-                        }
-                        catch (Exception exception)
-                        {
-                            throw new(
-                                $"""
-                                Failed to project/transform entity in list field `{name}`
-                                GraphType: {field.Type.FullName}
-                                TSource: {typeof(TSource).FullName}
-                                TEntity: {typeof(TEntity).FullName}
-                                TProjection: {typeof(TProjection).FullName}
-                                TReturn: {typeof(TReturn).FullName}
-                                """,
-                                exception);
-                        }
+                        throw;
                     }
+                    catch (Exception exception)
+                    {
+                        throw new(
+                            $"""
+                            Failed to project/transform entity in list field `{name}`
+                            GraphType: {field.Type.FullName}
+                            TSource: {typeof(TSource).FullName}
+                            TEntity: {typeof(TEntity).FullName}
+                            TProjection: {typeof(TProjection).FullName}
+                            TReturn: {typeof(TReturn).FullName}
+                            """,
+                            exception);
+                    }
+                }
 
-                    return results;
-                });
-        }
+                return results;
+            });
 
         return field;
     }
@@ -322,12 +316,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?>? asyncResolve = null;
-        if (resolve is not null)
-        {
-            asyncResolve = ctx => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
-        }
-
+        var asyncResolve = (ResolveEfFieldContext<TDbContext, TSource> ctx) => Task.FromResult(resolve(ctx));
         var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => Task.FromResult(transform(proj));
         var field = BuildProjectedField(name, asyncResolve, projection, asyncTransform, graphType);
         graph.AddField(field);
@@ -344,12 +333,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?>? asyncResolve = null;
-        if (resolve is not null)
-        {
-            asyncResolve = ctx => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
-        }
-
+        var asyncResolve = (ResolveEfFieldContext<TDbContext, TSource> ctx) => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
         var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> _, TProjection proj) => transform(proj);
         var field = BuildProjectedField(name, asyncResolve, projection, asyncTransform, graphType);
         graph.AddField(field);
@@ -366,12 +350,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?>? asyncResolve = null;
-        if (resolve is not null)
-        {
-            asyncResolve = ctx => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
-        }
-
+        var asyncResolve = (ResolveEfFieldContext<TDbContext, TSource> ctx) => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
         var asyncTransform = (ResolveEfFieldContext<TDbContext, TSource> ctx, TProjection proj) => Task.FromResult(transform(ctx, proj));
         var field = BuildProjectedField(name, asyncResolve, projection, asyncTransform, graphType);
         graph.AddField(field);
@@ -388,12 +367,7 @@ partial class EfGraphQLService<TDbContext>
         where TEntity : class
         where TReturn : class
     {
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?>? asyncResolve = null;
-        if (resolve is not null)
-        {
-            asyncResolve = ctx => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
-        }
-
+        var asyncResolve = (ResolveEfFieldContext<TDbContext, TSource> ctx) => Task.FromResult<IQueryable<TEntity>?>(resolve(ctx));
         var field = BuildProjectedField(name, asyncResolve, projection, transform, graphType);
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
@@ -554,7 +528,7 @@ partial class EfGraphQLService<TDbContext>
 
     FieldType BuildProjectedField<TSource, TEntity, TProjection, TReturn>(
         string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?>? resolve,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?> resolve,
         Expression<Func<TEntity, TProjection>> projection,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
         Type? graphType)
@@ -574,11 +548,6 @@ partial class EfGraphQLService<TDbContext>
             Resolver = new FuncFieldResolver<TSource, TReturn>(
                 async context =>
                 {
-                    if (resolve is null)
-                    {
-                        return default;
-                    }
-
                     var fieldContext = BuildContext(context);
 
                     var task = resolve(fieldContext);
