@@ -48,11 +48,6 @@ static class ProjectionIncludeAnalyzer
             {
                 var propertyName = path[i];
 
-                if (currentType == null)
-                {
-                    break;
-                }
-
                 var entityTypeInfo = model.FindEntityType(currentType);
                 if (entityTypeInfo == null)
                 {

@@ -632,7 +632,7 @@ partial class EfGraphQLService<TDbContext>
 
     #endregion
 
-    static IEnumerable<string>? MergeIncludes(IReadOnlySet<string> autoIncludes, IEnumerable<string>? userIncludes)
+    static IEnumerable<string>? MergeIncludes(IReadOnlySet<string> autoIncludes, IReadOnlySet<string>? userIncludes)
     {
         if (autoIncludes.Count == 0 && userIncludes == null)
         {
