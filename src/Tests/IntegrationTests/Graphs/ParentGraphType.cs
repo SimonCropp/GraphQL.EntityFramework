@@ -20,8 +20,7 @@
             name: "propertyUpper",
             resolve: _ => _.Source,
             projection: entity => entity.Property,
-            transform: property => property?.ToUpper() ?? "",
-            includeNames: ["Property"]);
+            transform: property => property?.ToUpper() ?? "");
 
         #endregion
 
@@ -35,8 +34,7 @@
             {
                 await Task.Yield();
                 return property?.ToUpper() ?? "";
-            },
-            includeNames: ["Property"]);
+            });
 
         #endregion
 
@@ -50,8 +48,7 @@
             {
                 var prefix = context.Source.Id.ToString()[..8];
                 return $"{prefix}: {property ?? "null"}";
-            },
-            includeNames: ["Property"]);
+            });
 
         #endregion
 
@@ -62,7 +59,7 @@
             resolve: _ => _.Source.Children,
             projection: child => child.Property,
             transform: property => property ?? "empty",
-            includeNames: ["Children", "Children.Property"]);
+            includeNames: ["Children"]);
 
         #endregion
 
@@ -71,8 +68,7 @@
             name: "anonymousProjection",
             resolve: _ => _.Source,
             projection: entity => entity.Id + "|" + (entity.Property ?? "null"),
-            transform: data => data,
-            includeNames: ["Property"]);
+            transform: data => data);
 
         AutoMap();
     }
