@@ -110,7 +110,7 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         bool omitQueryArguments = false)
         where TEntity : class
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationListField(this, name, _ => (IEnumerable<TEntity>)(object)_.Source!, projection, transform, itemGraphType, includeNames, omitQueryArguments);
+        GraphQlService.AddProjectedNavigationListField(this, name, _ => (IEnumerable<TEntity>)_.Source!, projection, transform, itemGraphType, includeNames, omitQueryArguments);
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
@@ -121,7 +121,7 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         bool omitQueryArguments = false)
         where TEntity : class
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationListField(this, name, _ => (IEnumerable<TEntity>)(object)_.Source!, projection, transform, itemGraphType, includeNames, omitQueryArguments);
+        GraphQlService.AddProjectedNavigationListField(this, name, _ => (IEnumerable<TEntity>)_.Source!, projection, transform, itemGraphType, includeNames, omitQueryArguments);
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
@@ -132,7 +132,7 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         bool omitQueryArguments = false)
         where TEntity : class
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationListField(this, name, _ => (IEnumerable<TEntity>)(object)_.Source!, projection, transform, itemGraphType, includeNames, omitQueryArguments);
+        GraphQlService.AddProjectedNavigationListField(this, name, _ => (IEnumerable<TEntity>)_.Source!, projection, transform, itemGraphType, includeNames, omitQueryArguments);
 
     public FieldBuilder<TSource, TReturn> AddProjectedNavigationListField<TEntity, TProjection, TReturn>(
         string name,
@@ -143,7 +143,7 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         bool omitQueryArguments = false)
         where TEntity : class
         where TReturn : class =>
-        GraphQlService.AddProjectedNavigationListField(this, name, _ => (IEnumerable<TEntity>)(object)_.Source!, projection, transform, itemGraphType, includeNames, omitQueryArguments);
+        GraphQlService.AddProjectedNavigationListField(this, name, _ => (IEnumerable<TEntity>)_.Source!, projection, transform, itemGraphType, includeNames, omitQueryArguments);
 
     #endregion
 }
