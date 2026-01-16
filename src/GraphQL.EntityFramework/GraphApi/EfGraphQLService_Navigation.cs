@@ -127,4 +127,28 @@ partial class EfGraphQLService<TDbContext>
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
     }
+
+    public FieldBuilder<TSource, TReturn> AddNavigationField<TSource, TReturn>(
+        ComplexGraphType<TSource> graph,
+        string name,
+        Expression<Func<TSource, TReturn?>> projection,
+        Type? graphType = null)
+        where TReturn : class
+    {
+        Ensure.NotWhiteSpace(nameof(name), name);
+
+        graphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+
+        var field = new FieldType
+        {
+            Name = name,
+            Type = graphType
+        };
+
+        var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
+        IncludeAppender.SetIncludeMetadata(field, name, includeNames);
+
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, TReturn>(field);
+    }
 }

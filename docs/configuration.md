@@ -721,9 +721,9 @@ public class BaseGraphType :
 {
     public BaseGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService) =>
-        AddNavigationConnectionField<DerivedChildEntity>(
+        AddNavigationConnectionField(
             name: "childrenFromInterface",
-            includeNames: ["ChildrenFromBase"]);
+            projection: _ => _.ChildrenFromBase);
 }
 ```
 <sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/BaseGraphType.cs#L1-L9' title='Snippet source file'>snippet source</a> | <a href='#snippet-BaseGraphType.cs' title='Start of snippet'>anchor</a></sup>

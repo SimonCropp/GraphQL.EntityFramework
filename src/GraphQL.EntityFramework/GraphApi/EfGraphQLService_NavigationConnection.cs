@@ -89,6 +89,47 @@ partial class EfGraphQLService<TDbContext>
         }
     }
 
+    public ConnectionBuilder<TSource> AddNavigationConnectionField<TSource, TReturn>(
+        ComplexGraphType<TSource> graph,
+        string name,
+        Expression<Func<TSource, IEnumerable<TReturn>?>> projection,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class
+    {
+        Ensure.NotWhiteSpace(nameof(name), name);
+
+        itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+
+        var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
+
+        var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
+
+        try
+        {
+            var arguments = new object?[]
+            {
+                graph,
+                name,
+                null,
+                includeNames,
+                omitQueryArguments
+            };
+            return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, arguments)!;
+        }
+        catch (Exception exception)
+        {
+            throw new(
+                $"""
+                 Failed to execute navigation connection for field `{name}`
+                 ItemGraphType: {itemGraphType.FullName}
+                 TSource: {typeof(TSource).FullName}
+                 TReturn: {typeof(TReturn).FullName}
+                 """,
+                exception);
+        }
+    }
+
     ConnectionBuilder<TSource> AddEnumerableConnection<TSource, TGraph, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
