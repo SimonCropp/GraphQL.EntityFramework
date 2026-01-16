@@ -6,13 +6,13 @@
     {
         AddNavigationField(
             name: "child1",
-            resolve: context =>
+            projection: _ => new { _.Child1, _.Child2 },
+            resolve: ctx =>
             {
-                Assert.NotNull(context.Source.Child2);
-                Assert.NotNull(context.Source.Child1);
-                return context.Source.Child1;
-            },
-            includeNames: [ "Child2", "Child1" ]);
+                Assert.NotNull(ctx.Projection.Child2);
+                Assert.NotNull(ctx.Projection.Child1);
+                return ctx.Projection.Child1;
+            });
         AutoMap();
     }
 }

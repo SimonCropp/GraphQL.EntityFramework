@@ -123,6 +123,7 @@ public static class Mapper<TDbContext>
         }
     }
 
+#pragma warning disable CS0618 // Obsolete - AutoMap needs to use legacy methods since it can't determine projections at runtime
     static void AddNavigation<TSource, TReturn>(
         ObjectGraphType<TSource> graph,
         IEfGraphQLService<TDbContext> graphQlService,
@@ -144,6 +145,7 @@ public static class Mapper<TDbContext>
         var compile = NavigationFunc<TSource, IEnumerable<TReturn>>(navigation.Name);
         graphQlService.AddNavigationListField(graph, navigation.Name, compile, graphTypeFromType);
     }
+#pragma warning restore CS0618
 
     public record NavigationKey(Type Type, string Name);
 

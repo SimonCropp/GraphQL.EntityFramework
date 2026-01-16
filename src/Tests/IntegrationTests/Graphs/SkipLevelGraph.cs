@@ -6,9 +6,9 @@
     {
         AddNavigationField(
             name: "level3Entity",
-            resolve: _ => _.Source.Level2Entity?.Level3Entity,
-            graphType: typeof(Level3GraphType),
-            includeNames: [ "Level2Entity.Level3Entity" ]);
+            projection: _ => _.Level2Entity!.Level3Entity,
+            resolve: ctx => ctx.Projection,
+            graphType: typeof(Level3GraphType));
         AutoMap();
     }
 }
