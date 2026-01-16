@@ -6,7 +6,8 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         AutoRegisteringInterfaceGraphType<TSource>(excludedProperties)
     where TDbContext : DbContext
 {
-    public EfInterfaceGraphType(IEfGraphQLService<TDbContext> graphQlService):this(graphQlService, null)
+    public EfInterfaceGraphType(IEfGraphQLService<TDbContext> graphQlService) :
+        this(graphQlService, null)
     {
     }
 

@@ -1,0 +1,14 @@
+﻿{
+  target:
+{
+  "data": {
+    "projectedParentSingle": "TEST"
+  }
+},
+  sql: {
+    Text:
+select   top (2) p.Property
+from     ParentEntities as p
+order by p.Property
+  }
+}

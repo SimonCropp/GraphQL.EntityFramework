@@ -14,6 +14,16 @@
             resolve: _ => _.DbContext.Level1Entities,
             graphType: typeof(SkipLevelGraph));
 
+        // Projected query field test - returns list of projected values
+        Field<ListGraphType<StringGraphType>>("projectedParents")
+            .Resolve(context =>
+            {
+                var dbContext = context.RequestServices!.GetRequiredService<IntegrationDbContext>();
+                return dbContext.ParentEntities
+                    .Select(entity => entity.Property != null ? entity.Property.ToLower() : "empty")
+                    .ToList();
+            });
+
         AddQueryField(
             name: "queryFieldWithInclude",
             resolve: context =>
@@ -312,5 +322,110 @@
                 name: "nullTaskInnerQueryConnection",
                 resolve: Task<IOrderedQueryable<ParentEntity>?>? (_) => Task.FromResult<IOrderedQueryable<ParentEntity>?>(null))
             .PageSize(10);
+
+        #region Projected Single/First Field tests
+
+        AddProjectedSingleField<string?, string>(
+            name: "projectedParentSingle",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedFirstField<string?, string>(
+            name: "projectedParentFirst",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedSingleField<string?, string>(
+            name: "projectedParentSingleNullable",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY",
+            nullable: true);
+
+        AddProjectedFirstField<string?, string>(
+            name: "projectedParentFirstNullable",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY",
+            nullable: true);
+
+        AddProjectedSingleField<string?, string>(
+            name: "projectedParentSingleAsync",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
+            transform: async prop =>
+            {
+                await Task.Yield();
+                return prop?.ToUpper() ?? "EMPTY";
+            });
+
+        AddProjectedFirstField<string?, string>(
+            name: "projectedParentFirstAsync",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
+            transform: async prop =>
+            {
+                await Task.Yield();
+                return prop?.ToUpper() ?? "EMPTY";
+            });
+
+        #endregion
+
+        #region Projected Query Field tests
+
+        AddProjectedQueryField<string?, string>(
+            name: "projectedParentQuery",
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(p => p.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedQueryField<string?, string>(
+            name: "projectedParentQueryAsync",
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(p => p.Property),
+            transform: async prop =>
+            {
+                await Task.Yield();
+                return prop?.ToUpper() ?? "EMPTY";
+            });
+
+        #endregion
+
+        #region Projected Query Connection Field tests
+
+        AddProjectedQueryConnectionField<string?, string>(
+            name: "projectedParentQueryConnection",
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(p => p.Property).OrderBy(p => p),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedQueryConnectionField<string?, string>(
+            name: "projectedParentQueryConnectionAsync",
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(p => p.Property).OrderBy(p => p),
+            transform: async prop =>
+            {
+                await Task.Yield();
+                return prop?.ToUpper() ?? "EMPTY";
+            });
+
+        #endregion
+
+        #region More Projected Query Field tests (resolve returns projected IQueryable)
+
+        // Simplified API - resolve returns IQueryable<TProjection> directly via .Select()
+        AddProjectedSingleField<string?, string>(
+            name: "simplifiedProjectedSingle",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(e => e.Property).Take(1).Select(e => e.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedFirstField<string?, string>(
+            name: "simplifiedProjectedFirst",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(e => e.Property).Select(e => e.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedQueryField<string?, string>(
+            name: "simplifiedProjectedQuery",
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(e => e.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedQueryConnectionField<string?, string>(
+            name: "simplifiedProjectedQueryConnection",
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(e => e.Property).OrderBy(p => p),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        #endregion
     }
 }

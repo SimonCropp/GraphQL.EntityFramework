@@ -65,7 +65,7 @@
             return method;
         }
 
-        if (IsEnumType(type))
+        if (type.IsEnumType())
         {
             return typeof(ICollection<>).MakeGenericType(type).GetMethod("Contains");
         }

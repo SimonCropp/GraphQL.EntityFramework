@@ -1,0 +1,19 @@
+{
+  target:
+{
+  "data": {
+    "simplifiedProjectedSingle": "TEST"
+  }
+},
+  sql: {
+    Text:
+select   top (2) p0.Property
+from     (select   top (@p) p.Property
+          from     ParentEntities as p
+          order by p.Property) as p0
+order by p0.Property,
+    Parameters: {
+      @p: 1
+    }
+  }
+}

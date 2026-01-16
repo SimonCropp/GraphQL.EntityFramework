@@ -1,0 +1,39 @@
+{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "id": "Guid_1",
+        "childrenConnectionProjectedAsync": {
+          "totalCount": 3,
+          "edges": [
+            {
+              "node": "EMPTY",
+              "cursor": "0"
+            },
+            {
+              "node": "EMPTY",
+              "cursor": "1"
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": true,
+            "hasPreviousPage": false
+          }
+        }
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   p.Id,
+         c.Id
+from     ParentEntities as p
+         left outer join
+         ChildEntities as c
+         on p.Id = c.ParentId
+order by p.Property, p.Id, c.Id
+  }
+}

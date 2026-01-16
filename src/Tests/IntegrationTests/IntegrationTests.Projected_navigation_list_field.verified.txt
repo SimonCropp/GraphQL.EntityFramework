@@ -1,0 +1,26 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "id": "Guid_1",
+        "childrenProperties": [
+          "empty",
+          "empty"
+        ]
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   p.Id,
+         c.Id
+from     ParentEntities as p
+         left outer join
+         ChildEntities as c
+         on p.Id = c.ParentId
+order by p.Property, p.Id, c.Id
+  }
+}

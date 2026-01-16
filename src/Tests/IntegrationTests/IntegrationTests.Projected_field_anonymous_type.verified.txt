@@ -1,0 +1,19 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntities": [
+      {
+        "id": "Guid_1",
+        "anonymousProjection": "Guid_1|null"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   p.Id
+from     ParentEntities as p
+order by p.Property
+  }
+}

@@ -1,0 +1,17 @@
+{
+  target:
+{
+  "data": {
+    "simplifiedProjectedQuery": [
+      "FIRST",
+      "SECOND"
+    ]
+  }
+},
+  sql: {
+    Text:
+select   p.Property
+from     ParentEntities as p
+order by p.Property
+  }
+}
