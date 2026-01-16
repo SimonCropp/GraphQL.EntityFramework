@@ -46,7 +46,29 @@ context.Heros
         .Include("Friends.Address");
 ```
 
-The string for the include is taken from the field name when using `AddNavigationField` or `AddNavigationConnectionField` with the first character upper cased. This value can be overridden using the optional parameter `includeNames` . Note that `includeNames` is an `IEnumerable<string>` so that multiple navigation properties can optionally be included for a single node.
+The string for the include is taken from the field name when using `AddNavigationField` or `AddNavigationConnectionField` with the first character upper cased. This can be customized using a projection expression:
+
+```cs
+// Using projection to specify which navigation properties to include
+AddNavigationConnectionField(
+    name: "employeesConnection",
+    projection: _ => _.Employees,
+    resolve: ctx => ctx.Projection);
+
+// Multiple properties can be included using anonymous types
+AddNavigationField(
+    name: "child1",
+    projection: _ => new { _.Child1, _.Child2 },
+    resolve: ctx => ctx.Projection.Child1);
+
+// Nested navigation paths are also supported
+AddNavigationField(
+    name: "level3Entity",
+    projection: _ => _.Level2Entity.Level3Entity,
+    resolve: ctx => ctx.Projection);
+```
+
+The projection expression provides type-safety and automatically extracts the include names from the accessed properties.
 
 
 ## Projections
@@ -216,8 +238,8 @@ public class CompanyGraph :
             resolve: _ => _.Source.Employees);
         AddNavigationConnectionField(
             name: "employeesConnection",
-            resolve: _ => _.Source.Employees,
-            includeNames: ["Employees"]);
+            projection: _ => _.Employees,
+            resolve: ctx => ctx.Projection);
         AutoMap();
     }
 }

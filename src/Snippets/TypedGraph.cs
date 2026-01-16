@@ -15,8 +15,8 @@ public class TypedGraph
                 resolve: _ => _.Source.Employees);
             AddNavigationConnectionField(
                 name: "employeesConnection",
-                resolve: _ => _.Source.Employees,
-                includeNames: ["Employees"]);
+                projection: _ => _.Employees,
+                resolve: ctx => ctx.Projection);
             AutoMap();
         }
     }
