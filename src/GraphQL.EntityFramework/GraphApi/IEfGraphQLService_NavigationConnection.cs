@@ -11,4 +11,13 @@ public partial interface IEfGraphQLService<TDbContext>
         IEnumerable<string>? includeNames = null,
         bool omitQueryArguments = false)
         where TReturn : class;
+
+    ConnectionBuilder<TSource> AddNavigationConnectionField<TSource, TReturn, TProjection>(
+        ComplexGraphType<TSource> graph,
+        string name,
+        Expression<Func<TSource, TProjection>> projection,
+        Func<ResolveProjectionContext<TDbContext, TProjection>, IEnumerable<TReturn>> resolve,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class;
 }

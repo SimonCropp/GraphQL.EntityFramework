@@ -20,10 +20,10 @@ select w.Id,
        c0.Id
 from   WithManyChildrenEntities as w
        left outer join
-       Child2Entities as c
+       Child1Entities as c
        on w.Id = c.ParentId
        left outer join
-       Child1Entities as c0
+       Child2Entities as c0
        on w.Id = c0.ParentId
   }
 }

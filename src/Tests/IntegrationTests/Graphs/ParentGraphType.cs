@@ -6,12 +6,12 @@
     {
         AddNavigationConnectionField(
             name: "childrenConnection",
-            resolve: _ => _.Source.Children,
-            includeNames: [ "Children" ]);
+            projection: _ => _.Children,
+            resolve: ctx => ctx.Projection);
         AddNavigationConnectionField(
             name: "childrenConnectionOmitQueryArguments",
-            resolve: _ => _.Source.Children,
-            includeNames: [ "Children" ],
+            projection: _ => _.Children,
+            resolve: ctx => ctx.Projection,
             omitQueryArguments: true);
         AutoMap();
     }
