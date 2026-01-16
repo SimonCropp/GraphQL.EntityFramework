@@ -1,0 +1,42 @@
+{
+  target:
+{
+  "data": {
+    "simplifiedProjectedQueryConnection": {
+      "totalCount": 3,
+      "edges": [
+        {
+          "node": "ALPHA",
+          "cursor": "0"
+        },
+        {
+          "node": "BETA",
+          "cursor": "1"
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": true,
+        "hasPreviousPage": false
+      }
+    }
+  }
+},
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   ParentEntities as p
+    },
+    {
+      Text:
+select   p.Property
+from     ParentEntities as p
+order by p.Property
+offset @p rows fetch next @p1 rows only,
+      Parameters: {
+        @p: 0,
+        @p1: 2
+      }
+    }
+  ]
+}

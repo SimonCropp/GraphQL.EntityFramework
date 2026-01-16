@@ -1,4 +1,4 @@
-type Query {
+﻿type Query {
   customType(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [CustomType!]!
   skipLevel(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SkipLevelGraph]!
   projectedParents: [String]
@@ -178,6 +178,20 @@ type Query {
     where: [WhereExpression!],
     orderBy: [OrderBy!],
     ids: [ID!]): StringConnection!
+  simplifiedProjectedSingle: String!
+  simplifiedProjectedFirst: String!
+  simplifiedProjectedQuery(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
+  simplifiedProjectedQueryConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!]): StringConnection!
 }
 
 type CustomType {
@@ -341,6 +355,19 @@ type Parent {
     where: [WhereExpression!],
     orderBy: [OrderBy!]): StringConnection!
   childrenConnectionProjectedAsync(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!]): StringConnection!
+  simplifiedFirstChildProperty: String!
+  simplifiedChildProperties(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
+  simplifiedChildrenConnection(
     "Only return edges after the specified cursor."
     after: String,
     "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."

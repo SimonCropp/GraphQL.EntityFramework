@@ -293,4 +293,188 @@ public partial class IntegrationTests
     }
 
     #endregion
+
+    #region Simplified API tests - resolve returns projected IQueryable
+
+    [Fact]
+    public async Task Simplified_projected_single()
+    {
+        var query = """
+            {
+              simplifiedProjectedSingle
+            }
+            """;
+
+        var entity = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "test"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity]);
+    }
+
+    [Fact]
+    public async Task Simplified_projected_first()
+    {
+        var query = """
+            {
+              simplifiedProjectedFirst
+            }
+            """;
+
+        var entity = new ParentEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "test"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity]);
+    }
+
+    [Fact]
+    public async Task Simplified_projected_query()
+    {
+        var query = """
+            {
+              simplifiedProjectedQuery
+            }
+            """;
+
+        var entities = new[]
+        {
+            new ParentEntity { Property = "first" },
+            new ParentEntity { Property = "second" }
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities);
+    }
+
+    [Fact]
+    public async Task Simplified_projected_query_connection()
+    {
+        var query = """
+            {
+              simplifiedProjectedQueryConnection(first: 2) {
+                totalCount
+                edges {
+                  node
+                  cursor
+                }
+                pageInfo {
+                  hasNextPage
+                  hasPreviousPage
+                }
+              }
+            }
+            """;
+
+        var entities = new[]
+        {
+            new ParentEntity { Property = "alpha" },
+            new ParentEntity { Property = "beta" },
+            new ParentEntity { Property = "gamma" }
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities);
+    }
+
+    #endregion
+
+    #region Simplified API tests - navigation projection from TSource
+
+    [Fact]
+    public async Task Simplified_first_child_property()
+    {
+        var query = """
+            {
+              parentEntities {
+                id
+                simplifiedFirstChildProperty
+              }
+            }
+            """;
+
+        var entity = new ParentEntity
+        {
+            Property = "parent",
+            Children =
+            [
+                new() { Property = "child1" },
+                new() { Property = "child2" }
+            ]
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity]);
+    }
+
+    [Fact]
+    public async Task Simplified_child_properties_list()
+    {
+        var query = """
+            {
+              parentEntities {
+                id
+                simplifiedChildProperties
+              }
+            }
+            """;
+
+        var entity = new ParentEntity
+        {
+            Property = "parent",
+            Children =
+            [
+                new() { Property = "child1" },
+                new() { Property = "child2" }
+            ]
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity]);
+    }
+
+    [Fact]
+    public async Task Simplified_children_connection()
+    {
+        var query = """
+            {
+              parentEntities {
+                id
+                simplifiedChildrenConnection(first: 2) {
+                  totalCount
+                  edges {
+                    node
+                    cursor
+                  }
+                  pageInfo {
+                    hasNextPage
+                    hasPreviousPage
+                  }
+                }
+              }
+            }
+            """;
+
+        var entity = new ParentEntity
+        {
+            Property = "parent",
+            Children =
+            [
+                new() { Property = "child1" },
+                new() { Property = "child2" },
+                new() { Property = "child3" }
+            ]
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity]);
+    }
+
+    #endregion
 }

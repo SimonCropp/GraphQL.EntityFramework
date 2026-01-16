@@ -732,4 +732,98 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
         GraphQlService.AddProjectedQueryField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
 
     #endregion
+
+    #region Simplified API - AddProjectedField (navigation projection from TSource)
+
+    /// <summary>
+    /// Adds a field that projects from the source entity and transforms the result.
+    /// Simplified API - projection is directly from TSource.
+    /// </summary>
+    /// <example>
+    /// AddProjectedField(
+    ///     name: "childName",
+    ///     projection: parent => parent.Child.Name,
+    ///     transform: name => name.ToUpper())
+    /// </example>
+    public FieldBuilder<TSource, TReturn> AddProjectedField<TProjection, TReturn>(
+        string name,
+        Expression<Func<TSource, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? graphType = null)
+        where TReturn : class =>
+        GraphQlService.AddProjectedField(this, name, projection, transform, graphType);
+
+    public FieldBuilder<TSource, TReturn> AddProjectedField<TProjection, TReturn>(
+        string name,
+        Expression<Func<TSource, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? graphType = null)
+        where TReturn : class =>
+        GraphQlService.AddProjectedField(this, name, projection, transform, graphType);
+
+    #endregion
+
+    #region Simplified API - AddProjectedListField (list projection from TSource)
+
+    /// <summary>
+    /// Adds a field that projects a list from the source entity and transforms each item.
+    /// Simplified API - projection is directly from TSource.
+    /// </summary>
+    /// <example>
+    /// AddProjectedListField(
+    ///     name: "childNames",
+    ///     projection: parent => parent.Children.Select(c => c.Name),
+    ///     transform: name => name.ToUpper())
+    /// </example>
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedListField<TProjection, TReturn>(
+        string name,
+        Expression<Func<TSource, IEnumerable<TProjection>>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class =>
+        GraphQlService.AddProjectedListField(this, name, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedListField<TProjection, TReturn>(
+        string name,
+        Expression<Func<TSource, IEnumerable<TProjection>>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class =>
+        GraphQlService.AddProjectedListField(this, name, projection, transform, itemGraphType, omitQueryArguments);
+
+    #endregion
+
+    #region Simplified API - AddProjectedConnectionField (connection projection from TSource)
+
+    /// <summary>
+    /// Adds a paginated connection field that projects from the source entity and transforms each item.
+    /// Simplified API - projection is directly from TSource.
+    /// </summary>
+    /// <example>
+    /// AddProjectedConnectionField(
+    ///     name: "childNamesConnection",
+    ///     projection: parent => parent.Children.Select(c => c.Name),
+    ///     transform: name => name.ToUpper())
+    /// </example>
+    public ConnectionBuilder<TSource> AddProjectedConnectionField<TProjection, TReturn>(
+        string name,
+        Expression<Func<TSource, IEnumerable<TProjection>>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class =>
+        GraphQlService.AddProjectedConnectionField(this, name, projection, transform, itemGraphType, omitQueryArguments);
+
+    public ConnectionBuilder<TSource> AddProjectedConnectionField<TProjection, TReturn>(
+        string name,
+        Expression<Func<TSource, IEnumerable<TProjection>>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class =>
+        GraphQlService.AddProjectedConnectionField(this, name, projection, transform, itemGraphType, omitQueryArguments);
+
+    #endregion
 }

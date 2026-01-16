@@ -85,6 +85,29 @@
 
         #endregion
 
+        #region Simplified API - Projection directly from TSource
+
+        // Simplified API - projection is directly from ParentEntity
+        // Single child's property
+        AddProjectedField<string?, string>(
+            name: "simplifiedFirstChildProperty",
+            projection: source => source.Children.Select(c => c.Property).FirstOrDefault(),
+            transform: prop => prop?.ToUpper() ?? "NO_CHILDREN");
+
+        // List of child properties via projection
+        AddProjectedListField<string?, string>(
+            name: "simplifiedChildProperties",
+            projection: source => source.Children.Select(c => c.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        // Connection of child properties via projection
+        AddProjectedConnectionField<string?, string>(
+            name: "simplifiedChildrenConnection",
+            projection: source => source.Children.Select(c => c.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        #endregion
+
         AutoMap();
     }
 }

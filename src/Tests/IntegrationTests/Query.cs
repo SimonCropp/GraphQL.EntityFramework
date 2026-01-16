@@ -412,5 +412,30 @@
             });
 
         #endregion
+
+        #region Simplified API - Projected Query Field tests (resolve returns projected IQueryable)
+
+        // Simplified API - resolve returns IQueryable<TProjection> directly via .Select()
+        AddProjectedSingleField<string?, string>(
+            name: "simplifiedProjectedSingle",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(e => e.Property).Take(1).Select(e => e.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedFirstField<string?, string>(
+            name: "simplifiedProjectedFirst",
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(e => e.Property).Select(e => e.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedQueryField<string?, string>(
+            name: "simplifiedProjectedQuery",
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(e => e.Property),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedQueryConnectionField<string?, string>(
+            name: "simplifiedProjectedQueryConnection",
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(e => e.Property).OrderBy(p => p),
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        #endregion
     }
 }
