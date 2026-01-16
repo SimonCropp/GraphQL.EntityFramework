@@ -632,6 +632,432 @@ partial class EfGraphQLService<TDbContext>
 
     #endregion
 
+    #region AddProjectedQueryField - TSource generic variants
+
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class
+    {
+        var field = BuildProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+            name,
+            _ => Task.FromResult(resolve(_)),
+            projection,
+            (_, proj) => Task.FromResult(transform(proj)),
+            itemGraphType, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, IEnumerable<TReturn>>(field);
+    }
+
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class
+    {
+        var field = BuildProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+            name,
+            _ => Task.FromResult(resolve(_)),
+            projection,
+            (_, proj) => transform(proj),
+            itemGraphType, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, IEnumerable<TReturn>>(field);
+    }
+
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class
+    {
+        var field = BuildProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+            name,
+            _ => Task.FromResult(resolve(_)),
+            projection,
+            (ctx, proj) => Task.FromResult(transform(ctx, proj)),
+            itemGraphType, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, IEnumerable<TReturn>>(field);
+    }
+
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class
+    {
+        var field = BuildProjectedQueryField(
+            name,
+            context => Task.FromResult(resolve(context)),
+            projection,
+            transform,
+            itemGraphType, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, IEnumerable<TReturn>>(field);
+    }
+
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class
+    {
+        var field = BuildProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+            name,
+            resolve,
+            projection,
+            (_, proj) => Task.FromResult(transform(proj)),
+            itemGraphType, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, IEnumerable<TReturn>>(field);
+    }
+
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class
+    {
+        var field = BuildProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+            name,
+            resolve,
+            projection,
+            (_, proj) => transform(proj),
+            itemGraphType, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, IEnumerable<TReturn>>(field);
+    }
+
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class
+    {
+        var field = BuildProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+            name,
+            resolve,
+            projection,
+            (ctx, proj) => Task.FromResult(transform(ctx, proj)),
+            itemGraphType, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, IEnumerable<TReturn>>(field);
+    }
+
+    public FieldBuilder<TSource, IEnumerable<TReturn>> AddProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class
+    {
+        var field = BuildProjectedQueryField(name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+        graph.AddField(field);
+        return new FieldBuilderEx<TSource, IEnumerable<TReturn>>(field);
+    }
+
+    #endregion
+
+    #region AddProjectedQueryField - object source variants
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        AddProjectedQueryField<object, TEntity, TProjection, TReturn>(
+            graph, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        AddProjectedQueryField<object, TEntity, TProjection, TReturn>(
+            graph, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        AddProjectedQueryField<object, TEntity, TProjection, TReturn>(
+            graph, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        AddProjectedQueryField<object, TEntity, TProjection, TReturn>(
+            graph, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        AddProjectedQueryField<object, TEntity, TProjection, TReturn>(
+            graph, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        AddProjectedQueryField<object, TEntity, TProjection, TReturn>(
+            graph, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        AddProjectedQueryField<object, TEntity, TProjection, TReturn>(
+            graph, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        IComplexGraphType graph,
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        AddProjectedQueryField<object, TEntity, TProjection, TReturn>(
+            graph, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    #endregion
+
+    #region BuildProjectedQueryField
+
+    FieldType BuildProjectedQueryField<TSource, TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, TSource>, TProjection, Task<TReturn>> transform,
+        Type? itemGraphType,
+        bool omitQueryArguments)
+        where TEntity : class
+        where TReturn : class
+    {
+        Ensure.NotWhiteSpace(nameof(name), name);
+
+        var hasId = keyNames.ContainsKey(typeof(TEntity));
+        itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
+
+        var compiledProjection = projection.Compile();
+
+        // Extract navigation includes from projection
+        var autoIncludes = ProjectionIncludeAnalyzer.ExtractNavigationIncludes(projection, model);
+
+        var fieldType = new FieldType
+        {
+            Name = name,
+            Type = nonNullType.MakeGenericType(listGraphType.MakeGenericType(itemGraphType)),
+            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false, omitQueryArguments),
+        };
+
+        // Set metadata for auto-detected includes
+        if (autoIncludes.Count > 0)
+        {
+            IncludeAppender.SetIncludeMetadata(fieldType, name, autoIncludes);
+        }
+
+        var names = GetKeyNames<TEntity>();
+
+        fieldType.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
+            async context =>
+            {
+                var fieldContext = BuildContext(context);
+
+                var task = resolve(fieldContext);
+                if (task is null)
+                {
+                    return [];
+                }
+
+                var query = await task;
+                if (query is null)
+                {
+                    return [];
+                }
+
+                try
+                {
+                    if (disableTracking)
+                    {
+                        query = query.AsNoTracking();
+                    }
+
+                    query = includeAppender.AddIncludes(query, context);
+                    if (!omitQueryArguments)
+                    {
+                        query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
+                    }
+
+                    QueryLogger.Write(query);
+
+                    List<TEntity> entities;
+                    if (query.Provider is IAsyncQueryProvider)
+                    {
+                        entities = await query.ToListAsync(context.CancellationToken);
+                    }
+                    else
+                    {
+                        entities = query.ToList();
+                    }
+
+                    // Apply filters
+                    IEnumerable<TEntity> filteredEntities = entities;
+                    if (fieldContext.Filters is not null)
+                    {
+                        filteredEntities = await fieldContext.Filters.ApplyFilter(
+                            entities, context.UserContext, fieldContext.DbContext, context.User);
+                    }
+
+                    // Project and transform each entity
+                    var results = new List<TReturn>();
+                    foreach (var entity in filteredEntities)
+                    {
+                        try
+                        {
+                            var projectedData = compiledProjection(entity);
+                            var transformed = await transform(fieldContext, projectedData);
+                            results.Add(transformed);
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            throw;
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            throw;
+                        }
+                        catch (Exception exception)
+                        {
+                            throw new(
+                                $"""
+                                 Failed to project/transform entity in query field `{name}`
+                                 ItemGraphType: {itemGraphType.FullName}
+                                 TSource: {typeof(TSource).FullName}
+                                 TEntity: {typeof(TEntity).FullName}
+                                 TProjection: {typeof(TProjection).FullName}
+                                 TReturn: {typeof(TReturn).FullName}
+                                 """,
+                                exception);
+                        }
+                    }
+
+                    return results;
+                }
+                catch (TaskCanceledException)
+                {
+                    throw;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception exception)
+                {
+                    throw new(
+                        $"""
+                         Failed to execute projected query field `{name}`
+                         ItemGraphType: {itemGraphType.FullName}
+                         TSource: {typeof(TSource).FullName}
+                         TEntity: {typeof(TEntity).FullName}
+                         TProjection: {typeof(TProjection).FullName}
+                         TReturn: {typeof(TReturn).FullName}
+                         Query: {query.SafeToQueryString()}
+                         """,
+                        exception);
+                }
+            });
+
+        return fieldType;
+    }
+
+    #endregion
+
     static IEnumerable<string>? MergeIncludes(IReadOnlySet<string> autoIncludes, IReadOnlySet<string>? userIncludes)
     {
         if (autoIncludes.Count == 0 && userIncludes == null)

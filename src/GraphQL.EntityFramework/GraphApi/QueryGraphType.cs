@@ -166,4 +166,404 @@ public class QueryGraphType<TDbContext>(IEfGraphQLService<TDbContext> graphQlSer
         GraphQlService.AddProjectedField(this, name, resolve, projection, transform, graphType);
 
     #endregion
+
+    #region AddProjectedSingleField
+
+    public FieldBuilder<object, TReturn> AddProjectedSingleField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedSingleField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedSingleField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedSingleField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedSingleField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedSingleField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedSingleField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedSingleField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedSingleField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedSingleField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedSingleField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedSingleField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedSingleField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedSingleField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedSingleField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedSingleField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    #endregion
+
+    #region AddProjectedFirstField
+
+    public FieldBuilder<object, TReturn> AddProjectedFirstField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedFirstField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedFirstField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedFirstField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedFirstField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedFirstField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedFirstField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedFirstField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedFirstField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedFirstField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedFirstField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedFirstField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedFirstField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedFirstField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    public FieldBuilder<object, TReturn> AddProjectedFirstField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? graphType = null,
+        bool nullable = false,
+        bool omitQueryArguments = false,
+        bool idOnly = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedFirstField(this, name, resolve, projection, transform, graphType, nullable, omitQueryArguments, idOnly);
+
+    #endregion
+
+    #region AddProjectedQueryConnectionField
+
+    public ConnectionBuilder<object> AddProjectedQueryConnectionField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IOrderedQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryConnectionField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public ConnectionBuilder<object> AddProjectedQueryConnectionField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IOrderedQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryConnectionField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public ConnectionBuilder<object> AddProjectedQueryConnectionField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IOrderedQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryConnectionField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public ConnectionBuilder<object> AddProjectedQueryConnectionField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IOrderedQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryConnectionField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public ConnectionBuilder<object> AddProjectedQueryConnectionField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IOrderedQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryConnectionField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public ConnectionBuilder<object> AddProjectedQueryConnectionField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IOrderedQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryConnectionField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public ConnectionBuilder<object> AddProjectedQueryConnectionField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IOrderedQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryConnectionField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public ConnectionBuilder<object> AddProjectedQueryConnectionField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IOrderedQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryConnectionField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    #endregion
+
+    #region AddProjectedQueryField
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, IQueryable<TEntity>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, TReturn> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    public FieldBuilder<object, IEnumerable<TReturn>> AddProjectedQueryField<TEntity, TProjection, TReturn>(
+        string name,
+        Func<ResolveEfFieldContext<TDbContext, object>, Task<IQueryable<TEntity>?>?> resolve,
+        Expression<Func<TEntity, TProjection>> projection,
+        Func<ResolveEfFieldContext<TDbContext, object>, TProjection, Task<TReturn>> transform,
+        Type? itemGraphType = null,
+        bool omitQueryArguments = false)
+        where TEntity : class
+        where TReturn : class =>
+        GraphQlService.AddProjectedQueryField(this, name, resolve, projection, transform, itemGraphType, omitQueryArguments);
+
+    #endregion
 }

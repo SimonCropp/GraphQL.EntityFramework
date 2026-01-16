@@ -1,4 +1,4 @@
-﻿type Query {
+type Query {
   customType(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [CustomType!]!
   skipLevel(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SkipLevelGraph]!
   projectedParents: [String]
@@ -146,6 +146,38 @@
     where: [WhereExpression!],
     orderBy: [OrderBy!],
     ids: [ID!]): ParentConnection!
+  projectedParentSingle(id: ID, ids: [ID!], where: [WhereExpression!]): String!
+  projectedParentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): String!
+  projectedParentSingleNullable(id: ID, ids: [ID!], where: [WhereExpression!]): String
+  projectedParentFirstNullable(id: ID, ids: [ID!], where: [WhereExpression!]): String
+  projectedParentSingleAsync(id: ID, ids: [ID!], where: [WhereExpression!]): String!
+  projectedParentFirstAsync(id: ID, ids: [ID!], where: [WhereExpression!]): String!
+  projectedParentQuery(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
+  projectedParentQueryAsync(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
+  projectedParentQueryConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): StringConnection!
+  projectedParentQueryConnectionAsync(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): StringConnection!
 }
 
 type CustomType {
@@ -297,6 +329,28 @@ type Parent {
   propertyWithContext: String!
   childrenProperties(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
   anonymousProjection: String!
+  childrenConnectionProjected(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!]): StringConnection!
+  childrenConnectionProjectedAsync(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!]): StringConnection!
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   id: ID!
   property: String
@@ -341,6 +395,26 @@ type Child {
   nullable: Int
   parentId: ID
   property: String
+}
+
+"A connection from an object to a list of objects of type `String`."
+type StringConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [StringEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [String!]
+}
+
+"An edge in a connection from an object to another object of type `String`."
+type StringEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: String!
 }
 
 type DateEntity {

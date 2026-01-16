@@ -65,6 +65,26 @@
             projection: source => source.Id + "|" + (source.Property ?? "null"),
             transform: data => data);
 
+        #region Projected Navigation Connection Field
+
+        AddProjectedNavigationConnectionField<ChildEntity, string?, string>(
+            name: "childrenConnectionProjected",
+            navigation: source => source.Children,
+            projection: child => child.Property,
+            transform: prop => prop?.ToUpper() ?? "EMPTY");
+
+        AddProjectedNavigationConnectionField<ChildEntity, string?, string>(
+            name: "childrenConnectionProjectedAsync",
+            navigation: source => source.Children,
+            projection: child => child.Property,
+            transform: async prop =>
+            {
+                await Task.Yield();
+                return prop?.ToUpper() ?? "EMPTY";
+            });
+
+        #endregion
+
         AutoMap();
     }
 }

@@ -1,0 +1,15 @@
+{
+  target:
+{
+  "data": {
+    "projectedParentSingleAsync": "TEST"
+  }
+},
+  sql: {
+    Text:
+select top (2) p.Id,
+               p.Property
+from   ParentEntities as p
+where  p.Id = 'Guid_1'
+  }
+}

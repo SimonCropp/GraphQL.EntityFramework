@@ -209,6 +209,149 @@ In the example above:
 This automatic detection ensures all required navigation properties are eager-loaded without any manual configuration.
 
 
+### Single/First Entity Queries
+
+For single entity queries with projection and transform support, use `AddProjectedSingleField` or `AddProjectedFirstField`:
+
+```cs
+public class Query : QueryGraphType<SampleDbContext>
+{
+    public Query(IEfGraphQLService<SampleDbContext> graphQlService) : base(graphQlService)
+    {
+        // AddProjectedSingleField - returns single entity (throws if multiple match)
+        AddProjectedSingleField<Order, OrderProjection, OrderDto>(
+            name: "order",
+            resolve: context => context.DbContext.Orders.Where(o => o.Id == context.GetArgument<Guid>("id")),
+            projection: entity => new OrderProjection
+            {
+                Id = entity.Id,
+                OrderNumber = entity.OrderNumber,
+                CustomerName = entity.Customer.Name
+            },
+            transform: projected => new OrderDto
+            {
+                Id = projected.Id,
+                DisplayNumber = $"ORD-{projected.OrderNumber}",
+                Customer = projected.CustomerName
+            });
+
+        // AddProjectedFirstField - returns first match (or null)
+        AddProjectedFirstField<Order, OrderProjection, OrderDto>(
+            name: "latestOrder",
+            resolve: context => context.DbContext.Orders.OrderByDescending(o => o.CreatedAt),
+            projection: entity => new OrderProjection
+            {
+                Id = entity.Id,
+                OrderNumber = entity.OrderNumber,
+                CustomerName = entity.Customer.Name
+            },
+            transform: projected => new OrderDto
+            {
+                Id = projected.Id,
+                DisplayNumber = $"ORD-{projected.OrderNumber}",
+                Customer = projected.CustomerName
+            },
+            nullable: true);
+    }
+}
+```
+
+Both methods support:
+- Sync and async transforms
+- Context-aware transforms (access to `ResolveEfFieldContext`)
+- `nullable` parameter (default: false) - controls whether null results are allowed or throw an exception
+- `idOnly` parameter - when true, only supports the `id` query argument
+
+
+### Query Fields (List Results)
+
+For query fields returning multiple entities with projection and transform support, use `AddProjectedQueryField`:
+
+```cs
+public class Query : QueryGraphType<SampleDbContext>
+{
+    public Query(IEfGraphQLService<SampleDbContext> graphQlService) : base(graphQlService)
+    {
+        AddProjectedQueryField<Order, OrderProjection, OrderDto>(
+            name: "orders",
+            resolve: context => context.DbContext.Orders,
+            projection: entity => new OrderProjection
+            {
+                Id = entity.Id,
+                OrderNumber = entity.OrderNumber,
+                CustomerName = entity.Customer.Name,
+                TotalAmount = entity.TotalAmount
+            },
+            transform: projected => new OrderDto
+            {
+                Id = projected.Id,
+                DisplayNumber = $"ORD-{projected.OrderNumber}",
+                Customer = projected.CustomerName,
+                FormattedTotal = projected.TotalAmount.ToString("C")
+            });
+    }
+}
+```
+
+
+### Projected Connection Fields
+
+For pageable fields with projection and transform support, use `AddProjectedNavigationConnectionField` (for navigation properties) or `AddProjectedQueryConnectionField` (for root queries):
+
+```cs
+// Root query with projected pagination
+public class Query : QueryGraphType<SampleDbContext>
+{
+    public Query(IEfGraphQLService<SampleDbContext> graphQlService) : base(graphQlService)
+    {
+        AddProjectedQueryConnectionField<Order, OrderProjection, OrderDto>(
+            name: "ordersConnection",
+            resolve: context => context.DbContext.Orders.OrderBy(o => o.CreatedAt),
+            projection: entity => new OrderProjection
+            {
+                Id = entity.Id,
+                OrderNumber = entity.OrderNumber,
+                CustomerName = entity.Customer.Name
+            },
+            transform: projected => new OrderDto
+            {
+                Id = projected.Id,
+                DisplayNumber = $"ORD-{projected.OrderNumber}",
+                Customer = projected.CustomerName
+            });
+    }
+}
+
+// Navigation property with projected pagination
+public class CustomerGraph : EfObjectGraphType<SampleDbContext, Customer>
+{
+    public CustomerGraph(IEfGraphQLService<SampleDbContext> graphQlService) : base(graphQlService)
+    {
+        AddProjectedNavigationConnectionField<Order, OrderProjection, OrderDto>(
+            name: "ordersConnection",
+            navigation: customer => customer.Orders,
+            projection: entity => new OrderProjection
+            {
+                Id = entity.Id,
+                OrderNumber = entity.OrderNumber,
+                TotalAmount = entity.TotalAmount
+            },
+            transform: projected => new OrderDto
+            {
+                Id = projected.Id,
+                DisplayNumber = $"ORD-{projected.OrderNumber}",
+                FormattedTotal = projected.TotalAmount.ToString("C")
+            });
+    }
+}
+```
+
+All projected connection fields return a `ConnectionBuilder` for further customization and support:
+- Sync and async transforms
+- Context-aware transforms (access to `ResolveEfFieldContext`)
+- Standard connection pagination (first/after, last/before)
+
+
 ## Connections
 
 Creating a page-able field is supported through [GraphQL Connections](https://graphql.org/learn/pagination/) by calling `IEfGraphQLService.AddNavigationConnectionField` (for an EF navigation property), or `IEfGraphQLService.AddQueryConnectionField` (for an IQueryable). Alternatively convenience methods are exposed on the types `EfObjectGraphType` or `EfObjectGraphType<TSource>` for root or nested graphs respectively.
