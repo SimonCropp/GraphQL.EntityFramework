@@ -6,7 +6,8 @@
     {
         AddNavigationConnectionField(
             name: "childrenFromInterface",
-            _ => _.Source.ChildrenFromBase);
+            projection: _ => _.ChildrenFromBase,
+            resolve: ctx => ctx.Projection);
         AddNavigationConnectionField(
             name: "childrenFromDerived",
             projection: _ => _.Children,

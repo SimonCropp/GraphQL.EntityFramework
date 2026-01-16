@@ -12,6 +12,7 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
 
     public IEfGraphQLService<TDbContext> GraphQlService { get; } = graphQlService;
 
+    [Obsolete("Use the projection-based overload instead")]
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,
         Type? graphType = null,
@@ -28,6 +29,7 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         where TReturn : class =>
         GraphQlService.AddNavigationConnectionField(this, name, projection, graphType, omitQueryArguments);
 
+    [Obsolete("Use the projection-based overload instead")]
     public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
         string name,
         Type? graphType = null,
@@ -42,6 +44,7 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         where TReturn : class =>
         GraphQlService.AddNavigationField(this, name, projection, graphType);
 
+    [Obsolete("Use the projection-based overload instead")]
     public FieldBuilder<TSource, TReturn> AddNavigationListField<TReturn>(
         string name,
         Type? graphType = null,

@@ -3,6 +3,7 @@
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
 {
+    [Obsolete("Use the projection-based overload instead")]
     public FieldBuilder<TSource, TReturn> AddNavigationListField<TSource, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,

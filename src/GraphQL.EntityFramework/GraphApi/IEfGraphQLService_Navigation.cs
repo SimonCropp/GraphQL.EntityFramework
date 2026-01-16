@@ -3,6 +3,7 @@
 //Navigation fields will always be on a typed graph. so use ComplexGraphType not IComplexGraphType
 public partial interface IEfGraphQLService<TDbContext>
 {
+    [Obsolete("Use the projection-based overload instead")]
     FieldBuilder<TSource, TReturn> AddNavigationField<TSource, TReturn>(ComplexGraphType<TSource> graph,
         string name,
         Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
@@ -25,6 +26,7 @@ public partial interface IEfGraphQLService<TDbContext>
         Type? graphType = null)
         where TReturn : class;
 
+    [Obsolete("Use the projection-based overload instead")]
     FieldBuilder<TSource, TReturn> AddNavigationListField<TSource, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,

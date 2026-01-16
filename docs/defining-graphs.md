@@ -235,7 +235,8 @@ public class CompanyGraph :
     {
         AddNavigationListField(
             name: "employees",
-            resolve: _ => _.Source.Employees);
+            projection: _ => _.Employees,
+            resolve: ctx => ctx.Projection);
         AddNavigationConnectionField(
             name: "employeesConnection",
             projection: _ => _.Employees,
@@ -244,7 +245,7 @@ public class CompanyGraph :
     }
 }
 ```
-<sup><a href='/src/Snippets/TypedGraph.cs#L5-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-typedGraph' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/TypedGraph.cs#L5-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-typedGraph' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -362,10 +363,11 @@ public class CompanyGraph :
         base(graphQlService) =>
         AddNavigationConnectionField(
             name: "employees",
-            resolve: _ => _.Source.Employees);
+            projection: _ => _.Employees,
+            resolve: ctx => ctx.Projection);
 }
 ```
-<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L5-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-ConnectionTypedGraph' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L5-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-ConnectionTypedGraph' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

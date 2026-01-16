@@ -9,6 +9,7 @@ partial class EfGraphQLService<TDbContext>
     static MethodInfo addEnumerableConnectionWithProjection = typeof(EfGraphQLService<TDbContext>)
         .GetMethod("AddEnumerableConnectionWithProjection", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
+    [Obsolete("Use the projection-based overload instead")]
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TSource, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,

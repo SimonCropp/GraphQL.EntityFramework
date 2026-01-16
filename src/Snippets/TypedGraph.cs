@@ -12,7 +12,8 @@ public class TypedGraph
         {
             AddNavigationListField(
                 name: "employees",
-                resolve: _ => _.Source.Employees);
+                projection: _ => _.Employees,
+                resolve: ctx => ctx.Projection);
             AddNavigationConnectionField(
                 name: "employeesConnection",
                 projection: _ => _.Employees,
