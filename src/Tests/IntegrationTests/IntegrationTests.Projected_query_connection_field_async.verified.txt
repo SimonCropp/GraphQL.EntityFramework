@@ -1,4 +1,4 @@
-{
+﻿{
   target:
 {
   "data": {
@@ -29,8 +29,7 @@ from   ParentEntities as p
     },
     {
       Text:
-select   p.Id,
-         p.Property
+select   p.Property
 from     ParentEntities as p
 order by p.Property
 offset @p rows fetch next @p1 rows only,

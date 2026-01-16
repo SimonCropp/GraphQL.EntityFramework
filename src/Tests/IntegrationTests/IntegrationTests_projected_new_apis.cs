@@ -7,7 +7,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              projectedParentSingle(id: "00000000-0000-0000-0000-000000000001")
+              projectedParentSingle
             }
             """;
 
@@ -26,7 +26,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              projectedParentSingleAsync(id: "00000000-0000-0000-0000-000000000001")
+              projectedParentSingleAsync
             }
             """;
 
@@ -45,7 +45,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              projectedParentSingleNullable(id: "00000000-0000-0000-0000-000000000099")
+              projectedParentSingleNullable
             }
             """;
 
@@ -62,7 +62,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              projectedParentFirst(id: "00000000-0000-0000-0000-000000000001")
+              projectedParentFirst
             }
             """;
 
@@ -81,7 +81,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              projectedParentFirstAsync(id: "00000000-0000-0000-0000-000000000001")
+              projectedParentFirstAsync
             }
             """;
 
@@ -100,7 +100,7 @@ public partial class IntegrationTests
     {
         var query = """
             {
-              projectedParentFirstNullable(id: "00000000-0000-0000-0000-000000000099")
+              projectedParentFirstNullable
             }
             """;
 

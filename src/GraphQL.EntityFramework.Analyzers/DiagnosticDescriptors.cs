@@ -9,7 +9,7 @@ public static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor ProblematicContextSourceAccess = new(
         id: DiagnosticId,
         title: "Avoid accessing non-ID properties on context.Source",
-        messageFormat: "Property '{0}' accessed on context.Source may not be loaded. Consider using AddProjectedField/AddProjectedNavigationField instead, or access the foreign key '{1}' if available.",
+        messageFormat: "Property '{0}' accessed on context.Source may not be loaded. Consider using AddProjectedField instead, or access the foreign key '{1}' if available.",
         category: "Usage",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,

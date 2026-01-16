@@ -1,4 +1,4 @@
-{
+﻿{
   target:
 {
   "data": {
@@ -10,8 +10,7 @@
 },
   sql: {
     Text:
-select   p.Id,
-         p.Property
+select   p.Property
 from     ParentEntities as p
 order by p.Property
   }

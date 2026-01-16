@@ -325,46 +325,40 @@
 
         #region Projected Single/First Field tests
 
-        AddProjectedSingleField<ParentEntity, string?, string>(
+        AddProjectedSingleField<string?, string>(
             name: "projectedParentSingle",
-            resolve: ctx => ctx.DbContext.ParentEntities,
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
             transform: prop => prop?.ToUpper() ?? "EMPTY");
 
-        AddProjectedFirstField<ParentEntity, string?, string>(
+        AddProjectedFirstField<string?, string>(
             name: "projectedParentFirst",
-            resolve: ctx => ctx.DbContext.ParentEntities,
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
             transform: prop => prop?.ToUpper() ?? "EMPTY");
 
-        AddProjectedSingleField<ParentEntity, string?, string>(
+        AddProjectedSingleField<string?, string>(
             name: "projectedParentSingleNullable",
-            resolve: ctx => ctx.DbContext.ParentEntities,
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
             transform: prop => prop?.ToUpper() ?? "EMPTY",
             nullable: true);
 
-        AddProjectedFirstField<ParentEntity, string?, string>(
+        AddProjectedFirstField<string?, string>(
             name: "projectedParentFirstNullable",
-            resolve: ctx => ctx.DbContext.ParentEntities,
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
             transform: prop => prop?.ToUpper() ?? "EMPTY",
             nullable: true);
 
-        AddProjectedSingleField<ParentEntity, string?, string>(
+        AddProjectedSingleField<string?, string>(
             name: "projectedParentSingleAsync",
-            resolve: ctx => ctx.DbContext.ParentEntities,
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
             transform: async prop =>
             {
                 await Task.Yield();
                 return prop?.ToUpper() ?? "EMPTY";
             });
 
-        AddProjectedFirstField<ParentEntity, string?, string>(
+        AddProjectedFirstField<string?, string>(
             name: "projectedParentFirstAsync",
-            resolve: ctx => ctx.DbContext.ParentEntities,
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property).Select(p => p.Property),
             transform: async prop =>
             {
                 await Task.Yield();
@@ -375,16 +369,14 @@
 
         #region Projected Query Field tests
 
-        AddProjectedQueryField<ParentEntity, string?, string>(
+        AddProjectedQueryField<string?, string>(
             name: "projectedParentQuery",
-            resolve: ctx => ctx.DbContext.ParentEntities,
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(p => p.Property),
             transform: prop => prop?.ToUpper() ?? "EMPTY");
 
-        AddProjectedQueryField<ParentEntity, string?, string>(
+        AddProjectedQueryField<string?, string>(
             name: "projectedParentQueryAsync",
-            resolve: ctx => ctx.DbContext.ParentEntities,
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(p => p.Property),
             transform: async prop =>
             {
                 await Task.Yield();
@@ -395,16 +387,14 @@
 
         #region Projected Query Connection Field tests
 
-        AddProjectedQueryConnectionField<ParentEntity, string?, string>(
+        AddProjectedQueryConnectionField<string?, string>(
             name: "projectedParentQueryConnection",
-            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property),
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(p => p.Property).OrderBy(p => p),
             transform: prop => prop?.ToUpper() ?? "EMPTY");
 
-        AddProjectedQueryConnectionField<ParentEntity, string?, string>(
+        AddProjectedQueryConnectionField<string?, string>(
             name: "projectedParentQueryConnectionAsync",
-            resolve: ctx => ctx.DbContext.ParentEntities.OrderBy(p => p.Property),
-            projection: entity => entity.Property,
+            resolve: ctx => ctx.DbContext.ParentEntities.Select(p => p.Property).OrderBy(p => p),
             transform: async prop =>
             {
                 await Task.Yield();
@@ -413,7 +403,7 @@
 
         #endregion
 
-        #region Simplified API - Projected Query Field tests (resolve returns projected IQueryable)
+        #region More Projected Query Field tests (resolve returns projected IQueryable)
 
         // Simplified API - resolve returns IQueryable<TProjection> directly via .Select()
         AddProjectedSingleField<string?, string>(

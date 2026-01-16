@@ -146,14 +146,14 @@
     where: [WhereExpression!],
     orderBy: [OrderBy!],
     ids: [ID!]): ParentConnection!
-  projectedParentSingle(id: ID, ids: [ID!], where: [WhereExpression!]): String!
-  projectedParentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): String!
-  projectedParentSingleNullable(id: ID, ids: [ID!], where: [WhereExpression!]): String
-  projectedParentFirstNullable(id: ID, ids: [ID!], where: [WhereExpression!]): String
-  projectedParentSingleAsync(id: ID, ids: [ID!], where: [WhereExpression!]): String!
-  projectedParentFirstAsync(id: ID, ids: [ID!], where: [WhereExpression!]): String!
-  projectedParentQuery(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
-  projectedParentQueryAsync(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
+  projectedParentSingle: String!
+  projectedParentFirst: String!
+  projectedParentSingleNullable: String
+  projectedParentFirstNullable: String
+  projectedParentSingleAsync: String!
+  projectedParentFirstAsync: String!
+  projectedParentQuery(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
+  projectedParentQueryAsync(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
   projectedParentQueryConnection(
     "Only return edges after the specified cursor."
     after: String,
@@ -164,8 +164,7 @@
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
     where: [WhereExpression!],
-    orderBy: [OrderBy!],
-    ids: [ID!]): StringConnection!
+    orderBy: [OrderBy!]): StringConnection!
   projectedParentQueryConnectionAsync(
     "Only return edges after the specified cursor."
     after: String,
@@ -176,8 +175,7 @@
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
     where: [WhereExpression!],
-    orderBy: [OrderBy!],
-    ids: [ID!]): StringConnection!
+    orderBy: [OrderBy!]): StringConnection!
   simplifiedProjectedSingle: String!
   simplifiedProjectedFirst: String!
   simplifiedProjectedQuery(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
@@ -340,9 +338,8 @@ type Parent {
     ids: [ID!]): ChildConnection!
   propertyUpper: String!
   propertyUpperAsync: String!
-  propertyWithContext: String!
-  childrenProperties(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
   anonymousProjection: String!
+  childrenProperties(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [String!]!
   childrenConnectionProjected(
     "Only return edges after the specified cursor."
     after: String,

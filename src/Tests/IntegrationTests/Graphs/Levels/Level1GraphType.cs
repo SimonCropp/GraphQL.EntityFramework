@@ -6,7 +6,7 @@
     {
         #region ProjectedFieldNestedNavigation
 
-        AddProjectedNavigationField<string?, string>(
+        AddProjectedField<string?, string>(
             name: "level2Property",
             projection: source => source.Level2Entity!.Level3Entity!.Property,
             transform: property => property ?? "none");

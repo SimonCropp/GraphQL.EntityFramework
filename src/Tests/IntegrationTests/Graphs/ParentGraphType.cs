@@ -16,7 +16,7 @@
 
         #region ProjectedFieldBasicTransform
 
-        AddProjectedNavigationField<string?, string>(
+        AddProjectedField<string?, string>(
             name: "propertyUpper",
             projection: source => source.Property,
             transform: property => property?.ToUpper() ?? "");
@@ -25,7 +25,7 @@
 
         #region ProjectedFieldAsyncTransform
 
-        AddProjectedNavigationField<string?, string>(
+        AddProjectedField<string?, string>(
             name: "propertyUpperAsync",
             projection: source => source.Property,
             transform: async property =>
@@ -36,47 +36,31 @@
 
         #endregion
 
-        #region ProjectedFieldContextAwareTransform
-
-        AddProjectedNavigationField<string?, string>(
-            name: "propertyWithContext",
-            projection: source => source.Property,
-            transform: (context, property) =>
-            {
-                var prefix = context.Source.Id.ToString()[..8];
-                return $"{prefix}: {property ?? "null"}";
-            });
-
-        #endregion
-
-        #region ProjectedFieldListField
-
-        AddProjectedNavigationListField<ChildEntity, string?, string>(
-            name: "childrenProperties",
-            navigation: source => source.Children,
-            projection: child => child.Property,
-            transform: property => property ?? "empty");
-
-        #endregion
-
         // Projected field with complex projection
-        AddProjectedNavigationField<string, string>(
+        AddProjectedField<string, string>(
             name: "anonymousProjection",
             projection: source => source.Id + "|" + (source.Property ?? "null"),
             transform: data => data);
 
-        #region Projected Navigation Connection Field
+        #region ProjectedFieldListField
 
-        AddProjectedNavigationConnectionField<ChildEntity, string?, string>(
+        AddProjectedListField<string?, string>(
+            name: "childrenProperties",
+            projection: source => source.Children.Select(c => c.Property),
+            transform: property => property ?? "empty");
+
+        #endregion
+
+        #region Projected Connection Field
+
+        AddProjectedConnectionField<string?, string>(
             name: "childrenConnectionProjected",
-            navigation: source => source.Children,
-            projection: child => child.Property,
+            projection: source => source.Children.Select(c => c.Property),
             transform: prop => prop?.ToUpper() ?? "EMPTY");
 
-        AddProjectedNavigationConnectionField<ChildEntity, string?, string>(
+        AddProjectedConnectionField<string?, string>(
             name: "childrenConnectionProjectedAsync",
-            navigation: source => source.Children,
-            projection: child => child.Property,
+            projection: source => source.Children.Select(c => c.Property),
             transform: async prop =>
             {
                 await Task.Yield();
@@ -85,9 +69,6 @@
 
         #endregion
 
-        #region Simplified API - Projection directly from TSource
-
-        // Simplified API - projection is directly from ParentEntity
         // Single child's property
         AddProjectedField<string?, string>(
             name: "simplifiedFirstChildProperty",
@@ -105,8 +86,6 @@
             name: "simplifiedChildrenConnection",
             projection: source => source.Children.Select(c => c.Property),
             transform: prop => prop?.ToUpper() ?? "EMPTY");
-
-        #endregion
 
         AutoMap();
     }

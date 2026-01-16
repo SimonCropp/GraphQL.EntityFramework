@@ -182,11 +182,6 @@ snippet: ProjectedFieldBasicTransform
 snippet: ProjectedFieldAsyncTransform
 
 
-### Context-Aware Transform
-
-snippet: ProjectedFieldContextAwareTransform
-
-
 ### List Field
 
 snippet: ProjectedFieldListField
