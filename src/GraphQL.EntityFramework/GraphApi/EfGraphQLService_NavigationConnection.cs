@@ -9,6 +9,9 @@ partial class EfGraphQLService<TDbContext>
     static MethodInfo addEnumerableConnectionWithProjection = typeof(EfGraphQLService<TDbContext>)
         .GetMethod("AddEnumerableConnectionWithProjection", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
+    static MethodInfo addEnumerableConnectionWithProjectionOnly = typeof(EfGraphQLService<TDbContext>)
+        .GetMethod("AddEnumerableConnectionWithProjectionOnly", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
     [Obsolete("Use the projection-based overload instead")]
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TSource, TReturn>(
         ComplexGraphType<TSource> graph,
@@ -102,9 +105,7 @@ partial class EfGraphQLService<TDbContext>
 
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
 
-        var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
-
-        var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
+        var addConnectionT = addEnumerableConnectionWithProjectionOnly.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
 
         try
         {
@@ -112,8 +113,7 @@ partial class EfGraphQLService<TDbContext>
             {
                 graph,
                 name,
-                null,
-                includeNames,
+                projection,
                 omitQueryArguments
             };
             return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, arguments)!;
@@ -217,6 +217,9 @@ partial class EfGraphQLService<TDbContext>
     {
         var builder = ConnectionBuilderEx<TSource>.Build<TGraph>(name);
 
+        // Store projection expression - flows through to Select expression builder
+        IncludeAppender.SetProjectionMetadata(builder.FieldType, projection, typeof(TSource));
+        // Also set include metadata as fallback
         var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
         IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
@@ -282,6 +285,32 @@ partial class EfGraphQLService<TDbContext>
                 context.Last,
                 context.Before);
         });
+
+        //TODO: works around https://github.com/graphql-dotnet/graphql-dotnet/pull/2581/
+        builder.FieldType.Type = typeof(NonNullGraphType<ConnectionType<TGraph, EdgeType<TGraph>>>);
+        var field = graph.AddField(builder.FieldType);
+
+        field.AddWhereArgument(hasId);
+        return builder;
+    }
+
+    ConnectionBuilder<TSource> AddEnumerableConnectionWithProjectionOnly<TSource, TGraph, TReturn>(
+        ComplexGraphType<TSource> graph,
+        string name,
+        Expression<Func<TSource, IEnumerable<TReturn>?>> projection,
+        bool omitQueryArguments)
+        where TGraph : IGraphType
+        where TReturn : class
+    {
+        var builder = ConnectionBuilderEx<TSource>.Build<TGraph>(name);
+
+        // Store projection expression - flows through to Select expression builder
+        IncludeAppender.SetProjectionMetadata(builder.FieldType, projection, typeof(TSource));
+        // Also set include metadata as fallback
+        var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
+        IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
+
+        var hasId = keyNames.ContainsKey(typeof(TReturn));
 
         //TODO: works around https://github.com/graphql-dotnet/graphql-dotnet/pull/2581/
         builder.FieldType.Type = typeof(NonNullGraphType<ConnectionType<TGraph, EdgeType<TGraph>>>);

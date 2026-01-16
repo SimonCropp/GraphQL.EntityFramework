@@ -79,6 +79,9 @@ partial class EfGraphQLService<TDbContext>
             Type = graphType
         };
 
+        // Store projection expression - flows through to Select expression builder
+        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
+        // Also set include metadata as fallback for cases where projection processing doesn't find navigations
         var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
@@ -146,6 +149,9 @@ partial class EfGraphQLService<TDbContext>
             Type = graphType
         };
 
+        // Store projection expression - flows through to Select expression builder
+        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
+        // Also set include metadata as fallback
         var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
