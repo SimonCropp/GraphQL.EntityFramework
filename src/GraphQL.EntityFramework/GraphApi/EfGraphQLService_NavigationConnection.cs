@@ -97,8 +97,7 @@ partial class EfGraphQLService<TDbContext>
         ComplexGraphType<TSource> graph,
         string name,
         Expression<Func<TSource, IEnumerable<TReturn>?>> projection,
-        Type? itemGraphType = null,
-        bool omitQueryArguments = false)
+        Type? itemGraphType = null)
         where TReturn : class
     {
         Ensure.NotWhiteSpace(nameof(name), name);
@@ -113,8 +112,7 @@ partial class EfGraphQLService<TDbContext>
             {
                 graph,
                 name,
-                projection,
-                omitQueryArguments
+                projection
             };
             return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, arguments)!;
         }
@@ -303,8 +301,7 @@ partial class EfGraphQLService<TDbContext>
     ConnectionBuilder<TSource> AddEnumerableConnectionWithProjectionOnly<TSource, TGraph, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
-        Expression<Func<TSource, IEnumerable<TReturn>?>> projection,
-        bool omitQueryArguments)
+        Expression<Func<TSource, IEnumerable<TReturn>?>> projection)
         where TGraph : IGraphType
         where TReturn : class
     {

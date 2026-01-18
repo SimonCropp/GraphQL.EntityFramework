@@ -39,10 +39,9 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,
         Expression<Func<TSource, IEnumerable<TReturn>?>> projection,
-        Type? graphType = null,
-        bool omitQueryArguments = false)
+        Type? graphType = null)
         where TReturn : class =>
-        GraphQlService.AddNavigationConnectionField(this, name, projection, graphType, omitQueryArguments);
+        GraphQlService.AddNavigationConnectionField(this, name, projection, graphType);
 
     [Obsolete("Use the projection-based overload instead")]
     public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(

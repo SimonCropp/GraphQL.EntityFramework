@@ -26,7 +26,6 @@ public partial interface IEfGraphQLService<TDbContext>
         ComplexGraphType<TSource> graph,
         string name,
         Expression<Func<TSource, IEnumerable<TReturn>?>> projection,
-        Type? itemGraphType = null,
-        bool omitQueryArguments = false)
+        Type? itemGraphType = null)
         where TReturn : class;
 }
