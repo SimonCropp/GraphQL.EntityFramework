@@ -104,6 +104,8 @@
     static MethodInfo enumListMethod = typeof(TypeConverter)
         .GetMethod("GetEnumList", BindingFlags.Static | BindingFlags.NonPublic)!;
 
+    // Use via reflection
+    // ReSharper disable once UnusedMember.Local
     static List<T> GetEnumList<T>(IEnumerable<string> values)
         where T : struct
     {
@@ -119,6 +121,8 @@
     static MethodInfo nullableEnumListMethod = typeof(TypeConverter)
         .GetMethod("GetNullableEnumList", BindingFlags.Static | BindingFlags.NonPublic)!;
 
+    // Use via reflection
+    // ReSharper disable once UnusedMember.Local
     static List<T?> GetNullableEnumList<T>(IEnumerable<string> values)
         where T : struct
     {

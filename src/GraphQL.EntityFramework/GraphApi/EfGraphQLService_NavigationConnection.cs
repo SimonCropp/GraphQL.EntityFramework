@@ -131,6 +131,8 @@ partial class EfGraphQLService<TDbContext>
         }
     }
 
+    // Use via reflection
+    // ReSharper disable once UnusedMember.Local
     ConnectionBuilder<TSource> AddEnumerableConnection<TSource, TGraph, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
@@ -206,6 +208,8 @@ partial class EfGraphQLService<TDbContext>
         return builder;
     }
 
+    // Use via reflection
+    // ReSharper disable once UnusedMember.Local
     ConnectionBuilder<TSource> AddEnumerableConnectionWithProjection<TSource, TGraph, TReturn, TProjection>(
         ComplexGraphType<TSource> graph,
         string name,
@@ -219,7 +223,7 @@ partial class EfGraphQLService<TDbContext>
 
         // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(builder.FieldType, projection, typeof(TSource));
-        // Also set include metadata as fallback
+        // Also set include metadata as fallback for abstract types where projection can't be built
         var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
         IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
@@ -294,6 +298,8 @@ partial class EfGraphQLService<TDbContext>
         return builder;
     }
 
+    // Use via reflection
+    // ReSharper disable once UnusedMember.Local
     ConnectionBuilder<TSource> AddEnumerableConnectionWithProjectionOnly<TSource, TGraph, TReturn>(
         ComplexGraphType<TSource> graph,
         string name,
@@ -306,9 +312,12 @@ partial class EfGraphQLService<TDbContext>
 
         // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(builder.FieldType, projection, typeof(TSource));
-        // Also set include metadata as fallback
+        // Also set include metadata as fallback for abstract types where projection can't be built
         var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
         IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
+
+        // No resolver set - this overload is for interface types where the concrete types provide resolvers
+        // The projection metadata flows through to the Select expression builder
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
 

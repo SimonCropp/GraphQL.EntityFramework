@@ -140,14 +140,15 @@
                 navigationProperties,
                 navProjections,
                 context);
-            // Only return if we added navigations; otherwise fall through to check field name
+            // Only return if we added navigations; otherwise fall through to include metadata
+            // This handles cases like abstract types where projection can't be built
             if (navProjections.Count > countBefore)
             {
                 return;
             }
         }
 
-        // Check if this field has include metadata (legacy approach)
+        // Check if this field has include metadata (fallback for abstract types, or legacy/obsolete approach)
         if (TryGetIncludeMetadata(fieldInfo.FieldType, out var includeNames))
         {
             // It's a navigation field - include ALL navigation properties from metadata

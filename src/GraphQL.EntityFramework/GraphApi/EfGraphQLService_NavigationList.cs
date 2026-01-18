@@ -71,7 +71,7 @@ partial class EfGraphQLService<TDbContext>
 
         // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
-        // Also set include metadata as fallback
+        // Also set include metadata as fallback for abstract types where projection can't be built
         var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
@@ -131,7 +131,7 @@ partial class EfGraphQLService<TDbContext>
 
         // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
-        // Also set include metadata as fallback
+        // Also set include metadata as fallback for abstract types where projection can't be built
         var includeNames = FilterProjectionAnalyzer.ExtractRequiredProperties(projection);
         IncludeAppender.SetIncludeMetadata(field, name, includeNames);
 
