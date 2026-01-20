@@ -1,19 +1,10 @@
-#nullable enable
-
-using System.Collections.Immutable;
-using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-
 namespace GraphQL.EntityFramework.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        ImmutableArray.Create(DiagnosticDescriptors.GQLEF002);
+        [DiagnosticDescriptors.GQLEF002];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -22,7 +13,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
     }
 
-    void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
+    static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
@@ -54,7 +45,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    bool IsFieldBuilderResolveCall(
+    static bool IsFieldBuilderResolveCall(
         InvocationExpressionSyntax invocation,
         SemanticModel semanticModel,
         out LambdaExpressionSyntax? lambdaExpression)
@@ -62,8 +53,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         lambdaExpression = null;
 
         // Check method name is Resolve, ResolveAsync, ResolveList, or ResolveListAsync
-        var memberAccess = invocation.Expression as MemberAccessExpressionSyntax;
-        if (memberAccess == null)
+        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess)
         {
             return false;
         }
@@ -114,7 +104,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
-    bool IsProjectionBasedResolve(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
+    static bool IsProjectionBasedResolve(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
     {
         var symbolInfo = semanticModel.GetSymbolInfo(invocation);
         if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
@@ -128,7 +118,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
                methodSymbol.ContainingNamespace?.ToString() == "GraphQL.EntityFramework";
     }
 
-    bool IsInEfGraphType(SyntaxNode node, SemanticModel semanticModel)
+    static bool IsInEfGraphType(SyntaxNode node, SemanticModel semanticModel)
     {
         var classDeclaration = node.FirstAncestorOrSelf<ClassDeclarationSyntax>();
         if (classDeclaration == null)
@@ -147,9 +137,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         while (baseType != null)
         {
             var typeName = baseType.Name;
-            if ((typeName == "EfObjectGraphType" ||
-                 typeName == "EfInterfaceGraphType" ||
-                 typeName == "QueryGraphType") &&
+            if (typeName is "EfObjectGraphType" or "EfInterfaceGraphType" or "QueryGraphType" &&
                 baseType.ContainingNamespace?.ToString() == "GraphQL.EntityFramework")
             {
                 return true;
@@ -161,7 +149,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
-    bool AccessesNavigationProperties(LambdaExpressionSyntax lambda, SemanticModel semanticModel)
+    static bool AccessesNavigationProperties(LambdaExpressionSyntax lambda, SemanticModel semanticModel)
     {
         var body = lambda.Body;
 
@@ -196,7 +184,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
-    bool IsContextSourceAccess(MemberAccessExpressionSyntax memberAccess, out MemberAccessExpressionSyntax? propertyAccess)
+    static bool IsContextSourceAccess(MemberAccessExpressionSyntax memberAccess, out MemberAccessExpressionSyntax? propertyAccess)
     {
         propertyAccess = null;
 
@@ -207,8 +195,15 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         // Walk up the chain to find context.Source
         while (true)
         {
-            if (current.Expression is MemberAccessExpressionSyntax { Name.Identifier.Text: "Source", Expression: IdentifierNameSyntax identifier } &&
-                (identifier.Identifier.Text == "context" || identifier.Identifier.Text == "ctx"))
+            if (current.Expression is
+                MemberAccessExpressionSyntax
+                {
+                    Name.Identifier.Text: "Source",
+                    Expression: IdentifierNameSyntax
+                    {
+                        Identifier.Text: "context" or "ctx"
+                    }
+                })
             {
                 sourceAccess = current;
                 break;
@@ -240,21 +235,24 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
 
         // Also check for direct access like: context.Source (without further property access)
         if (memberAccess.Name.Identifier.Text == "Source" &&
-            memberAccess.Expression is IdentifierNameSyntax ctxId &&
-            (ctxId.Identifier.Text == "context" || ctxId.Identifier.Text == "ctx"))
-        {
-            // This is just context.Source itself, check parent node
-            if (memberAccess.Parent is MemberAccessExpressionSyntax parentMember)
+            memberAccess is
             {
-                propertyAccess = parentMember;
-                return true;
-            }
+                Expression: IdentifierNameSyntax
+                {
+                    Identifier.Text: "context" or "ctx"
+                },
+                Parent: MemberAccessExpressionSyntax parentMember
+            })
+            // This is just context.Source itself, check parent node
+        {
+            propertyAccess = parentMember;
+            return true;
         }
 
         return false;
     }
 
-    bool IsSafeProperty(IPropertySymbol propertySymbol)
+    static bool IsSafeProperty(IPropertySymbol propertySymbol)
     {
         // Only primary keys and foreign keys are safe to access
         // because they are always included in EF projections
@@ -344,5 +342,4 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         var typeName = underlyingType.ToString();
         return typeName == "System.Guid";
     }
-
 }

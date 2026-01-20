@@ -1,7 +1,3 @@
-using Microsoft.CodeAnalysis;
-
-namespace GraphQL.EntityFramework.Analyzers;
-
 static class DiagnosticDescriptors
 {
     public static readonly DiagnosticDescriptor GQLEF002 = new(

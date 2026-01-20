@@ -210,7 +210,7 @@ public static class FieldBuilderExtensions
         var compiledProjection = projection.Compile();
 
         field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
-            async context =>
+            context =>
             {
                 // Resolve service from request services
                 var executionContext = context.ExecutionContext;
@@ -240,7 +240,7 @@ public static class FieldBuilderExtensions
                 }
                 catch (Exception exception)
                 {
-                    throw new Exception(
+                    throw new(
                         $"""
                         Failed to execute projection-based list resolve for field `{field.Name}`
                         TSource: {typeof(TSource).FullName}
@@ -252,7 +252,7 @@ public static class FieldBuilderExtensions
 
                 // Note: For list results, we don't apply filters on the collection itself
                 // Filters would be applied to individual items if needed
-                return result ?? Enumerable.Empty<TReturn>();
+                return result;
             });
 
         return builder;
@@ -321,7 +321,7 @@ public static class FieldBuilderExtensions
                 }
                 catch (Exception exception)
                 {
-                    throw new Exception(
+                    throw new(
                         $"""
                         Failed to execute projection-based async list resolve for field `{field.Name}`
                         TSource: {typeof(TSource).FullName}
@@ -333,7 +333,7 @@ public static class FieldBuilderExtensions
 
                 // Note: For list results, we don't apply filters on the collection itself
                 // Filters would be applied to individual items if needed
-                return result ?? Enumerable.Empty<TReturn>();
+                return result;
             });
 
         return builder;
@@ -346,7 +346,7 @@ public static class FieldBuilderExtensions
         // This is a workaround since we can't access it directly
         var serviceType = service.GetType();
         var method = serviceType.GetMethod("ResolveFilter",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            BindingFlags.NonPublic | BindingFlags.Instance);
 
         if (method is null)
         {
