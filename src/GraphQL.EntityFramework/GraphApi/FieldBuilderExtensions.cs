@@ -69,7 +69,7 @@ public static class FieldBuilderExtensions
                 }
                 catch (Exception exception)
                 {
-                    throw new Exception(
+                    throw new(
                         $"""
                         Failed to execute projection-based resolve for field `{field.Name}`
                         TSource: {typeof(TSource).FullName}
@@ -155,7 +155,7 @@ public static class FieldBuilderExtensions
                 }
                 catch (Exception exception)
                 {
-                    throw new Exception(
+                    throw new(
                         $"""
                         Failed to execute projection-based async resolve for field `{field.Name}`
                         TSource: {typeof(TSource).FullName}

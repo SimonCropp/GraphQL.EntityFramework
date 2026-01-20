@@ -164,10 +164,6 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
     bool AccessesNavigationProperties(LambdaExpressionSyntax lambda, SemanticModel semanticModel)
     {
         var body = lambda.Body;
-        if (body == null)
-        {
-            return false;
-        }
 
         // Find all member access expressions in the lambda
         var memberAccesses = body.DescendantNodesAndSelf()
@@ -209,19 +205,16 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         MemberAccessExpressionSyntax? sourceAccess = null;
 
         // Walk up the chain to find context.Source
-        while (current != null)
+        while (true)
         {
-            if (current.Expression is MemberAccessExpressionSyntax innerAccess &&
-                innerAccess.Name.Identifier.Text == "Source" &&
-                innerAccess.Expression is IdentifierNameSyntax identifier &&
+            if (current.Expression is MemberAccessExpressionSyntax { Name.Identifier.Text: "Source", Expression: IdentifierNameSyntax identifier } &&
                 (identifier.Identifier.Text == "context" || identifier.Identifier.Text == "ctx"))
             {
                 sourceAccess = current;
                 break;
             }
 
-            if (current.Expression is IdentifierNameSyntax id &&
-                id.Identifier.Text == "Source")
+            if (current.Expression is IdentifierNameSyntax { Identifier.Text: "Source" })
             {
                 // This might be a simplified lambda like: Source => Source.Property
                 sourceAccess = current;
@@ -282,7 +275,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
-    bool IsPrimaryKeyProperty(IPropertySymbol propertySymbol)
+    static bool IsPrimaryKeyProperty(IPropertySymbol propertySymbol)
     {
         var name = propertySymbol.Name;
 
@@ -314,7 +307,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
-    bool IsForeignKeyProperty(IPropertySymbol propertySymbol)
+    static bool IsForeignKeyProperty(IPropertySymbol propertySymbol)
     {
         var name = propertySymbol.Name;
         var type = propertySymbol.Type;
@@ -334,7 +327,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         // Check if the type is a scalar type suitable for FK (int, long, Guid, etc.)
         // Unwrap nullable
         var underlyingType = type;
-        if (type is INamedTypeSymbol namedType && namedType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
+        if (type is INamedTypeSymbol { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T } namedType)
         {
             underlyingType = namedType.TypeArguments[0];
         }
