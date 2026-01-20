@@ -1,4 +1,4 @@
-static class FilterProjectionAnalyzer
+static class ProjectionAnalyzer
 {
     public static IReadOnlySet<string> ExtractRequiredProperties<TEntity, TProjection>(
         Expression<Func<TEntity, TProjection>> projection)

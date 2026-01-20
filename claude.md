@@ -67,6 +67,10 @@ The README.md and docs/*.md files are auto-generated from source files using [Ma
 - Builds LINQ expressions from GraphQL where clause arguments
 - Supports complex filtering including grouping, negation, and nested properties
 
+**ProjectionAnalyzer** (`src/GraphQL.EntityFramework/GraphApi/ProjectionAnalyzer.cs`)
+- Analyzes projection expressions to extract required property names
+- Used by navigation fields, filters, and FieldBuilder extensions to determine which properties need to be loaded
+
 **Filters** (`src/GraphQL.EntityFramework/Filters/Filters.cs`)
 - Post-query filtering mechanism for authorization or business rules
 - Executed after EF query to determine if nodes should be included in results
