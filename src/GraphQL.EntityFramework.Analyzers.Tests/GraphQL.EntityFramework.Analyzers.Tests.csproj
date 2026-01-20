@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GraphQL.EntityFramework.Analyzers\GraphQL.EntityFramework.Analyzers.csproj" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
   </ItemGroup>
 </Project>

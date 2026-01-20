@@ -2,6 +2,7 @@ using GraphQL.EntityFramework.Analyzers;
 using GraphQL.Types;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework.Tests;
@@ -379,7 +380,7 @@ public class FieldBuilderResolveAnalyzerTests
         Assert.Equal("GQLEF002", diagnostics[0].Id);
     }
 
-    static async Task<IEnumerable<Diagnostic>> GetDiagnosticsAsync(string source)
+    static async Task<Diagnostic[]> GetDiagnosticsAsync(string source)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
@@ -449,10 +450,8 @@ public class FieldBuilderResolveAnalyzerTests
         }
 
         // Filter to only GQLEF002 diagnostics
-        var gqlef002Diagnostics = allDiagnostics
+        return allDiagnostics
             .Where(d => d.Id == "GQLEF002")
             .ToArray();
-
-        return gqlef002Diagnostics;
     }
 }
