@@ -29,9 +29,13 @@
     <Using Include="GraphQL.Execution" />
     <Using Include="GraphQL.Builders" />
     <Using Include="System.Text.RegularExpressions" />
-    <ProjectReference Condition="$(Configuration)=='Release'" Include="..\GraphQL.EntityFramework.Analyzers\GraphQL.EntityFramework.Analyzers.csproj">
+    <ProjectReference Include="..\GraphQL.EntityFramework.Analyzers\GraphQL.EntityFramework.Analyzers.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
+      <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="$(Configuration)=='Release'">
+    <None Include="..\GraphQL.EntityFramework.Analyzers\bin\$(Configuration)\netstandard2.0\GraphQL.EntityFramework.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>
