@@ -155,8 +155,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
 
         // Find all member access expressions in the lambda
         var memberAccesses = body.DescendantNodesAndSelf()
-            .OfType<MemberAccessExpressionSyntax>()
-            .ToList();
+            .OfType<MemberAccessExpressionSyntax>();
 
         foreach (var memberAccess in memberAccesses)
         {
@@ -252,26 +251,14 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
-    static bool IsSafeProperty(IPropertySymbol propertySymbol)
-    {
+    static bool IsSafeProperty(IPropertySymbol propertySymbol) =>
         // Only primary keys and foreign keys are safe to access
         // because they are always included in EF projections
-
         // Check if it's a primary key (Id, EntityId, etc.)
-        if (IsPrimaryKeyProperty(propertySymbol))
-        {
-            return true;
-        }
-
+        IsPrimaryKeyProperty(propertySymbol) ||
         // Check if it's a foreign key (ParentId, UserId, etc.)
-        if (IsForeignKeyProperty(propertySymbol))
-        {
-            return true;
-        }
-
         // Everything else (navigation properties, scalar properties) is unsafe
-        return false;
-    }
+        IsForeignKeyProperty(propertySymbol);
 
     static bool IsPrimaryKeyProperty(IPropertySymbol propertySymbol)
     {

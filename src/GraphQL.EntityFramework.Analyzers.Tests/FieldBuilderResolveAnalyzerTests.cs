@@ -1,11 +1,4 @@
-using GraphQL.EntityFramework.Analyzers;
-using GraphQL.Types;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.EntityFrameworkCore;
-
-namespace GraphQL.EntityFramework.Tests;
+using GraphQL.EntityFramework;
 
 public class FieldBuilderResolveAnalyzerTests
 {
@@ -205,7 +198,7 @@ public class FieldBuilderResolveAnalyzerTests
         var diagnostics = await GetDiagnosticsAsync(source);
         // Should warn because Name, Age, IsActive, CreatedDate are scalar properties, not PK/FK
         Assert.Equal(2, diagnostics.Length); // Two Resolve calls
-        Assert.All(diagnostics, d => Assert.Equal("GQLEF002", d.Id));
+        Assert.All(diagnostics, _ => Assert.Equal("GQLEF002", _.Id));
     }
 
     [Fact]
@@ -388,13 +381,18 @@ public class FieldBuilderResolveAnalyzerTests
 
         // Add specific assemblies we need, avoiding conflicts
         var requiredAssemblies = new[]
-        {
-            typeof(object).Assembly, // System.Private.CoreLib
-            typeof(Console).Assembly, // System.Console
-            typeof(IEfGraphQLService<>).Assembly, // GraphQL.EntityFramework
-            typeof(DbContext).Assembly, // EF Core
-            typeof(ObjectGraphType).Assembly, // GraphQL
-            typeof(IQueryable<>).Assembly, // System.Linq.Expressions
+        { // System.Private.CoreLib
+            typeof(object).Assembly,
+            // System.Console
+            typeof(Console).Assembly,
+            // GraphQL.EntityFramework
+            typeof(IEfGraphQLService<>).Assembly,
+            // EF Core
+            typeof(DbContext).Assembly,
+            // GraphQL
+            typeof(ObjectGraphType).Assembly,
+            // System.Linq.Expressions
+            typeof(IQueryable<>).Assembly,
         };
 
         foreach (var assembly in requiredAssemblies)
@@ -410,20 +408,23 @@ public class FieldBuilderResolveAnalyzerTests
         {
             if (!assembly.IsDynamic &&
                 !string.IsNullOrEmpty(assembly.Location) &&
-                !references.Any(r => r.Display == assembly.Location))
+                references.All(_ => _.Display != assembly.Location))
             {
                 var name = assembly.GetName().Name ?? "";
-                if ((name.StartsWith("System.") || name.StartsWith("Microsoft.")) &&
-                    !name.Contains("xunit", StringComparison.OrdinalIgnoreCase))
+                if ((!name.StartsWith("System.") &&
+                     !name.StartsWith("Microsoft.")) ||
+                    name.Contains("xunit", StringComparison.OrdinalIgnoreCase))
                 {
-                    try
-                    {
-                        references.Add(MetadataReference.CreateFromFile(assembly.Location));
-                    }
-                    catch
-                    {
-                        // Ignore assemblies that can't be referenced
-                    }
+                    continue;
+                }
+
+                try
+                {
+                    references.Add(MetadataReference.CreateFromFile(assembly.Location));
+                }
+                catch
+                {
+                    // Ignore assemblies that can't be referenced
                 }
             }
         }
@@ -442,16 +443,16 @@ public class FieldBuilderResolveAnalyzerTests
         var allDiagnostics = await compilationWithAnalyzers.GetAllDiagnosticsAsync();
 
         // Check for compilation errors
-        var compilationErrors = allDiagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+        var compilationErrors = allDiagnostics.Where(_ => _.Severity == DiagnosticSeverity.Error).ToArray();
         if (compilationErrors.Length > 0)
         {
-            var errorMessages = string.Join("\n", compilationErrors.Select(e => $"{e.Id}: {e.GetMessage()}"));
+            var errorMessages = string.Join("\n", compilationErrors.Select(_ => $"{_.Id}: {_.GetMessage()}"));
             throw new($"Compilation errors:\n{errorMessages}");
         }
 
         // Filter to only GQLEF002 diagnostics
         return allDiagnostics
-            .Where(d => d.Id == "GQLEF002")
+            .Where(_ => _.Id == "GQLEF002")
             .ToArray();
     }
 }
