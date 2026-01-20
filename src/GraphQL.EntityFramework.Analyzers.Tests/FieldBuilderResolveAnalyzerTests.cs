@@ -373,6 +373,108 @@ public class FieldBuilderResolveAnalyzerTests
         Assert.Equal("GQLEF002", diagnostics[0].Id);
     }
 
+    [Fact]
+    public async Task DetectsResolveWithDiscardVariable()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using GraphQL.Types;
+            using Microsoft.EntityFrameworkCore;
+            using System.Collections.Generic;
+            using System.Linq;
+
+            public class ChildEntity { public int Id { get; set; } }
+            public class ParentEntity
+            {
+                public int Id { get; set; }
+                public List<ChildEntity> Children { get; set; } = new();
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class ParentGraphType : EfObjectGraphType<TestDbContext, ParentEntity>
+            {
+                public ParentGraphType(IEfGraphQLService<TestDbContext> graphQlService) : base(graphQlService)
+                {
+                    Field<int>("ChildCount")
+                        .Resolve(_ => _.Source.Children.Count());
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        Assert.Single(diagnostics);
+        Assert.Equal("GQLEF002", diagnostics[0].Id);
+    }
+
+    [Fact]
+    public async Task DetectsResolveAsyncWithDiscardVariable()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using GraphQL.Types;
+            using Microsoft.EntityFrameworkCore;
+            using System.Threading.Tasks;
+
+            public class ParentEntity { public int Id { get; set; } }
+            public class ChildEntity
+            {
+                public int Id { get; set; }
+                public int ParentId { get; set; }
+                public ParentEntity Parent { get; set; } = null!;
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class ChildGraphType : EfObjectGraphType<TestDbContext, ChildEntity>
+            {
+                public ChildGraphType(IEfGraphQLService<TestDbContext> graphQlService) : base(graphQlService)
+                {
+                    Field<int>("ParentProp")
+                        .ResolveAsync(async _ => await Task.FromResult(_.Source.Parent.Id));
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        Assert.Single(diagnostics);
+        Assert.Equal("GQLEF002", diagnostics[0].Id);
+    }
+
+    [Fact]
+    public async Task DetectsResolveAsyncWithElidedDelegate()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using GraphQL.Types;
+            using Microsoft.EntityFrameworkCore;
+            using System.Threading.Tasks;
+
+            public class ParentEntity { public int Id { get; set; } }
+            public class ChildEntity
+            {
+                public int Id { get; set; }
+                public int ParentId { get; set; }
+                public ParentEntity Parent { get; set; } = null!;
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class ChildGraphType : EfObjectGraphType<TestDbContext, ChildEntity>
+            {
+                public ChildGraphType(IEfGraphQLService<TestDbContext> graphQlService) : base(graphQlService)
+                {
+                    Field<int>("ParentProp")
+                        .ResolveAsync(context => Task.FromResult(context.Source.Parent.Id));
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        Assert.Single(diagnostics);
+        Assert.Equal("GQLEF002", diagnostics[0].Id);
+    }
+
     static async Task<Diagnostic[]> GetDiagnosticsAsync(string source)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);

@@ -200,7 +200,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
                     Name.Identifier.Text: "Source",
                     Expression: IdentifierNameSyntax
                     {
-                        Identifier.Text: "context" or "ctx"
+                        Identifier.Text: "context" or "ctx" or "_"
                     }
                 })
             {
@@ -238,7 +238,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
             {
                 Expression: IdentifierNameSyntax
                 {
-                    Identifier.Text: "context" or "ctx"
+                    Identifier.Text: "context" or "ctx" or "_"
                 },
                 Parent: MemberAccessExpressionSyntax parentMember
             })
