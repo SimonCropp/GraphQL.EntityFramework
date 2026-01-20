@@ -1,8 +1,7 @@
-using System.Collections.Immutable;
-using System.Reflection;
+using GraphQL.EntityFramework.Analyzers;
+using GraphQL.Types;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphQL.EntityFramework.Tests;
@@ -380,75 +379,80 @@ public class FieldBuilderResolveAnalyzerTests
         Assert.Equal("GQLEF002", diagnostics[0].Id);
     }
 
-    static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsAsync(string source)
+    static async Task<IEnumerable<Diagnostic>> GetDiagnosticsAsync(string source)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
         var references = new List<MetadataReference>();
 
-        // Add basic references
-        var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
-        references.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
-        references.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
-        references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")));
-        references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Collections.dll")));
-        references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.dll")));
-        references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.Expressions.dll")));
-
-        // Add GraphQL references
-        references.Add(MetadataReference.CreateFromFile(typeof(GraphQL.IResolveFieldContext).Assembly.Location));
-        references.Add(MetadataReference.CreateFromFile(typeof(GraphQL.Types.ObjectGraphType).Assembly.Location));
-
-        // Add EF Core references
-        references.Add(MetadataReference.CreateFromFile(typeof(DbContext).Assembly.Location));
-
-        // Add GraphQL.EntityFramework reference
-        var entityFrameworkAssembly = typeof(GraphQL.EntityFramework.EfObjectGraphType<,>).Assembly;
-        references.Add(MetadataReference.CreateFromFile(entityFrameworkAssembly.Location));
-
-        // Add referenced assemblies
-        foreach (var referencedAssembly in entityFrameworkAssembly.GetReferencedAssemblies())
+        // Add specific assemblies we need, avoiding conflicts
+        var requiredAssemblies = new[]
         {
-            try
+            typeof(object).Assembly, // System.Private.CoreLib
+            typeof(Console).Assembly, // System.Console
+            typeof(IEfGraphQLService<>).Assembly, // GraphQL.EntityFramework
+            typeof(DbContext).Assembly, // EF Core
+            typeof(ObjectGraphType).Assembly, // GraphQL
+            typeof(IQueryable<>).Assembly, // System.Linq.Expressions
+        };
+
+        foreach (var assembly in requiredAssemblies)
+        {
+            if (!string.IsNullOrEmpty(assembly.Location))
             {
-                var assembly = Assembly.Load(referencedAssembly);
                 references.Add(MetadataReference.CreateFromFile(assembly.Location));
             }
-            catch
+        }
+
+        // Add all System.* and Microsoft.* assemblies except those that conflict
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            if (!assembly.IsDynamic &&
+                !string.IsNullOrEmpty(assembly.Location) &&
+                !references.Any(r => r.Display == assembly.Location))
             {
-                // Ignore if assembly can't be loaded
+                var name = assembly.GetName().Name ?? "";
+                if ((name.StartsWith("System.") || name.StartsWith("Microsoft.")) &&
+                    !name.Contains("xunit", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        references.Add(MetadataReference.CreateFromFile(assembly.Location));
+                    }
+                    catch
+                    {
+                        // Ignore assemblies that can't be referenced
+                    }
+                }
             }
         }
 
         var compilation = CSharpCompilation.Create(
             "TestAssembly",
-            [syntaxTree],
-            references,
-            new CSharpCompilationOptions(
+            syntaxTrees: [syntaxTree],
+            references: references,
+            options: new(
                 OutputKind.DynamicallyLinkedLibrary,
                 nullableContextOptions: NullableContextOptions.Enable));
 
-        var compilationDiagnostics = compilation.GetDiagnostics();
-        var errors = compilationDiagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
+        var analyzer = new FieldBuilderResolveAnalyzer();
+        var compilationWithAnalyzers = compilation.WithAnalyzers([analyzer]);
 
-        if (errors.Count > 0)
+        var allDiagnostics = await compilationWithAnalyzers.GetAllDiagnosticsAsync();
+
+        // Check for compilation errors
+        var compilationErrors = allDiagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+        if (compilationErrors.Length > 0)
         {
-            var errorMessages = string.Join("\n", errors.Select(e => e.ToString()));
-            throw new InvalidOperationException($"Compilation errors:\n{errorMessages}");
+            var errorMessages = string.Join("\n", compilationErrors.Select(e => $"{e.Id}: {e.GetMessage()}"));
+            throw new($"Compilation errors:\n{errorMessages}");
         }
 
-        // Load analyzer from DLL
-        var analyzerAssemblyPath = Path.GetFullPath(Path.Combine(
-            Path.GetDirectoryName(typeof(FieldBuilderResolveAnalyzerTests).Assembly.Location)!,
-            "..", "..", "..", "..", "GraphQL.EntityFramework.Analyzers", "bin", "Release", "netstandard2.0", "GraphQL.EntityFramework.Analyzers.dll"));
-        var analyzerAssembly = Assembly.LoadFrom(analyzerAssemblyPath);
-        var analyzerType = analyzerAssembly.GetType("GraphQL.EntityFramework.Analyzers.FieldBuilderResolveAnalyzer")!;
-        var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance(analyzerType)!;
+        // Filter to only GQLEF002 diagnostics
+        var gqlef002Diagnostics = allDiagnostics
+            .Where(d => d.Id == "GQLEF002")
+            .ToArray();
 
-        var compilationWithAnalyzers = compilation.WithAnalyzers(
-            ImmutableArray.Create(analyzer));
-
-        var analyzerDiagnostics = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync();
-        return analyzerDiagnostics;
+        return gqlef002Diagnostics;
     }
 }
