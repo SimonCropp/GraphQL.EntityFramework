@@ -189,15 +189,9 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
                 continue;
             }
 
-            // Check if this property is a navigation property
-            if (IsNavigationProperty(propertySymbol))
-            {
-                return true;
-            }
-
-            // Check if this is accessing a nested property (e.g., context.Source.Parent.Name)
-            // This is also problematic because Parent might not be loaded
-            if (IsNestedPropertyAccess(propertyAccess))
+            // Check if this property is safe to access (PK or FK only)
+            // Only primary keys and foreign keys are guaranteed to be loaded by projection
+            if (!IsSafeProperty(propertySymbol))
             {
                 return true;
             }
@@ -267,49 +261,57 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
-    bool IsNavigationProperty(IPropertySymbol propertySymbol)
+    bool IsSafeProperty(IPropertySymbol propertySymbol)
     {
-        var propertyType = propertySymbol.Type;
+        // Only primary keys and foreign keys are safe to access
+        // because they are always included in EF projections
 
-        // Check if it's a primary key (Id, EntityId, etc.) - these are safe
+        // Check if it's a primary key (Id, EntityId, etc.)
         if (IsPrimaryKeyProperty(propertySymbol))
         {
-            return false;
-        }
-
-        // Check if it's a foreign key (ParentId, UserId, etc.) - these are safe
-        if (IsForeignKeyProperty(propertySymbol))
-        {
-            return false;
-        }
-
-        // Check if it's a scalar type - these are safe
-        if (IsScalarType(propertyType))
-        {
-            return false;
-        }
-
-        // Check if it's a navigation property (entity type or collection)
-        // Navigation properties are typically:
-        // 1. Of a class type (not primitive)
-        // 2. Not string, DateTime, Guid, etc.
-        // 3. Could be ICollection<T>, List<T>, or direct entity reference
-        if (propertyType.TypeKind == TypeKind.Class ||
-            propertyType.TypeKind == TypeKind.Interface)
-        {
-            // It's a navigation property
             return true;
         }
 
+        // Check if it's a foreign key (ParentId, UserId, etc.)
+        if (IsForeignKeyProperty(propertySymbol))
+        {
+            return true;
+        }
+
+        // Everything else (navigation properties, scalar properties) is unsafe
         return false;
     }
 
     bool IsPrimaryKeyProperty(IPropertySymbol propertySymbol)
     {
         var name = propertySymbol.Name;
-        return name == "Id" ||
-               name.EndsWith("Id") && name.Length > 2 &&
-               char.IsUpper(name[name.Length - 3]); // e.g., EntityId, not ParentId
+
+        // Simple "Id" is always a primary key
+        if (name == "Id")
+        {
+            return true;
+        }
+
+        // EntityId, CompanyId (where Entity/Company is the class name) are primary keys
+        // But ParentId, UserId (where Parent/User is a navigation) are foreign keys
+        // We can't perfectly distinguish without EF metadata, so we use a heuristic:
+        // If it ends with "Id" and has uppercase before "Id", it MIGHT be PK
+        // We'll check the containing type name
+        var containingType = propertySymbol.ContainingType;
+        if (containingType != null && name.EndsWith("Id") && name.Length > 2)
+        {
+            // Check if the property name matches the type name + "Id"
+            // e.g., property "CompanyId" in class "Company" or "CompanyEntity"
+            var typeName = containingType.Name;
+            var typeNameWithoutSuffix = typeName.Replace("Entity", "").Replace("Model", "").Replace("Dto", "");
+
+            if (name == $"{typeNameWithoutSuffix}Id" || name == $"{typeName}Id")
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     bool IsForeignKeyProperty(IPropertySymbol propertySymbol)
@@ -318,57 +320,36 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         var type = propertySymbol.Type;
 
         // Foreign keys are typically nullable or non-nullable integer/Guid types ending with "Id"
-        if (!name.EndsWith("Id"))
+        if (!name.EndsWith("Id") || name == "Id")
         {
             return false;
         }
 
-        // Check if the type is a scalar type suitable for FK
-        return IsScalarType(type);
-    }
-
-    bool IsScalarType(ITypeSymbol type)
-    {
-        // Unwrap nullable
-        if (type is INamedTypeSymbol namedType && namedType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
+        // If we already determined it's a primary key, it's not a foreign key
+        if (IsPrimaryKeyProperty(propertySymbol))
         {
-            type = namedType.TypeArguments[0];
+            return false;
         }
 
-        // Check for primitive and common scalar types
-        switch (type.SpecialType)
+        // Check if the type is a scalar type suitable for FK (int, long, Guid, etc.)
+        // Unwrap nullable
+        var underlyingType = type;
+        if (type is INamedTypeSymbol namedType && namedType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
         {
-            case SpecialType.System_Boolean:
-            case SpecialType.System_Byte:
-            case SpecialType.System_SByte:
-            case SpecialType.System_Int16:
-            case SpecialType.System_UInt16:
+            underlyingType = namedType.TypeArguments[0];
+        }
+
+        // Foreign keys are typically int, long, Guid
+        switch (underlyingType.SpecialType)
+        {
             case SpecialType.System_Int32:
-            case SpecialType.System_UInt32:
             case SpecialType.System_Int64:
-            case SpecialType.System_UInt64:
-            case SpecialType.System_Single:
-            case SpecialType.System_Double:
-            case SpecialType.System_Decimal:
-            case SpecialType.System_String:
-            case SpecialType.System_Char:
-            case SpecialType.System_DateTime:
+            case SpecialType.System_Int16:
                 return true;
         }
 
-        // Check for common value types like Guid, DateTimeOffset, TimeSpan
-        var typeName = type.ToString();
-        return typeName == "System.Guid" ||
-               typeName == "System.DateTimeOffset" ||
-               typeName == "System.TimeSpan" ||
-               typeName == "System.DateOnly" ||
-               typeName == "System.TimeOnly";
+        var typeName = underlyingType.ToString();
+        return typeName == "System.Guid";
     }
 
-    bool IsNestedPropertyAccess(MemberAccessExpressionSyntax memberAccess)
-    {
-        // Check if we're accessing a property on a property (e.g., Parent.Name)
-        // The expression should be another MemberAccessExpressionSyntax
-        return memberAccess.Expression is MemberAccessExpressionSyntax;
-    }
 }

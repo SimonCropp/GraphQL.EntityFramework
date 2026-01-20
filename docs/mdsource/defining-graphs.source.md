@@ -120,7 +120,7 @@ public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntit
         base(graphQlService) =>
         Field<int>("ParentId")
             .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
-                projection: x => x.Parent!,
+                projection: x => x.Parent,
                 resolve: ctx => ctx.Projection.Id);
 }
 ```
@@ -136,14 +136,14 @@ The projection-based extension methods ensure required data is loaded by:
 
 1. Storing projection metadata in field metadata
 2. Compiling the projection expression for runtime execution
-3. Applying the projection to `context.Source` before calling your resolver
+3. Applying the projection to `context.Source` before calling the resolver
 4. Providing the projected data via `ResolveProjectionContext<TDbContext, TProjection>`
 
 **Problematic Pattern (Navigation Property May Be Null):**
 
 ```cs
 Field<int>("ParentId")
-    .Resolve(context => context.Source.Parent.Id); // ❌ Parent may be null!
+    .Resolve(context => context.Source.Parent.Id); // Parent may be null
 ```
 
 **Safe Pattern (Projection Ensures Data Is Loaded):**
@@ -151,11 +151,11 @@ Field<int>("ParentId")
 ```cs
 Field<int>("ParentId")
     .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
-        projection: x => x.Parent!,
-        resolve: ctx => ctx.Projection.Id); // ✅ Parent is guaranteed to be loaded
+        projection: x => x.Parent,
+        resolve: ctx => ctx.Projection.Id); // Parent is guaranteed to be loaded
 ```
 
-**Note:** A Roslyn analyzer (GQLEF002) will warn you at compile time if you use `Field().Resolve()` to access navigation properties without using projection-based extension methods.
+**Note:** A Roslyn analyzer (GQLEF002) warns at compile time when `Field().Resolve()` accesses properties other than primary keys and foreign keys. Only PK and FK properties are guaranteed to be loaded by the projection system - all other properties (including regular scalars like `Name`) require projection-based extension methods to ensure they are loaded.
 
 
 ### When Projections Are Not Used

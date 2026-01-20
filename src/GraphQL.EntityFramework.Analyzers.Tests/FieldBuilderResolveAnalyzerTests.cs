@@ -171,7 +171,7 @@ public class FieldBuilderResolveAnalyzerTests
     }
 
     [Fact]
-    public async Task AllowsResolveWithScalarProperties()
+    public async Task DetectsResolveWithScalarProperties()
     {
         var source = """
             using GraphQL.EntityFramework;
@@ -203,7 +203,9 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        // Should warn because Name, Age, IsActive, CreatedDate are scalar properties, not PK/FK
+        Assert.Equal(2, diagnostics.Length); // Two Resolve calls
+        Assert.All(diagnostics, d => Assert.Equal("GQLEF002", d.Id));
     }
 
     [Fact]
@@ -214,7 +216,11 @@ public class FieldBuilderResolveAnalyzerTests
             using GraphQL.Types;
             using Microsoft.EntityFrameworkCore;
 
-            public class ParentEntity { public int Id { get; set; } }
+            public class ParentEntity
+            {
+                public int Id { get; set; }
+                public string Name { get; set; } = "";
+            }
             public class ChildEntity
             {
                 public int Id { get; set; }
@@ -228,10 +234,10 @@ public class FieldBuilderResolveAnalyzerTests
             {
                 public ChildGraphType(IEfGraphQLService<TestDbContext> graphQlService) : base(graphQlService)
                 {
-                    Field<int>("ParentProp")
-                        .Resolve<TestDbContext, ChildEntity, int, ParentEntity>(
+                    Field<string>("ParentName")
+                        .Resolve<TestDbContext, ChildEntity, string, ParentEntity>(
                             projection: x => x.Parent,
-                            resolve: ctx => ctx.Projection.Id);
+                            resolve: ctx => ctx.Projection.Name);
                 }
             }
             """;
@@ -249,7 +255,11 @@ public class FieldBuilderResolveAnalyzerTests
             using Microsoft.EntityFrameworkCore;
             using System.Threading.Tasks;
 
-            public class ParentEntity { public int Id { get; set; } }
+            public class ParentEntity
+            {
+                public int Id { get; set; }
+                public string Name { get; set; } = "";
+            }
             public class ChildEntity
             {
                 public int Id { get; set; }
@@ -263,10 +273,10 @@ public class FieldBuilderResolveAnalyzerTests
             {
                 public ChildGraphType(IEfGraphQLService<TestDbContext> graphQlService) : base(graphQlService)
                 {
-                    Field<int>("ParentProp")
-                        .ResolveAsync<TestDbContext, ChildEntity, int, ParentEntity>(
+                    Field<string>("ParentName")
+                        .ResolveAsync<TestDbContext, ChildEntity, string, ParentEntity>(
                             projection: x => x.Parent,
-                            resolve: async ctx => await Task.FromResult(ctx.Projection.Id));
+                            resolve: async ctx => await Task.FromResult(ctx.Projection.Name));
                 }
             }
             """;

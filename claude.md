@@ -175,15 +175,18 @@ The project includes a Roslyn analyzer (`GraphQL.EntityFramework.Analyzers`) tha
 - **Solution:** Use projection-based extension methods instead
 
 **Safe Patterns (No Warning):**
-- Accessing primary key properties (e.g., `context.Source.Id`)
-- Accessing foreign key properties (e.g., `context.Source.ParentId`)
-- Accessing scalar properties (e.g., `context.Source.Name`, `context.Source.CreatedDate`)
+- Accessing primary key properties (e.g., `context.Source.Id`, `context.Source.CompanyId` when in `Company` class)
+- Accessing foreign key properties (e.g., `context.Source.ParentId`, `context.Source.UserId`)
 - Using projection-based extension methods
 
 **Unsafe Patterns (Warning):**
+- Accessing scalar properties (e.g., `context.Source.Name`, `context.Source.Age`) - these might not be loaded
 - Accessing navigation properties (e.g., `context.Source.Parent`)
 - Accessing properties on navigation properties (e.g., `context.Source.Parent.Id`)
 - Accessing collection navigation properties (e.g., `context.Source.Children.Count()`)
+
+**Why Only PK/FK Are Safe:**
+The EF projection system always loads primary keys and foreign keys, but other properties (including regular scalars like `Name` or `Age`) are only loaded if explicitly requested in the GraphQL query. Accessing them in a resolver without projection can cause null reference exceptions.
 
 The analyzer automatically runs during build and in IDEs (Visual Studio, Rider, VS Code).
 
