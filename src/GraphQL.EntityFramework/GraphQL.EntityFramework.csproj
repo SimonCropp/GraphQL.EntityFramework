@@ -31,4 +31,10 @@
     <Using Include="GraphQL.Builders" />
     <Using Include="System.Text.RegularExpressions" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GraphQL.EntityFramework.Analyzers\GraphQL.EntityFramework.Analyzers.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

@@ -109,6 +109,55 @@ snippet: ProjectionCustomResolver
 Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0` (or `Guid.Empty` for Guid keys) if `customerId` wasn't explicitly requested in the GraphQL query, causing the query to fail.
 
 
+### Using Projection-Based Resolve
+
+When using `Field().Resolve()` or `Field().ResolveAsync()` in graph types, navigation properties on `context.Source` may not be loaded if the projection system didn't include them. To safely access navigation properties in custom resolvers, use the projection-based extension methods:
+
+```cs
+public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntity>
+{
+    public ChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
+        base(graphQlService) =>
+        Field<int>("ParentId")
+            .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
+                projection: x => x.Parent!,
+                resolve: ctx => ctx.Projection.Id);
+}
+```
+
+**Available Extension Methods:**
+
+- `Resolve<TDbContext, TSource, TReturn, TProjection>()` - Synchronous resolver with projection
+- `ResolveAsync<TDbContext, TSource, TReturn, TProjection>()` - Async resolver with projection
+- `ResolveList<TDbContext, TSource, TReturn, TProjection>()` - List resolver with projection
+- `ResolveListAsync<TDbContext, TSource, TReturn, TProjection>()` - Async list resolver with projection
+
+The projection-based extension methods ensure required data is loaded by:
+
+1. Storing projection metadata in field metadata
+2. Compiling the projection expression for runtime execution
+3. Applying the projection to `context.Source` before calling your resolver
+4. Providing the projected data via `ResolveProjectionContext<TDbContext, TProjection>`
+
+**Problematic Pattern (Navigation Property May Be Null):**
+
+```cs
+Field<int>("ParentId")
+    .Resolve(context => context.Source.Parent.Id); // ❌ Parent may be null!
+```
+
+**Safe Pattern (Projection Ensures Data Is Loaded):**
+
+```cs
+Field<int>("ParentId")
+    .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
+        projection: x => x.Parent!,
+        resolve: ctx => ctx.Projection.Id); // ✅ Parent is guaranteed to be loaded
+```
+
+**Note:** A Roslyn analyzer (GQLEF002) will warn you at compile time if you use `Field().Resolve()` to access navigation properties without using projection-based extension methods.
+
+
 ### When Projections Are Not Used
 
 Projections are bypassed and the full entity is loaded in these cases:

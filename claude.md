@@ -136,6 +136,57 @@ Arguments are processed in order: ids → where → orderBy → skip → take
 
 The library supports EF projections where you can use `Select()` to project to DTOs or anonymous types before applying GraphQL field resolution.
 
+### FieldBuilder Extensions (Projection-Based Resolve)
+
+The library provides projection-based extension methods on `FieldBuilder` to safely access navigation properties in custom resolvers:
+
+**Extension Methods** (`src/GraphQL.EntityFramework/GraphApi/FieldBuilderExtensions.cs`)
+- `Resolve<TDbContext, TSource, TReturn, TProjection>()` - Synchronous resolver with projection
+- `ResolveAsync<TDbContext, TSource, TReturn, TProjection>()` - Async resolver with projection
+- `ResolveList<TDbContext, TSource, TReturn, TProjection>()` - List resolver with projection
+- `ResolveListAsync<TDbContext, TSource, TReturn, TProjection>()` - Async list resolver with projection
+
+**Why Use These Methods:**
+When using `Field().Resolve()` or `Field().ResolveAsync()` directly, navigation properties on `context.Source` may be null if the projection system didn't include them. The projection-based extension methods ensure required data is loaded by:
+1. Storing projection metadata in field metadata
+2. Compiling the projection expression for runtime execution
+3. Applying the projection to `context.Source` before calling your resolver
+4. Providing the projected data via `ResolveProjectionContext<TDbContext, TProjection>`
+
+**Example:**
+```csharp
+public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntity>
+{
+    public ChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) : base(graphQlService) =>
+        Field<int>("ParentId")
+            .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
+                projection: x => x.Parent!,
+                resolve: ctx => ctx.Projection.Id);
+}
+```
+
+## Roslyn Analyzer
+
+The project includes a Roslyn analyzer (`GraphQL.EntityFramework.Analyzers`) that detects problematic usage patterns at compile time:
+
+**GQLEF002**: Warns when using `Field().Resolve()` or `Field().ResolveAsync()` to access navigation properties without projection
+- **Category:** Usage
+- **Severity:** Warning
+- **Solution:** Use projection-based extension methods instead
+
+**Safe Patterns (No Warning):**
+- Accessing primary key properties (e.g., `context.Source.Id`)
+- Accessing foreign key properties (e.g., `context.Source.ParentId`)
+- Accessing scalar properties (e.g., `context.Source.Name`, `context.Source.CreatedDate`)
+- Using projection-based extension methods
+
+**Unsafe Patterns (Warning):**
+- Accessing navigation properties (e.g., `context.Source.Parent`)
+- Accessing properties on navigation properties (e.g., `context.Source.Parent.Id`)
+- Accessing collection navigation properties (e.g., `context.Source.Children.Count()`)
+
+The analyzer automatically runs during build and in IDEs (Visual Studio, Rider, VS Code).
+
 ## Testing
 
 Tests use:

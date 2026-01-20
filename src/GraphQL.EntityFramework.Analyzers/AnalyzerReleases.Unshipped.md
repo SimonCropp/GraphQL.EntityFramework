@@ -1,0 +1,8 @@
+; Unshipped analyzer release
+; https://github.com/dotnet/roslyn-analyzers/blob/main/src/Microsoft.CodeAnalysis.Analyzers/ReleaseTrackingAnalyzers.Help.md
+
+### New Rules
+
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+GQLEF002 | Usage | Warning | Use projection-based Resolve extension methods when accessing navigation properties
