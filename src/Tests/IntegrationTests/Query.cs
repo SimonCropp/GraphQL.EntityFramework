@@ -312,5 +312,9 @@
                 name: "nullTaskInnerQueryConnection",
                 resolve: Task<IOrderedQueryable<ParentEntity>?>? (_) => Task.FromResult<IOrderedQueryable<ParentEntity>?>(null))
             .PageSize(10);
+
+        AddQueryField(
+            name: "fieldBuilderProjectionEntities",
+            resolve: _ => _.DbContext.FieldBuilderProjectionEntities);
     }
 }

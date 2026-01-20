@@ -6,3 +6,4 @@
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
 GQLEF002 | Usage | Warning | Use projection-based Resolve extension methods when accessing navigation properties
+GQLEF003 | Usage | Error | Identity projection is not allowed in projection-based Resolve methods

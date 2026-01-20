@@ -1,0 +1,69 @@
+﻿{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "Child1",
+        "siblingCountAsync": 0
+      },
+      {
+        "name": "Child2",
+        "siblingCountAsync": 0
+      },
+      {
+        "name": "Child3",
+        "siblingCountAsync": 0
+      }
+    ]
+  }
+},
+  sql: [
+    {
+      Text:
+select   f.Id,
+         f.Name
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+    },
+    {
+      Text:
+select top (1) f.Id,
+               f.Name
+from   FieldBuilderProjectionParentEntities as f
+where  exists (select 1
+               from   FieldBuilderProjectionEntities as f0
+               where  f.Id = f0.ParentId
+                      and f0.Id = @ctx_Projection),
+      Parameters: {
+        @ctx_Projection: Guid_1
+      }
+    },
+    {
+      Text:
+select top (1) f.Id,
+               f.Name
+from   FieldBuilderProjectionParentEntities as f
+where  exists (select 1
+               from   FieldBuilderProjectionEntities as f0
+               where  f.Id = f0.ParentId
+                      and f0.Id = @ctx_Projection),
+      Parameters: {
+        @ctx_Projection: Guid_2
+      }
+    },
+    {
+      Text:
+select top (1) f.Id,
+               f.Name
+from   FieldBuilderProjectionParentEntities as f
+where  exists (select 1
+               from   FieldBuilderProjectionEntities as f0
+               where  f.Id = f0.ParentId
+                      and f0.Id = @ctx_Projection),
+      Parameters: {
+        @ctx_Projection: Guid_3
+      }
+    }
+  ]
+}

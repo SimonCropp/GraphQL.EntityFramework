@@ -1,0 +1,93 @@
+public class FieldBuilderExtensionsTests
+{
+    class TestEntity
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+    }
+
+    class TestDbContext : DbContext;
+
+    [Fact]
+    public void Resolve_ThrowsArgumentException_WhenIdentityProjectionUsed()
+    {
+        var graphType = new ObjectGraphType<TestEntity>();
+        var field = graphType.Field<int>("test");
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+            field.Resolve<TestDbContext, TestEntity, int, TestEntity>(
+            projection: _ => _,
+            resolve: _ => _.Projection.Id));
+
+        Assert.Contains("Identity projection", exception.Message);
+        Assert.Contains("_ => _", exception.Message);
+    }
+
+    [Fact]
+    public void Resolve_ThrowsArgumentException_WhenIdentityProjectionUsedWithDiscardVariable()
+    {
+        var graphType = new ObjectGraphType<TestEntity>();
+        var field = graphType.Field<int>("test");
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+            field.Resolve<TestDbContext, TestEntity, int, TestEntity>(
+            projection: _ => _,
+            resolve: _ => _.Projection.Id));
+
+        Assert.Contains("Identity projection", exception.Message);
+    }
+
+    [Fact]
+    public void ResolveAsync_ThrowsArgumentException_WhenIdentityProjectionUsed()
+    {
+        var graphType = new ObjectGraphType<TestEntity>();
+        var field = graphType.Field<int>("test");
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+            field.ResolveAsync<TestDbContext, TestEntity, int, TestEntity>(
+            projection: _ => _,
+            resolve: _ => Task.FromResult(_.Projection.Id)));
+
+        Assert.Contains("Identity projection", exception.Message);
+    }
+
+    [Fact]
+    public void ResolveList_ThrowsArgumentException_WhenIdentityProjectionUsed()
+    {
+        var graphType = new ObjectGraphType<TestEntity>();
+        var field = graphType.Field<IEnumerable<int>>("test");
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+            field.ResolveList<TestDbContext, TestEntity, int, TestEntity>(
+            projection: _ => _,
+            resolve: _ => [_.Projection.Id]));
+
+        Assert.Contains("Identity projection", exception.Message);
+    }
+
+    [Fact]
+    public void ResolveListAsync_ThrowsArgumentException_WhenIdentityProjectionUsed()
+    {
+        var graphType = new ObjectGraphType<TestEntity>();
+        var field = graphType.Field<IEnumerable<int>>("test");
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+            field.ResolveListAsync<TestDbContext, TestEntity, int, TestEntity>(
+                projection: _ => _,
+                resolve: _ => Task.FromResult<IEnumerable<int>>([_.Projection.Id])));
+
+        Assert.Contains("Identity projection", exception.Message);
+    }
+
+    [Fact]
+    public void Resolve_DoesNotThrow_WhenValidProjectionUsed()
+    {
+        var graphType = new ObjectGraphType<TestEntity>();
+        var field = graphType.Field<string>("test");
+
+        // This should not throw
+        field.Resolve<TestDbContext, TestEntity, string, string>(
+            projection: _ => _.Name,
+            resolve: _ => _.Projection);
+    }
+}

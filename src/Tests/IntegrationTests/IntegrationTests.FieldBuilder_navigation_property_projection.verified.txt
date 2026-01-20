@@ -1,0 +1,29 @@
+﻿{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "HasParent",
+        "parentName": "No Parent"
+      },
+      {
+        "name": "NoParent",
+        "parentName": "No Parent"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Name,
+         case when f0.Id is null then cast (1 as bit) else cast (0 as bit) end,
+         f0.Id
+from     FieldBuilderProjectionEntities as f
+         left outer join
+         FieldBuilderProjectionParentEntities as f0
+         on f.ParentId = f0.Id
+order by f.Name
+  }
+}

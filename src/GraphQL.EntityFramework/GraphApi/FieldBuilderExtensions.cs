@@ -24,10 +24,11 @@ public static class FieldBuilderExtensions
     public static FieldBuilder<TSource, TReturn> Resolve<TDbContext, TSource, TReturn, TProjection>(
         this FieldBuilder<TSource, TReturn> builder,
         Expression<Func<TSource, TProjection>> projection,
-        Func<ResolveProjectionContext<TDbContext, TProjection>, TReturn?> resolve)
+        Func<ResolveProjectionContext<TDbContext, TProjection>, TReturn> resolve)
         where TDbContext : DbContext
-        where TReturn : class
     {
+        ValidateProjection(projection);
+
         var field = builder.FieldType;
 
         // Store projection expression - flows through to Select expression builder
@@ -38,7 +39,7 @@ public static class FieldBuilderExtensions
 
         var compiledProjection = projection.Compile();
 
-        field.Resolver = new FuncFieldResolver<TSource, TReturn?>(
+        field.Resolver = new FuncFieldResolver<TSource, TReturn>(
             async context =>
             {
                 // Resolve service from request services
@@ -62,7 +63,7 @@ public static class FieldBuilderExtensions
                     FieldContext = context
                 };
 
-                TReturn? result;
+                TReturn result;
                 try
                 {
                     result = resolve(projectionContext);
@@ -79,13 +80,7 @@ public static class FieldBuilderExtensions
                         exception);
                 }
 
-                if (filters == null ||
-                    await filters.ShouldInclude(context.UserContext, dbContext, context.User, result))
-                {
-                    return result;
-                }
-
-                return default;
+                return await ApplyFilters(filters, context, dbContext, result);
             });
 
         return builder;
@@ -110,10 +105,11 @@ public static class FieldBuilderExtensions
     public static FieldBuilder<TSource, TReturn> ResolveAsync<TDbContext, TSource, TReturn, TProjection>(
         this FieldBuilder<TSource, TReturn> builder,
         Expression<Func<TSource, TProjection>> projection,
-        Func<ResolveProjectionContext<TDbContext, TProjection>, Task<TReturn?>> resolve)
+        Func<ResolveProjectionContext<TDbContext, TProjection>, Task<TReturn>> resolve)
         where TDbContext : DbContext
-        where TReturn : class
     {
+        ValidateProjection(projection);
+
         var field = builder.FieldType;
 
         // Store projection expression - flows through to Select expression builder
@@ -124,7 +120,7 @@ public static class FieldBuilderExtensions
 
         var compiledProjection = projection.Compile();
 
-        field.Resolver = new FuncFieldResolver<TSource, TReturn?>(
+        field.Resolver = new FuncFieldResolver<TSource, TReturn>(
             async context =>
             {
                 // Resolve service from request services
@@ -148,7 +144,7 @@ public static class FieldBuilderExtensions
                     FieldContext = context
                 };
 
-                TReturn? result;
+                TReturn result;
                 try
                 {
                     result = await resolve(projectionContext);
@@ -165,13 +161,7 @@ public static class FieldBuilderExtensions
                         exception);
                 }
 
-                if (filters == null ||
-                    await filters.ShouldInclude(context.UserContext, dbContext, context.User, result))
-                {
-                    return result;
-                }
-
-                return default;
+                return await ApplyFilters(filters, context, dbContext, result);
             });
 
         return builder;
@@ -199,6 +189,8 @@ public static class FieldBuilderExtensions
         Func<ResolveProjectionContext<TDbContext, TProjection>, IEnumerable<TReturn>> resolve)
         where TDbContext : DbContext
     {
+        ValidateProjection(projection);
+
         var field = builder.FieldType;
 
         // Store projection expression - flows through to Select expression builder
@@ -280,6 +272,8 @@ public static class FieldBuilderExtensions
         Func<ResolveProjectionContext<TDbContext, TProjection>, Task<IEnumerable<TReturn>>> resolve)
         where TDbContext : DbContext
     {
+        ValidateProjection(projection);
+
         var field = builder.FieldType;
 
         // Store projection expression - flows through to Select expression builder
@@ -339,6 +333,33 @@ public static class FieldBuilderExtensions
         return builder;
     }
 
+    static async Task<TReturn> ApplyFilters<TDbContext, TReturn>(
+        Filters<TDbContext>? filters,
+        IResolveFieldContext context,
+        TDbContext dbContext,
+        TReturn result)
+        where TDbContext : DbContext
+    {
+        // Value types don't support filtering - return as-is
+        if (typeof(TReturn).IsValueType)
+        {
+            return result;
+        }
+
+        // For reference types, apply filters if available
+        if (filters != null && result is not null)
+        {
+            // Use dynamic to work around the class constraint on ShouldInclude
+            dynamic dynamicFilters = filters;
+            if (!await dynamicFilters.ShouldInclude(context.UserContext, dbContext, context.User, result))
+            {
+                return default!;
+            }
+        }
+
+        return result;
+    }
+
     static Filters<TDbContext>? ResolveFilters<TDbContext>(IEfGraphQLService<TDbContext> service, IResolveFieldContext context)
         where TDbContext : DbContext
     {
@@ -355,5 +376,19 @@ public static class FieldBuilderExtensions
 
         var genericMethod = method.MakeGenericMethod(context.Source?.GetType() ?? typeof(object));
         return genericMethod.Invoke(service, [context]) as Filters<TDbContext>;
+    }
+
+    static void ValidateProjection<TSource, TProjection>(Expression<Func<TSource, TProjection>> projection)
+    {
+        // Detect identity projection: _ => _
+        if (projection.Body is not ParameterExpression parameter ||
+            parameter != projection.Parameters[0])
+        {
+            return;
+        }
+
+        throw new ArgumentException(
+            "Identity projection '_ => _' is not allowed. If only access to primary key or foreign key properties, use the regular Resolve() method instead. If required to access navigation properties, specify them in the projection (e.g., '_ => _.Parent').",
+            nameof(projection));
     }
 }

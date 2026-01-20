@@ -36,6 +36,8 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<ManyToManyShadowRightEntity> ManyToManyShadowRightEntities { get; set; } = null!;
     public DbSet<OwnedParent> OwnedParents { get; set; } = null!;
     public DbSet<ReadOnlyEntity> ReadOnlyEntities { get; set; } = null!;
+    public DbSet<FieldBuilderProjectionEntity> FieldBuilderProjectionEntities { get; set; } = null!;
+    public DbSet<FieldBuilderProjectionParentEntity> FieldBuilderProjectionParentEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,5 +92,9 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<ReadOnlyEntity>()
             .Property(_ => _.ComputedInDb)
             .HasComputedColumnSql("Trim(Concat(Coalesce(FirstName, ''), ' ', Coalesce(LastName, '')))", stored: true);
+        var fieldBuilderProjection = modelBuilder.Entity<FieldBuilderProjectionEntity>();
+        fieldBuilderProjection.OrderBy(_ => _.Name);
+        fieldBuilderProjection.Property(_ => _.Salary).HasPrecision(18, 2);
+        modelBuilder.Entity<FieldBuilderProjectionParentEntity>().OrderBy(_ => _.Name);
     }
 }

@@ -4,7 +4,7 @@ namespace GraphQL.EntityFramework.Analyzers;
 public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        [DiagnosticDescriptors.GQLEF002];
+        [DiagnosticDescriptors.GQLEF002, DiagnosticDescriptors.GQLEF003];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -30,8 +30,20 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         }
 
         // Check if the lambda already uses projection-based extension methods (has 4 type parameters)
-        if (IsProjectionBasedResolve(invocation, context.SemanticModel))
+        var isProjectionBased = IsProjectionBasedResolve(invocation, context.SemanticModel);
+
+        if (isProjectionBased)
         {
+            // For projection-based methods, check for identity projection
+            var hasIdentity = HasIdentityProjection(invocation, context.SemanticModel);
+
+            if (hasIdentity)
+            {
+                var diagnostic = Diagnostic.Create(
+                    DiagnosticDescriptors.GQLEF003,
+                    invocation.GetLocation());
+                context.ReportDiagnostic(diagnostic);
+            }
             return;
         }
 
@@ -114,7 +126,9 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
 
         // Projection-based extension methods have 4 type parameters:
         // TDbContext, TSource, TReturn, TProjection
+        // AND have a parameter named "projection"
         return methodSymbol.TypeArguments.Length == 4 &&
+               methodSymbol.Parameters.Any(_ => _.Name == "projection") &&
                methodSymbol.ContainingNamespace?.ToString() == "GraphQL.EntityFramework";
     }
 
@@ -350,5 +364,67 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
 
         var typeName = underlyingType.ToString();
         return typeName == "System.Guid";
+    }
+
+    static bool HasIdentityProjection(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
+    {
+        // Get the symbol info to find parameter positions
+        var symbolInfo = semanticModel.GetSymbolInfo(invocation);
+        if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
+        {
+            return false;
+        }
+
+        // Find the "projection" parameter
+        var projectionParameter = methodSymbol.Parameters.FirstOrDefault(_ => _.Name == "projection");
+        if (projectionParameter == null)
+        {
+            return false;
+        }
+
+        // Find the corresponding argument (by name or position)
+        ArgumentSyntax? projectionArgument = null;
+
+        // First, try to find by named argument
+        foreach (var arg in invocation.ArgumentList.Arguments)
+        {
+            if (arg.NameColon?.Name.Identifier.Text == "projection")
+            {
+                projectionArgument = arg;
+                break;
+            }
+        }
+
+        // If not found by name, try positional (for the case where all args are positional)
+        if (projectionArgument == null)
+        {
+            var parameterIndex = Array.IndexOf(methodSymbol.Parameters.ToArray(), projectionParameter);
+            if (parameterIndex >= 0 && parameterIndex < invocation.ArgumentList.Arguments.Count)
+            {
+                projectionArgument = invocation.ArgumentList.Arguments[parameterIndex];
+            }
+        }
+
+        if (projectionArgument?.Expression is not LambdaExpressionSyntax lambda)
+        {
+            return false;
+        }
+
+        // Check if it's an identity projection (x => x or _ => _)
+        // Lambda body should be a simple parameter reference that matches the lambda parameter
+        if (lambda.Body is not IdentifierNameSyntax identifier)
+        {
+            return false;
+        }
+
+        // Get the parameter name (e.g., "x", "_", "item")
+        var parameterName = lambda is SimpleLambdaExpressionSyntax simpleLambda
+            ? simpleLambda.Parameter.Identifier.Text
+            : lambda is ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters.Count: 1 } parenthesizedLambda
+                ? parenthesizedLambda.ParameterList.Parameters[0].Identifier.Text
+                : null;
+
+        // Check if the body references the same parameter
+        return parameterName != null && identifier.Identifier.Text == parameterName;
     }
 }

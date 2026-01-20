@@ -145,6 +145,7 @@
     where: [WhereExpression!],
     orderBy: [OrderBy!],
     ids: [ID!]): ParentConnection!
+  fieldBuilderProjectionEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FieldBuilderProjection!]!
 }
 
 type CustomType {
@@ -600,6 +601,29 @@ type OwnedParent {
 type OwnedChild {
   property: String!
 }
+
+type FieldBuilderProjection {
+  ageDoubled: Int!
+  isAdult: Boolean!
+  createdYear: DateTime!
+  salaryWithBonus: Decimal!
+  scoreNormalized: Float!
+  viewCountDoubled: Long!
+  hasParentAsync: Boolean!
+  siblingCountAsync: Int!
+  nameUpper: String!
+  parentName: String!
+  age: Int!
+  createdAt: DateTime!
+  id: ID!
+  isActive: Boolean!
+  name: String!
+  salary: Decimal!
+  score: Float!
+  viewCount: Long!
+}
+
+scalar Decimal
 
 type Mutation {
   parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!

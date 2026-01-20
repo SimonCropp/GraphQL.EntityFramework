@@ -1,0 +1,22 @@
+﻿{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "Test",
+        "createdAt": "2024-06-15T10:30:00",
+        "createdYear": "2024-01-01T00:00:00Z"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Name,
+         f.CreatedAt
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+  }
+}

@@ -1,0 +1,34 @@
+﻿{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "Child",
+        "hasParentAsync": true
+      }
+    ]
+  }
+},
+  sql: [
+    {
+      Text:
+select   f.Id,
+         f.Name
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+    },
+    {
+      Text:
+select case when exists (select 1
+                         from   FieldBuilderProjectionParentEntities as f
+                         where  exists (select 1
+                                        from   FieldBuilderProjectionEntities as f0
+                                        where  f.Id = f0.ParentId
+                                               and f0.Id = @ctx_Projection)) then cast (1 as bit) else cast (0 as bit) end,
+      Parameters: {
+        @ctx_Projection: Guid_1
+      }
+    }
+  ]
+}

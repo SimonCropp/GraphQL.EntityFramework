@@ -1,0 +1,22 @@
+﻿{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "Student",
+        "score": 85.5,
+        "scoreNormalized": 0.855
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Name,
+         f.Score
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+  }
+}
