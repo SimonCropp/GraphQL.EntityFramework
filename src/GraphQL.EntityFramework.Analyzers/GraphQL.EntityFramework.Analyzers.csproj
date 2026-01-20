@@ -4,7 +4,7 @@
     <LangVersion>preview</LangVersion>
     <IsRoslynComponent>true</IsRoslynComponent>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeBuildOutput Condition="$(Configuration)=='Release'">false</IncludeBuildOutput>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <Description>Roslyn analyzer for GraphQL.EntityFramework to detect problematic usage patterns</Description>

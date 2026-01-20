@@ -281,15 +281,37 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
             // Check if the property name matches the type name + "Id"
             // e.g., property "CompanyId" in class "Company" or "CompanyEntity"
             var typeName = containingType.Name;
-            var typeNameWithoutSuffix = typeName.Replace("Entity", "").Replace("Model", "").Replace("Dto", "");
 
-            if (name == $"{typeNameWithoutSuffix}Id" || name == $"{typeName}Id")
+            if (name == $"{typeName}Id")
+            {
+                return true;
+            }
+
+            // Check if removing common suffixes from typeName + "Id" equals name
+            // e.g., "CompanyEntity" -> "CompanyId"
+            if (TryMatchWithoutSuffix(typeName, name, "Entity") ||
+                TryMatchWithoutSuffix(typeName, name, "Model") ||
+                TryMatchWithoutSuffix(typeName, name, "Dto"))
             {
                 return true;
             }
         }
 
         return false;
+    }
+
+    static bool TryMatchWithoutSuffix(string typeName, string propertyName, string suffix)
+    {
+        if (!typeName.EndsWith(suffix) || typeName.Length <= suffix.Length)
+        {
+            return false;
+        }
+
+        var baseLength = typeName.Length - suffix.Length;
+        // Check if propertyName is baseTypeName + "Id"
+        return propertyName.Length == baseLength + 2 &&
+               typeName.AsSpan(0, baseLength).SequenceEqual(propertyName.AsSpan(0, baseLength)) &&
+               propertyName.EndsWith("Id");
     }
 
     static bool IsForeignKeyProperty(IPropertySymbol propertySymbol)
