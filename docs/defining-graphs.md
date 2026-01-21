@@ -285,11 +285,11 @@ public class CompanyGraph :
         AddNavigationListField(
             name: "employees",
             projection: _ => _.Employees,
-            resolve: ctx => ctx.Projection);
+            resolve: _ => _.Projection);
         AddNavigationConnectionField(
             name: "employeesConnection",
             projection: _ => _.Employees,
-            resolve: ctx => ctx.Projection);
+            resolve: _ => _.Projection);
         AutoMap();
     }
 }
@@ -413,7 +413,7 @@ public class CompanyGraph :
         AddNavigationConnectionField(
             name: "employees",
             projection: _ => _.Employees,
-            resolve: ctx => ctx.Projection);
+            resolve: _ => _.Projection);
 }
 ```
 <sup><a href='/src/Snippets/ConnectionTypedGraph.cs#L5-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-ConnectionTypedGraph' title='Start of snippet'>anchor</a></sup>
