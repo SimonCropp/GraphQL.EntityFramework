@@ -381,14 +381,54 @@ public static class FieldBuilderExtensions
     static void ValidateProjection<TSource, TProjection>(Expression<Func<TSource, TProjection>> projection)
     {
         // Detect identity projection: _ => _
-        if (projection.Body is not ParameterExpression parameter ||
-            parameter != projection.Parameters[0])
+        if (projection.Body is ParameterExpression parameter &&
+            parameter == projection.Parameters[0])
         {
-            return;
+            throw new ArgumentException(
+                "Identity projection '_ => _' is not allowed. If only access to primary key or foreign key properties, use the regular Resolve() method instead. If required to access navigation properties, specify them in the projection (e.g., '_ => _.Parent').",
+                nameof(projection));
         }
 
-        throw new ArgumentException(
-            "Identity projection '_ => _' is not allowed. If only access to primary key or foreign key properties, use the regular Resolve() method instead. If required to access navigation properties, specify them in the projection (e.g., '_ => _.Parent').",
-            nameof(projection));
+        // Detect projection to scalar/primitive types
+        var projectionType = typeof(TProjection);
+        var underlyingType = Nullable.GetUnderlyingType(projectionType) ?? projectionType;
+
+        if (IsScalarType(underlyingType))
+        {
+            throw new ArgumentException(
+                $"Projection to scalar type '{projectionType.Name}' is not allowed in projection-based Resolve methods. " +
+                "Projection-based methods are designed for loading navigation properties (related entities), not for accessing scalar properties. " +
+                $"Use the regular Resolve() method instead to access scalar properties. " +
+                "Example: Field<T>(\"name\").Resolve(ctx => Transform(ctx.Source.ScalarProperty))",
+                nameof(projection));
+        }
+    }
+
+    static bool IsScalarType(Type type)
+    {
+        // Check for primitive types (int, bool, etc.)
+        if (type.IsPrimitive)
+        {
+            return true;
+        }
+
+        // Check for common scalar types
+        if (type == typeof(string) ||
+            type == typeof(decimal) ||
+            type == typeof(DateTime) ||
+            type == typeof(DateTimeOffset) ||
+            type == typeof(TimeSpan) ||
+            type == typeof(Guid))
+        {
+            return true;
+        }
+
+        // Check for enums
+        if (type.IsEnum)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

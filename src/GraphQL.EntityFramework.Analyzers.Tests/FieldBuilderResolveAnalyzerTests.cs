@@ -475,10 +475,10 @@ public class FieldBuilderResolveAnalyzerTests
         Assert.Equal("GQLEF002", diagnostics[0].Id);
     }
 
-    // NOTE: Analyzer tests for GQLEF003 (identity projection detection) are skipped
-    // because the analyzer implementation has issues detecting identity projections in test scenarios.
-    // However, runtime validation works perfectly and catches identity projections immediately when code runs.
-    // See FieldBuilderExtensionsTests for runtime validation tests.
+    // NOTE: Analyzer tests for GQLEF003 (identity projection detection) and GQLEF004 (scalar type projection)
+    // are skipped because the analyzer implementation has issues detecting these patterns in test scenarios.
+    // However, runtime validation works perfectly and catches both issues immediately when code runs.
+    // See FieldBuilderExtensionsTests for comprehensive runtime validation tests.
 
     static async Task<Diagnostic[]> GetDiagnosticsAsync(string source)
     {
@@ -557,9 +557,9 @@ public class FieldBuilderResolveAnalyzerTests
             throw new($"Compilation errors:\n{errorMessages}");
         }
 
-        // Filter to only GQLEF002 and GQLEF003 diagnostics
+        // Filter to only GQLEF002, GQLEF003, and GQLEF004 diagnostics
         return allDiagnostics
-            .Where(_ => _.Id == "GQLEF002" || _.Id == "GQLEF003")
+            .Where(_ => _.Id == "GQLEF002" || _.Id == "GQLEF003" || _.Id == "GQLEF004")
             .ToArray();
     }
 }

@@ -34,9 +34,9 @@ from   FieldBuilderProjectionParentEntities as f
 where  exists (select 1
                from   FieldBuilderProjectionEntities as f0
                where  f.Id = f0.ParentId
-                      and f0.Id = @ctx_Projection),
+                      and f0.Id = @ctx_Source_Id),
       Parameters: {
-        @ctx_Projection: Guid_1
+        @ctx_Source_Id: Guid_1
       }
     },
     {
@@ -47,9 +47,9 @@ from   FieldBuilderProjectionParentEntities as f
 where  exists (select 1
                from   FieldBuilderProjectionEntities as f0
                where  f.Id = f0.ParentId
-                      and f0.Id = @ctx_Projection),
+                      and f0.Id = @ctx_Source_Id),
       Parameters: {
-        @ctx_Projection: Guid_2
+        @ctx_Source_Id: Guid_2
       }
     },
     {
@@ -60,9 +60,9 @@ from   FieldBuilderProjectionParentEntities as f
 where  exists (select 1
                from   FieldBuilderProjectionEntities as f0
                where  f.Id = f0.ParentId
-                      and f0.Id = @ctx_Projection),
+                      and f0.Id = @ctx_Source_Id),
       Parameters: {
-        @ctx_Projection: Guid_3
+        @ctx_Source_Id: Guid_3
       }
     }
   ]
