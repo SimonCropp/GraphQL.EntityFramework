@@ -389,46 +389,7 @@ public static class FieldBuilderExtensions
                 nameof(projection));
         }
 
-        // Detect projection to scalar/primitive types
-        var projectionType = typeof(TProjection);
-        var underlyingType = Nullable.GetUnderlyingType(projectionType) ?? projectionType;
-
-        if (IsScalarType(underlyingType))
-        {
-            throw new ArgumentException(
-                $"Projection to scalar type '{projectionType.Name}' is not allowed in projection-based Resolve methods. " +
-                "Projection-based methods are designed for loading navigation properties (related entities), not for accessing scalar properties. " +
-                $"Use the regular Resolve() method instead to access scalar properties. " +
-                "Example: Field<T>(\"name\").Resolve(ctx => Transform(ctx.Source.ScalarProperty))",
-                nameof(projection));
-        }
-    }
-
-    static bool IsScalarType(Type type)
-    {
-        // Check for primitive types (int, bool, etc.)
-        if (type.IsPrimitive)
-        {
-            return true;
-        }
-
-        // Check for common scalar types
-        if (type == typeof(string) ||
-            type == typeof(decimal) ||
-            type == typeof(DateTime) ||
-            type == typeof(DateTimeOffset) ||
-            type == typeof(TimeSpan) ||
-            type == typeof(Guid))
-        {
-            return true;
-        }
-
-        // Check for enums
-        if (type.IsEnum)
-        {
-            return true;
-        }
-
-        return false;
+        // Note: Scalar projections are allowed - they're useful for ensuring scalar properties
+        // are loaded from the database and can be transformed in the resolver
     }
 }

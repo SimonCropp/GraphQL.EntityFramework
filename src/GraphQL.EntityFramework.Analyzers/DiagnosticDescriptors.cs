@@ -19,14 +19,4 @@ static class DiagnosticDescriptors
         isEnabledByDefault: true,
         description: "Using '_ => _' as the projection parameter in projection-based Resolve extension methods is not allowed because it doesn't load any additional navigation properties. If you only need to access primary key or foreign key properties, use the regular Resolve() method instead. If you need to access navigation properties, specify them in the projection (e.g., 'x => x.Parent').",
         helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#projection-based-resolve");
-
-    public static readonly DiagnosticDescriptor GQLEF004 = new(
-        id: "GQLEF004",
-        title: "Projection to scalar types is not allowed in projection-based Resolve methods",
-        messageFormat: "Projection to scalar type '{0}' is not allowed. Projection-based Resolve methods are for loading navigation properties, not scalar properties. Use regular Resolve() method instead.",
-        category: "Usage",
-        defaultSeverity: DiagnosticSeverity.Error,
-        isEnabledByDefault: true,
-        description: "Projection-based Resolve extension methods are designed for loading navigation properties (related entities), not for accessing scalar properties like primitives, strings, dates, or enums. Use the regular Resolve() method to access and transform scalar properties.",
-        helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#projection-based-resolve");
 }

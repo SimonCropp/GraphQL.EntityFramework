@@ -4,7 +4,7 @@ namespace GraphQL.EntityFramework.Analyzers;
 public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        [DiagnosticDescriptors.GQLEF002, DiagnosticDescriptors.GQLEF003, DiagnosticDescriptors.GQLEF004];
+        [DiagnosticDescriptors.GQLEF002, DiagnosticDescriptors.GQLEF003];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -45,16 +45,8 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
                 context.ReportDiagnostic(diagnostic);
             }
 
-            // Check for scalar type projection
-            var scalarTypeName = GetScalarProjectionTypeName(invocation, context.SemanticModel);
-            if (scalarTypeName != null)
-            {
-                var diagnostic = Diagnostic.Create(
-                    DiagnosticDescriptors.GQLEF004,
-                    invocation.GetLocation(),
-                    scalarTypeName);
-                context.ReportDiagnostic(diagnostic);
-            }
+            // Note: Scalar projections are allowed - they're useful for ensuring scalar properties
+            // are loaded and can be transformed in the resolver
 
             return;
         }
@@ -438,77 +430,5 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
 
         // Check if the body references the same parameter
         return parameterName != null && identifier.Identifier.Text == parameterName;
-    }
-
-    static string? GetScalarProjectionTypeName(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
-    {
-        // Get the symbol info to find type parameters
-        var symbolInfo = semanticModel.GetSymbolInfo(invocation);
-        if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
-        {
-            return null;
-        }
-
-        // For projection-based methods, TProjection is the 4th type parameter (TDbContext, TSource, TReturn, TProjection)
-        if (methodSymbol.TypeArguments.Length < 4)
-        {
-            return null;
-        }
-
-        var projectionType = methodSymbol.TypeArguments[3];
-        var underlyingType = projectionType;
-
-        // Unwrap nullable types
-        if (projectionType is INamedTypeSymbol { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T } namedType)
-        {
-            underlyingType = namedType.TypeArguments[0];
-        }
-
-        // Check if it's a scalar type
-        if (IsScalarTypeSymbol(underlyingType))
-        {
-            return projectionType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-        }
-
-        return null;
-    }
-
-    static bool IsScalarTypeSymbol(ITypeSymbol type)
-    {
-        // Check for primitive types (int, bool, etc.)
-        if (type.SpecialType is
-            SpecialType.System_Boolean or
-            SpecialType.System_Byte or
-            SpecialType.System_SByte or
-            SpecialType.System_Int16 or
-            SpecialType.System_UInt16 or
-            SpecialType.System_Int32 or
-            SpecialType.System_UInt32 or
-            SpecialType.System_Int64 or
-            SpecialType.System_UInt64 or
-            SpecialType.System_Single or
-            SpecialType.System_Double or
-            SpecialType.System_Char or
-            SpecialType.System_String or
-            SpecialType.System_Decimal or
-            SpecialType.System_DateTime)
-        {
-            return true;
-        }
-
-        // Check for common scalar types by name
-        var fullName = type.ToString();
-        if (fullName is "System.DateTimeOffset" or "System.TimeSpan" or "System.Guid")
-        {
-            return true;
-        }
-
-        // Check for enums
-        if (type.TypeKind == TypeKind.Enum)
-        {
-            return true;
-        }
-
-        return false;
     }
 }
