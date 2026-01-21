@@ -352,4 +352,52 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
+
+    [Fact]
+    public async Task FieldBuilder_enum_projection_through_navigation()
+    {
+        // This test verifies that scalar enum projections work correctly when navigating through relationships
+        // Before the fix, this would fail with: "Unable to find navigation 'Status' specified in string based include path"
+        // because IncludeAppender tried to add includes for scalar types
+        var query =
+            """
+            {
+              fieldBuilderProjectionParents
+              {
+                name
+                children {
+                  edges {
+                    node {
+                      name
+                      status
+                      statusDisplay
+                    }
+                  }
+                }
+              }
+            }
+            """;
+
+        var parent = new FieldBuilderProjectionParentEntity
+        {
+            Name = "Parent"
+        };
+        var child1 = new FieldBuilderProjectionEntity
+        {
+            Name = "ActiveChild",
+            Status = EntityStatus.Active,
+            Parent = parent
+        };
+        var child2 = new FieldBuilderProjectionEntity
+        {
+            Name = "PendingChild",
+            Status = EntityStatus.Pending,
+            Parent = parent
+        };
+        parent.Children.Add(child1);
+        parent.Children.Add(child2);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [parent, child1, child2]);
+    }
 }

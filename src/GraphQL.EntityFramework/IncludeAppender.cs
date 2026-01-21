@@ -495,6 +495,14 @@
             return;
         }
 
+        // Check if entity type has navigation properties BEFORE processing includes
+        // Scalar types (enums, primitives) won't be in the navigations dictionary
+        // and shouldn't have includes added - projection handles loading scalar data
+        if (!navigations.TryGetValue(entityType, out var navigationProperties))
+        {
+            return;
+        }
+
         if (!TryGetIncludeMetadata(fieldType, out var includeNames))
         {
             return;
@@ -503,12 +511,7 @@
         var paths = GetPaths(parentPath, includeNames).ToList();
         list.AddRange(paths);
 
-        // Only process sub-fields if the entity type has navigation properties
-        // Scalar types won't be in the navigations dictionary
-        if (navigations.TryGetValue(entityType, out var navigationProperties))
-        {
-            ProcessSubFields(list, paths.First(), subFields, graph, navigationProperties, context);
-        }
+        ProcessSubFields(list, paths.First(), subFields, graph, navigationProperties, context);
     }
 
     static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)

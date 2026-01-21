@@ -316,5 +316,9 @@
         AddQueryField(
             name: "fieldBuilderProjectionEntities",
             resolve: _ => _.DbContext.FieldBuilderProjectionEntities);
+
+        AddQueryField(
+            name: "fieldBuilderProjectionParents",
+            resolve: _ => _.DbContext.FieldBuilderProjectionParentEntities);
     }
 }

@@ -146,6 +146,7 @@
     orderBy: [OrderBy!],
     ids: [ID!]): ParentConnection!
   fieldBuilderProjectionEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FieldBuilderProjection!]!
+  fieldBuilderProjectionParents(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FieldBuilderProjectionParent!]!
 }
 
 type CustomType {
@@ -631,6 +632,43 @@ enum EntityStatus {
   ACTIVE
   INACTIVE
   PENDING
+}
+
+type FieldBuilderProjectionParent {
+  children(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): FieldBuilderProjectionConnection!
+  id: ID!
+  name: String!
+}
+
+"A connection from an object to a list of objects of type `FieldBuilderProjection`."
+type FieldBuilderProjectionConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [FieldBuilderProjectionEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [FieldBuilderProjection!]
+}
+
+"An edge in a connection from an object to another object of type `FieldBuilderProjection`."
+type FieldBuilderProjectionEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: FieldBuilderProjection!
 }
 
 type Mutation {
