@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Workflow Guidelines
+
+**IMPORTANT - Git Commits:**
+- NEVER automatically commit changes
+- NEVER prompt or ask to commit changes
+- NEVER suggest creating commits
+- The user will handle all git commits manually
+
 ## Project Overview
 
 GraphQL.EntityFramework is a .NET library that adds EntityFramework Core IQueryable support to GraphQL.NET. It enables automatic query generation, filtering, pagination, and ordering for GraphQL queries backed by EF Core.
