@@ -7,7 +7,7 @@
         AddNavigationConnectionField(
             name: "childrenConnection",
             projection: _ => _.Children,
-            resolve: ctx => ctx.Projection);
+            resolve: _ => _.Projection);
         AutoMap();
     }
 }

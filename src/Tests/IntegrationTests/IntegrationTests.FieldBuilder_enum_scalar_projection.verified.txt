@@ -1,0 +1,32 @@
+{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "ActiveEntity",
+        "status": "ACTIVE",
+        "statusDisplay": "Currently Active"
+      },
+      {
+        "name": "InactiveEntity",
+        "status": "INACTIVE",
+        "statusDisplay": "Currently Inactive"
+      },
+      {
+        "name": "PendingEntity",
+        "status": "PENDING",
+        "statusDisplay": "Pending Activation"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Name,
+         f.Status
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+  }
+}

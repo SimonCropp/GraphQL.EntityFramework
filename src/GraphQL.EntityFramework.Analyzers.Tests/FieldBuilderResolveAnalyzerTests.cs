@@ -229,8 +229,8 @@ public class FieldBuilderResolveAnalyzerTests
                 {
                     Field<string>("ParentName")
                         .Resolve<TestDbContext, ChildEntity, string, ParentEntity>(
-                            projection: x => x.Parent,
-                            resolve: ctx => ctx.Projection.Name);
+                            projection: _ => _.Parent,
+                            resolve: _ => _.Projection.Name);
                 }
             }
             """;
@@ -268,7 +268,7 @@ public class FieldBuilderResolveAnalyzerTests
                 {
                     Field<string>("ParentName")
                         .ResolveAsync<TestDbContext, ChildEntity, string, ParentEntity>(
-                            projection: x => x.Parent,
+                            projection: _ => _.Parent,
                             resolve: async ctx => await Task.FromResult(ctx.Projection.Name));
                 }
             }

@@ -8,7 +8,7 @@
         AddNavigationField(
             name: "parent",
             projection: _ => _.Parent,
-            resolve: ctx => ctx.Projection,
+            resolve: _ => _.Projection,
             graphType: typeof(BaseGraphType));
         AutoMap(["Parent", "TypedParent"]);
     }

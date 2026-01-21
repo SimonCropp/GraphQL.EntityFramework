@@ -7,7 +7,7 @@
         AddNavigationConnectionField(
             name: "childrenFromInterface",
             projection: _ => _.ChildrenFromBase,
-            resolve: ctx => ctx.Projection);
+            resolve: _ => _.Projection);
         AutoMap();
         Interface<BaseGraphType>();
         IsTypeOf = obj => obj is DerivedEntity;

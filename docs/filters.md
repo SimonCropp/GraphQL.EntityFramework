@@ -294,7 +294,7 @@ Filters can project through navigation properties to access related entity data:
 ```cs
 var filters = new Filters<MyDbContext>();
 filters.For<Order>().Add(
-    projection: o => new { o.TotalAmount, o.Customer.IsActive },
+    projection: _ => new { _.TotalAmount, _.Customer.IsActive },
     filter: (_, _, _, x) => x.TotalAmount >= 100 && x.IsActive);
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,

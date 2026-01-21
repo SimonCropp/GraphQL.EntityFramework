@@ -7,11 +7,11 @@
         AddNavigationListField(
             name: "employees",
             projection: _ => _.Employees,
-            resolve: ctx => ctx.Projection);
+            resolve: _ => _.Projection);
         AddNavigationConnectionField(
             name: "employeesConnection",
             projection: _ => _.Employees,
-            resolve: ctx => ctx.Projection);
+            resolve: _ => _.Projection);
         AutoMap();
     }
 }

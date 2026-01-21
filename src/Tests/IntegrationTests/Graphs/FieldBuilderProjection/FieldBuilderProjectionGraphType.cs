@@ -45,10 +45,22 @@ public class FieldBuilderProjectionGraphType :
         Field<NonNullGraphType<StringGraphType>, string>("nameUpper")
             .Resolve(_ => _.Source.Name.ToUpper());
 
+        // Enum projection - demonstrates projecting scalar enum types
+        Field<NonNullGraphType<StringGraphType>, string>("statusDisplay")
+            .Resolve<IntegrationDbContext, FieldBuilderProjectionEntity, string, EntityStatus>(
+                projection: _ => _.Status,
+                resolve: _ => _.Projection switch
+                {
+                    EntityStatus.Active => "Currently Active",
+                    EntityStatus.Inactive => "Currently Inactive",
+                    EntityStatus.Pending => "Pending Activation",
+                    _ => "Unknown"
+                });
+
         // Navigation property access DOES use projection-based resolve
         Field<NonNullGraphType<StringGraphType>, string>("parentName")
             .Resolve<IntegrationDbContext, FieldBuilderProjectionEntity, string, FieldBuilderProjectionParentEntity?>(
-                projection: x => x.Parent,
+                projection: _ => _.Parent,
                 resolve: _ => _.Projection?.Name ?? "No Parent");
 
         AutoMap(exclusions: [nameof(FieldBuilderProjectionEntity.Parent)]);

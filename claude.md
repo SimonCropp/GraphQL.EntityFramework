@@ -223,3 +223,4 @@ The test project (`src/Tests/`) includes:
 - Treats warnings as errors
 - Uses .editorconfig for code style enforcement
 - Uses Fody/ConfigureAwait.Fody for ConfigureAwait(false) injection
+- Always use `_ => _` for single parameter delegates (not `x => x` or other named parameters)

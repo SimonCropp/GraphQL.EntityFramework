@@ -1,3 +1,10 @@
+public enum EntityStatus
+{
+    Active,
+    Inactive,
+    Pending
+}
+
 public class FieldBuilderProjectionEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -8,5 +15,6 @@ public class FieldBuilderProjectionEntity
     public decimal Salary { get; set; }
     public double Score { get; set; }
     public long ViewCount { get; set; }
+    public EntityStatus Status { get; set; }
     public FieldBuilderProjectionParentEntity? Parent { get; set; }
 }

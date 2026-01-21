@@ -317,4 +317,39 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [entity]);
     }
+
+    [Fact]
+    public async Task FieldBuilder_enum_scalar_projection()
+    {
+        var query =
+            """
+            {
+              fieldBuilderProjectionEntities
+              {
+                name
+                status
+                statusDisplay
+              }
+            }
+            """;
+
+        var entity1 = new FieldBuilderProjectionEntity
+        {
+            Name = "ActiveEntity",
+            Status = EntityStatus.Active
+        };
+        var entity2 = new FieldBuilderProjectionEntity
+        {
+            Name = "PendingEntity",
+            Status = EntityStatus.Pending
+        };
+        var entity3 = new FieldBuilderProjectionEntity
+        {
+            Name = "InactiveEntity",
+            Status = EntityStatus.Inactive
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
+    }
 }

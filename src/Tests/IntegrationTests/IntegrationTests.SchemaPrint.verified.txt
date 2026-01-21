@@ -612,6 +612,7 @@ type FieldBuilderProjection {
   hasParentAsync: Boolean!
   siblingCountAsync: Int!
   nameUpper: String!
+  statusDisplay: String!
   parentName: String!
   age: Int!
   createdAt: DateTime!
@@ -620,10 +621,17 @@ type FieldBuilderProjection {
   name: String!
   salary: Decimal!
   score: Float!
+  status: EntityStatus!
   viewCount: Long!
 }
 
 scalar Decimal
+
+enum EntityStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
 
 type Mutation {
   parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!

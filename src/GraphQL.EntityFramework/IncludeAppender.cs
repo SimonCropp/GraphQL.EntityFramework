@@ -471,7 +471,7 @@
             var name = fragmentSpread.FragmentName.Name;
             var fragmentDefinition = context.Document.Definitions
                 .OfType<GraphQLFragmentDefinition>()
-                .SingleOrDefault(x => x.FragmentName.Name == name);
+                .SingleOrDefault(_ => _.FragmentName.Name == name);
             if (fragmentDefinition is null)
             {
                 continue;
@@ -503,7 +503,12 @@
         var paths = GetPaths(parentPath, includeNames).ToList();
         list.AddRange(paths);
 
-        ProcessSubFields(list, paths.First(), subFields, graph, navigations[entityType], context);
+        // Only process sub-fields if the entity type has navigation properties
+        // Scalar types won't be in the navigations dictionary
+        if (navigations.TryGetValue(entityType, out var navigationProperties))
+        {
+            ProcessSubFields(list, paths.First(), subFields, graph, navigationProperties, context);
+        }
     }
 
     static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)
