@@ -16,6 +16,7 @@
 select l.Id,
        case when l0.Id is null then cast (1 as bit) else cast (0 as bit) end,
        l0.Id,
+       l0.Level3EntityId,
        case when l1.Id is null then cast (1 as bit) else cast (0 as bit) end,
        l1.Id,
        l1.Property

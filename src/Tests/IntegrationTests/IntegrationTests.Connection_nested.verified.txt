@@ -89,7 +89,8 @@
   sql: {
     Text:
 select   p.Id,
-         c.Id
+         c.Id,
+         c.ParentId
 from     ParentEntities as p
          left outer join
          ChildEntities as c

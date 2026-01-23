@@ -19,6 +19,7 @@
 select   p.Id,
          p.Property,
          c.Id,
+         c.ParentId,
          c.Property
 from     ParentEntities as p
          left outer join

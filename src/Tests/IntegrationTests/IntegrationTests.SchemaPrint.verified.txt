@@ -147,6 +147,8 @@
     ids: [ID!]): ParentConnection!
   fieldBuilderProjectionEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FieldBuilderProjection!]!
   fieldBuilderProjectionParents(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FieldBuilderProjectionParent!]!
+  departments(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Department!]!
+  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
 }
 
 type CustomType {
@@ -669,6 +671,21 @@ type FieldBuilderProjectionEdge {
   cursor: String!
   "The item at the end of the edge"
   node: FieldBuilderProjection!
+}
+
+type Department {
+  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
+  id: ID!
+  isActive: Boolean!
+  name: String
+}
+
+type Employee {
+  isInActiveDepartment: Boolean!
+  department: Department
+  departmentId: ID!
+  id: ID!
+  name: String
 }
 
 type Mutation {
