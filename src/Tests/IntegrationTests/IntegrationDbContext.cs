@@ -38,6 +38,8 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<ReadOnlyEntity> ReadOnlyEntities { get; set; } = null!;
     public DbSet<FieldBuilderProjectionEntity> FieldBuilderProjectionEntities { get; set; } = null!;
     public DbSet<FieldBuilderProjectionParentEntity> FieldBuilderProjectionParentEntities { get; set; } = null!;
+    public DbSet<DepartmentEntity> Departments { get; set; } = null!;
+    public DbSet<EmployeeEntity> Employees { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -96,5 +98,13 @@ public class IntegrationDbContext(DbContextOptions options) :
         fieldBuilderProjection.OrderBy(_ => _.Name);
         fieldBuilderProjection.Property(_ => _.Salary).HasPrecision(18, 2);
         modelBuilder.Entity<FieldBuilderProjectionParentEntity>().OrderBy(_ => _.Name);
+        modelBuilder.Entity<DepartmentEntity>().OrderBy(_ => _.Name);
+        var employeeEntity = modelBuilder.Entity<EmployeeEntity>();
+        employeeEntity.OrderBy(_ => _.Name);
+        employeeEntity
+            .HasOne(_ => _.Department)
+            .WithMany(_ => _.Employees)
+            .HasForeignKey(_ => _.DepartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

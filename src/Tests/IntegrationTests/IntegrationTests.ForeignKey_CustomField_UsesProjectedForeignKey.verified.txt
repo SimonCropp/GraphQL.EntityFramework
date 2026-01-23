@@ -1,0 +1,90 @@
+﻿{
+  target:
+{
+  "data": {
+    "departments": [
+      {
+        "id": "Guid_1",
+        "name": "Active Department",
+        "isActive": true,
+        "employees": [
+          {
+            "id": "Guid_2",
+            "name": "Alice",
+            "departmentId": "Guid_1",
+            "isInActiveDepartment": true
+          },
+          {
+            "id": "Guid_3",
+            "name": "Bob",
+            "departmentId": "Guid_1",
+            "isInActiveDepartment": true
+          }
+        ]
+      },
+      {
+        "id": "Guid_4",
+        "name": "Inactive Department",
+        "isActive": false,
+        "employees": [
+          {
+            "id": "Guid_5",
+            "name": "Charlie",
+            "departmentId": "Guid_4",
+            "isInActiveDepartment": false
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: [
+    {
+      Text:
+select   d.Id,
+         d.Name,
+         d.IsActive,
+         e.Id,
+         e.DepartmentId,
+         e.Name
+from     Departments as d
+         left outer join
+         Employees as e
+         on d.Id = e.DepartmentId
+order by d.Name, d.Id, e.Id
+    },
+    {
+      Text:
+select top (2) d.Id,
+               d.IsActive,
+               d.Name
+from   Departments as d
+where  d.Id = @context_Source_DepartmentId,
+      Parameters: {
+        @context_Source_DepartmentId: Guid_1
+      }
+    },
+    {
+      Text:
+select top (2) d.Id,
+               d.IsActive,
+               d.Name
+from   Departments as d
+where  d.Id = @context_Source_DepartmentId,
+      Parameters: {
+        @context_Source_DepartmentId: Guid_1
+      }
+    },
+    {
+      Text:
+select top (2) d.Id,
+               d.IsActive,
+               d.Name
+from   Departments as d
+where  d.Id = @context_Source_DepartmentId,
+      Parameters: {
+        @context_Source_DepartmentId: Guid_4
+      }
+    }
+  ]
+}

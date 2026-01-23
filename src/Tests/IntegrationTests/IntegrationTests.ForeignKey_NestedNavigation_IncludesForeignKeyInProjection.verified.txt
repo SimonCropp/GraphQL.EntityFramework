@@ -1,0 +1,46 @@
+﻿{
+  target:
+{
+  "data": {
+    "departments": [
+      {
+        "name": "Engineering",
+        "employees": [
+          {
+            "name": "Developer",
+            "departmentId": "Guid_1",
+            "isInActiveDepartment": true
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: [
+    {
+      Text:
+select   d.Id,
+         d.Name,
+         e.Id,
+         e.DepartmentId,
+         e.Name
+from     Departments as d
+         left outer join
+         Employees as e
+         on d.Id = e.DepartmentId
+where    d.Name = N'Engineering'
+order by d.Name, d.Id, e.Id
+    },
+    {
+      Text:
+select top (2) d.Id,
+               d.IsActive,
+               d.Name
+from   Departments as d
+where  d.Id = @context_Source_DepartmentId,
+      Parameters: {
+        @context_Source_DepartmentId: Guid_1
+      }
+    }
+  ]
+}

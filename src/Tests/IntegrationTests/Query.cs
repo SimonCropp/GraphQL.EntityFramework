@@ -320,5 +320,13 @@
         AddQueryField(
             name: "fieldBuilderProjectionParents",
             resolve: _ => _.DbContext.FieldBuilderProjectionParentEntities);
+
+        AddQueryField(
+            name: "departments",
+            resolve: _ => _.DbContext.Departments);
+
+        AddQueryField(
+            name: "employees",
+            resolve: _ => _.DbContext.Employees);
     }
 }
