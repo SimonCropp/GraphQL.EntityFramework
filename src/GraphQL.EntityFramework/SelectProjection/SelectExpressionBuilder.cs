@@ -217,7 +217,7 @@ static class SelectExpressionBuilder
         [NotNullWhen(true)] out List<MemberBinding>? bindings)
     {
         // Pre-size collections to avoid reallocations
-        var capacity = projection.KeyNames.Count + projection.ScalarFields.Count + projection.Navigations.Count;
+        var capacity = projection.KeyNames.Count + projection.ForeignKeyNames.Count + projection.ScalarFields.Count + projection.Navigations.Count;
         bindings = new(capacity);
         var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
         var properties = GetEntityMetadata(entityType).Properties;
@@ -228,6 +228,17 @@ static class SelectExpressionBuilder
             if (properties.TryGetValue(keyName, out var metadata) &&
                 metadata.CanWrite &&
                 addedProperties.Add(keyName))
+            {
+                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
+            }
+        }
+
+        // Add foreign key properties
+        foreach (var fkName in projection.ForeignKeyNames)
+        {
+            if (properties.TryGetValue(fkName, out var metadata) &&
+                metadata.CanWrite &&
+                addedProperties.Add(fkName))
             {
                 bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
             }
