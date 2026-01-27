@@ -69,6 +69,7 @@ select   c.Id,
          p.Id,
          p.Property,
          s.Id,
+         s.ParentId,
          s.Property,
          s.c,
          s.Id0,
@@ -79,11 +80,11 @@ from     ChildEntities as c
          on c.ParentId = p.Id
          left outer join
          (select c0.Id,
+                 c0.ParentId,
                  c0.Property,
                  case when p0.Id is null then cast (1 as bit) else cast (0 as bit) end as c,
                  p0.Id as Id0,
-                 p0.Property as Property0,
-                 c0.ParentId
+                 p0.Property as Property0
           from   ChildEntities as c0
                  left outer join
                  ParentEntities as p0

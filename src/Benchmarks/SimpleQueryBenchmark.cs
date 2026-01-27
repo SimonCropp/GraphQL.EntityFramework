@@ -38,8 +38,8 @@ public class ParentGraphType :
     {
         AddNavigationListField(
             name: "children",
-            resolve: _ => _.Source.Children,
-            includeNames: ["Children"]);
+            projection: _ => _.Children,
+            resolve: _ => _.Projection);
         AutoMap();
     }
 }

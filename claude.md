@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Workflow Guidelines
+
+**IMPORTANT - Git Commits:**
+- NEVER automatically commit changes
+- NEVER prompt or ask to commit changes
+- NEVER suggest creating commits
+- The user will handle all git commits manually
+
 ## Project Overview
 
 GraphQL.EntityFramework is a .NET library that adds EntityFramework Core IQueryable support to GraphQL.NET. It enables automatic query generation, filtering, pagination, and ordering for GraphQL queries backed by EF Core.
@@ -66,6 +74,10 @@ The README.md and docs/*.md files are auto-generated from source files using [Ma
 **ExpressionBuilder** (`src/GraphQL.EntityFramework/Filters/`)
 - Builds LINQ expressions from GraphQL where clause arguments
 - Supports complex filtering including grouping, negation, and nested properties
+
+**ProjectionAnalyzer** (`src/GraphQL.EntityFramework/GraphApi/ProjectionAnalyzer.cs`)
+- Analyzes projection expressions to extract required property names
+- Used by navigation fields, filters, and FieldBuilder extensions to determine which properties need to be loaded
 
 **Filters** (`src/GraphQL.EntityFramework/Filters/Filters.cs`)
 - Post-query filtering mechanism for authorization or business rules
@@ -136,6 +148,60 @@ Arguments are processed in order: ids → where → orderBy → skip → take
 
 The library supports EF projections where you can use `Select()` to project to DTOs or anonymous types before applying GraphQL field resolution.
 
+### FieldBuilder Extensions (Projection-Based Resolve)
+
+The library provides projection-based extension methods on `FieldBuilder` to safely access navigation properties in custom resolvers:
+
+**Extension Methods** (`src/GraphQL.EntityFramework/GraphApi/FieldBuilderExtensions.cs`)
+- `Resolve<TDbContext, TSource, TReturn, TProjection>()` - Synchronous resolver with projection
+- `ResolveAsync<TDbContext, TSource, TReturn, TProjection>()` - Async resolver with projection
+- `ResolveList<TDbContext, TSource, TReturn, TProjection>()` - List resolver with projection
+- `ResolveListAsync<TDbContext, TSource, TReturn, TProjection>()` - Async list resolver with projection
+
+**Why Use These Methods:**
+When using `Field().Resolve()` or `Field().ResolveAsync()` directly, navigation properties on `context.Source` may be null if the projection system didn't include them. The projection-based extension methods ensure required data is loaded by:
+1. Storing projection metadata in field metadata
+2. Compiling the projection expression for runtime execution
+3. Applying the projection to `context.Source` before calling your resolver
+4. Providing the projected data via `ResolveProjectionContext<TDbContext, TProjection>`
+
+**Example:**
+```csharp
+public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntity>
+{
+    public ChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) : base(graphQlService) =>
+        Field<int>("ParentId")
+            .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
+                projection: x => x.Parent!,
+                resolve: ctx => ctx.Projection.Id);
+}
+```
+
+## Roslyn Analyzer
+
+The project includes a Roslyn analyzer (`GraphQL.EntityFramework.Analyzers`) that detects problematic usage patterns at compile time:
+
+**GQLEF002**: Warns when using `Field().Resolve()` or `Field().ResolveAsync()` to access navigation properties without projection
+- **Category:** Usage
+- **Severity:** Warning
+- **Solution:** Use projection-based extension methods instead
+
+**Safe Patterns (No Warning):**
+- Accessing primary key properties (e.g., `context.Source.Id`, `context.Source.CompanyId` when in `Company` class)
+- Accessing foreign key properties (e.g., `context.Source.ParentId`, `context.Source.UserId`)
+- Using projection-based extension methods
+
+**Unsafe Patterns (Warning):**
+- Accessing scalar properties (e.g., `context.Source.Name`, `context.Source.Age`) - these might not be loaded
+- Accessing navigation properties (e.g., `context.Source.Parent`)
+- Accessing properties on navigation properties (e.g., `context.Source.Parent.Id`)
+- Accessing collection navigation properties (e.g., `context.Source.Children.Count()`)
+
+**Why Only PK/FK Are Safe:**
+The EF projection system always loads primary keys and foreign keys, but other properties (including regular scalars like `Name` or `Age`) are only loaded if explicitly requested in the GraphQL query. Accessing them in a resolver without projection can cause null reference exceptions.
+
+The analyzer automatically runs during build and in IDEs (Visual Studio, Rider, VS Code).
+
 ## Testing
 
 Tests use:
@@ -157,3 +223,4 @@ The test project (`src/Tests/`) includes:
 - Treats warnings as errors
 - Uses .editorconfig for code style enforcement
 - Uses Fody/ConfigureAwait.Fody for ConfigureAwait(false) injection
+- Always use `_ => _` for single parameter delegates (not `x => x` or other named parameters)

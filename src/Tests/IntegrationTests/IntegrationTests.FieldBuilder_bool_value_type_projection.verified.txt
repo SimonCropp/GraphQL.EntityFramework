@@ -1,0 +1,27 @@
+﻿{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "Adult",
+        "age": 25,
+        "isAdult": true
+      },
+      {
+        "name": "Child",
+        "age": 15,
+        "isAdult": false
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Name,
+         f.Age
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+  }
+}

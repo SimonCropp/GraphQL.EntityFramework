@@ -12,6 +12,7 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
 
     public IEfGraphQLService<TDbContext> GraphQlService { get; } = graphQlService;
 
+    [Obsolete("Use the projection-based overload instead")]
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
         string name,
         Type? graphType = null,
@@ -20,6 +21,14 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         where TReturn : class =>
         GraphQlService.AddNavigationConnectionField<TSource, TReturn>(this, name, null, graphType, includeNames, omitQueryArguments);
 
+    public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
+        string name,
+        Expression<Func<TSource, IEnumerable<TReturn>?>> projection,
+        Type? graphType = null)
+        where TReturn : class =>
+        GraphQlService.AddNavigationConnectionField(this, name, projection, graphType);
+
+    [Obsolete("Use the projection-based overload instead")]
     public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
         string name,
         Type? graphType = null,
@@ -27,6 +36,14 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         where TReturn : class =>
         GraphQlService.AddNavigationField<TSource, TReturn>(this, name, null, graphType, includeNames);
 
+    public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
+        string name,
+        Expression<Func<TSource, TReturn?>> projection,
+        Type? graphType = null)
+        where TReturn : class =>
+        GraphQlService.AddNavigationField(this, name, projection, graphType);
+
+    [Obsolete("Use the projection-based overload instead")]
     public FieldBuilder<TSource, TReturn> AddNavigationListField<TReturn>(
         string name,
         Type? graphType = null,
@@ -34,6 +51,14 @@ public class EfInterfaceGraphType<TDbContext, TSource>(
         bool omitQueryArguments = false)
         where TReturn : class =>
         GraphQlService.AddNavigationListField<TSource, TReturn>(this, name, null, graphType, includeNames, omitQueryArguments);
+
+    public FieldBuilder<TSource, TReturn> AddNavigationListField<TReturn>(
+        string name,
+        Expression<Func<TSource, IEnumerable<TReturn>?>> projection,
+        Type? graphType = null,
+        bool omitQueryArguments = false)
+        where TReturn : class =>
+        GraphQlService.AddNavigationListField(this, name, projection, graphType, omitQueryArguments);
 
     public ConnectionBuilder<TSource> AddQueryConnectionField<TReturn>(
         string name,

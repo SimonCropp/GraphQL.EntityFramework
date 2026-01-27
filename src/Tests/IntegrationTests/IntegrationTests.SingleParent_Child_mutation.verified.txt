@@ -20,6 +20,7 @@
 select   p0.Id,
          p0.Property,
          c.Id,
+         c.ParentId,
          c.Property
 from     (select top (2) p.Id,
                          p.Property

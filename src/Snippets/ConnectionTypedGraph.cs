@@ -11,7 +11,8 @@ class ConnectionTypedGraph
             base(graphQlService) =>
             AddNavigationConnectionField(
                 name: "employees",
-                resolve: _ => _.Source.Employees);
+                projection: _ => _.Employees,
+                resolve: _ => _.Projection);
     }
 
     #endregion

@@ -6,7 +6,8 @@
     {
         AddNavigationListField(
             name: "employees",
-            resolve: _ => _.Source.Employees);
+            projection: _ => _.Employees,
+            resolve: _ => _.Projection);
         AutoMap();
     }
 }

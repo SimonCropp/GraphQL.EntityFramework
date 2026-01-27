@@ -1,0 +1,29 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntitiesFiltered": [
+      {
+        "property": "ParentValue",
+        "children": [
+          {
+            "property": "KeepMe"
+          }
+        ]
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Property,
+         f0.Id,
+         f0.Property
+from     FilterParentEntities as f
+         left outer join
+         FilterChildEntities as f0
+         on f.Id = f0.ParentId
+order by f.Property, f.Id, f0.Id
+  }
+}

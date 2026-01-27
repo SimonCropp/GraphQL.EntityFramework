@@ -1,0 +1,20 @@
+﻿{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "lowercase",
+        "nameUpper": "LOWERCASE"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Name
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+  }
+}

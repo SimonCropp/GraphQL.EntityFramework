@@ -7,7 +7,8 @@
         // Add navigation to abstract parent - this is what triggers the bug
         AddNavigationField(
             name: "parent",
-            resolve: _ => _.Source.Parent,
+            projection: _ => _.Parent,
+            resolve: _ => _.Projection,
             graphType: typeof(BaseGraphType));
         AutoMap(["Parent", "TypedParent"]);
     }

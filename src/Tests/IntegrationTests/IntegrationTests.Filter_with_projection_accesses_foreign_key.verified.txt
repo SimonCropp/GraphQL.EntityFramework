@@ -35,8 +35,8 @@ from   ParentEntities as p
 select   p0.Id,
          p0.Property,
          c.Id,
-         c.Property,
-         c.ParentId
+         c.ParentId,
+         c.Property
 from     (select   p.Id,
                    p.Property
           from     ParentEntities as p

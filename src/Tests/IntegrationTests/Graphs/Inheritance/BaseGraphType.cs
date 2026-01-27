@@ -3,7 +3,7 @@
 {
     public BaseGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService) =>
-        AddNavigationConnectionField<DerivedChildEntity>(
+        AddNavigationConnectionField(
             name: "childrenFromInterface",
-            includeNames: ["ChildrenFromBase"]);
+            projection: _ => _.ChildrenFromBase);
 }

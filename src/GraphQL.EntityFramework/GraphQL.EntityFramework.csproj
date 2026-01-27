@@ -10,7 +10,6 @@
     <PackageReference Include="ConfigureAwait.Fody" PrivateAssets="All" />
     <PackageReference Include="Fody" PrivateAssets="all" />
     <PackageReference Include="GraphQL" />
-    <PackageReference Include="EfOrderBy" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Polyfill" PrivateAssets="all" />
@@ -30,5 +29,13 @@
     <Using Include="GraphQL.Execution" />
     <Using Include="GraphQL.Builders" />
     <Using Include="System.Text.RegularExpressions" />
+    <ProjectReference Include="..\GraphQL.EntityFramework.Analyzers\GraphQL.EntityFramework.Analyzers.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="$(Configuration)=='Release'">
+    <None Include="..\GraphQL.EntityFramework.Analyzers\bin\$(Configuration)\netstandard2.0\GraphQL.EntityFramework.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>

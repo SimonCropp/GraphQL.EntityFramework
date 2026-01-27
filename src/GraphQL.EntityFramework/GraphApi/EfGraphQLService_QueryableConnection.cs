@@ -118,6 +118,8 @@ partial class EfGraphQLService<TDbContext>
         }
     }
 
+    // Use via reflection
+    // ReSharper disable once UnusedMember.Local
     ConnectionBuilder<TSource> AddQueryableConnection<TSource, TGraph, TReturn>(
         IComplexGraphType graph,
         string name,

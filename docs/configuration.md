@@ -721,9 +721,9 @@ public class BaseGraphType :
 {
     public BaseGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService) =>
-        AddNavigationConnectionField<DerivedChildEntity>(
+        AddNavigationConnectionField(
             name: "childrenFromInterface",
-            includeNames: ["ChildrenFromBase"]);
+            projection: _ => _.ChildrenFromBase);
 }
 ```
 <sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/BaseGraphType.cs#L1-L9' title='Snippet source file'>snippet source</a> | <a href='#snippet-BaseGraphType.cs' title='Start of snippet'>anchor</a></sup>
@@ -740,14 +740,15 @@ public class DerivedGraphType :
     {
         AddNavigationConnectionField(
             name: "childrenFromInterface",
-            _ => _.Source.ChildrenFromBase);
+            projection: _ => _.ChildrenFromBase,
+            resolve: _ => _.Projection);
         AutoMap();
         Interface<BaseGraphType>();
         IsTypeOf = obj => obj is DerivedEntity;
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraphType.cs#L1-L14' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraphType.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraphType.cs#L1-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

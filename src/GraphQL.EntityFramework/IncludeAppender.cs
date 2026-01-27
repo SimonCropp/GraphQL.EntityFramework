@@ -129,7 +129,26 @@
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
-        // Check if this field has include metadata (navigation field with possible alias)
+        // Check if this field has a projection expression (new approach - flows to Select)
+        if (TryGetProjectionMetadata(fieldInfo.FieldType, out var projection, out var sourceType))
+        {
+            var countBefore = navProjections.Count;
+            ProcessProjectionExpression(
+                fieldInfo,
+                projection,
+                sourceType,
+                navigationProperties,
+                navProjections,
+                context);
+            // Only return if we added navigations; otherwise fall through to include metadata
+            // This handles cases like abstract types where projection can't be built
+            if (navProjections.Count > countBefore)
+            {
+                return;
+            }
+        }
+
+        // Check if this field has include metadata (fallback for abstract types, or legacy/obsolete approach)
         if (TryGetIncludeMetadata(fieldInfo.FieldType, out var includeNames))
         {
             // It's a navigation field - include ALL navigation properties from metadata
@@ -199,6 +218,120 @@
         {
             // It's a scalar field
             scalarFields.Add(fieldName);
+        }
+    }
+
+    /// <summary>
+    /// Processes a projection expression to build NavigationProjectionInfo entries.
+    /// The expression is analyzed to determine which navigations and properties to include
+    /// in the Select projection.
+    /// </summary>
+    void ProcessProjectionExpression(
+        (GraphQLField Field, FieldType FieldType) fieldInfo,
+        LambdaExpression projection,
+        Type sourceType,
+        IReadOnlyDictionary<string, Navigation>? navigationProperties,
+        Dictionary<string, NavigationProjectionInfo> navProjections,
+        IResolveFieldContext context)
+    {
+        // Extract property paths from the projection expression
+        var accessedPaths = ProjectionPathAnalyzer.ExtractPropertyPaths(projection, sourceType);
+
+        // Group paths by their root navigation property
+        var pathsByNavigation = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        var primaryNavigation = (string?)null;
+
+        foreach (var path in accessedPaths)
+        {
+            var rootProperty = path.Contains('.') ? path[..path.IndexOf('.')] : path;
+
+            if (!pathsByNavigation.TryGetValue(rootProperty, out var paths))
+            {
+                paths = [];
+                pathsByNavigation[rootProperty] = paths;
+            }
+
+            // Store the nested path (without root) if it's a nested access
+            if (path.Contains('.'))
+            {
+                paths.Add(path[(path.IndexOf('.') + 1)..]);
+            }
+
+            // First navigation encountered is the primary one (gets GraphQL fields)
+            primaryNavigation ??= rootProperty;
+        }
+
+        // Build NavigationProjectionInfo for each accessed navigation
+        foreach (var (navName, nestedPaths) in pathsByNavigation)
+        {
+            // Try case-sensitive first, then case-insensitive
+            Navigation? navigation = null;
+            string? actualNavName = null;
+            if (navigationProperties != null)
+            {
+                if (navigationProperties.TryGetValue(navName, out navigation))
+                {
+                    actualNavName = navName;
+                }
+                else
+                {
+                    // Case-insensitive fallback
+                    var match = navigationProperties.FirstOrDefault(kvp =>
+                        string.Equals(kvp.Key, navName, StringComparison.OrdinalIgnoreCase));
+                    if (match.Value != null)
+                    {
+                        navigation = match.Value;
+                        actualNavName = match.Key;
+                    }
+                }
+            }
+
+            if (navigation == null || actualNavName == null || navProjections.ContainsKey(actualNavName))
+            {
+                continue;
+            }
+
+            var navType = navigation.Type;
+            navigations.TryGetValue(navType, out var nestedNavProps);
+            keyNames.TryGetValue(navType, out var nestedKeys);
+            foreignKeys.TryGetValue(navType, out var nestedFks);
+
+            FieldProjectionInfo nestedProjection;
+
+            if (navName == primaryNavigation)
+            {
+                // Primary navigation: merge GraphQL fields with projection-required fields
+                nestedProjection = GetNestedProjection(
+                    fieldInfo.Field.SelectionSet,
+                    nestedNavProps,
+                    nestedKeys,
+                    nestedFks,
+                    context);
+
+                // Add any specific fields from the projection expression
+                foreach (var nestedPath in nestedPaths)
+                {
+                    if (!nestedPath.Contains('.') &&
+                        !nestedProjection.ScalarFields.Contains(nestedPath, StringComparer.OrdinalIgnoreCase))
+                    {
+                        nestedProjection.ScalarFields.Add(nestedPath);
+                    }
+                }
+            }
+            else
+            {
+                // Secondary navigation: include only projection-required fields
+                var scalarFields = nestedPaths
+                    .Where(p => !p.Contains('.'))
+                    .ToList();
+
+                nestedProjection = new(scalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
+            }
+
+            navProjections[actualNavName] = new(
+                navType,
+                navigation.IsCollection,
+                nestedProjection);
         }
     }
 
@@ -338,7 +471,7 @@
             var name = fragmentSpread.FragmentName.Name;
             var fragmentDefinition = context.Document.Definitions
                 .OfType<GraphQLFragmentDefinition>()
-                .SingleOrDefault(x => x.FragmentName.Name == name);
+                .SingleOrDefault(_ => _.FragmentName.Name == name);
             if (fragmentDefinition is null)
             {
                 continue;
@@ -362,6 +495,14 @@
             return;
         }
 
+        // Check if entity type has navigation properties BEFORE processing includes
+        // Scalar types (enums, primitives) won't be in the navigations dictionary
+        // and shouldn't have includes added - projection handles loading scalar data
+        if (!navigations.TryGetValue(entityType, out var navigationProperties))
+        {
+            return;
+        }
+
         if (!TryGetIncludeMetadata(fieldType, out var includeNames))
         {
             return;
@@ -370,7 +511,7 @@
         var paths = GetPaths(parentPath, includeNames).ToList();
         list.AddRange(paths);
 
-        ProcessSubFields(list, paths.First(), subFields, graph, navigations[entityType], context);
+        ProcessSubFields(list, paths.First(), subFields, graph, navigationProperties, context);
     }
 
     static IEnumerable<string> GetPaths(string? parentPath, string[] includeNames)
@@ -428,6 +569,32 @@
         }
 
         value = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Stores a projection expression in field metadata.
+    /// This is used by navigation fields to specify which properties to project,
+    /// flowing through to the root Select expression.
+    /// </summary>
+    public static void SetProjectionMetadata(FieldType fieldType, LambdaExpression projection, Type sourceType)
+    {
+        fieldType.Metadata["_EF_Projection"] = projection;
+        fieldType.Metadata["_EF_ProjectionSourceType"] = sourceType;
+    }
+
+    static bool TryGetProjectionMetadata(FieldType fieldType, [NotNullWhen(true)] out LambdaExpression? projection, [NotNullWhen(true)] out Type? sourceType)
+    {
+        if (fieldType.Metadata.TryGetValue("_EF_Projection", out var projectionObj) &&
+            fieldType.Metadata.TryGetValue("_EF_ProjectionSourceType", out var sourceTypeObj))
+        {
+            projection = (LambdaExpression)projectionObj!;
+            sourceType = (Type)sourceTypeObj!;
+            return true;
+        }
+
+        projection = null;
+        sourceType = null;
         return false;
     }
 }

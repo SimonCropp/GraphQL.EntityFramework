@@ -312,5 +312,21 @@
                 name: "nullTaskInnerQueryConnection",
                 resolve: Task<IOrderedQueryable<ParentEntity>?>? (_) => Task.FromResult<IOrderedQueryable<ParentEntity>?>(null))
             .PageSize(10);
+
+        AddQueryField(
+            name: "fieldBuilderProjectionEntities",
+            resolve: _ => _.DbContext.FieldBuilderProjectionEntities);
+
+        AddQueryField(
+            name: "fieldBuilderProjectionParents",
+            resolve: _ => _.DbContext.FieldBuilderProjectionParentEntities);
+
+        AddQueryField(
+            name: "departments",
+            resolve: _ => _.DbContext.Departments);
+
+        AddQueryField(
+            name: "employees",
+            resolve: _ => _.DbContext.Employees);
     }
 }

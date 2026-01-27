@@ -12,11 +12,12 @@ public class TypedGraph
         {
             AddNavigationListField(
                 name: "employees",
-                resolve: _ => _.Source.Employees);
+                projection: _ => _.Employees,
+                resolve: _ => _.Projection);
             AddNavigationConnectionField(
                 name: "employeesConnection",
-                resolve: _ => _.Source.Employees,
-                includeNames: ["Employees"]);
+                projection: _ => _.Employees,
+                resolve: _ => _.Projection);
             AutoMap();
         }
     }

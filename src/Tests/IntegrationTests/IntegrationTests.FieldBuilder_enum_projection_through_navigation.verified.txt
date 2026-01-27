@@ -1,0 +1,26 @@
+{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionParents": [
+      {
+        "name": "Parent",
+        "children": {
+          "edges": []
+        }
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Name,
+         f0.Id
+from     FieldBuilderProjectionParentEntities as f
+         left outer join
+         FieldBuilderProjectionEntities as f0
+         on f.Id = f0.ParentId
+order by f.Name, f.Id, f0.Id
+  }
+}

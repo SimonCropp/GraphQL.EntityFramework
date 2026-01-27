@@ -1,0 +1,22 @@
+﻿{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "Employee",
+        "salary": 50000.00,
+        "salaryWithBonus": 55000.000
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Name,
+         f.Salary
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+  }
+}
