@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="ConfigureAwait.Fody" Version="3.3.2" />
-    <PackageVersion Include="EfLocalDb" Version="23.4.1" />
+    <PackageVersion Include="EfLocalDb" Version="23.4.2" />
     <PackageVersion Include="EfOrderBy" Version="0.1.6" />
     <PackageVersion Include="Fody" Version="6.9.3" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
