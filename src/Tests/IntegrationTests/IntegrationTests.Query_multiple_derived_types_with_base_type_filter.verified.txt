@@ -1,0 +1,23 @@
+﻿{
+  target:
+{
+  "data": {
+    "baseEntities": [
+      {
+        "property": "Derived1"
+      },
+      {
+        "property": "Derived3"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select b.Id,
+       b.Discriminator,
+       b.Property,
+       b.Status
+from   BaseEntities as b
+  }
+}

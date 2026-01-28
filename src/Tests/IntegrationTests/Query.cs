@@ -147,6 +147,14 @@
             resolve: _ => _.DbContext.BaseEntities);
 
         AddQueryField(
+            name: "derivedEntities",
+            resolve: _ => _.DbContext.BaseEntities.OfType<DerivedEntity>());
+
+        AddSingleField(
+            name: "derivedEntity",
+            resolve: _ => _.DbContext.BaseEntities.OfType<DerivedEntity>());
+
+        AddQueryField(
             name: "derivedChildEntities",
             resolve: _ => _.DbContext.DerivedChildEntities);
 

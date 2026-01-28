@@ -16,7 +16,8 @@
     Text:
 select   b.Id,
          b.Discriminator,
-         b.Property
+         b.Property,
+         b.Status
 from     BaseEntities as b
 order by b.Property
   }
