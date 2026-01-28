@@ -12,10 +12,11 @@
 },
   sql: {
     Text:
-select b.Id,
-       b.Property,
-       b.Status
-from   BaseEntities as b
-where  b.Discriminator = N'DerivedEntity'
+select   b.Id,
+         b.Property,
+         b.Status
+from     BaseEntities as b
+where    b.Discriminator = N'DerivedEntity'
+order by b.Property desc
   }
 }

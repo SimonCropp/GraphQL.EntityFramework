@@ -69,7 +69,9 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<NamedIdEntity>();
         modelBuilder.Entity<OwnedParent>();
         modelBuilder.Entity<Child2Entity>();
-        modelBuilder.Entity<DerivedEntity>().HasBaseType<BaseEntity>();
+        modelBuilder.Entity<DerivedEntity>()
+            .HasBaseType<BaseEntity>()
+            .OrderByDescending(_ => _.Property);
         modelBuilder.Entity<DerivedWithNavigationEntity>()
             .HasBaseType<BaseEntity>()
             .HasMany(_ => _.Children)
