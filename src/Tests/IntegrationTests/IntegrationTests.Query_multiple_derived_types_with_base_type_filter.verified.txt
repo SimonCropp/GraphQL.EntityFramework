@@ -4,10 +4,10 @@
   "data": {
     "baseEntities": [
       {
-        "property": "Value1"
+        "property": "Derived1"
       },
       {
-        "property": "Value2"
+        "property": "Derived3"
       }
     ]
   }

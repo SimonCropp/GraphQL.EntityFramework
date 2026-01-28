@@ -8,16 +8,25 @@ record FieldProjectionInfo(
     {
         // Merge filter fields for this entity type
         var mergedScalars = new List<string>(ScalarFields);
-        if (allFilterFields.TryGetValue(entityType, out var filterFields))
+
+        // Check filter fields for the entity type and all its base types
+        // This handles TPH inheritance where filters are defined on base types
+        foreach (var (filterType, filterFields) in allFilterFields)
         {
-            foreach (var field in filterFields)
+            // Include filter fields if:
+            // 1. Exact type match (filterType == entityType), OR
+            // 2. Filter is for a base type (filterType.IsAssignableFrom(entityType))
+            if (filterType.IsAssignableFrom(entityType))
             {
-                // Only merge simple property names (not navigation paths like "Parent.Name")
-                if (!field.Contains('.') &&
-                    !mergedScalars.Contains(field, StringComparer.OrdinalIgnoreCase) &&
-                    !KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase))
+                foreach (var field in filterFields)
                 {
-                    mergedScalars.Add(field);
+                    // Only merge simple property names (not navigation paths like "Parent.Name")
+                    if (!field.Contains('.') &&
+                        !mergedScalars.Contains(field, StringComparer.OrdinalIgnoreCase) &&
+                        !KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase))
+                    {
+                        mergedScalars.Add(field);
+                    }
                 }
             }
         }

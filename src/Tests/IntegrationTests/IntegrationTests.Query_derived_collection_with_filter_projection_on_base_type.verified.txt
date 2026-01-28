@@ -2,12 +2,10 @@
   target:
 {
   "data": {
-    "baseEntities": [
+    "derivedEntities": [
       {
-        "property": "Value1"
-      },
-      {
-        "property": "Value2"
+        "id": "Guid_1",
+        "property": "Derived1"
       }
     ]
   }
@@ -15,10 +13,10 @@
   sql: {
     Text:
 select   b.Id,
-         b.Discriminator,
          b.Property,
          b.Status
 from     BaseEntities as b
-order by b.Property
+where    b.Discriminator = N'DerivedEntity'
+order by b.Property desc
   }
 }

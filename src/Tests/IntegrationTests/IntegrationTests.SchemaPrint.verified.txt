@@ -72,6 +72,8 @@
     orderBy: [OrderBy!],
     ids: [ID!]): BaseConnection!
   baseEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [BaseEntity]!
+  derivedEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Derived!]!
+  derivedEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Derived!
   derivedChildEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   readOnlyEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyEntity]!
   manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
@@ -505,6 +507,7 @@ type BaseEdge {
 interface BaseEntity {
   id: ID!
   property: String
+  status: String
   childrenFromBase: [DerivedChild!]!
   childrenFromInterface(
     "Only return edges after the specified cursor."
@@ -546,6 +549,25 @@ type DerivedChildEdge {
   cursor: String!
   "The item at the end of the edge"
   node: DerivedChild!
+}
+
+type Derived implements BaseEntity {
+  childrenFromInterface(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): DerivedChildConnection!
+  childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
+  id: ID!
+  property: String
+  status: String
 }
 
 type ReadOnlyEntity {
@@ -692,24 +714,6 @@ type Mutation {
   parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
 }
 
-type Derived implements BaseEntity {
-  childrenFromInterface(
-    "Only return edges after the specified cursor."
-    after: String,
-    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
-    first: Int,
-    "Only return edges prior to the specified cursor."
-    before: String,
-    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
-    last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
-    ids: [ID!]): DerivedChildConnection!
-  childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
-  id: ID!
-  property: String
-}
-
 type DerivedWithNavigation implements BaseEntity {
   childrenFromInterface(
     "Only return edges after the specified cursor."
@@ -739,4 +743,5 @@ type DerivedWithNavigation implements BaseEntity {
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   id: ID!
   property: String
+  status: String
 }

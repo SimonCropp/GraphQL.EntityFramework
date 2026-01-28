@@ -26,7 +26,8 @@ select   d.Id,
          d.TypedParentId,
          b.Id,
          b.Discriminator,
-         b.Property
+         b.Property,
+         b.Status
 from     DerivedChildEntities as d
          left outer join
          BaseEntities as b
