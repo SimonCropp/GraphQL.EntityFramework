@@ -695,10 +695,11 @@ public abstract class BaseEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string? Property { get; set; }
+    public string? Status { get; set; } = "Draft";
     public IList<DerivedChildEntity> ChildrenFromBase { get; set; } = [];
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/BaseEntity.cs#L1-L6' title='Snippet source file'>snippet source</a> | <a href='#snippet-BaseEntity.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/BaseEntity.cs#L1-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-BaseEntity.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 <!-- snippet: DerivedEntity.cs -->
