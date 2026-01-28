@@ -52,8 +52,10 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<FilterParentEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<FilterChildEntity>().OrderBy(_ => _.Property);
         modelBuilder.Entity<SimpleTypeFilterEntity>().OrderBy(_ => _.Name);
-        modelBuilder.Entity<ParentEntity>().OrderBy(_ => _.Property);
-        modelBuilder.Entity<ChildEntity>().OrderBy(_ => _.Property);
+        modelBuilder.Entity<ParentEntity>()
+            .OrderBy(_ => _.Property);
+        modelBuilder.Entity<ChildEntity>()
+            .OrderBy(_ => _.Property);
         modelBuilder.Entity<WithMisNamedQueryParentEntity>();
         modelBuilder.Entity<WithMisNamedQueryChildEntity>();
         modelBuilder.Entity<IncludeNonQueryableB>();
