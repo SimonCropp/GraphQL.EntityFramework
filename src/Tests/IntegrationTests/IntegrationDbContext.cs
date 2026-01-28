@@ -69,6 +69,8 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<NamedIdEntity>();
         modelBuilder.Entity<OwnedParent>();
         modelBuilder.Entity<Child2Entity>();
+        modelBuilder.Entity<BaseEntity>()
+            .OrderBy(_ => _.Property);
         modelBuilder.Entity<DerivedEntity>()
             .HasBaseType<BaseEntity>()
             .OrderByDescending(_ => _.Property);

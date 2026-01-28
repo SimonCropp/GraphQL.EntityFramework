@@ -4,20 +4,21 @@
   "data": {
     "baseEntities": [
       {
-        "property": "Derived3"
+        "property": "Derived1"
       },
       {
-        "property": "Derived1"
+        "property": "Derived3"
       }
     ]
   }
 },
   sql: {
     Text:
-select b.Id,
-       b.Discriminator,
-       b.Property,
-       b.Status
-from   BaseEntities as b
+select   b.Id,
+         b.Discriminator,
+         b.Property,
+         b.Status
+from     BaseEntities as b
+order by b.Property
   }
 }
