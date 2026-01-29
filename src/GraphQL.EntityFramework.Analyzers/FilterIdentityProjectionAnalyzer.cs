@@ -25,51 +25,63 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         // 1. filters.Add<T>(filter: ...) - validate PK/FK only (GQLEF005)
         // 2. filters.For<T>().Add(projection: _ => _, filter: ...) - suggest or error (GQLEF004/GQLEF006)
 
-        if (IsSimplifiedFilterAdd(invocation, context.SemanticModel, out var filterLambda1, out _))
+        if (IsSimplifiedFilterAdd(invocation, context.SemanticModel, out var filterLambda1))
         {
             // Pattern 1: filters.Add<T>(filter: ...)
             // Validate that filter only accesses PK/FK properties
-            if (filterLambda1 != null)
+            if (filterLambda1 == null)
             {
-                var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda1, context.SemanticModel);
-                if (nonKeyProperty != null)
-                {
-                    var diagnostic = Diagnostic.Create(
-                        DiagnosticDescriptors.GQLEF005,
-                        invocation.GetLocation(),
-                        nonKeyProperty);
-                    context.ReportDiagnostic(diagnostic);
-                }
+                return;
             }
+
+            var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda1, context.SemanticModel);
+            if (nonKeyProperty == null)
+            {
+                return;
+            }
+
+            var diagnostic = Diagnostic.Create(
+                DiagnosticDescriptors.GQLEF005,
+                invocation.GetLocation(),
+                nonKeyProperty);
+            context.ReportDiagnostic(diagnostic);
+            return;
         }
-        else if (IsFilterBuilderAdd(invocation, context.SemanticModel, out var projectionLambda, out var filterLambda2, out var entityType2))
+
+        if (IsFilterBuilderAdd(invocation, context.SemanticModel, out var projectionLambda, out var filterLambda2, out var entityType2))
         {
             // Pattern 2: filters.For<T>().Add(...)
-            if (IsIdentityProjection(projectionLambda))
+            if (!IsIdentityProjection(projectionLambda))
             {
-                // Identity projection detected
-                if (filterLambda2 != null)
-                {
-                    var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda2, context.SemanticModel);
-                    if (nonKeyProperty != null)
-                    {
-                        // Error: Identity projection with non-key access
-                        var diagnostic = Diagnostic.Create(
-                            DiagnosticDescriptors.GQLEF006,
-                            invocation.GetLocation(),
-                            nonKeyProperty);
-                        context.ReportDiagnostic(diagnostic);
-                    }
-                    else if (!string.IsNullOrEmpty(entityType2))
-                    {
-                        // Info: Suggest simplified API
-                        var diagnostic = Diagnostic.Create(
-                            DiagnosticDescriptors.GQLEF004,
-                            invocation.GetLocation(),
-                            entityType2);
-                        context.ReportDiagnostic(diagnostic);
-                    }
-                }
+                return;
+            }
+
+            // Identity projection detected
+            if (filterLambda2 == null)
+            {
+                return;
+            }
+
+            var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda2, context.SemanticModel);
+            if (nonKeyProperty != null)
+            {
+                // Error: Identity projection with non-key access
+                var diagnostic = Diagnostic.Create(
+                    DiagnosticDescriptors.GQLEF006,
+                    invocation.GetLocation(),
+                    nonKeyProperty);
+                context.ReportDiagnostic(diagnostic);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(entityType2))
+            {
+                // Info: Suggest simplified API
+                var diagnostic = Diagnostic.Create(
+                    DiagnosticDescriptors.GQLEF004,
+                    invocation.GetLocation(),
+                    entityType2);
+                context.ReportDiagnostic(diagnostic);
             }
         }
     }
@@ -77,11 +89,9 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
     static bool IsSimplifiedFilterAdd(
         InvocationExpressionSyntax invocation,
         SemanticModel semanticModel,
-        out LambdaExpressionSyntax? filterLambda,
-        out string? entityType)
+        out LambdaExpressionSyntax? filterLambda)
     {
         filterLambda = null;
-        entityType = null;
 
         // Check method name is Add
         if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess)
@@ -121,7 +131,6 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         }
 
         // Extract the entity type name
-        entityType = methodSymbol.TypeArguments[0].Name;
 
         // Extract filter lambda
         if (invocation.ArgumentList.Arguments.Count > 0)
@@ -192,11 +201,13 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         // Extract arguments
         foreach (var arg in invocation.ArgumentList.Arguments)
         {
-            if (arg.NameColon?.Name.Identifier.Text == "projection" && arg.Expression is LambdaExpressionSyntax projLambda)
+            if (arg.NameColon?.Name.Identifier.Text == "projection" &&
+                arg.Expression is LambdaExpressionSyntax projLambda)
             {
                 projectionLambda = projLambda;
             }
-            else if (arg.NameColon?.Name.Identifier.Text == "filter" && arg.Expression is LambdaExpressionSyntax filtLambda)
+            else if (arg.NameColon?.Name.Identifier.Text == "filter" &&
+                     arg.Expression is LambdaExpressionSyntax filtLambda)
             {
                 filterLambda = filtLambda;
             }
@@ -234,14 +245,9 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
 
     static bool IsIdentityProjection(LambdaExpressionSyntax? lambda)
     {
-        if (lambda == null)
-        {
-            return false;
-        }
-
         // Check if it's an identity projection (x => x or _ => _)
         // Lambda body should be a simple parameter reference that matches the lambda parameter
-        if (lambda.Body is not IdentifierNameSyntax identifier)
+        if (lambda?.Body is not IdentifierNameSyntax identifier)
         {
             return false;
         }
