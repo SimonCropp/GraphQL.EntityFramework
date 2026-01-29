@@ -23,20 +23,15 @@ public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        // Find the invocation expression
-        var invocation = root.FindToken(diagnosticSpan.Start)
-            .Parent?
-            .AncestorsAndSelf()
-            .OfType<InvocationExpressionSyntax>()
-            .FirstOrDefault();
+        // Find the invocation expression - get the node directly from the span
+        var node = root.FindNode(diagnosticSpan);
+        var invocation = node as InvocationExpressionSyntax ??
+                        node.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
 
         if (invocation == null)
         {
             return;
         }
-
-        System.Console.WriteLine($"Found invocation: {invocation.ToString().Substring(0, Math.Min(100, invocation.ToString().Length))}");
-        System.Console.WriteLine($"Invocation has {invocation.ArgumentList.Arguments.Count} arguments");
 
         context.RegisterCodeFix(
             CodeAction.Create(
