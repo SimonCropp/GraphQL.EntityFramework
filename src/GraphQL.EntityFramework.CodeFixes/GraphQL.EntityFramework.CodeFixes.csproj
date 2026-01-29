@@ -3,6 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>preview</LangVersion>
     <IsRoslynComponent>true</IsRoslynComponent>
+    <IsPackable>false</IsPackable>
     <DevelopmentDependency>true</DevelopmentDependency>
     <IncludeBuildOutput Condition="$(Configuration)=='Release'">false</IncludeBuildOutput>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
