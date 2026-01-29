@@ -34,8 +34,14 @@
       <OutputItemType>Analyzer</OutputItemType>
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
+    <ProjectReference Include="..\GraphQL.EntityFramework.CodeFixes\GraphQL.EntityFramework.CodeFixes.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="$(Configuration)=='Release'">
     <None Include="..\GraphQL.EntityFramework.Analyzers\bin\$(Configuration)\netstandard2.0\GraphQL.EntityFramework.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\GraphQL.EntityFramework.CodeFixes\bin\$(Configuration)\netstandard2.0\GraphQL.EntityFramework.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>

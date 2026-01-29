@@ -11,8 +11,10 @@
   <Project Path="Benchmarks/Benchmarks.csproj" />
   <Project Path="GraphQL.EntityFramework.Analyzers.Tests/GraphQL.EntityFramework.Analyzers.Tests.csproj" />
   <Project Path="GraphQL.EntityFramework.Analyzers/GraphQL.EntityFramework.Analyzers.csproj" />
+  <Project Path="GraphQL.EntityFramework.CodeFixes/GraphQL.EntityFramework.CodeFixes.csproj" />
   <Project Path="GraphQL.EntityFramework/GraphQL.EntityFramework.csproj" >
     <BuildDependency Project="GraphQL.EntityFramework.Analyzers/GraphQL.EntityFramework.Analyzers.csproj" />
+    <BuildDependency Project="GraphQL.EntityFramework.CodeFixes/GraphQL.EntityFramework.CodeFixes.csproj" />
   </Project>
   <Project Path="SampleWeb.Tests/SampleWeb.Tests.csproj" />
   <Project Path="SampleWeb/SampleWeb.csproj" />

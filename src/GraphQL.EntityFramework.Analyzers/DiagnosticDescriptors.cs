@@ -1,4 +1,4 @@
-static class DiagnosticDescriptors
+public static class DiagnosticDescriptors
 {
     public static readonly DiagnosticDescriptor GQLEF002 = new(
         id: "GQLEF002",

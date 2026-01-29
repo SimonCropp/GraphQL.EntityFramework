@@ -1,5 +1,3 @@
-using GraphQL.EntityFramework;
-
 public class FilterIdentityProjectionAnalyzerTests
 {
     // GQLEF004 Tests - Suggest simplified API
