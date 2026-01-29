@@ -1,0 +1,23 @@
+﻿using GraphQL.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using System;
+
+public class TestEntity
+{
+    public Guid Id { get; set; }
+    public Guid? ParentId { get; set; }
+}
+
+public class TestDbContext : DbContext { }
+
+public class TestClass
+{
+    public void ConfigureFilters(Filters<TestDbContext> filters)
+    {
+        filters.For<TestEntity>().Add(
+            filter: (_, _, _, e) =>
+            {
+                return e.ParentId != null;
+            });
+    }
+}

@@ -26,7 +26,9 @@ public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
         // Find the invocation expression - get the node directly from the span
         var node = root.FindNode(diagnosticSpan);
         var invocation = node as InvocationExpressionSyntax ??
-                        node.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+                        node.AncestorsAndSelf()
+                            .OfType<InvocationExpressionSyntax>()
+                            .FirstOrDefault();
 
         if (invocation == null)
         {

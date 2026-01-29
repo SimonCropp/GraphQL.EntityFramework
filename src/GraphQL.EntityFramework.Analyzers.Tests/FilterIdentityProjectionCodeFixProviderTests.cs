@@ -26,30 +26,8 @@ public class FilterIdentityProjectionCodeFixProviderTests
             }
             """;
 
-        var expected = """
-            using GraphQL.EntityFramework;
-            using Microsoft.EntityFrameworkCore;
-            using System;
-
-            public class TestEntity
-            {
-                public Guid Id { get; set; }
-            }
-
-            public class TestDbContext : DbContext { }
-
-            public class TestClass
-            {
-                public void ConfigureFilters(Filters<TestDbContext> filters, Guid targetId)
-                {
-                    filters.For<TestEntity>().Add(
-                        filter: (_, _, _, e) => e.Id == targetId);
-                }
-            }
-            """;
-
-        var actual = await ApplyCodeFixAsync(source);
-        Assert.Equal(expected, actual);
+        var result = await ApplyCodeFixAsync(source);
+        await Verify(result);
     }
 
     [Fact]
@@ -82,34 +60,8 @@ public class FilterIdentityProjectionCodeFixProviderTests
             }
             """;
 
-        var expected = """
-            using GraphQL.EntityFramework;
-            using Microsoft.EntityFrameworkCore;
-            using System;
-
-            public class TestEntity
-            {
-                public Guid Id { get; set; }
-                public Guid? ParentId { get; set; }
-            }
-
-            public class TestDbContext : DbContext { }
-
-            public class TestClass
-            {
-                public void ConfigureFilters(Filters<TestDbContext> filters)
-                {
-                    filters.For<TestEntity>().Add(
-                        filter: (_, _, _, e) =>
-                        {
-                            return e.ParentId != null;
-                        });
-                }
-            }
-            """;
-
-        var actual = await ApplyCodeFixAsync(source);
-        Assert.Equal(expected, actual);
+        var result = await ApplyCodeFixAsync(source);
+        await Verify(result);
     }
 
     [Fact]
@@ -139,31 +91,8 @@ public class FilterIdentityProjectionCodeFixProviderTests
             }
             """;
 
-        var expected = """
-            using GraphQL.EntityFramework;
-            using Microsoft.EntityFrameworkCore;
-            using System;
-
-            public class TestEntity
-            {
-                public Guid Id { get; set; }
-                public int? CategoryId { get; set; }
-            }
-
-            public class TestDbContext : DbContext { }
-
-            public class TestClass
-            {
-                public void ConfigureFilters(Filters<TestDbContext> filters, int categoryId)
-                {
-                    filters.For<TestEntity>().Add(
-                        filter: (_, _, _, e) => e.CategoryId == categoryId);
-                }
-            }
-            """;
-
-        var actual = await ApplyCodeFixAsync(source);
-        Assert.Equal(expected, actual);
+        var result = await ApplyCodeFixAsync(source);
+        await Verify(result);
     }
 
     static async Task<string> ApplyCodeFixAsync(string source)

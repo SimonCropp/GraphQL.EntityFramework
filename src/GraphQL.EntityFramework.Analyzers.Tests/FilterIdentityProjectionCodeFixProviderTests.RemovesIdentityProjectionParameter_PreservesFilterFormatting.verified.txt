@@ -1,0 +1,20 @@
+﻿using GraphQL.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using System;
+
+public class TestEntity
+{
+    public Guid Id { get; set; }
+    public int? CategoryId { get; set; }
+}
+
+public class TestDbContext : DbContext { }
+
+public class TestClass
+{
+    public void ConfigureFilters(Filters<TestDbContext> filters, int categoryId)
+    {
+        filters.For<TestEntity>().Add(
+            filter: (_, _, _, e) => e.CategoryId == categoryId);
+    }
+}
