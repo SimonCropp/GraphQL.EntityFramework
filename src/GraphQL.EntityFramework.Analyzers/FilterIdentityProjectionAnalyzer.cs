@@ -25,7 +25,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         // 1. filters.Add<T>(filter: ...) - validate PK/FK only (GQLEF005)
         // 2. filters.For<T>().Add(projection: _ => _, filter: ...) - suggest or error (GQLEF004/GQLEF006)
 
-        if (IsSimplifiedFilterAdd(invocation, context.SemanticModel, out var filterLambda1, out var entityType1))
+        if (IsSimplifiedFilterAdd(invocation, context.SemanticModel, out var filterLambda1, out _))
         {
             // Pattern 1: filters.Add<T>(filter: ...)
             // Validate that filter only accesses PK/FK properties
