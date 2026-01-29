@@ -175,7 +175,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         // Try positional arguments if named not found
         if (projectionLambda == null && projectionParameter != null)
         {
-            var parameterIndex = Array.IndexOf(methodSymbol.Parameters.ToArray(), projectionParameter);
+            var parameterIndex = GetParameterIndex(methodSymbol.Parameters, projectionParameter);
             if (parameterIndex >= 0 && parameterIndex < invocation.ArgumentList.Arguments.Count)
             {
                 var arg = invocation.ArgumentList.Arguments[parameterIndex];
@@ -188,7 +188,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
 
         if (filterLambda == null && filterParameter != null)
         {
-            var parameterIndex = Array.IndexOf(methodSymbol.Parameters.ToArray(), filterParameter);
+            var parameterIndex = GetParameterIndex(methodSymbol.Parameters, filterParameter);
             if (parameterIndex >= 0 && parameterIndex < invocation.ArgumentList.Arguments.Count)
             {
                 var arg = invocation.ArgumentList.Arguments[parameterIndex];
@@ -273,7 +273,9 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
             }
 
             // Check if this property is NOT a key property
-            if (!IsPrimaryKeyProperty(propertySymbol) && !IsForeignKeyProperty(propertySymbol))
+            // Check primary key first (cheaper), then foreign key
+            var isPrimaryKey = IsPrimaryKeyProperty(propertySymbol);
+            if (!isPrimaryKey && !IsForeignKeyProperty(propertySymbol))
             {
                 return propertySymbol.Name;
             }
@@ -369,12 +371,6 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        // If we already determined it's a primary key, it's not a foreign key
-        if (IsPrimaryKeyProperty(propertySymbol))
-        {
-            return false;
-        }
-
         // Check if the type is a scalar type suitable for FK (int, long, Guid, etc.)
         // Unwrap nullable
         var underlyingType = type;
@@ -392,7 +388,26 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
                 return true;
         }
 
-        var typeName = underlyingType.ToString();
-        return typeName == "System.Guid";
+        // Check for System.Guid using symbol comparison instead of string
+        if (underlyingType is INamedTypeSymbol namedTypeSymbol)
+        {
+            return namedTypeSymbol.SpecialType == SpecialType.None &&
+                   namedTypeSymbol.Name == "Guid" &&
+                   namedTypeSymbol.ContainingNamespace?.ToDisplayString() == "System";
+        }
+
+        return false;
+    }
+
+    static int GetParameterIndex(ImmutableArray<IParameterSymbol> parameters, IParameterSymbol parameter)
+    {
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            if (SymbolEqualityComparer.Default.Equals(parameters[i], parameter))
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 }

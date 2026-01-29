@@ -4,7 +4,7 @@ namespace GraphQL.EntityFramework.CodeFixes;
 [Shared]
 public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
 {
-    const string title = "Remove identity projection parameter";
+    const string Title = "Remove identity projection parameter";
 
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
         [DiagnosticDescriptors.GQLEF004.Id];
@@ -20,15 +20,12 @@ public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
             return;
         }
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         // Find the invocation expression - get the node directly from the span
         var node = root.FindNode(diagnosticSpan);
-        var invocation = node as InvocationExpressionSyntax ??
-                        node.AncestorsAndSelf()
-                            .OfType<InvocationExpressionSyntax>()
-                            .FirstOrDefault();
+        var invocation = node as InvocationExpressionSyntax ?? node.FirstAncestorOrSelf<InvocationExpressionSyntax>();
 
         if (invocation == null)
         {
@@ -37,18 +34,18 @@ public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create(
-                title: title,
+                title: Title,
                 createChangedDocument: c => RemoveIdentityProjectionAsync(context.Document, invocation, c),
-                equivalenceKey: title),
+                equivalenceKey: Title),
             diagnostic);
     }
 
     static async Task<Document> RemoveIdentityProjectionAsync(
         Document document,
         InvocationExpressionSyntax invocation,
-        Cancel cancel)
+        CancellationToken cancellationToken)
     {
-        var root = await document.GetSyntaxRootAsync(cancel);
+        var root = await document.GetSyntaxRootAsync(cancellationToken);
         if (root == null)
         {
             return document;
@@ -56,9 +53,10 @@ public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
 
         // Find the projection argument index
         var projectionArgumentIndex = -1;
-        for (var i = 0; i < invocation.ArgumentList.Arguments.Count; i++)
+        var arguments = invocation.ArgumentList.Arguments;
+        for (var i = 0; i < arguments.Count; i++)
         {
-            if (invocation.ArgumentList.Arguments[i].NameColon?.Name.Identifier.Text == "projection")
+            if (arguments[i].NameColon?.Name.Identifier.Text == "projection")
             {
                 projectionArgumentIndex = i;
                 break;
@@ -70,17 +68,13 @@ public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
             return document;
         }
 
-        // Use an annotation to track the invocation
-        var annotation = new SyntaxAnnotation();
-        var trackedRoot = root.ReplaceNode(invocation, invocation.WithAdditionalAnnotations(annotation));
-        var trackedInvocation = trackedRoot.GetAnnotatedNodes(annotation).OfType<InvocationExpressionSyntax>().First();
-
         // Create new argument list without the projection argument
-        var newArguments = trackedInvocation.ArgumentList.Arguments.RemoveAt(projectionArgumentIndex);
-        var newArgumentList = trackedInvocation.ArgumentList.WithArguments(newArguments);
+        var newArguments = arguments.RemoveAt(projectionArgumentIndex);
+        var newArgumentList = invocation.ArgumentList.WithArguments(newArguments);
+        var newInvocation = invocation.WithArgumentList(newArgumentList);
 
-        var newInvocation = trackedInvocation.WithArgumentList(newArgumentList);
-        var newRoot = trackedRoot.ReplaceNode(trackedInvocation, newInvocation);
+        // Replace the node in one operation
+        var newRoot = root.ReplaceNode(invocation, newInvocation);
 
         return document.WithSyntaxRoot(newRoot);
     }
