@@ -104,8 +104,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         // Check if it's the simplified API: filters.Add<TEntity>(filter: ...)
         // The containing type should be Filters<TDbContext>
         var containingType = methodSymbol.ContainingType;
-        if (containingType == null ||
-            containingType.Name != "Filters" ||
+        if (containingType is not { Name: "Filters" } ||
             containingType.ContainingNamespace?.ToString() != "GraphQL.EntityFramework")
         {
             return false;
@@ -169,8 +168,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         // Check if it's the FilterBuilder API: filters.For<T>().Add(projection: ..., filter: ...)
         // The containing type should be FilterBuilder<TDbContext, TEntity>
         var containingType = methodSymbol.ContainingType;
-        if (containingType == null ||
-            containingType.Name != "FilterBuilder" ||
+        if (containingType is not { Name: "FilterBuilder" } ||
             containingType.ContainingNamespace?.ToString() != "GraphQL.EntityFramework")
         {
             return false;
@@ -337,8 +335,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
 
         // Check for nested access (e.g., e.Parent.Id)
         // We'll detect the first level property access
-        if (memberAccess.Expression is MemberAccessExpressionSyntax nestedAccess &&
-            nestedAccess.Expression is IdentifierNameSyntax nestedIdentifier &&
+        if (memberAccess.Expression is MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax nestedIdentifier } nestedAccess &&
             nestedIdentifier.Identifier.Text == filterParameterName)
         {
             propertyAccess = nestedAccess;
