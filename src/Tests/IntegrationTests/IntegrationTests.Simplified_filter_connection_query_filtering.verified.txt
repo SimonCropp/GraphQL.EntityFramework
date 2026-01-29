@@ -1,0 +1,40 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntitiesConnectionFiltered": {
+      "edges": [
+        {
+          "node": {
+            "property": "Entity1"
+          }
+        },
+        {
+          "node": {
+            "property": "Entity3"
+          }
+        }
+      ]
+    }
+  }
+},
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   FilterParentEntities as f
+    },
+    {
+      Text:
+select   f.Id,
+         f.Property
+from     FilterParentEntities as f
+order by f.Property
+offset @p rows fetch next @p1 rows only,
+      Parameters: {
+        @p: 0,
+        @p1: 10
+      }
+    }
+  ]
+}

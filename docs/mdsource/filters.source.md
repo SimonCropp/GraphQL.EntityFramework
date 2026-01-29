@@ -145,3 +145,93 @@ This is useful when:
 * User permissions are stored in the database
 * Filter logic requires async operations
 * Complex checks involve multiple data sources
+
+
+## Simplified Filter API
+
+For filters that only need to access **primary key** or **foreign key** properties, a simplified API is available that eliminates the need to specify a projection:
+
+snippet: simplified-filter-api
+
+### When to Use the Simplified API
+
+Use `filters.Add<TEntity>(filter: ...)` when the filter **only** accesses:
+
+* **Primary keys**: `Id`, `EntityId`, `CompanyId` (matching the entity type name)
+* **Foreign keys**: Properties ending with `Id` like `ParentId`, `CategoryId`, `LocationId`
+
+The simplified API uses identity projection (`_ => _`) internally, which in EF projections only guarantees that key properties are loaded.
+
+### Key Property Detection Rules
+
+A property is considered a **primary key** if it is:
+
+* Named `Id`
+* Named `{TypeName}Id` (e.g., `CompanyId` for `Company` entity)
+* Named `{TypeName}Id` where TypeName has suffix removed: `Entity`, `Model`, `Dto`
+  * Example: `CompanyId` in `CompanyEntity` class
+
+A property is considered a **foreign key** if:
+
+* Name ends with `Id` (but is not solely `Id`)
+* Not identified as a primary key
+* Type is `int`, `long`, `short`, or `Guid` (nullable or non-nullable)
+
+### Restrictions
+
+**IMPORTANT**: Do not access scalar properties (like `Name`, `City`, `Capacity`) or navigation properties (like `Parent`, `Category`) with the simplified API. These properties are not loaded by identity projection and will cause runtime errors.
+
+For non-key properties, use the full API with explicit projection:
+
+```csharp
+// INVALID - Will cause runtime error
+filters.Add<Accommodation>(
+    filter: (_, _, _, a) => a.City == "London");  // City is NOT a key
+
+// VALID - Explicit projection for scalar properties
+filters.For<Accommodation>().Add(
+    projection: a => a.City,
+    filter: (_, _, _, city) => city == "London");
+```
+
+### Comparison with Full API
+
+The simplified API is syntactic sugar for the identity projection pattern:
+
+```csharp
+// Simplified API
+filters.Add<Accommodation>(
+    filter: (_, _, _, a) => a.Id != Guid.Empty);
+
+// Equivalent full API
+filters.For<Accommodation>().Add(
+    projection: _ => _,  // Identity projection
+    filter: (_, _, _, a) => a.Id != Guid.Empty);
+```
+
+### Analyzer Support
+
+Three analyzer diagnostics help ensure correct usage:
+
+* **GQLEF004** (Info): Suggests using the simplified API when identity projection only accesses keys
+* **GQLEF005** (Error): Prevents accessing non-key properties with simplified API
+* **GQLEF006** (Error): Prevents accessing non-key properties with identity projection
+
+### Migration Guide
+
+Existing code using identity projection with filters that only access keys can be migrated to the simplified API:
+
+**Before:**
+```csharp
+filters.For<Product>().Add(
+    projection: _ => _,
+    filter: (_, _, _, p) => p.CategoryId == allowedCategoryId);
+```
+
+**After:**
+```csharp
+filters.Add<Product>(
+    filter: (_, _, _, p) => p.CategoryId == allowedCategoryId);
+```
+
+The simplified API makes intent clearer and reduces boilerplate while maintaining the same runtime behavior

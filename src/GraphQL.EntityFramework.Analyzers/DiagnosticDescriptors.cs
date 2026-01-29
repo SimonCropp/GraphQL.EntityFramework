@@ -19,4 +19,34 @@ static class DiagnosticDescriptors
         isEnabledByDefault: true,
         description: "Using '_ => _' as the projection parameter in projection-based Resolve extension methods is not allowed because it doesn't load any additional navigation properties. If you only need to access primary key or foreign key properties, use the regular Resolve() method instead. If you need to access navigation properties, specify them in the projection (e.g., 'x => x.Parent').",
         helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#projection-based-resolve");
+
+    public static readonly DiagnosticDescriptor GQLEF004 = new(
+        id: "GQLEF004",
+        title: "Use simplified filter API for identity projections",
+        messageFormat: "Identity projection '_ => _' detected. Consider using simplified API: filters.Add<{0}>(filter: ...).",
+        category: "Usage",
+        defaultSeverity: DiagnosticSeverity.Info,
+        isEnabledByDefault: true,
+        description: "When using identity projection '_ => _' with a filter that only accesses primary key or foreign key properties, use the simplified API filters.Add<TEntity>(filter: ...) instead.",
+        helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#simplified-filter-api");
+
+    public static readonly DiagnosticDescriptor GQLEF005 = new(
+        id: "GQLEF005",
+        title: "Filter with simplified API must only access primary key or foreign key properties",
+        messageFormat: "Filter accesses '{0}' which is not a primary key or foreign key. The simplified filter API uses identity projection, which only loads keys.",
+        category: "Usage",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        description: "The simplified filter API filters.Add<TEntity>(filter: ...) uses identity projection internally, which only guarantees that primary keys and foreign keys are loaded. Use filters.For<TEntity>().Add(projection: ..., filter: ...) to project required properties.",
+        helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#simplified-filter-api");
+
+    public static readonly DiagnosticDescriptor GQLEF006 = new(
+        id: "GQLEF006",
+        title: "Identity projection with filter that accesses non-key properties is invalid",
+        messageFormat: "Filter accesses '{0}' which is not a primary key or foreign key, but projection is '_ => _'. Project the required properties instead.",
+        category: "Usage",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        description: "When using identity projection '_ => _', only primary keys and foreign keys are guaranteed to be loaded. Either project specific properties needed or use the simplified API if you only need key properties.",
+        helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#identity-projection-filters");
 }
