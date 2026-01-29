@@ -304,4 +304,67 @@ public class GlobalFilterSnippets
 
         #endregion
     }
+
+    #region simplified-filter-api
+
+    public class Accommodation
+    {
+        public Guid Id { get; set; }
+        public Guid? LocationId { get; set; }
+        public string? City { get; set; }
+        public int Capacity { get; set; }
+    }
+
+    #endregion
+
+    public static void AddSimplifiedFilterApi(ServiceCollection services)
+    {
+        #region simplified-filter-api
+
+        var filters = new Filters<MyDbContext>();
+
+        // VALID: Simplified API with primary key access
+        filters.Add<Accommodation>(
+            filter: (_, _, _, a) => a.Id != Guid.Empty);
+
+        // VALID: Simplified API with foreign key access
+        var allowedLocationId = Guid.NewGuid();
+        filters.Add<Accommodation>(
+            filter: (_, _, _, a) => a.LocationId == allowedLocationId);
+
+        // VALID: Simplified API with nullable foreign key check
+        filters.Add<Accommodation>(
+            filter: (_, _, _, a) => a.LocationId != null);
+
+        // INVALID: Simplified API accessing scalar property (will cause runtime error!)
+        // filters.Add<Accommodation>(
+        //     filter: (_, _, _, a) => a.City == "London");  // ERROR: City is not a key
+
+        // INVALID: Simplified API accessing scalar property (will cause runtime error!)
+        // filters.Add<Accommodation>(
+        //     filter: (_, _, _, a) => a.Capacity > 10);  // ERROR: Capacity is not a key
+
+        // For non-key properties, use the full API with projection:
+        filters.For<Accommodation>().Add(
+            projection: a => a.City,
+            filter: (_, _, _, city) => city == "London");
+
+        filters.For<Accommodation>().Add(
+            projection: a => new { a.City, a.Capacity },
+            filter: (_, _, _, x) => x.City == "London" && x.Capacity > 10);
+
+        // COMPARISON: These are equivalent when filter only accesses keys
+        filters.Add<Accommodation>(
+            filter: (_, _, _, a) => a.Id != Guid.Empty);
+        // Equivalent to:
+        filters.For<Accommodation>().Add(
+            projection: _ => _,  // Identity projection
+            filter: (_, _, _, a) => a.Id != Guid.Empty);
+
+        EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+            services,
+            resolveFilters: _ => filters);
+
+        #endregion
+    }
 }
