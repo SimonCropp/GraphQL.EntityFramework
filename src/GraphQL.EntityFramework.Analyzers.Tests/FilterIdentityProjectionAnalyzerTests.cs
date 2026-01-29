@@ -34,7 +34,6 @@ public class FilterIdentityProjectionAnalyzerTests
         var diagnostics = await GetDiagnosticsAsync(source);
         Assert.Single(diagnostics);
         Assert.Equal("GQLEF004", diagnostics[0].Id);
-        Assert.Contains("TestEntity", diagnostics[0].GetMessage());
     }
 
     [Fact]
@@ -155,7 +154,7 @@ public class FilterIdentityProjectionAnalyzerTests
             {
                 public void ConfigureFilters(Filters<TestDbContext> filters)
                 {
-                    filters.Add<TestEntity>(
+                    filters.For<TestEntity>().Add(
                         filter: (_, _, _, e) => e.Name == "Test");
                 }
             }
@@ -189,7 +188,7 @@ public class FilterIdentityProjectionAnalyzerTests
             {
                 public void ConfigureFilters(Filters<TestDbContext> filters)
                 {
-                    filters.Add<TestEntity>(
+                    filters.For<TestEntity>().Add(
                         filter: (_, _, _, e) => e.Parent != null);
                 }
             }
@@ -221,7 +220,7 @@ public class FilterIdentityProjectionAnalyzerTests
             {
                 public void ConfigureFilters(Filters<TestDbContext> filters, Guid targetId)
                 {
-                    filters.Add<TestEntity>(
+                    filters.For<TestEntity>().Add(
                         filter: (_, _, _, e) => e.Id == targetId);
                 }
             }
@@ -251,7 +250,7 @@ public class FilterIdentityProjectionAnalyzerTests
             {
                 public void ConfigureFilters(Filters<TestDbContext> filters, Guid parentId)
                 {
-                    filters.Add<TestEntity>(
+                    filters.For<TestEntity>().Add(
                         filter: (_, _, _, e) => e.ParentId == parentId);
                 }
             }
@@ -281,7 +280,7 @@ public class FilterIdentityProjectionAnalyzerTests
             {
                 public void ConfigureFilters(Filters<TestDbContext> filters)
                 {
-                    filters.Add<TestEntity>(
+                    filters.For<TestEntity>().Add(
                         filter: (_, _, _, e) => e.CategoryId != null);
                 }
             }
@@ -381,7 +380,7 @@ public class FilterIdentityProjectionAnalyzerTests
             {
                 public void ConfigureFilters(Filters<TestDbContext> filters)
                 {
-                    filters.Add<TestEntity>(
+                    filters.For<TestEntity>().Add(
                         filter: (_, _, _, _) => true);
                 }
             }
@@ -411,7 +410,7 @@ public class FilterIdentityProjectionAnalyzerTests
             {
                 public void ConfigureFilters(Filters<TestDbContext> filters, Guid companyId)
                 {
-                    filters.Add<CompanyEntity>(
+                    filters.For<CompanyEntity>().Add(
                         filter: (_, _, _, e) => e.CompanyId == companyId);
                 }
             }
@@ -443,7 +442,7 @@ public class FilterIdentityProjectionAnalyzerTests
 
                 public void ConfigureFilters(Filters<TestDbContext> filters)
                 {
-                    filters.Add<TestEntity>(
+                    filters.For<TestEntity>().Add(
                         filter: (_, _, _, e) => IsValidId(e.ParentId));
                 }
             }
@@ -510,7 +509,7 @@ public class FilterIdentityProjectionAnalyzerTests
             {
                 public void ConfigureFilters(Filters<TestDbContext> filters, Guid parentId)
                 {
-                    filters.Add<TestEntity>(
+                    filters.For<TestEntity>().Add(
                         filter: async (_, _, _, e) =>
                         {
                             await Task.Delay(1);

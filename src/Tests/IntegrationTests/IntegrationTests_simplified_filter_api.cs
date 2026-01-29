@@ -19,7 +19,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Simplified API - filter by primary key
-        filters.Add<ChildEntity>(
+        filters.For<ChildEntity>().Add(
             filter: (_, _, _, e) => e.Id == entity1.Id || e.Id == entity3.Id);
 
         await using var database = await sqlInstance.Build();
@@ -48,7 +48,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Simplified API - async filter by foreign key
-        filters.Add<ChildEntity>(
+        filters.For<ChildEntity>().Add(
             filter: async (_, _, _, e) =>
             {
                 await Task.Delay(1); // Simulate async validation
@@ -82,7 +82,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Simplified API - filter with OR logic on foreign keys
-        filters.Add<ChildEntity>(
+        filters.For<ChildEntity>().Add(
             filter: (_, _, _, e) => e.ParentId == parent1.Id || e.ParentId == parent3.Id);
 
         await using var database = await sqlInstance.Build();
@@ -110,7 +110,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Simplified API - filter with nullable FK check
-        filters.Add<ChildEntity>(
+        filters.For<ChildEntity>().Add(
             filter: (_, _, _, e) => e.ParentId != null);
 
         await using var database = await sqlInstance.Build();
@@ -136,7 +136,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Simplified API filter
-        filters.Add<FilterParentEntity>(
+        filters.For<FilterParentEntity>().Add(
             filter: (_, _, _, e) => e.Id != entity2.Id);
 
         // Traditional API filter with projection
@@ -167,7 +167,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Simplified API on list query
-        filters.Add<FilterParentEntity>(
+        filters.For<FilterParentEntity>().Add(
             filter: (_, _, _, e) => e.Id == entity1.Id || e.Id == entity2.Id);
 
         await using var database = await sqlInstance.Build();
@@ -199,7 +199,7 @@ public partial class IntegrationTests
 
         var filters = new Filters<IntegrationDbContext>();
         // Simplified API on connection query
-        filters.Add<FilterParentEntity>(
+        filters.For<FilterParentEntity>().Add(
             filter: (_, _, _, e) => e.Id != entity2.Id);
 
         await using var database = await sqlInstance.Build();

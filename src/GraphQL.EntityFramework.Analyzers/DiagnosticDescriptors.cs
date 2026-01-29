@@ -23,21 +23,21 @@ static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor GQLEF004 = new(
         id: "GQLEF004",
         title: "Use simplified filter API for identity projections",
-        messageFormat: "Identity projection '_ => _' detected. Consider using simplified API: filters.Add<{0}>(filter: ...).",
+        messageFormat: "Identity projection '_ => _' detected. Consider using simplified 4-parameter filter instead of explicit projection.",
         category: "Usage",
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
-        description: "When using identity projection '_ => _' with a filter that only accesses primary key or foreign key properties, use the simplified API filters.Add<TEntity>(filter: ...) instead.",
+        description: "When using identity projection '_ => _' with a filter that only accesses primary key or foreign key properties, use the simplified 4-parameter filter syntax filters.For<TEntity>().Add(filter: (_, _, _, e) => ...) instead of specifying the projection explicitly.",
         helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#simplified-filter-api");
 
     public static readonly DiagnosticDescriptor GQLEF005 = new(
         id: "GQLEF005",
-        title: "Filter with simplified API must only access primary key or foreign key properties",
-        messageFormat: "Filter accesses '{0}' which is not a primary key or foreign key. The simplified filter API uses identity projection, which only loads keys.",
+        title: "Filter with 4-parameter syntax must only access primary key or foreign key properties",
+        messageFormat: "Filter accesses '{0}' which is not a primary key or foreign key. The 4-parameter filter uses identity projection, which only loads keys.",
         category: "Usage",
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
-        description: "The simplified filter API filters.Add<TEntity>(filter: ...) uses identity projection internally, which only guarantees that primary keys and foreign keys are loaded. Use filters.For<TEntity>().Add(projection: ..., filter: ...) to project required properties.",
+        description: "The 4-parameter filter syntax filters.For<TEntity>().Add(filter: (_, _, _, e) => ...) uses identity projection internally, which only guarantees that primary keys and foreign keys are loaded. Use filters.For<TEntity>().Add(projection: ..., filter: ...) to project required properties.",
         helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#simplified-filter-api");
 
     public static readonly DiagnosticDescriptor GQLEF006 = new(

@@ -127,4 +127,45 @@ public class FilterBuilder<TDbContext, TEntity>
         filters.Add<TEntity, bool>(
             null,
             (userContext, dbContext, userPrincipal, _) => filter(userContext, dbContext, userPrincipal));
+
+    /// <summary>
+    /// Add a synchronous filter that operates on the entity itself (identity projection).
+    /// Only primary key and foreign key properties should be accessed in the filter.
+    /// </summary>
+    /// <param name="filter">Synchronous filter function that receives the full entity.</param>
+    /// <remarks>
+    /// This simplified API is equivalent to:
+    /// <code>
+    /// filters.For&lt;TEntity&gt;().Add(
+    ///     projection: _ => _,
+    ///     filter: (userContext, data, userPrincipal, entity) => /* logic */);
+    /// </code>
+    /// IMPORTANT: Only access primary key (Id, EntityId) or foreign key (ParentId, etc.)
+    /// properties. Accessing scalar or navigation properties will cause runtime errors
+    /// because they won't be loaded by EF projections.
+    /// </remarks>
+    public void Add(Filters<TDbContext>.Filter<TEntity> filter) =>
+        filters.Add<TEntity, TEntity>(
+            projection: _ => _,
+            filter: filter);
+
+    /// <summary>
+    /// Add an asynchronous filter that operates on the entity itself (identity projection).
+    /// Only primary key and foreign key properties should be accessed in the filter.
+    /// </summary>
+    /// <param name="filter">Asynchronous filter function that receives the full entity.</param>
+    /// <remarks>
+    /// This simplified API is equivalent to:
+    /// <code>
+    /// filters.For&lt;TEntity&gt;().Add(
+    ///     projection: _ => _,
+    ///     filter: async (userContext, data, userPrincipal, entity) => /* logic */);
+    /// </code>
+    /// IMPORTANT: Only access primary key (Id, EntityId) or foreign key (ParentId, etc.)
+    /// properties. Accessing scalar or navigation properties will cause runtime errors.
+    /// </remarks>
+    public void Add(Filters<TDbContext>.AsyncFilter<TEntity> filter) =>
+        filters.Add<TEntity, TEntity>(
+            projection: _ => _,
+            filter: filter);
 }

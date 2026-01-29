@@ -155,7 +155,7 @@ snippet: simplified-filter-api
 
 ### When to Use the Simplified API
 
-Use `filters.Add<TEntity>(filter: ...)` when the filter **only** accesses:
+Use `filters.For<TEntity>().Add(filter: (_, _, _, e) => ...)` when the filter **only** accesses:
 
 * **Primary keys**: `Id`, `EntityId`, `CompanyId` (matching the entity type name)
 * **Foreign keys**: Properties ending with `Id` like `ParentId`, `CategoryId`, `LocationId`
@@ -185,7 +185,7 @@ For non-key properties, use the full API with explicit projection:
 
 ```csharp
 // INVALID - Will cause runtime error
-filters.Add<Accommodation>(
+filters.For<Accommodation>().Add(
     filter: (_, _, _, a) => a.City == "London");  // City is NOT a key
 
 // VALID - Explicit projection for scalar properties
@@ -200,7 +200,7 @@ The simplified API is syntactic sugar for the identity projection pattern:
 
 ```csharp
 // Simplified API
-filters.Add<Accommodation>(
+filters.For<Accommodation>().Add(
     filter: (_, _, _, a) => a.Id != Guid.Empty);
 
 // Equivalent full API
@@ -230,7 +230,7 @@ filters.For<Product>().Add(
 
 **After:**
 ```csharp
-filters.Add<Product>(
+filters.For<Product>().Add(
     filter: (_, _, _, p) => p.CategoryId == allowedCategoryId);
 ```
 

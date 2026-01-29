@@ -21,48 +21,31 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
-        // Detect three patterns:
-        // 1. filters.Add<T>(filter: ...) - validate PK/FK only (GQLEF005)
-        // 2. filters.For<T>().Add(projection: _ => _, filter: ...) - suggest or error (GQLEF004/GQLEF006)
+        // Detect two patterns:
+        // 1. filters.For<T>().Add(filter: (_, _, _, e) => ...) - 4-param filter without projection (GQLEF005)
+        // 2. filters.For<T>().Add(projection: _ => _, filter: ...) - explicit identity projection (GQLEF004/GQLEF006)
 
-        if (IsSimplifiedFilterAdd(invocation, context.SemanticModel, out var filterLambda1))
+        if (!IsFilterBuilderAdd(invocation, context.SemanticModel, out var projectionLambda, out var filterLambda, out var entityType))
         {
-            // Pattern 1: filters.Add<T>(filter: ...)
-            // Validate that filter only accesses PK/FK properties
-            if (filterLambda1 == null)
-            {
-                return;
-            }
-
-            var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda1, context.SemanticModel);
-            if (nonKeyProperty == null)
-            {
-                return;
-            }
-
-            var diagnostic = Diagnostic.Create(
-                DiagnosticDescriptors.GQLEF005,
-                invocation.GetLocation(),
-                nonKeyProperty);
-            context.ReportDiagnostic(diagnostic);
             return;
         }
 
-        if (IsFilterBuilderAdd(invocation, context.SemanticModel, out var projectionLambda, out var filterLambda2, out var entityType2))
+        if (filterLambda == null)
         {
-            // Pattern 2: filters.For<T>().Add(...)
+            return;
+        }
+
+        // Check if there's an explicit projection parameter
+        if (projectionLambda != null)
+        {
+            // Pattern 2: filters.For<T>().Add(projection: ..., filter: ...)
             if (!IsIdentityProjection(projectionLambda))
             {
                 return;
             }
 
             // Identity projection detected
-            if (filterLambda2 == null)
-            {
-                return;
-            }
-
-            var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda2, context.SemanticModel);
+            var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda, context.SemanticModel);
             if (nonKeyProperty != null)
             {
                 // Error: Identity projection with non-key access
@@ -74,75 +57,51 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
                 return;
             }
 
-            if (!string.IsNullOrEmpty(entityType2))
+            if (!string.IsNullOrEmpty(entityType))
             {
                 // Info: Suggest simplified API
                 var diagnostic = Diagnostic.Create(
                     DiagnosticDescriptors.GQLEF004,
                     invocation.GetLocation(),
-                    entityType2);
+                    entityType);
+                context.ReportDiagnostic(diagnostic);
+            }
+            return;
+        }
+
+        // Pattern 1: filters.For<T>().Add(filter: (_, _, _, e) => ...) - no explicit projection
+        // Check if this is a 4-parameter filter (identity projection without explicit projection parameter)
+        var is4ParamFilter = Is4ParameterFilter(filterLambda);
+
+        if (is4ParamFilter)
+        {
+            // Validate that filter only accesses PK/FK properties
+            var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda, context.SemanticModel);
+            if (nonKeyProperty != null)
+            {
+                var diagnostic = Diagnostic.Create(
+                    DiagnosticDescriptors.GQLEF005,
+                    invocation.GetLocation(),
+                    nonKeyProperty);
                 context.ReportDiagnostic(diagnostic);
             }
         }
     }
 
-    static bool IsSimplifiedFilterAdd(
-        InvocationExpressionSyntax invocation,
-        SemanticModel semanticModel,
-        out LambdaExpressionSyntax? filterLambda)
+    static bool Is4ParameterFilter(LambdaExpressionSyntax lambda)
     {
-        filterLambda = null;
-
-        // Check method name is Add
-        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess)
+        // Check if the lambda has 4 parameters (userContext, dbContext, userPrincipal, entity)
+        if (lambda is SimpleLambdaExpressionSyntax)
         {
-            return false;
+            return false; // Single parameter lambda
         }
 
-        if (memberAccess.Name.Identifier.Text != "Add")
+        if (lambda is ParenthesizedLambdaExpressionSyntax parenthesized)
         {
-            return false;
+            return parenthesized.ParameterList.Parameters.Count == 4;
         }
 
-        // Get the symbol info
-        var symbolInfo = semanticModel.GetSymbolInfo(invocation);
-        if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
-        {
-            return false;
-        }
-
-        // Check if it's the simplified API: filters.Add<TEntity>(filter: ...)
-        // The containing type should be Filters<TDbContext>
-        var containingType = methodSymbol.ContainingType;
-        if (containingType is not { Name: "Filters" } ||
-            containingType.ContainingNamespace?.ToString() != "GraphQL.EntityFramework")
-        {
-            return false;
-        }
-
-        // Check method signature:
-        // - Should have 1 type parameter (TEntity)
-        // - Should have 1 parameter named "filter"
-        if (methodSymbol.TypeArguments.Length != 1 ||
-            methodSymbol.Parameters.Length != 1 ||
-            methodSymbol.Parameters[0].Name != "filter")
-        {
-            return false;
-        }
-
-        // Extract the entity type name
-
-        // Extract filter lambda
-        if (invocation.ArgumentList.Arguments.Count > 0)
-        {
-            var firstArg = invocation.ArgumentList.Arguments[0].Expression;
-            if (firstArg is LambdaExpressionSyntax lambda)
-            {
-                filterLambda = lambda;
-            }
-        }
-
-        return true;
+        return false;
     }
 
     static bool IsFilterBuilderAdd(
