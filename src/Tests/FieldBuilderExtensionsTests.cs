@@ -6,7 +6,7 @@ public class FieldBuilderExtensionsTests
         public string Name { get; set; } = "";
     }
 
-    class TestDbContext : DbContext;
+    class TestDbContext(DbContextOptions options) : DbContext(options);
 
     [Fact]
     public void Resolve_ThrowsArgumentException_WhenIdentityProjectionUsed()
@@ -77,6 +77,20 @@ public class FieldBuilderExtensionsTests
                 resolve: _ => Task.FromResult<IEnumerable<int>>([_.Projection.Id])));
 
         Assert.Contains("Identity projection", exception.Message);
+    }
+
+    [Fact]
+    public void FieldBuilderEx_Resolve_ThrowsException()
+    {
+        // Arrange
+        var fieldType = new FieldType { Name = "test", Type = typeof(StringGraphType) };
+        var builder = new FieldBuilderEx<object, string>(fieldType);
+
+        // Assert - Calling Resolve should throw
+        var exception = Assert.Throws<Exception>(() =>
+            builder.Resolve(_ => "test"));
+
+        Assert.Contains("resolve has already been configured", exception.Message);
     }
 
     enum TestEnum
