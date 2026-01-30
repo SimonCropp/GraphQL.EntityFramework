@@ -112,13 +112,15 @@
                 // Simple field - check if it's a navigation property
                 var isNavigation = navigationProperties?.ContainsKey(field) == true;
 
-                if (!isNavigation &&
-                    !projection.ScalarFields.Contains(field, StringComparer.OrdinalIgnoreCase) &&
-                    !projection.KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase))
+                if (isNavigation ||
+                    projection.ScalarFields.Contains(field, StringComparer.OrdinalIgnoreCase) ||
+                    projection.KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase))
                 {
-                    scalarFieldsToAdd.Add(field);
+                    // Skip navigation names - they'll be handled via navigation paths
+                    continue;
                 }
-                // Skip navigation names - they'll be handled via navigation paths
+
+                scalarFieldsToAdd.Add(field);
             }
         }
 
