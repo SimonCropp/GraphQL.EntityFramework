@@ -44,5 +44,6 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [parent1, parent2, entity1, entity2, entity3]);
     }
 
+    // ReSharper disable NotAccessedPositionalProperty.Local
     record ChildFilterProjection(Guid? ParentId, string? ParentProperty, Guid ChildId);
 }

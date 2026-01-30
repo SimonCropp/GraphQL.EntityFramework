@@ -19,20 +19,25 @@ record FieldProjectionInfo(
             // Include filter fields if:
             // 1. Exact type match (filterType == entityType), OR
             // 2. Filter is for a base type (filterType.IsAssignableFrom(entityType))
-            if (filterType.IsAssignableFrom(entityType))
+            if (!filterType.IsAssignableFrom(entityType))
             {
-                foreach (var field in filterFields)
+                continue;
+            }
+
+            foreach (var field in filterFields)
+            {
+                // Only merge simple property names (not navigation paths like "Parent.Name")
+                // Also exclude navigation property names to prevent loading entire navigations
+                if (field.Contains('.') ||
+                    mergedScalars.Contains(field, StringComparer.OrdinalIgnoreCase) ||
+                    KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase) ||
+                    // Skip navigation properties
+                    navigationMetadata?.ContainsKey(field) == true)
                 {
-                    // Only merge simple property names (not navigation paths like "Parent.Name")
-                    // Also exclude navigation property names to prevent loading entire navigations
-                    if (!field.Contains('.') &&
-                        !mergedScalars.Contains(field, StringComparer.OrdinalIgnoreCase) &&
-                        !KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase) &&
-                        !(navigationMetadata?.ContainsKey(field) == true)) // NEW: Skip navigation properties
-                    {
-                        mergedScalars.Add(field);
-                    }
+                    continue;
                 }
+
+                mergedScalars.Add(field);
             }
         }
 
