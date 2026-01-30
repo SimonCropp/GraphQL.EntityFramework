@@ -10,3 +10,5 @@ nugets/
 nul
 *claude*
 /src/Benchmarks/BenchmarkDotNet.Artifacts
+/coverage-report
+*TestResults*
