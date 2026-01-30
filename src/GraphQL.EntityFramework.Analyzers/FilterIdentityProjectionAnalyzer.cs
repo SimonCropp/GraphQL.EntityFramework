@@ -391,8 +391,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         // Check for System.Guid using symbol comparison instead of string
         if (underlyingType is INamedTypeSymbol namedTypeSymbol)
         {
-            return namedTypeSymbol.SpecialType == SpecialType.None &&
-                   namedTypeSymbol.Name == "Guid" &&
+            return namedTypeSymbol is { SpecialType: SpecialType.None, Name: "Guid" } &&
                    namedTypeSymbol.ContainingNamespace?.ToDisplayString() == "System";
         }
 

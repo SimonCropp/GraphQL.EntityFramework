@@ -43,9 +43,9 @@ public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
     static async Task<Document> RemoveIdentityProjectionAsync(
         Document document,
         InvocationExpressionSyntax invocation,
-        CancellationToken cancellationToken)
+        Cancel cancel)
     {
-        var root = await document.GetSyntaxRootAsync(cancellationToken);
+        var root = await document.GetSyntaxRootAsync(cancel);
         if (root == null)
         {
             return document;
