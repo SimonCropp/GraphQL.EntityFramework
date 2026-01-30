@@ -113,7 +113,7 @@
                 var isNavigation = navigationProperties?.ContainsKey(field) == true;
 
                 if (isNavigation ||
-                    projection.ScalarFields.Contains(field, StringComparer.OrdinalIgnoreCase) ||
+                    projection.ScalarFields.Contains(field) ||
                     projection.KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase))
                 {
                     // Skip navigation names - they'll be handled via navigation paths
@@ -125,8 +125,8 @@
         }
 
         // Merge scalar fields
-        var mergedScalars = new List<string>(projection.ScalarFields);
-        mergedScalars.AddRange(scalarFieldsToAdd);
+        var mergedScalars = new HashSet<string>(projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
+        foreach (var field in scalarFieldsToAdd) mergedScalars.Add(field);
 
         // Merge navigations
         var mergedNavigations = new Dictionary<string, NavigationProjectionInfo>(projection.Navigations);
@@ -161,13 +161,10 @@
             if (mergedNavigations.TryGetValue(navName, out var existingNav))
             {
                 // Navigation exists - add filter-required properties
-                var updatedScalars = new List<string>(existingNav.Projection.ScalarFields);
+                var updatedScalars = new HashSet<string>(existingNav.Projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
                 foreach (var prop in requiredProps)
                 {
-                    if (!updatedScalars.Contains(prop, StringComparer.OrdinalIgnoreCase))
-                    {
-                        updatedScalars.Add(prop);
-                    }
+                    updatedScalars.Add(prop);
                 }
 
                 var updatedProjection = existingNav.Projection with
@@ -187,7 +184,7 @@
                 foreignKeys.TryGetValue(navType, out var navFks);
 
                 var navProjection = new FieldProjectionInfo(
-                    requiredProps.ToList(),
+                    new HashSet<string>(requiredProps, StringComparer.OrdinalIgnoreCase),
                     navKeys ?? [],
                     navFks ?? new HashSet<string>(),
                     new());
@@ -224,7 +221,7 @@
         List<string>? keys,
         IReadOnlySet<string>? foreignKeyNames)
     {
-        var scalarFields = new List<string>();
+        var scalarFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var navProjections = new Dictionary<string, NavigationProjectionInfo>();
 
         if (context.SubFields is not null)
@@ -249,7 +246,7 @@
     void ProcessConnectionNodeFields(
         GraphQLSelectionSet? selectionSet,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        List<string> scalarFields,
+        HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
@@ -284,7 +281,7 @@
         string fieldName,
         (GraphQLField Field, FieldType FieldType) fieldInfo,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        List<string> scalarFields,
+        HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
@@ -471,7 +468,7 @@
                 foreach (var nestedPath in nestedPaths)
                 {
                     if (!nestedPath.Contains('.') &&
-                        !nestedProjection.ScalarFields.Contains(nestedPath, StringComparer.OrdinalIgnoreCase))
+                        !nestedProjection.ScalarFields.Contains(nestedPath))
                     {
                         nestedProjection.ScalarFields.Add(nestedPath);
                     }
@@ -482,7 +479,7 @@
                 // Secondary navigation: include only projection-required fields
                 var scalarFields = nestedPaths
                     .Where(p => !p.Contains('.'))
-                    .ToList();
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                 nestedProjection = new(scalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
             }
@@ -501,7 +498,7 @@
         IReadOnlySet<string>? foreignKeyNames,
         IResolveFieldContext context)
     {
-        var scalarFields = new List<string>();
+        var scalarFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var navProjections = new Dictionary<string, NavigationProjectionInfo>();
 
         if (selectionSet?.Selections is null)
@@ -553,7 +550,7 @@
         string fieldName,
         GraphQLField field,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        List<string> scalarFields,
+        HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
@@ -564,10 +561,7 @@
         if (navigation == null)
         {
             // It's a scalar field - avoid duplicates
-            if (!scalarFields.Contains(fieldName, StringComparer.OrdinalIgnoreCase))
-            {
-                scalarFields.Add(fieldName);
-            }
+            scalarFields.Add(fieldName);
         }
         else
         {
