@@ -170,9 +170,15 @@
                     }
                 }
 
-                var updatedProjection = existingNav.Projection with { ScalarFields = updatedScalars };
+                var updatedProjection = existingNav.Projection with
+                {
+                    ScalarFields = updatedScalars
+                };
                 updatedProjection = MergeFilterFieldsIntoProjection(updatedProjection, allFilterFields, navType);
-                mergedNavigations[navName] = existingNav with { Projection = updatedProjection };
+                mergedNavigations[navName] = existingNav with
+                {
+                    Projection = updatedProjection
+                };
             }
             else
             {
@@ -197,11 +203,19 @@
             if (!mergedNavigations.ContainsKey(navName))
             {
                 var updated = MergeFilterFieldsIntoProjection(navProjection.Projection, allFilterFields, navProjection.EntityType);
-                mergedNavigations[navName] = navProjection with { Projection = updated };
+                mergedNavigations[navName] = navProjection with
+                {
+                    Projection = updated
+                };
             }
         }
 
-        return new(mergedScalars, projection.KeyNames, projection.ForeignKeyNames, mergedNavigations);
+        return projection
+            with
+            {
+                ScalarFields = mergedScalars,
+                Navigations = mergedNavigations
+            };
     }
 
     FieldProjectionInfo GetProjectionInfo(
