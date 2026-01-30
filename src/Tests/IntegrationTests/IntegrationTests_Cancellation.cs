@@ -60,8 +60,8 @@ public class IntegrationTests_Cancellation
         var executer = new EfDocumentExecuter();
 
         // Create a pre-cancelled token
-        var cts = new CancellationTokenSource();
-        cts.Cancel();
+        var cts = new CancelSource();
+        await cts.CancelAsync();
 
         var options = new ExecutionOptions
         {
@@ -116,7 +116,7 @@ public class IntegrationTests_Cancellation
         using var schema = new Schema(provider);
         var executer = new EfDocumentExecuter();
 
-        var cts = new CancellationTokenSource();
+        var cts = new CancelSource();
 
         var options = new ExecutionOptions
         {
@@ -127,7 +127,7 @@ public class IntegrationTests_Cancellation
         };
 
         // Cancel immediately to trigger OperationCanceledException
-        cts.Cancel();
+        await cts.CancelAsync();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
             await executer.ExecuteAsync(options));
