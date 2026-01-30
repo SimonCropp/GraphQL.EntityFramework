@@ -1,49 +1,20 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntitiesFiltered": [
-      {
-        "property": "AllowedParent",
-        "children": [
-          {
-            "property": "Child4",
-            "age": 40,
-            "isActive": true
-          }
-        ]
-      },
-      {
-        "property": "BlockedParent",
-        "children": []
-      }
-    ]
-  }
-},
+  target: {
+    Type: NullReferenceException,
+    Message: Object reference not set to an instance of an object.
+  },
   sql: {
     Text:
 select   f.Id,
          f.Property,
-         s.Id,
-         s.Property,
-         s.Age,
-         s.IsActive,
-         s.Id0,
-         s.Property0
+         f0.Id,
+         f0.Property,
+         f0.Age,
+         f0.IsActive
 from     FilterParentEntities as f
          left outer join
-         (select f0.Id,
-                 f0.Property,
-                 f0.Age,
-                 f0.IsActive,
-                 f1.Id as Id0,
-                 f1.Property as Property0,
-                 f0.ParentId
-          from   FilterChildEntities as f0
-                 left outer join
-                 FilterParentEntities as f1
-                 on f0.ParentId = f1.Id) as s
-         on f.Id = s.ParentId
-order by f.Property, f.Id, s.Id
+         FilterChildEntities as f0
+         on f.Id = f0.ParentId
+order by f.Property, f.Id, f0.Id
   }
 }

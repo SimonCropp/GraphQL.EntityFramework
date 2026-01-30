@@ -50,30 +50,36 @@ static class SelectExpressionBuilder
         var properties = entityMetadata.Properties;
 
         // Pre-size collections to avoid reallocations
-        var capacity = projection.KeyNames.Count + projection.ForeignKeyNames.Count +
-                      projection.ScalarFields.Count + projection.Navigations.Count;
+        var capacity = projection.KeyNames?.Count ?? 0 + projection.ForeignKeyNames?.Count ?? 0 +
+                      projection.ScalarFields.Count + projection.Navigations?.Count ?? 0;
         var bindings = new List<MemberBinding>(capacity);
         var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
 
         // 1. Always include key properties
-        foreach (var keyName in projection.KeyNames)
+        if (projection.KeyNames != null)
         {
-            if (properties.TryGetValue(keyName, out var metadata) &&
-                metadata.CanWrite &&
-                addedProperties.Add(keyName))
+            foreach (var keyName in projection.KeyNames)
             {
-                bindings.Add(metadata.Binding!);
+                if (properties.TryGetValue(keyName, out var metadata) &&
+                    metadata.CanWrite &&
+                    addedProperties.Add(keyName))
+                {
+                    bindings.Add(metadata.Binding!);
+                }
             }
         }
 
         // 2. Always include foreign key properties
-        foreach (var fkName in projection.ForeignKeyNames)
+        if (projection.ForeignKeyNames != null)
         {
-            if (properties.TryGetValue(fkName, out var metadata) &&
-                metadata.CanWrite &&
-                addedProperties.Add(fkName))
+            foreach (var fkName in projection.ForeignKeyNames)
             {
-                bindings.Add(metadata.Binding!);
+                if (properties.TryGetValue(fkName, out var metadata) &&
+                    metadata.CanWrite &&
+                    addedProperties.Add(fkName))
+                {
+                    bindings.Add(metadata.Binding!);
+                }
             }
         }
 
@@ -95,22 +101,25 @@ static class SelectExpressionBuilder
         }
 
         // 4. Add navigation properties with nested projections
-        foreach (var (navFieldName, navProjection) in projection.Navigations)
+        if (projection.Navigations != null)
         {
-            if (!properties.TryGetValue(navFieldName, out var metadata) ||
-                !addedProperties.Add(navFieldName))
+            foreach (var (navFieldName, navProjection) in projection.Navigations)
             {
-                continue;
-            }
+                if (!properties.TryGetValue(navFieldName, out var metadata) ||
+                    !addedProperties.Add(navFieldName))
+                {
+                    continue;
+                }
 
-            var binding = BuildNavigationBinding(metadata.PropertyAccess, navProjection, keyNames);
-            if (binding == null)
-            {
-                // Can't project navigation - return null to load full entity
-                return null;
-            }
+                var binding = BuildNavigationBinding(metadata.PropertyAccess, navProjection, keyNames);
+                if (binding == null)
+                {
+                    // Can't project navigation - return null to load full entity
+                    return null;
+                }
 
-            bindings.Add(binding);
+                bindings.Add(binding);
+            }
         }
 
         var memberInit = Expression.MemberInit(entityMetadata.NewInstance, bindings);
@@ -217,13 +226,13 @@ static class SelectExpressionBuilder
         [NotNullWhen(true)] out List<MemberBinding>? bindings)
     {
         // Pre-size collections to avoid reallocations
-        var capacity = projection.KeyNames.Count + projection.ForeignKeyNames.Count + projection.ScalarFields.Count + projection.Navigations.Count;
+        var capacity = projection.KeyNames?.Count ?? 0 + projection.ForeignKeyNames?.Count ?? 0 + projection.ScalarFields.Count + projection.Navigations?.Count ?? 0;
         bindings = new(capacity);
         var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
         var properties = GetEntityMetadata(entityType).Properties;
 
         // Add key properties
-        foreach (var keyName in projection.KeyNames)
+        if (projection.KeyNames != null) foreach (var keyName in projection.KeyNames)
         {
             if (properties.TryGetValue(keyName, out var metadata) &&
                 metadata.CanWrite &&
@@ -234,13 +243,16 @@ static class SelectExpressionBuilder
         }
 
         // Add foreign key properties
-        foreach (var fkName in projection.ForeignKeyNames)
+        if (projection.ForeignKeyNames != null)
         {
-            if (properties.TryGetValue(fkName, out var metadata) &&
-                metadata.CanWrite &&
-                addedProperties.Add(fkName))
+            foreach (var fkName in projection.ForeignKeyNames)
             {
-                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
+                if (properties.TryGetValue(fkName, out var metadata) &&
+                    metadata.CanWrite &&
+                    addedProperties.Add(fkName))
+                {
+                    bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
+                }
             }
         }
 
@@ -263,22 +275,25 @@ static class SelectExpressionBuilder
         }
 
         // Add nested navigations recursively
-        foreach (var (navFieldName, nestedNavProjection) in projection.Navigations)
+        if (projection.Navigations != null)
         {
-            if (!properties.TryGetValue(navFieldName, out var metadata) ||
-                !addedProperties.Add(navFieldName))
+            foreach (var (navFieldName, nestedNavProjection) in projection.Navigations)
             {
-                continue;
-            }
+                if (!properties.TryGetValue(navFieldName, out var metadata) ||
+                    !addedProperties.Add(navFieldName))
+                {
+                    continue;
+                }
 
-            if (!TryBuildNestedNavigationBinding(sourceExpression, metadata.Property, nestedNavProjection, keyNames, out var binding))
-            {
-                // Can't project navigation - return false to load full entity
-                bindings = null;
-                return false;
-            }
+                if (!TryBuildNestedNavigationBinding(sourceExpression, metadata.Property, nestedNavProjection, keyNames, out var binding))
+                {
+                    // Can't project navigation - return false to load full entity
+                    bindings = null;
+                    return false;
+                }
 
-            bindings.Add(binding);
+                bindings.Add(binding);
+            }
         }
 
         return true;

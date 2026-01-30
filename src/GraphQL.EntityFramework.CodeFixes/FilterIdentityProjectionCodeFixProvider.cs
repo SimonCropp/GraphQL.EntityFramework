@@ -4,7 +4,7 @@ namespace GraphQL.EntityFramework.CodeFixes;
 [Shared]
 public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
 {
-    const string Title = "Remove identity projection parameter";
+    const string title = "Remove identity projection parameter";
 
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
         [DiagnosticDescriptors.GQLEF004.Id];
@@ -34,9 +34,9 @@ public class FilterIdentityProjectionCodeFixProvider : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create(
-                title: Title,
+                title: title,
                 createChangedDocument: c => RemoveIdentityProjectionAsync(context.Document, invocation, c),
-                equivalenceKey: Title),
+                equivalenceKey: title),
             diagnostic);
     }
 

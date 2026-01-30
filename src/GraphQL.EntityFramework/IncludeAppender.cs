@@ -53,10 +53,176 @@
         // Merge filter fields if provided (recursively for navigations)
         if (allFilterFields is { Count: > 0 })
         {
-            projection = projection.MergeAllFilterFields(allFilterFields, typeof(TItem));
+            projection = MergeFilterFieldsIntoProjection(projection, allFilterFields, typeof(TItem));
         }
 
         return SelectExpressionBuilder.TryBuild(projection, keyNames, out expression);
+    }
+
+    FieldProjectionInfo MergeFilterFieldsIntoProjection(
+        FieldProjectionInfo projection,
+        IReadOnlyDictionary<Type, IReadOnlySet<string>> allFilterFields,
+        Type entityType)
+    {
+        // Get filter fields for this entity type and its base types
+        var relevantFilterFields = new List<string>();
+        foreach (var (filterType, filterFields) in allFilterFields)
+        {
+            if (filterType.IsAssignableFrom(entityType))
+            {
+                relevantFilterFields.AddRange(filterFields);
+            }
+        }
+
+        if (relevantFilterFields.Count == 0)
+        {
+            return projection;
+        }
+
+        // Get navigation metadata for this entity type
+        navigations.TryGetValue(entityType, out var navigationProperties);
+
+        // Separate simple fields and navigation paths
+        var scalarFieldsToAdd = new List<string>();
+        var navigationPaths = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var field in relevantFilterFields)
+        {
+            if (field.Contains('.'))
+            {
+                // Navigation path like "Parent.Id"
+                var parts = field.Split('.', 2);
+                var navName = parts[0];
+                var navProperty = parts[1];
+
+                if (!navigationPaths.TryGetValue(navName, out var properties))
+                {
+                    properties = new(StringComparer.OrdinalIgnoreCase);
+                    navigationPaths[navName] = properties;
+                }
+
+                // Only add if it doesn't contain further dots (single-level navigation)
+                if (!navProperty.Contains('.'))
+                {
+                    properties.Add(navProperty);
+                }
+            }
+            else
+            {
+                // Simple field - check if it's a navigation property
+                var isNavigation = navigationProperties?.ContainsKey(field) == true;
+
+                if (isNavigation ||
+                    projection.ScalarFields.Contains(field) ||
+                    projection.KeyNames?.Contains(field, StringComparer.OrdinalIgnoreCase) == true)
+                {
+                    // Skip navigation names - they'll be handled via navigation paths
+                    continue;
+                }
+
+                scalarFieldsToAdd.Add(field);
+            }
+        }
+
+        // Merge scalar fields
+        var mergedScalars = new HashSet<string>(projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
+        foreach (var field in scalarFieldsToAdd) mergedScalars.Add(field);
+
+        // Merge navigations
+        var infos = projection.Navigations;
+        Dictionary<string, NavigationProjectionInfo> mergedNavigations;
+        if (infos == null)
+        {
+            mergedNavigations = [];
+        }
+        else
+        {
+            mergedNavigations = new(infos);
+        }
+
+
+        // Process navigation paths from filter fields
+        foreach (var (navName, requiredProps) in navigationPaths)
+        {
+            // Skip if no navigation metadata available for this entity type
+            if (navigationProperties == null)
+            {
+                continue;
+            }
+
+            // Try to find the navigation - use case-insensitive search
+            Navigation? navMetadata = null;
+            foreach (var (key, value) in navigationProperties)
+            {
+                if (string.Equals(key, navName, StringComparison.OrdinalIgnoreCase))
+                {
+                    navMetadata = value;
+                    break;
+                }
+            }
+
+            if (navMetadata == null)
+            {
+                continue;
+            }
+
+            var navType = navMetadata.Type;
+
+            if (mergedNavigations.TryGetValue(navName, out var existingNav))
+            {
+                // Navigation exists - add filter-required properties
+                var updatedScalars = new HashSet<string>(existingNav.Projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
+                foreach (var prop in requiredProps)
+                {
+                    updatedScalars.Add(prop);
+                }
+
+                var updatedProjection = existingNav.Projection with
+                {
+                    ScalarFields = updatedScalars
+                };
+                updatedProjection = MergeFilterFieldsIntoProjection(updatedProjection, allFilterFields, navType);
+                mergedNavigations[navName] = existingNav with
+                {
+                    Projection = updatedProjection
+                };
+            }
+            else
+            {
+                // Navigation doesn't exist - create it with filter-required properties
+                keyNames.TryGetValue(navType, out var navKeys);
+                foreignKeys.TryGetValue(navType, out var navFks);
+
+                var navProjection = new FieldProjectionInfo(
+                    new(requiredProps, StringComparer.OrdinalIgnoreCase),
+                    navKeys,
+                    navFks,
+                    null);
+
+                navProjection = MergeFilterFieldsIntoProjection(navProjection, allFilterFields, navType);
+                mergedNavigations[navName] = new(navType, navMetadata.IsCollection, navProjection);
+            }
+        }
+
+        // Recursively process existing navigations
+        if (projection.Navigations != null) foreach (var (navName, navProjection) in projection.Navigations)
+        {
+            if (!mergedNavigations.ContainsKey(navName))
+            {
+                var updated = MergeFilterFieldsIntoProjection(navProjection.Projection, allFilterFields, navProjection.EntityType);
+                mergedNavigations[navName] = navProjection with
+                {
+                    Projection = updated
+                };
+            }
+        }
+
+        return projection
+            with
+            {
+                ScalarFields = mergedScalars,
+                Navigations = mergedNavigations
+            };
     }
 
     FieldProjectionInfo GetProjectionInfo(
@@ -65,7 +231,7 @@
         List<string>? keys,
         IReadOnlySet<string>? foreignKeyNames)
     {
-        var scalarFields = new List<string>();
+        var scalarFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var navProjections = new Dictionary<string, NavigationProjectionInfo>();
 
         if (context.SubFields is not null)
@@ -84,13 +250,13 @@
             }
         }
 
-        return new(scalarFields, keys ?? [], foreignKeyNames ?? new HashSet<string>(), navProjections);
+        return new(scalarFields, keys, foreignKeyNames, navProjections);
     }
 
     void ProcessConnectionNodeFields(
         GraphQLSelectionSet? selectionSet,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        List<string> scalarFields,
+        HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
@@ -125,7 +291,7 @@
         string fieldName,
         (GraphQLField Field, FieldType FieldType) fieldInfo,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        List<string> scalarFields,
+        HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
@@ -312,7 +478,7 @@
                 foreach (var nestedPath in nestedPaths)
                 {
                     if (!nestedPath.Contains('.') &&
-                        !nestedProjection.ScalarFields.Contains(nestedPath, StringComparer.OrdinalIgnoreCase))
+                        !nestedProjection.ScalarFields.Contains(nestedPath))
                     {
                         nestedProjection.ScalarFields.Add(nestedPath);
                     }
@@ -323,7 +489,7 @@
                 // Secondary navigation: include only projection-required fields
                 var scalarFields = nestedPaths
                     .Where(p => !p.Contains('.'))
-                    .ToList();
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                 nestedProjection = new(scalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
             }
@@ -342,12 +508,12 @@
         IReadOnlySet<string>? foreignKeyNames,
         IResolveFieldContext context)
     {
-        var scalarFields = new List<string>();
+        var scalarFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var navProjections = new Dictionary<string, NavigationProjectionInfo>();
 
         if (selectionSet?.Selections is null)
         {
-            return new(scalarFields, keys ?? [], foreignKeyNames ?? new HashSet<string>(), navProjections);
+            return new(scalarFields, keys, foreignKeyNames, navProjections);
         }
 
         // Process direct fields
@@ -387,14 +553,14 @@
             }
         }
 
-        return new(scalarFields, keys ?? [], foreignKeyNames ?? new HashSet<string>(), navProjections);
+        return new(scalarFields, keys, foreignKeyNames, navProjections);
     }
 
     void ProcessNestedProjectionField(
         string fieldName,
         GraphQLField field,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        List<string> scalarFields,
+        HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
@@ -405,10 +571,7 @@
         if (navigation == null)
         {
             // It's a scalar field - avoid duplicates
-            if (!scalarFields.Contains(fieldName, StringComparer.OrdinalIgnoreCase))
-            {
-                scalarFields.Add(fieldName);
-            }
+            scalarFields.Add(fieldName);
         }
         else
         {
