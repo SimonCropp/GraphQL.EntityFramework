@@ -114,7 +114,7 @@
 
                 if (isNavigation ||
                     projection.ScalarFields.Contains(field) ||
-                    projection.KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase))
+                    projection.KeyNames?.Contains(field, StringComparer.OrdinalIgnoreCase) == true)
                 {
                     // Skip navigation names - they'll be handled via navigation paths
                     continue;
@@ -129,7 +129,17 @@
         foreach (var field in scalarFieldsToAdd) mergedScalars.Add(field);
 
         // Merge navigations
-        var mergedNavigations = new Dictionary<string, NavigationProjectionInfo>(projection.Navigations);
+        var infos = projection.Navigations;
+        Dictionary<string, NavigationProjectionInfo> mergedNavigations;
+        if (infos == null)
+        {
+            mergedNavigations = [];
+        }
+        else
+        {
+            mergedNavigations = new(infos);
+        }
+
 
         // Process navigation paths from filter fields
         foreach (var (navName, requiredProps) in navigationPaths)
@@ -184,10 +194,10 @@
                 foreignKeys.TryGetValue(navType, out var navFks);
 
                 var navProjection = new FieldProjectionInfo(
-                    new HashSet<string>(requiredProps, StringComparer.OrdinalIgnoreCase),
-                    navKeys ?? [],
-                    navFks ?? new HashSet<string>(),
-                    new());
+                    new(requiredProps, StringComparer.OrdinalIgnoreCase),
+                    navKeys,
+                    navFks,
+                    null);
 
                 navProjection = MergeFilterFieldsIntoProjection(navProjection, allFilterFields, navType);
                 mergedNavigations[navName] = new(navType, navMetadata.IsCollection, navProjection);
@@ -195,7 +205,7 @@
         }
 
         // Recursively process existing navigations
-        foreach (var (navName, navProjection) in projection.Navigations)
+        if (projection.Navigations != null) foreach (var (navName, navProjection) in projection.Navigations)
         {
             if (!mergedNavigations.ContainsKey(navName))
             {
@@ -240,7 +250,7 @@
             }
         }
 
-        return new(scalarFields, keys ?? [], foreignKeyNames ?? new HashSet<string>(), navProjections);
+        return new(scalarFields, keys, foreignKeyNames, navProjections);
     }
 
     void ProcessConnectionNodeFields(
@@ -503,7 +513,7 @@
 
         if (selectionSet?.Selections is null)
         {
-            return new(scalarFields, keys ?? [], foreignKeyNames ?? new HashSet<string>(), navProjections);
+            return new(scalarFields, keys, foreignKeyNames, navProjections);
         }
 
         // Process direct fields
@@ -543,7 +553,7 @@
             }
         }
 
-        return new(scalarFields, keys ?? [], foreignKeyNames ?? new HashSet<string>(), navProjections);
+        return new(scalarFields, keys, foreignKeyNames, navProjections);
     }
 
     void ProcessNestedProjectionField(
