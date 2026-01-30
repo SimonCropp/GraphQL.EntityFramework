@@ -53,10 +53,153 @@
         // Merge filter fields if provided (recursively for navigations)
         if (allFilterFields is { Count: > 0 })
         {
-            projection = projection.MergeAllFilterFields(allFilterFields, typeof(TItem));
+            projection = MergeFilterFieldsIntoProjection(projection, allFilterFields, typeof(TItem));
         }
 
         return SelectExpressionBuilder.TryBuild(projection, keyNames, out expression);
+    }
+
+    FieldProjectionInfo MergeFilterFieldsIntoProjection(
+        FieldProjectionInfo projection,
+        IReadOnlyDictionary<Type, IReadOnlySet<string>> allFilterFields,
+        Type entityType)
+    {
+        // Get filter fields for this entity type and its base types
+        var relevantFilterFields = new List<string>();
+        foreach (var (filterType, filterFields) in allFilterFields)
+        {
+            if (filterType.IsAssignableFrom(entityType))
+            {
+                relevantFilterFields.AddRange(filterFields);
+            }
+        }
+
+        if (relevantFilterFields.Count == 0)
+        {
+            return projection;
+        }
+
+        // Get navigation metadata for this entity type
+        navigations.TryGetValue(entityType, out var navigationProperties);
+
+        // Separate simple fields and navigation paths
+        var scalarFieldsToAdd = new List<string>();
+        var navigationPaths = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var field in relevantFilterFields)
+        {
+            if (field.Contains('.'))
+            {
+                // Navigation path like "Parent.Id"
+                var parts = field.Split('.', 2);
+                var navName = parts[0];
+                var navProperty = parts[1];
+
+                if (!navigationPaths.TryGetValue(navName, out var properties))
+                {
+                    properties = new(StringComparer.OrdinalIgnoreCase);
+                    navigationPaths[navName] = properties;
+                }
+
+                // Only add if it doesn't contain further dots (single-level navigation)
+                if (!navProperty.Contains('.'))
+                {
+                    properties.Add(navProperty);
+                }
+            }
+            else
+            {
+                // Simple field - check if it's a navigation property
+                var isNavigation = navigationProperties?.ContainsKey(field) == true;
+
+                if (!isNavigation &&
+                    !projection.ScalarFields.Contains(field, StringComparer.OrdinalIgnoreCase) &&
+                    !projection.KeyNames.Contains(field, StringComparer.OrdinalIgnoreCase))
+                {
+                    scalarFieldsToAdd.Add(field);
+                }
+                // Skip navigation names - they'll be handled via navigation paths
+            }
+        }
+
+        // Merge scalar fields
+        var mergedScalars = new List<string>(projection.ScalarFields);
+        mergedScalars.AddRange(scalarFieldsToAdd);
+
+        // Merge navigations
+        var mergedNavigations = new Dictionary<string, NavigationProjectionInfo>(projection.Navigations);
+
+        // Process navigation paths from filter fields
+        foreach (var (navName, requiredProps) in navigationPaths)
+        {
+            // Skip if no navigation metadata available for this entity type
+            if (navigationProperties == null)
+            {
+                continue;
+            }
+
+            // Try to find the navigation - use case-insensitive search
+            Navigation? navMetadata = null;
+            foreach (var (key, value) in navigationProperties)
+            {
+                if (string.Equals(key, navName, StringComparison.OrdinalIgnoreCase))
+                {
+                    navMetadata = value;
+                    break;
+                }
+            }
+
+            if (navMetadata == null)
+            {
+                continue;
+            }
+
+            var navType = navMetadata.Type;
+
+            if (mergedNavigations.TryGetValue(navName, out var existingNav))
+            {
+                // Navigation exists - add filter-required properties
+                var updatedScalars = new List<string>(existingNav.Projection.ScalarFields);
+                foreach (var prop in requiredProps)
+                {
+                    if (!updatedScalars.Contains(prop, StringComparer.OrdinalIgnoreCase))
+                    {
+                        updatedScalars.Add(prop);
+                    }
+                }
+
+                var updatedProjection = existingNav.Projection with { ScalarFields = updatedScalars };
+                updatedProjection = MergeFilterFieldsIntoProjection(updatedProjection, allFilterFields, navType);
+                mergedNavigations[navName] = existingNav with { Projection = updatedProjection };
+            }
+            else
+            {
+                // Navigation doesn't exist - create it with filter-required properties
+                keyNames.TryGetValue(navType, out var navKeys);
+                foreignKeys.TryGetValue(navType, out var navFks);
+
+                var navProjection = new FieldProjectionInfo(
+                    requiredProps.ToList(),
+                    navKeys ?? [],
+                    navFks ?? new HashSet<string>(),
+                    new());
+
+                navProjection = MergeFilterFieldsIntoProjection(navProjection, allFilterFields, navType);
+                mergedNavigations[navName] = new(navType, navMetadata.IsCollection, navProjection);
+            }
+        }
+
+        // Recursively process existing navigations
+        foreach (var (navName, navProjection) in projection.Navigations)
+        {
+            if (!mergedNavigations.ContainsKey(navName))
+            {
+                var updated = MergeFilterFieldsIntoProjection(navProjection.Projection, allFilterFields, navProjection.EntityType);
+                mergedNavigations[navName] = navProjection with { Projection = updated };
+            }
+        }
+
+        return new(mergedScalars, projection.KeyNames, projection.ForeignKeyNames, mergedNavigations);
     }
 
     FieldProjectionInfo GetProjectionInfo(
