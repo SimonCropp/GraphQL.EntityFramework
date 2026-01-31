@@ -1,23 +1,5 @@
-public class IntegrationTests_Cancellation
+public partial class IntegrationTests
 {
-    static SqlInstance<IntegrationDbContext> sqlInstance;
-
-    static IntegrationTests_Cancellation() =>
-        sqlInstance = new(
-            buildTemplate: async data =>
-            {
-                var database = data.Database;
-                await database.EnsureCreatedAsync();
-            },
-            constructInstance: builder =>
-            {
-                builder.ConfigureWarnings(_ =>
-                    _.Ignore(
-                        CoreEventId.NavigationBaseIncludeIgnored,
-                        CoreEventId.ShadowForeignKeyPropertyCreated,
-                        CoreEventId.CollectionWithoutComparer));
-                return new(builder.Options);
-            });
 
     [Fact]
     public async Task QueryConnection_WithCancelledToken_ThrowsOperationCanceledException()
@@ -132,10 +114,4 @@ public class IntegrationTests_Cancellation
         await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
             await executer.ExecuteAsync(options));
     }
-
-    static IEnumerable<Type> GetGraphQlTypes() =>
-        typeof(IntegrationTests_Cancellation)
-            .Assembly
-            .GetTypes()
-            .Where(_ => !_.IsAbstract && _.IsAssignableTo<GraphType>());
 }
