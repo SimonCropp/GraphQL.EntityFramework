@@ -44,6 +44,65 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [parent1, parent2, entity1, entity2, entity3]);
     }
 
+    /// <summary>
+    /// Tests that filter projections accessing ABSTRACT navigation properties work correctly.
+    /// When a filter projection accesses properties from an abstract navigation:
+    /// 1. The navigation should be loaded via EF Include (not SELECT projection)
+    /// 2. The projection should be skipped to avoid SelectExpressionBuilder failures
+    /// 3. The full entity with all columns should be loaded
+    /// This prevents "Can't compile a NewExpression with a constructor declared on an abstract class" errors
+    /// </summary>
+    [Fact]
+    public async Task Filter_projection_with_abstract_navigation_should_use_include()
+    {
+        var query =
+            """
+            {
+              derivedChildEntities
+              {
+                property
+              }
+            }
+            """;
+
+        var parentId = Guid.NewGuid();
+        var child1Id = Guid.NewGuid();
+        var child2Id = Guid.NewGuid();
+
+        var parent = new DerivedWithNavigationEntity
+        {
+            Id = parentId,
+            Property = "Parent1"
+        };
+        var child1 = new DerivedChildEntity
+        {
+            Id = child1Id,
+            Property = "Child1",
+            TypedParent = parent
+        };
+        var child2 = new DerivedChildEntity
+        {
+            Id = child2Id,
+            Property = "Child2",
+            TypedParent = parent
+        };
+
+        var filters = new Filters<IntegrationDbContext>();
+
+        // Filter projection accesses properties from abstract BaseEntity navigation
+        // This should use Include instead of projection to avoid abstract type construction errors
+        filters.For<DerivedChildEntity>().Add(
+            projection: c => new AbstractNavFilterProjection(
+                c.TypedParent != null ? c.TypedParent.Id : null,
+                c.TypedParent != null ? c.TypedParent.Property : null,
+                c.Id),
+            filter: (_, _, _, projection) => projection.ParentId == parentId);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, filters, false, [parent, child1, child2]);
+    }
+
     // ReSharper disable NotAccessedPositionalProperty.Local
     record ChildFilterProjection(Guid? ParentId, string? ParentProperty, Guid ChildId);
+    record AbstractNavFilterProjection(Guid? ParentId, string? ParentProperty, Guid ChildId);
 }
