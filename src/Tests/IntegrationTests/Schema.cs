@@ -39,9 +39,13 @@
         RegisterTypeMapping(typeof(FieldBuilderProjectionParentEntity), typeof(FieldBuilderProjectionParentGraphType));
         RegisterTypeMapping(typeof(DepartmentEntity), typeof(DepartmentGraphType));
         RegisterTypeMapping(typeof(EmployeeEntity), typeof(EmployeeGraphType));
+        RegisterTypeMapping(typeof(FilterReferenceEntity), typeof(FilterReferenceGraphType));
+        RegisterTypeMapping(typeof(FilterBaseEntity), typeof(FilterBaseGraphType));
+        RegisterTypeMapping(typeof(FilterDerivedEntity), typeof(FilterDerivedGraphType));
         Query = (Query)resolver.GetService(typeof(Query))!;
         Mutation = (Mutation)resolver.GetService(typeof(Mutation))!;
         RegisterType(typeof(DerivedGraphType));
         RegisterType(typeof(DerivedWithNavigationGraphType));
+        RegisterType(typeof(FilterDerivedGraphType));
     }
 }

@@ -151,6 +151,10 @@
   fieldBuilderProjectionParents(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FieldBuilderProjectionParent!]!
   departments(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Department!]!
   employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
+  filterChildEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterChild!]!
+  filterChildEntity(id: ID, ids: [ID!], where: [WhereExpression!]): FilterChild!
+  filterReferenceEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterReference!]!
+  filterReferenceEntity(id: ID, ids: [ID!], where: [WhereExpression!]): FilterReference!
 }
 
 type CustomType {
@@ -412,6 +416,16 @@ type FilterParent {
     orderBy: [OrderBy!],
     ids: [ID!]): FilterChildConnection!
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterChild!]!
+  field1: String
+  field10: ID
+  field2: String
+  field3: String
+  field4: Int!
+  field5: Int!
+  field6: DateTime
+  field7: DateTime
+  field8: Boolean!
+  field9: Boolean!
   id: ID!
   property: String
 }
@@ -710,6 +724,28 @@ type Employee {
   name: String
 }
 
+type FilterReference {
+  baseEntity: FilterBase
+  baseEntityId: ID!
+  id: ID!
+  property: String
+}
+
+type FilterBase {
+  commonProperty: String
+  field1: String
+  field10: ID
+  field2: String
+  field3: String
+  field4: Int!
+  field5: Int!
+  field6: DateTime
+  field7: DateTime
+  field8: Boolean!
+  field9: Boolean!
+  id: ID!
+}
+
 type Mutation {
   parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
 }
@@ -744,4 +780,21 @@ type DerivedWithNavigation implements BaseEntity {
   id: ID!
   property: String
   status: String
+}
+
+type FilterDerived {
+  references(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterReference!]!
+  commonProperty: String
+  derivedProperty: String
+  field1: String
+  field10: ID
+  field2: String
+  field3: String
+  field4: Int!
+  field5: Int!
+  field6: DateTime
+  field7: DateTime
+  field8: Boolean!
+  field9: Boolean!
+  id: ID!
 }

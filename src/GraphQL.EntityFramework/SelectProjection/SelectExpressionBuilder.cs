@@ -142,6 +142,7 @@ static class SelectExpressionBuilder
         var navType = navProjection.EntityType;
 
         // Can't create NewExpression for abstract types
+        // (EF Core can't compile "new AbstractType { ... }")
         if (navType.IsAbstract)
         {
             return null;
@@ -190,6 +191,7 @@ static class SelectExpressionBuilder
         var navType = navProjection.EntityType;
 
         // Can't create NewExpression for abstract types
+        // (EF Core can't compile "new AbstractType { ... }")
         if (navType.IsAbstract)
         {
             return null;

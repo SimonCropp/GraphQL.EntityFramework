@@ -102,7 +102,144 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [parent, child1, child2]);
     }
 
+    /// <summary>
+    /// BUG TEST: Verifies that filter projections with navigation property access
+    /// should only SELECT the required fields from the navigation, not all fields.
+    ///
+    /// This reproduces the bug where EntityFilters cause Include() to be added,
+    /// which loads ALL columns from the navigation entity instead of just the
+    /// filter-required columns.
+    ///
+    /// Expected behavior: SQL should only select Parent.Property (required by filter)
+    /// and Parent.Id (primary key), not all the extra fields (Field1-Field10).
+    ///
+    /// Actual behavior (BUG): SQL includes ALL parent fields because Include() is used.
+    /// </summary>
+    [Fact]
+    public async Task Filter_projection_should_not_select_all_navigation_fields()
+    {
+        var query =
+            """
+            {
+              filterChildEntity(id: "{id}")
+              {
+                id
+              }
+            }
+            """;
+
+        var parent = new FilterParentEntity
+        {
+            Property = "AllowedParent",
+            Field1 = "Extra1",
+            Field2 = "Extra2",
+            Field3 = "Extra3",
+            Field4 = 100,
+            Field5 = 200,
+            Field6 = DateTime.UtcNow,
+            Field7 = DateTime.UtcNow,
+            Field8 = true,
+            Field9 = false,
+            Field10 = Guid.NewGuid()
+        };
+        var child = new FilterChildEntity
+        {
+            Property = "Child1",
+            Parent = parent
+        };
+
+        query = query.Replace("{id}", child.Id.ToString());
+
+        var filters = new Filters<IntegrationDbContext>();
+
+        // Filter only accesses Parent.Property - should NOT load all parent fields
+        filters.For<FilterChildEntity>().Add(
+            projection: c => new FilterChildProjection(
+                c.Parent != null ? c.Parent.Property : null,
+                c.Id),
+            filter: (_, _, _, projection) => projection.ParentProperty == "AllowedParent");
+
+        await using var database = await sqlInstance.Build();
+
+        // BUG: The SQL will include Parent.Field1, Parent.Field2, etc. even though
+        // only Parent.Property is needed by the filter
+        await RunQuery(database, query, null, filters, false, [parent, child]);
+    }
+
+    /// <summary>
+    /// BUG TEST: Reproduces the bug where TPH inheritance + entity filters on base type
+    /// cause ALL columns to be selected from the navigation entity.
+    ///
+    /// This matches the MinistersApi scenario:
+    /// - FilterReferenceEntity (like Accommodation) has a navigation to FilterBaseEntity
+    /// - FilterBaseEntity (like BaseRequest) is an abstract base with TPH inheritance
+    /// - FilterDerivedEntity (like TravelRequest) inherits from FilterBaseEntity
+    /// - Both FilterReferenceEntity and FilterBaseEntity have entity filters
+    ///
+    /// Expected: SQL should only select BaseEntity.CommonProperty (required by filter)
+    /// Actual (BUG): SQL includes ALL fields (Field1-Field10) due to Include() being used
+    /// </summary>
+    [Fact]
+    public async Task Filter_projection_with_TPH_inheritance_should_not_select_all_fields()
+    {
+        var query =
+            """
+            {
+              filterReferenceEntity(id: "{id}")
+              {
+                id
+              }
+            }
+            """;
+
+        var derived = new FilterDerivedEntity
+        {
+            CommonProperty = "Allowed",
+            DerivedProperty = "Derived1",
+            Field1 = "Extra1",
+            Field2 = "Extra2",
+            Field3 = "Extra3",
+            Field4 = 100,
+            Field5 = 200,
+            Field6 = DateTime.UtcNow,
+            Field7 = DateTime.UtcNow,
+            Field8 = true,
+            Field9 = false,
+            Field10 = Guid.NewGuid()
+        };
+        var reference = new FilterReferenceEntity
+        {
+            Property = "Reference1",
+            BaseEntity = derived
+        };
+
+        query = query.Replace("{id}", reference.Id.ToString());
+
+        var filters = new Filters<IntegrationDbContext>();
+
+        // Filter on FilterReferenceEntity accesses BaseEntity.CommonProperty
+        filters.For<FilterReferenceEntity>().Add(
+            projection: r => new FilterReferenceProjection(
+                r.BaseEntity != null ? r.BaseEntity.CommonProperty : null,
+                r.Id),
+            filter: (_, _, _, proj) => proj.BaseCommonProperty == "Allowed");
+
+        // Filter on base type (like BaseRequest in MinistersApi)
+        filters.For<FilterBaseEntity>().Add(
+            projection: b => new FilterBaseProjection(b.CommonProperty, b.Id),
+            filter: (_, _, _, proj) => proj.CommonProperty != null);
+
+        await using var database = await sqlInstance.Build();
+
+        // BUG: The SQL will include a subquery selecting ALL fields from FilterBaseEntity
+        // (Field1-Field10) even though only CommonProperty is needed
+        await RunQuery(database, query, null, filters, false, [derived, reference]);
+    }
+
     // ReSharper disable NotAccessedPositionalProperty.Local
     record ChildFilterProjection(Guid? ParentId, string? ParentProperty, Guid ChildId);
     record AbstractNavFilterProjection(Guid? ParentId, string? ParentProperty, Guid ChildId);
+    record FilterChildProjection(string? ParentProperty, Guid ChildId);
+    record FilterReferenceProjection(string? BaseCommonProperty, Guid Id);
+    record FilterBaseProjection(string? CommonProperty, Guid Id);
 }

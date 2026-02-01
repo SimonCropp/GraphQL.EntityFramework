@@ -24,11 +24,8 @@
         IQueryable<TItem> query,
         IResolveFieldContext context,
         IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields)
-        where TItem : class
-    {
-        var (resultQuery, _) = AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields);
-        return resultQuery;
-    }
+        where TItem : class =>
+        AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields).query;
 
     internal (IQueryable<TItem> query, bool hasAbstractFilterNavigations) AddIncludesWithFiltersAndDetectNavigations<TItem>(
         IQueryable<TItem> query,
@@ -89,17 +86,22 @@
             }
         }
 
-        // Add Include for each filter-required navigation
+        // Only add Include for abstract filter-required navigations
+        // Non-abstract navigations are handled via the projection system in TryGetProjectionExpressionWithFilters
+        // which only selects the filter-required columns, not all columns
         var hasAbstractNavigations = false;
         foreach (var navName in filterNavigations)
         {
             if (navigationProperties.TryGetValue(navName, out var navMetadata))
             {
-                query = query.Include(navName);
                 if (navMetadata.Type.IsAbstract)
                 {
+                    // Abstract types cannot be projected (can't instantiate abstract class)
+                    // Must use Include which loads all columns
+                    query = query.Include(navName);
                     hasAbstractNavigations = true;
                 }
+                // Non-abstract navigations: projection system handles them efficiently
             }
         }
 
@@ -273,17 +275,16 @@
                     Projection = updatedProjection
                 };
             }
-            else if (!navType.IsAbstract)
+            else
             {
-                // Create navigation projection for filter-only navigations (unless abstract)
-                // Abstract navigations are handled via AddIncludesWithFilters() which uses EF Include
+                // Create navigation projection for filter-only navigations
+                // Note: For abstract types, we still create the projection here
+                // If SelectExpressionBuilder can't handle it, TryBuild will return false
+                // and the Include added by AddFilterIncludes will be used instead
                 var navProjection = new FieldProjectionInfo(requiredProps, null, null, null);
                 navProjection = MergeFilterFieldsIntoProjection(navProjection, allFilterFields, navType);
                 mergedNavigations[navName] = new(navType, navMetadata.IsCollection, navProjection);
             }
-            // Note: Abstract filter-required navigations are handled via AddIncludesWithFilters() which uses EF Include.
-            // We skip creating projections for them to prevent SelectExpressionBuilder from failing,
-            // which would cause it to fall back to loading all entity properties.
         }
 
         // Recursively process existing navigations
