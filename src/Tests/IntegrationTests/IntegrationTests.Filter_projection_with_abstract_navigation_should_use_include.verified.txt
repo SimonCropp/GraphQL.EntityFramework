@@ -1,0 +1,33 @@
+﻿{
+  target:
+{
+  "data": {
+    "derivedChildEntities": [
+      {
+        "property": "Child1"
+      },
+      {
+        "property": "Child2"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   d.Id,
+         d.ParentId,
+         d.TypedParentId,
+         d.Property,
+         case when b0.Id is null then cast (1 as bit) else cast (0 as bit) end,
+         b0.Id,
+         b0.Property
+from     DerivedChildEntities as d
+         left outer join
+         (select b.Id,
+                 b.Property
+          from   BaseEntities as b
+          where  b.Discriminator = N'DerivedWithNavigationEntity') as b0
+         on d.TypedParentId = b0.Id
+order by d.Property
+  }
+}

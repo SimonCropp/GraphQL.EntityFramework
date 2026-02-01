@@ -155,15 +155,19 @@ partial class EfGraphQLService<TDbContext>
                         query = query.AsNoTracking();
                     }
 
-                    query = includeAppender.AddIncludes(query, context);
+                    // Get filter-required fields early so we can add filter-required navigations via Include
+                    var allFilterFields = fieldContext.Filters?.GetAllRequiredFilterProperties();
+
+                    var (queryWithIncludes, hasAbstractFilterNavigations) = includeAppender.AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields);
+                    query = queryWithIncludes;
                     query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
 
                     // Apply column projection based on requested GraphQL fields
                     // Skip projection for abstract types as they cannot be instantiated
-                    if (!typeof(TReturn).IsAbstract)
+                    // Skip projection if abstract filter navigations are present (projection fails on abstract types, EF would drop includes)
+                    if (!typeof(TReturn).IsAbstract && !hasAbstractFilterNavigations)
                     {
-                        // Get filter-required fields and merge into projection (for all entity types including navigations)
-                        var allFilterFields = fieldContext.Filters?.GetAllRequiredFilterProperties();
+                        // Merge filter-required scalar fields into projection (navigations are handled via Include above)
                         if (includeAppender.TryGetProjectionExpressionWithFilters<TReturn>(context, allFilterFields, out var selectExpr))
                         {
                             query = query.Select(selectExpr);
