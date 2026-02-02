@@ -33,66 +33,17 @@
         IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields)
         where TItem : class
     {
-        // First add includes from GraphQL query
+        // Add includes from GraphQL query
         query = AddIncludes(query, context);
 
-        // Then add includes for filter-required navigations
-        if (allFilterFields is { Count: > 0 })
-        {
-            var type = typeof(TItem);
-            if (navigations.TryGetValue(type, out var navigationProperties))
-            {
-                query = AddFilterIncludes(query, allFilterFields, type, navigationProperties);
-            }
-        }
+        // Note: Filter-required navigations are now handled entirely by the projection system
+        // in TryGetProjectionExpressionWithFilters, which builds projections that include
+        // filter-required fields. Abstract navigation access is prevented by FilterEntry validation.
+        // No additional includes are needed here.
 
         return query;
     }
 
-    static IQueryable<TItem> AddFilterIncludes<TItem>(
-        IQueryable<TItem> query,
-        IReadOnlyDictionary<Type, IReadOnlySet<string>> allFilterFields,
-        Type entityType,
-        IReadOnlyDictionary<string, Navigation> navigationProperties)
-        where TItem : class
-    {
-        // Get filter fields for this entity type and its base types
-        var relevantFilterFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var (filterType, filterFields) in allFilterFields)
-        {
-            if (filterType.IsAssignableFrom(entityType))
-            {
-                foreach (var field in filterFields)
-                {
-                    relevantFilterFields.Add(field);
-                }
-            }
-        }
-
-        if (relevantFilterFields.Count == 0)
-        {
-            return query;
-        }
-
-        // Extract navigation names from filter fields (e.g., "TravelRequest.GroupOwnerId" -> "TravelRequest")
-        var filterNavigations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var field in relevantFilterFields)
-        {
-            if (field.Contains('.'))
-            {
-                var navName = field.Split('.', 2)[0];
-                filterNavigations.Add(navName);
-            }
-        }
-
-        // Note: Abstract filter navigations are now prevented by FilterEntry validation
-        // All filter-required navigations here should be from explicit projections
-        // that extract specific properties (not identity projections)
-        // These are handled via the projection system in TryGetProjectionExpressionWithFilters
-        // which only selects the required columns, not all columns
-
-        return query;
-    }
 
     public FieldProjectionInfo? GetProjection<TItem>(IResolveFieldContext context)
         where TItem : class

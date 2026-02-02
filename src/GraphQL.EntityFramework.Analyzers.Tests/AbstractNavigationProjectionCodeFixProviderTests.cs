@@ -83,7 +83,7 @@ public class AbstractNavigationProjectionCodeFixProviderTests
         var operation = operations.OfType<ApplyChangesOperation>().FirstOrDefault();
         if (operation == null)
         {
-            throw new($"No ApplyChangesOperation found");
+            throw new("No ApplyChangesOperation found");
         }
 
         var changedSolution = operation.ChangedSolution;

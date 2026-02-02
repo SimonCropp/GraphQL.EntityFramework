@@ -1,5 +1,3 @@
-using GraphQL.EntityFramework;
-
 public class FilterEntryValidationTests
 {
     class TestEntity
@@ -23,9 +21,7 @@ public class FilterEntryValidationTests
         public string? Property { get; set; }
     }
 
-    class TestDbContext : DbContext
-    {
-    }
+    class TestDbContext : DbContext;
 
     [Fact]
     public void Explicit_projection_with_abstract_navigation_property_throws()

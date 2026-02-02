@@ -77,7 +77,7 @@ public partial class IntegrationTests
         // (Runtime doesn't validate filter, so this is allowed)
         filters.For<DerivedChildEntity>().Add(
             projection: c => c,
-            filter: (_, _, _, c) => c.Property == "test" && c.ParentId != null);
+            filter: (_, _, _, c) => c is { Property: "test", ParentId: not null });
 
         // For identity projection, RequiredPropertyNames is empty
         var requiredProps = filters.GetRequiredFilterProperties<DerivedChildEntity>();
