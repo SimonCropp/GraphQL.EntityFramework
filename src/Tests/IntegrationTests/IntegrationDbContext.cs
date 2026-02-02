@@ -40,6 +40,9 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<FieldBuilderProjectionParentEntity> FieldBuilderProjectionParentEntities { get; set; } = null!;
     public DbSet<DepartmentEntity> Departments { get; set; } = null!;
     public DbSet<EmployeeEntity> Employees { get; set; } = null!;
+    public DbSet<FilterBaseEntity> FilterBaseEntities { get; set; } = null!;
+    public DbSet<FilterDerivedEntity> FilterDerivedEntities { get; set; } = null!;
+    public DbSet<FilterReferenceEntity> FilterReferenceEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -112,5 +115,13 @@ public class IntegrationDbContext(DbContextOptions options) :
             .WithMany(_ => _.Employees)
             .HasForeignKey(_ => _.DepartmentId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Configure TPH inheritance for FilterBaseEntity -> FilterDerivedEntity
+        modelBuilder.Entity<FilterBaseEntity>()
+            .OrderBy(_ => _.CommonProperty);
+        modelBuilder.Entity<FilterDerivedEntity>()
+            .HasBaseType<FilterBaseEntity>();
+        modelBuilder.Entity<FilterReferenceEntity>()
+            .OrderBy(_ => _.Property);
     }
 }

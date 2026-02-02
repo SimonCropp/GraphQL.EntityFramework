@@ -7,7 +7,8 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         [
             DiagnosticDescriptors.GQLEF004,
             DiagnosticDescriptors.GQLEF005,
-            DiagnosticDescriptors.GQLEF006
+            DiagnosticDescriptors.GQLEF006,
+            DiagnosticDescriptors.GQLEF007
         ];
 
     public override void Initialize(AnalysisContext context)
@@ -45,6 +46,21 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
             }
 
             // Identity projection detected
+            // First check for abstract navigation access (GQLEF007)
+            var abstractNav = FindAbstractNavigationAccess(filterLambda, context.SemanticModel);
+            if (abstractNav != null)
+            {
+                // Error: Identity projection with abstract navigation access
+                var diagnostic = Diagnostic.Create(
+                    DiagnosticDescriptors.GQLEF007,
+                    invocation.GetLocation(),
+                    entityType ?? "Entity",
+                    abstractNav);
+                context.ReportDiagnostic(diagnostic);
+                return;
+            }
+
+            // Then check for non-key property access (GQLEF006)
             var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda, context.SemanticModel);
             if (nonKeyProperty != null)
             {
@@ -75,7 +91,20 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
 
         if (is4ParamFilter)
         {
-            // Validate that filter only accesses PK/FK properties
+            // First check for abstract navigation access (GQLEF007)
+            var abstractNav = FindAbstractNavigationAccess(filterLambda, context.SemanticModel);
+            if (abstractNav != null)
+            {
+                var diagnostic = Diagnostic.Create(
+                    DiagnosticDescriptors.GQLEF007,
+                    invocation.GetLocation(),
+                    entityType ?? "Entity",
+                    abstractNav);
+                context.ReportDiagnostic(diagnostic);
+                return;
+            }
+
+            // Then validate that filter only accesses PK/FK properties
             var nonKeyProperty = FindNonKeyPropertyAccess(filterLambda, context.SemanticModel);
             if (nonKeyProperty != null)
             {
@@ -149,8 +178,8 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         }
 
         // Find the projection and filter parameters
-        var projectionParameter = methodSymbol.Parameters.FirstOrDefault(p => p.Name == "projection");
-        var filterParameter = methodSymbol.Parameters.FirstOrDefault(p => p.Name == "filter");
+        var projectionParameter = methodSymbol.Parameters.FirstOrDefault(_ => _.Name == "projection");
+        var filterParameter = methodSymbol.Parameters.FirstOrDefault(_ => _.Name == "filter");
 
         if (projectionParameter == null && filterParameter == null)
         {
@@ -408,5 +437,76 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
             }
         }
         return -1;
+    }
+
+    static string? FindAbstractNavigationAccess(
+        LambdaExpressionSyntax lambda,
+        SemanticModel semanticModel)
+    {
+        var body = lambda.Body;
+
+        // Get the filter lambda parameter name (last parameter in the filter signature)
+        string? filterParameterName = null;
+        if (lambda is SimpleLambdaExpressionSyntax simpleLambda)
+        {
+            filterParameterName = simpleLambda.Parameter.Identifier.Text;
+        }
+        else if (lambda is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
+        {
+            var parameterCount = parenthesizedLambda.ParameterList.Parameters.Count;
+            if (parameterCount > 0)
+            {
+                filterParameterName = parenthesizedLambda.ParameterList.Parameters[parameterCount - 1].Identifier.Text;
+            }
+        }
+
+        if (filterParameterName == null)
+        {
+            return null;
+        }
+
+        // Find all member access expressions in the lambda
+        var memberAccesses = body.DescendantNodesAndSelf()
+            .OfType<MemberAccessExpressionSyntax>();
+
+        foreach (var memberAccess in memberAccesses)
+        {
+            // Check for navigation property access pattern: e.Parent.Property
+            // We want to detect when `e.Parent` is a navigation to an abstract type
+            if (memberAccess.Expression is MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax identifier } nestedAccess &&
+                identifier.Identifier.Text == filterParameterName)
+            {
+                // This is e.Parent.Property - check if Parent is abstract
+                if (semanticModel.GetSymbolInfo(nestedAccess).Symbol is IPropertySymbol { Type.IsAbstract: true } navigationSymbol)
+                {
+                    return navigationSymbol.Name;
+                }
+            }
+            // Also check direct navigation access: e.Parent (without further property access)
+            else if (memberAccess.Expression is IdentifierNameSyntax directIdentifier &&
+                     directIdentifier.Identifier.Text == filterParameterName)
+            {
+                if (semanticModel.GetSymbolInfo(memberAccess).Symbol is not IPropertySymbol propertySymbol)
+                {
+                    continue;
+                }
+
+                var propType = propertySymbol.Type;
+                // Check if this is a reference type (not a primitive) and is abstract
+                // This indicates it's likely a navigation property to an abstract entity
+                if (propType is not { IsAbstract: true, TypeKind: TypeKind.Class })
+                {
+                    continue;
+                }
+
+                // But make sure it's not a primitive key property or known scalar
+                if (!IsPrimaryKeyProperty(propertySymbol) && !IsForeignKeyProperty(propertySymbol))
+                {
+                    return propertySymbol.Name;
+                }
+            }
+        }
+
+        return null;
     }
 }

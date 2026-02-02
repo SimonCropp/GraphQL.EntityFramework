@@ -10,3 +10,4 @@ GQLEF003 | Usage | Error | Identity projection is not allowed in projection-base
 GQLEF004 | Usage | Info | Suggests using 4-parameter filter syntax instead of explicit identity projection
 GQLEF005 | Usage | Error | Prevents accessing non-key properties with 4-parameter filter syntax
 GQLEF006 | Usage | Error | Prevents accessing non-key properties with explicit identity projection
+GQLEF007 | Usage | Error | Identity projection with abstract navigation access

@@ -602,9 +602,206 @@ public class FilterIdentityProjectionAnalyzerTests
             throw new($"Compilation errors:\n{errorMessages}");
         }
 
-        // Filter to only GQLEF004, GQLEF005, and GQLEF006 diagnostics
+        // Filter to only GQLEF004, GQLEF005, GQLEF006, and GQLEF007 diagnostics
         return allDiagnostics
-            .Where(_ => _.Id == "GQLEF004" || _.Id == "GQLEF005" || _.Id == "GQLEF006")
+            .Where(_ => _.Id == "GQLEF004" || _.Id == "GQLEF005" || _.Id == "GQLEF006" || _.Id == "GQLEF007")
             .ToArray();
+    }
+
+    // GQLEF007 Tests - Identity projection with abstract navigation access
+
+    [Fact]
+    public async Task GQLEF007_Reports_IdentityProjection_WithAbstractNavigationAccess()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using Microsoft.EntityFrameworkCore;
+            using System;
+
+            public abstract class BaseEntity
+            {
+                public Guid Id { get; set; }
+                public string Property { get; set; } = "";
+            }
+
+            public class DerivedEntity : BaseEntity { }
+
+            public class ChildEntity
+            {
+                public Guid Id { get; set; }
+                public Guid? ParentId { get; set; }
+                public BaseEntity? Parent { get; set; }
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class TestClass
+            {
+                public void ConfigureFilters(Filters<TestDbContext> filters)
+                {
+                    filters.For<ChildEntity>().Add(
+                        projection: _ => _,
+                        filter: (_, _, _, c) => c.Parent!.Property == "test");
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        Assert.Single(diagnostics);
+        Assert.Equal("GQLEF007", diagnostics[0].Id);
+        Assert.Contains("Parent", diagnostics[0].GetMessage());
+    }
+
+    [Fact]
+    public async Task GQLEF007_Reports_FourParamFilter_WithAbstractNavigationAccess()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using Microsoft.EntityFrameworkCore;
+            using System;
+
+            public abstract class BaseEntity
+            {
+                public Guid Id { get; set; }
+                public string Status { get; set; } = "";
+            }
+
+            public class ChildEntity
+            {
+                public Guid Id { get; set; }
+                public BaseEntity? Parent { get; set; }
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class TestClass
+            {
+                public void ConfigureFilters(Filters<TestDbContext> filters)
+                {
+                    filters.For<ChildEntity>().Add(
+                        filter: (_, _, _, c) => c.Parent!.Status == "Active");
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        Assert.Single(diagnostics);
+        Assert.Equal("GQLEF007", diagnostics[0].Id);
+    }
+
+    [Fact]
+    public async Task GQLEF007_NoReport_ConcreteNavigationAccess()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using Microsoft.EntityFrameworkCore;
+            using System;
+
+            public class ConcreteParent
+            {
+                public Guid Id { get; set; }
+                public string Property { get; set; } = "";
+            }
+
+            public class ChildEntity
+            {
+                public Guid Id { get; set; }
+                public ConcreteParent? Parent { get; set; }
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class TestClass
+            {
+                public void ConfigureFilters(Filters<TestDbContext> filters)
+                {
+                    filters.For<ChildEntity>().Add(
+                        projection: _ => _,
+                        filter: (_, _, _, c) => c.Parent!.Property == "test");
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        // Should report GQLEF006 (non-key property access) but not GQLEF007
+        Assert.DoesNotContain(diagnostics, d => d.Id == "GQLEF007");
+    }
+
+    [Fact]
+    public async Task GQLEF007_NoReport_ExplicitProjection_WithAbstractNavigation()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using Microsoft.EntityFrameworkCore;
+            using System;
+
+            public abstract class BaseEntity
+            {
+                public Guid Id { get; set; }
+                public string Property { get; set; } = "";
+            }
+
+            public class ChildEntity
+            {
+                public Guid Id { get; set; }
+                public BaseEntity? Parent { get; set; }
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class TestClass
+            {
+                public void ConfigureFilters(Filters<TestDbContext> filters)
+                {
+                    filters.For<ChildEntity>().Add(
+                        projection: c => new { c.Id, ParentProp = c.Parent!.Property },
+                        filter: (_, _, _, proj) => proj.ParentProp == "test");
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        // Explicit projection - analyzer doesn't catch this (runtime does)
+        Assert.Empty(diagnostics);
+    }
+
+    [Fact]
+    public async Task GQLEF007_Reports_NestedAbstractNavigationAccess()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using Microsoft.EntityFrameworkCore;
+            using System;
+            using System.Collections.Generic;
+
+            public abstract class BaseEntity
+            {
+                public Guid Id { get; set; }
+                public List<ChildEntity> Children { get; set; } = new();
+            }
+
+            public class ChildEntity
+            {
+                public Guid Id { get; set; }
+                public BaseEntity? Parent { get; set; }
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class TestClass
+            {
+                public void ConfigureFilters(Filters<TestDbContext> filters)
+                {
+                    filters.For<ChildEntity>().Add(
+                        projection: _ => _,
+                        filter: (_, _, _, c) => c.Parent!.Children.Count > 0);
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        Assert.Single(diagnostics);
+        Assert.Equal("GQLEF007", diagnostics[0].Id);
+        Assert.Contains("Parent", diagnostics[0].GetMessage());
     }
 }

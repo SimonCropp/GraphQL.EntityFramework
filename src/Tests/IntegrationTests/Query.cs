@@ -336,5 +336,21 @@
         AddQueryField(
             name: "employees",
             resolve: _ => _.DbContext.Employees);
+
+        AddQueryField(
+            name: "filterChildEntities",
+            resolve: _ => _.DbContext.FilterChildEntities);
+
+        AddSingleField(
+            name: "filterChildEntity",
+            resolve: _ => _.DbContext.FilterChildEntities);
+
+        AddQueryField(
+            name: "filterReferenceEntities",
+            resolve: _ => _.DbContext.FilterReferenceEntities);
+
+        AddSingleField(
+            name: "filterReferenceEntity",
+            resolve: _ => _.DbContext.FilterReferenceEntities);
     }
 }

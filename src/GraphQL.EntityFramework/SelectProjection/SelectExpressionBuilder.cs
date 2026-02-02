@@ -142,6 +142,7 @@ static class SelectExpressionBuilder
         var navType = navProjection.EntityType;
 
         // Can't create NewExpression for abstract types
+        // (EF Core can't compile "new AbstractType { ... }")
         if (navType.IsAbstract)
         {
             return null;
@@ -160,7 +161,7 @@ static class SelectExpressionBuilder
         var innerMemberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
         var innerLambda = Expression.Lambda(innerMemberInit, navParam);
 
-        // Build: x.Children.OrderBy(n => n.Key) to ensure deterministic ordering
+        // Build: x.Children.OrderBy(_ => _.Key) to ensure deterministic ordering
         Expression orderedCollection = navAccess;
         if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
         {
@@ -190,6 +191,7 @@ static class SelectExpressionBuilder
         var navType = navProjection.EntityType;
 
         // Can't create NewExpression for abstract types
+        // (EF Core can't compile "new AbstractType { ... }")
         if (navType.IsAbstract)
         {
             return null;
@@ -333,7 +335,7 @@ static class SelectExpressionBuilder
             var innerMemberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
             var innerLambda = Expression.Lambda(innerMemberInit, navParam);
 
-            // .OrderBy(o => o.Key) to ensure deterministic ordering
+            // .OrderBy(_ => _.Key) to ensure deterministic ordering
             Expression orderedCollection = navAccess;
             if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
             {
@@ -346,7 +348,7 @@ static class SelectExpressionBuilder
                 }
             }
 
-            // .Select(n => new Child { ... })
+            // .Select(_ => new Child { ... })
             var selectCall = Expression.Call(null, navMetadata.SelectMethod, orderedCollection, innerLambda);
 
             // .ToList()

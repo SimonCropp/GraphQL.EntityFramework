@@ -158,16 +158,16 @@ partial class EfGraphQLService<TDbContext>
                     // Get filter-required fields early so we can add filter-required navigations via Include
                     var allFilterFields = fieldContext.Filters?.GetAllRequiredFilterProperties();
 
-                    var (queryWithIncludes, hasAbstractFilterNavigations) = includeAppender.AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields);
-                    query = queryWithIncludes;
+                    query = includeAppender.AddIncludesWithFiltersAndDetectNavigations(query, context);
                     query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
 
                     // Apply column projection based on requested GraphQL fields
                     // Skip projection for abstract types as they cannot be instantiated
-                    // Skip projection if abstract filter navigations are present (projection fails on abstract types, EF would drop includes)
-                    if (!typeof(TReturn).IsAbstract && !hasAbstractFilterNavigations)
+                    if (!typeof(TReturn).IsAbstract)
                     {
-                        // Merge filter-required scalar fields into projection (navigations are handled via Include above)
+                        // Try to build projection even with abstract filter navigations
+                        // The projection system may handle them (e.g., TPH inheritance)
+                        // If projection build fails, we fall back to Include (which was already added above)
                         if (includeAppender.TryGetProjectionExpressionWithFilters<TReturn>(context, allFilterFields, out var selectExpr))
                         {
                             query = query.Select(selectExpr);

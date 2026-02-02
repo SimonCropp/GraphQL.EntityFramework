@@ -1,0 +1,27 @@
+﻿using GraphQL.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using System;
+
+public abstract class BaseEntity
+{
+    public Guid Id { get; set; }
+    public string Property { get; set; } = "";
+}
+
+public class ChildEntity
+{
+    public Guid Id { get; set; }
+    public BaseEntity? Parent { get; set; }
+}
+
+public class TestDbContext : DbContext { }
+
+public class TestClass
+{
+    public void ConfigureFilters(Filters<TestDbContext> filters)
+    {
+        filters.For<ChildEntity>().Add(
+            projection: c => new { c.Id, ParentProperty = c.Parent.Property },
+            filter: (_, _, _, proj) => proj.ParentProperty == "test");
+    }
+}

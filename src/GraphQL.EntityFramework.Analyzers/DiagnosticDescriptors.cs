@@ -49,4 +49,14 @@ public static class DiagnosticDescriptors
         isEnabledByDefault: true,
         description: "When using identity projection '_ => _', only primary keys and foreign keys are guaranteed to be loaded. Either project specific properties needed or use the simplified API if you only need key properties.",
         helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#identity-projection-filters");
+
+    public static readonly DiagnosticDescriptor GQLEF007 = new(
+        id: "GQLEF007",
+        title: "Identity projection with abstract navigation access",
+        messageFormat: "Filter for '{0}' uses identity projection but accesses abstract navigation '{1}'. This forces Include() to load all columns. Use explicit projection to load only required properties.",
+        category: "Usage",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        description: "Abstract type navigations cannot use SQL projections and fall back to Include() which loads all columns. Use explicit projection to extract only required properties from abstract navigations.",
+        helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#abstract-navigation-projections");
 }
