@@ -196,19 +196,37 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
 
         foreach (var memberAccess in memberAccesses)
         {
-            // Look for patterns like: e.Parent.Property
-            if (memberAccess.Expression is MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax identifier } nestedAccess &&
-                identifier.Identifier.Text == paramName)
-            {
-                // e.Parent.Property - extract as "Parent.Property"
-                var navName = nestedAccess.Name.Identifier.Text;
-                var propName = memberAccess.Name.Identifier.Text;
-                var fullPath = $"{navName}.{propName}";
-                var flatName = $"{navName}{propName}";
+            // Look for patterns like: e.Parent.Property or e.Parent!.Property (with null-forgiving operator)
+            // The null-forgiving operator creates a PostfixUnaryExpressionSyntax wrapper
+            var innerExpression = memberAccess.Expression;
 
-                if (!properties.Any(p => p.FullPath == fullPath))
+            // Unwrap null-forgiving operator if present: e.Parent! -> e.Parent
+            if (innerExpression is PostfixUnaryExpressionSyntax { RawKind: (int)SyntaxKind.SuppressNullableWarningExpression } postfix)
+            {
+                innerExpression = postfix.Operand;
+            }
+
+            if (innerExpression is MemberAccessExpressionSyntax nestedAccess)
+            {
+                // Check if the root is our parameter (possibly with null-forgiving)
+                var rootExpr = nestedAccess.Expression;
+                if (rootExpr is PostfixUnaryExpressionSyntax { RawKind: (int)SyntaxKind.SuppressNullableWarningExpression } rootPostfix)
                 {
-                    properties.Add(new(fullPath, flatName, memberAccess));
+                    rootExpr = rootPostfix.Operand;
+                }
+
+                if (rootExpr is IdentifierNameSyntax identifier && identifier.Identifier.Text == paramName)
+                {
+                    // e.Parent.Property - extract as "Parent.Property"
+                    var navName = nestedAccess.Name.Identifier.Text;
+                    var propName = memberAccess.Name.Identifier.Text;
+                    var fullPath = $"{navName}.{propName}";
+                    var flatName = $"{navName}{propName}";
+
+                    if (!properties.Any(p => p.FullPath == fullPath))
+                    {
+                        properties.Add(new(fullPath, flatName, memberAccess));
+                    }
                 }
             }
         }
