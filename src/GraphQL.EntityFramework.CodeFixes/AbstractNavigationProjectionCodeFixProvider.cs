@@ -61,7 +61,6 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
 
         // Find projection and filter arguments
         var arguments = invocation.ArgumentList.Arguments;
-        LambdaExpressionSyntax? projectionLambda = null;
         LambdaExpressionSyntax? filterLambda = null;
         var projectionArgumentIndex = -1;
         var filterArgumentIndex = -1;
@@ -69,10 +68,8 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         for (var i = 0; i < arguments.Count; i++)
         {
             var arg = arguments[i];
-            if (arg.NameColon?.Name.Identifier.Text == "projection" &&
-                arg.Expression is LambdaExpressionSyntax projLambda)
+            if (arg.NameColon?.Name.Identifier.Text == "projection")
             {
-                projectionLambda = projLambda;
                 projectionArgumentIndex = i;
             }
             else if (arg.NameColon?.Name.Identifier.Text == "filter" &&
