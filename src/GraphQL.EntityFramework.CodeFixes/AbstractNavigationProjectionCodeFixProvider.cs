@@ -110,7 +110,7 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         var newProjectionLambda = BuildProjectionLambda(entityParamName, accessedProperties);
 
         // Build new filter lambda with renamed parameter: (_, _, _, proj) => proj.Prop1 == value
-        var newFilterLambda = BuildFilterLambda(filterLambda, entityParamName, accessedProperties);
+        var newFilterLambda = BuildFilterLambda(filterLambda, accessedProperties);
 
         // Replace arguments
         SyntaxNode newInvocation;
@@ -270,7 +270,6 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
 
     static LambdaExpressionSyntax BuildFilterLambda(
         LambdaExpressionSyntax originalFilter,
-        string originalParamName,
         List<PropertyAccess> properties)
     {
         // Replace entity parameter references with proj and update property accesses
@@ -282,7 +281,7 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
             // Replace e.Parent.Property with proj.ParentProperty
             newBody = newBody.ReplaceNodes(
                 newBody.DescendantNodesAndSelf().Where(n => n == prop.OriginalAccess),
-                (_, __) => SyntaxFactory.MemberAccessExpression(
+                (_, _) => SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.IdentifierName("proj"),
                     SyntaxFactory.IdentifierName(prop.FlatName)));
@@ -295,7 +294,8 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("proj")),
                 newBody);
         }
-        else if (originalFilter is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
+
+        if (originalFilter is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
         {
             var parameters = parenthesizedLambda.ParameterList.Parameters;
             var newParameters = parameters.RemoveAt(parameters.Count - 1)

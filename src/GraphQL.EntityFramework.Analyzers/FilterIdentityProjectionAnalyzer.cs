@@ -486,19 +486,23 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
             else if (memberAccess.Expression is IdentifierNameSyntax directIdentifier &&
                      directIdentifier.Identifier.Text == filterParameterName)
             {
-                if (semanticModel.GetSymbolInfo(memberAccess).Symbol is IPropertySymbol propertySymbol)
+                if (semanticModel.GetSymbolInfo(memberAccess).Symbol is not IPropertySymbol propertySymbol)
                 {
-                    var propType = propertySymbol.Type;
-                    // Check if this is a reference type (not a primitive) and is abstract
-                    // This indicates it's likely a navigation property to an abstract entity
-                    if (propType is { IsAbstract: true, TypeKind: TypeKind.Class })
-                    {
-                        // But make sure it's not a primitive key property or known scalar
-                        if (!IsPrimaryKeyProperty(propertySymbol) && !IsForeignKeyProperty(propertySymbol))
-                        {
-                            return propertySymbol.Name;
-                        }
-                    }
+                    continue;
+                }
+
+                var propType = propertySymbol.Type;
+                // Check if this is a reference type (not a primitive) and is abstract
+                // This indicates it's likely a navigation property to an abstract entity
+                if (propType is not { IsAbstract: true, TypeKind: TypeKind.Class })
+                {
+                    continue;
+                }
+
+                // But make sure it's not a primitive key property or known scalar
+                if (!IsPrimaryKeyProperty(propertySymbol) && !IsForeignKeyProperty(propertySymbol))
+                {
+                    return propertySymbol.Name;
                 }
             }
         }
