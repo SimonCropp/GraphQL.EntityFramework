@@ -33,16 +33,10 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
             return;
         }
 
-        var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken);
-        if (semanticModel == null)
-        {
-            return;
-        }
-
         context.RegisterCodeFix(
             CodeAction.Create(
                 title: title,
-                createChangedDocument: c => ConvertToExplicitProjectionAsync(context.Document, invocation, semanticModel, c),
+                createChangedDocument: c => ConvertToExplicitProjectionAsync(context.Document, invocation, c),
                 equivalenceKey: title),
             diagnostic);
     }
@@ -50,7 +44,6 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
     static async Task<Document> ConvertToExplicitProjectionAsync(
         Document document,
         InvocationExpressionSyntax invocation,
-        SemanticModel semanticModel,
         Cancel cancel)
     {
         var root = await document.GetSyntaxRootAsync(cancel);
@@ -89,7 +82,7 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         }
 
         // Extract accessed properties from filter
-        var accessedProperties = ExtractAccessedProperties(filterLambda, semanticModel);
+        var accessedProperties = ExtractAccessedProperties(filterLambda);
         if (accessedProperties.Count == 0)
         {
             return document;
@@ -163,9 +156,7 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         return document.WithSyntaxRoot(newRoot);
     }
 
-    static List<PropertyAccess> ExtractAccessedProperties(
-        LambdaExpressionSyntax filterLambda,
-        SemanticModel semanticModel)
+    static List<PropertyAccess> ExtractAccessedProperties(LambdaExpressionSyntax filterLambda)
     {
         var properties = new List<PropertyAccess>();
         var body = filterLambda.Body;
