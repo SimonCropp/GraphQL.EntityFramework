@@ -1,46 +1,47 @@
 public partial class IntegrationTests
 {
     /// <summary>
-    /// Test that explicit projection accessing properties through abstract navigation throws.
-    /// DerivedChildEntity.Parent is BaseEntity (abstract), so projecting Parent.Property
-    /// should throw because abstract types cannot be projected by EF Core.
+    /// Test that explicit projection accessing properties through abstract navigation succeeds.
+    /// DerivedChildEntity.Parent is BaseEntity (abstract), but explicit projections that extract
+    /// specific scalar properties are ALLOWED because EF Core can project scalar properties
+    /// through abstract navigations efficiently. Only identity projections are problematic.
     /// </summary>
     [Fact]
-    public void Explicit_projection_with_abstract_navigation_property_throws()
+    public void Explicit_projection_with_abstract_navigation_property_succeeds()
     {
         var filters = new Filters<IntegrationDbContext>();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-        {
-            // Projection accesses Parent.Property where Parent is BaseEntity (abstract)
-            filters.For<DerivedChildEntity>().Add(
-                projection: c => c.Parent!.Property,
-                filter: (_, _, _, prop) => prop == "test");
-        });
+        // Projection accesses Parent.Property where Parent is BaseEntity (abstract)
+        // This is ALLOWED - EF Core generates efficient JOIN to get only the needed column
+        filters.For<DerivedChildEntity>().Add(
+            projection: c => c.Parent!.Property,
+            filter: (_, _, _, prop) => prop == "test");
 
-        Assert.Contains("abstract navigation", exception.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Parent", exception.Message);
+        // Verify the filter was registered with the expected property
+        var requiredProps = filters.GetRequiredFilterProperties<DerivedChildEntity>();
+        Assert.Contains("Parent.Property", requiredProps);
     }
 
     /// <summary>
-    /// Test that anonymous type projection with abstract navigation also throws.
-    /// Even with anonymous types, we cannot project from abstract navigations.
+    /// Test that anonymous type projection with abstract navigation succeeds.
+    /// Explicit projections (including anonymous types) that extract specific properties
+    /// through abstract navigations are ALLOWED - EF Core handles this efficiently.
     /// </summary>
     [Fact]
-    public void Anonymous_type_projection_with_abstract_navigation_throws()
+    public void Anonymous_type_projection_with_abstract_navigation_succeeds()
     {
         var filters = new Filters<IntegrationDbContext>();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-        {
-            // Even with anonymous type, projecting from abstract Parent throws
-            filters.For<DerivedChildEntity>().Add(
-                projection: c => new { c.Id, ParentProperty = c.Parent!.Property },
-                filter: (_, _, _, proj) => proj.ParentProperty == "test");
-        });
+        // Anonymous type projection extracting properties through abstract Parent
+        // This is ALLOWED - EF Core generates efficient SQL with JOINs
+        filters.For<DerivedChildEntity>().Add(
+            projection: c => new { c.Id, ParentProperty = c.Parent!.Property },
+            filter: (_, _, _, proj) => proj.ParentProperty == "test");
 
-        Assert.Contains("abstract navigation", exception.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Parent", exception.Message);
+        // Verify the filter was registered with expected properties
+        var requiredProps = filters.GetRequiredFilterProperties<DerivedChildEntity>();
+        Assert.Contains("Id", requiredProps);
+        Assert.Contains("Parent.Property", requiredProps);
     }
 
     /// <summary>
@@ -104,22 +105,43 @@ public partial class IntegrationTests
     }
 
     /// <summary>
-    /// Test projecting from nested abstract navigation property.
+    /// Test projecting from nested abstract navigation property succeeds.
+    /// Explicit projections that extract specific scalar properties are allowed.
     /// </summary>
     [Fact]
-    public void Projection_with_nested_abstract_navigation_property_throws()
+    public void Projection_with_nested_abstract_navigation_property_succeeds()
     {
         var filters = new Filters<IntegrationDbContext>();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-        {
-            // Accessing nested property through abstract parent
-            filters.For<DerivedChildEntity>().Add(
-                projection: c => c.Parent!.Status,
-                filter: (_, _, _, status) => status == "Active");
-        });
+        // Accessing nested property through abstract parent is allowed for explicit projections
+        filters.For<DerivedChildEntity>().Add(
+            projection: c => c.Parent!.Status,
+            filter: (_, _, _, status) => status == "Active");
 
-        Assert.Contains("abstract navigation", exception.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Parent", exception.Message);
+        var requiredProps = filters.GetRequiredFilterProperties<DerivedChildEntity>();
+        Assert.Contains("Parent.Status", requiredProps);
+    }
+
+    /// <summary>
+    /// Test that identity projection with filter accessing abstract navigation is NOT caught at runtime.
+    /// The runtime cannot analyze the filter delegate. The GQLEF007 analyzer catches this at compile time.
+    /// </summary>
+    [Fact]
+    public void Identity_projection_with_abstract_navigation_in_filter_not_caught_at_runtime()
+    {
+        var filters = new Filters<IntegrationDbContext>();
+
+        // Identity projection where filter accesses abstract Parent
+        // This is NOT caught at runtime because:
+        // 1. The projection `c => c` has no property accesses to analyze
+        // 2. The filter is a compiled delegate, not an expression tree
+        // The GQLEF007 analyzer catches this at compile time instead.
+        filters.For<DerivedChildEntity>().Add(
+            projection: c => c,
+            filter: (_, _, _, c) => c.Parent!.Property == "test");
+
+        // Identity projection extracts no properties
+        var requiredProps = filters.GetRequiredFilterProperties<DerivedChildEntity>();
+        Assert.Empty(requiredProps);
     }
 }

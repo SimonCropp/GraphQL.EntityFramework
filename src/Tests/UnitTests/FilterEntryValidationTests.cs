@@ -24,20 +24,20 @@ public class FilterEntryValidationTests
     class TestDbContext : DbContext;
 
     [Fact]
-    public void Explicit_projection_with_abstract_navigation_property_throws()
+    public void Explicit_projection_with_abstract_navigation_property_succeeds()
     {
         var filters = new Filters<TestDbContext>();
 
-        // This should throw - projection directly accesses abstract navigation property
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-        {
-            filters.For<TestEntity>().Add(
-                projection: e => e.Parent!.Property,
-                filter: (_, _, _, prop) => prop == "test");
-        });
+        // Explicit projections that extract specific properties through abstract navigations are ALLOWED
+        // because EF Core can project scalar properties through abstract navigations efficiently.
+        // Only identity projections are problematic.
+        filters.For<TestEntity>().Add(
+            projection: e => e.Parent!.Property,
+            filter: (_, _, _, prop) => prop == "test");
 
-        Assert.Contains("abstract navigation", exception.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Parent", exception.Message);
+        // Verify the filter was registered with the expected property
+        var requiredProps = filters.GetRequiredFilterProperties<TestEntity>();
+        Assert.Contains("Parent.Property", requiredProps);
     }
 
     [Fact]
@@ -52,20 +52,20 @@ public class FilterEntryValidationTests
     }
 
     [Fact]
-    public void Anonymous_type_projection_with_abstract_navigation_throws()
+    public void Anonymous_type_projection_with_abstract_navigation_succeeds()
     {
         var filters = new Filters<TestDbContext>();
 
-        // This should also throw - even with anonymous type, we're projecting from abstract navigation
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-        {
-            filters.For<TestEntity>().Add(
-                projection: e => new { e.Id, ParentProp = e.Parent!.Property },
-                filter: (_, _, _, proj) => proj.ParentProp == "test");
-        });
+        // Explicit projections (including anonymous types) that extract specific properties
+        // through abstract navigations are ALLOWED - EF Core handles this efficiently.
+        filters.For<TestEntity>().Add(
+            projection: e => new { e.Id, ParentProp = e.Parent!.Property },
+            filter: (_, _, _, proj) => proj.ParentProp == "test");
 
-        Assert.Contains("abstract navigation", exception.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Parent", exception.Message);
+        // Verify the filter was registered with expected properties
+        var requiredProps = filters.GetRequiredFilterProperties<TestEntity>();
+        Assert.Contains("Id", requiredProps);
+        Assert.Contains("Parent.Property", requiredProps);
     }
 
     [Fact]
@@ -89,5 +89,24 @@ public class FilterEntryValidationTests
         filters.For<TestEntity>().Add(
             projection: e => e,
             filter: (_, _, _, e) => e.Property == "test");
+    }
+
+    [Fact]
+    public void Identity_projection_with_abstract_navigation_in_filter_not_caught_at_runtime()
+    {
+        var filters = new Filters<TestDbContext>();
+
+        // Identity projection where filter accesses abstract navigation
+        // This is NOT caught at runtime because:
+        // 1. The projection `e => e` has no property accesses to analyze
+        // 2. The filter is a compiled delegate, not an expression tree
+        // The GQLEF007 analyzer catches this at compile time instead.
+        filters.For<TestEntity>().Add(
+            projection: e => e,
+            filter: (_, _, _, e) => e.Parent!.Property == "test");
+
+        // Identity projection extracts no properties
+        var requiredProps = filters.GetRequiredFilterProperties<TestEntity>();
+        Assert.Empty(requiredProps);
     }
 }

@@ -42,6 +42,8 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
             // Pattern 2: filters.For<T>().Add(projection: ..., filter: ...)
             if (!IsIdentityProjection(projectionLambda))
             {
+                // Explicit projections that extract specific properties from abstract navigations
+                // are ALLOWED - they produce efficient SQL. Only identity projections are problematic.
                 return;
             }
 

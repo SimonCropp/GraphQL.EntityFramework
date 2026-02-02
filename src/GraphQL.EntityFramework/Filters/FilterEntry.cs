@@ -42,6 +42,16 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         Expression<Func<TEntity, TProjection>> projection,
         IReadOnlySet<string> requiredPropertyNames)
     {
+        // Only validate identity projections (x => x)
+        // Explicit projections that extract specific properties from abstract navigations are ALLOWED
+        // because EF Core can project scalar properties through abstract navigations efficiently.
+        // The problem only occurs with identity projections where the filter accesses abstract nav properties,
+        // which forces Include() to load all columns.
+        if (!IsIdentityProjection(projection))
+        {
+            return;
+        }
+
         // Extract navigation paths (e.g., "Parent.Property" -> navigation "Parent")
         var navigationPaths = requiredPropertyNames
             .Where(_ => _.Contains('.'))
@@ -55,7 +65,6 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         }
 
         var entityType = typeof(TEntity);
-        var isIdentity = IsIdentityProjection(projection);
 
         // Check each navigation for abstract types
         foreach (var navPath in navigationPaths)
@@ -83,12 +92,11 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
 
             if (navType.IsAbstract)
             {
-                var projectionType = isIdentity ? "identity projection '_ => _'" : "projection that accesses abstract navigation";
                 throw new InvalidOperationException(
-                    $"Filter for '{entityType.Name}' uses {projectionType} " +
+                    $"Filter for '{entityType.Name}' uses identity projection '_ => _' " +
                     $"to access properties of abstract navigation '{navPath}' ({navType.Name}). " +
                     $"This forces Include() to load all columns from {navType.Name}. " +
-                    $"Abstract types cannot be projected. Extract only the required properties: " +
+                    $"Extract only the required properties in an explicit projection: " +
                     $"projection: e => new {{ e.Id, {navPath}Property = e.{navPath}.PropertyName }}, " +
                     $"filter: (_, _, _, proj) => proj.{navPath}Property == value");
             }
