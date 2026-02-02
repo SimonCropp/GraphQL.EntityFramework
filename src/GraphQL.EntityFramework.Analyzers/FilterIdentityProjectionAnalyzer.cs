@@ -47,7 +47,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
 
             // Identity projection detected
             // First check for abstract navigation access (GQLEF007)
-            var abstractNav = FindAbstractNavigationAccess(filterLambda, context.SemanticModel, entityType);
+            var abstractNav = FindAbstractNavigationAccess(filterLambda, context.SemanticModel);
             if (abstractNav != null)
             {
                 // Error: Identity projection with abstract navigation access
@@ -92,7 +92,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         if (is4ParamFilter)
         {
             // First check for abstract navigation access (GQLEF007)
-            var abstractNav = FindAbstractNavigationAccess(filterLambda, context.SemanticModel, entityType);
+            var abstractNav = FindAbstractNavigationAccess(filterLambda, context.SemanticModel);
             if (abstractNav != null)
             {
                 var diagnostic = Diagnostic.Create(
@@ -441,8 +441,7 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
 
     static string? FindAbstractNavigationAccess(
         LambdaExpressionSyntax lambda,
-        SemanticModel semanticModel,
-        string? entityTypeName)
+        SemanticModel semanticModel)
     {
         var body = lambda.Body;
 
@@ -478,22 +477,16 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
                 identifier.Identifier.Text == filterParameterName)
             {
                 // This is e.Parent.Property - check if Parent is abstract
-                var navigationSymbol = semanticModel.GetSymbolInfo(nestedAccess).Symbol as IPropertySymbol;
-                if (navigationSymbol != null)
+                if (semanticModel.GetSymbolInfo(nestedAccess).Symbol is IPropertySymbol { Type.IsAbstract: true } navigationSymbol)
                 {
-                    var navType = navigationSymbol.Type;
-                    if (navType.IsAbstract)
-                    {
-                        return navigationSymbol.Name;
-                    }
+                    return navigationSymbol.Name;
                 }
             }
             // Also check direct navigation access: e.Parent (without further property access)
             else if (memberAccess.Expression is IdentifierNameSyntax directIdentifier &&
                      directIdentifier.Identifier.Text == filterParameterName)
             {
-                var propertySymbol = semanticModel.GetSymbolInfo(memberAccess).Symbol as IPropertySymbol;
-                if (propertySymbol != null)
+                if (semanticModel.GetSymbolInfo(memberAccess).Symbol is IPropertySymbol propertySymbol)
                 {
                     var propType = propertySymbol.Type;
                     // Check if this is a reference type (not a primitive) and is abstract
