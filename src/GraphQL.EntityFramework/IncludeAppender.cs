@@ -25,12 +25,11 @@
         IResolveFieldContext context,
         IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields)
         where TItem : class =>
-        AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields);
+        AddIncludesWithFiltersAndDetectNavigations(query, context);
 
     internal IQueryable<TItem> AddIncludesWithFiltersAndDetectNavigations<TItem>(
         IQueryable<TItem> query,
-        IResolveFieldContext context,
-        IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields)
+        IResolveFieldContext context)
         where TItem : class
     {
         // Add includes from GraphQL query
@@ -43,7 +42,6 @@
 
         return query;
     }
-
 
     public FieldProjectionInfo? GetProjection<TItem>(IResolveFieldContext context)
         where TItem : class
@@ -497,8 +495,7 @@
                 // Add any specific fields from the projection expression
                 foreach (var nestedPath in nestedPaths)
                 {
-                    if (!nestedPath.Contains('.') &&
-                        !nestedProjection.ScalarFields.Contains(nestedPath))
+                    if (!nestedPath.Contains('.'))
                     {
                         nestedProjection.ScalarFields.Add(nestedPath);
                     }

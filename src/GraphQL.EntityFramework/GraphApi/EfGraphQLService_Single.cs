@@ -166,7 +166,7 @@ partial class EfGraphQLService<TDbContext>
                     // Get filter-required fields early so we can add filter-required navigations via Include
                     var allFilterFields = fieldContext.Filters?.GetAllRequiredFilterProperties();
 
-                    query = includeAppender.AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields);
+                    query = includeAppender.AddIncludesWithFiltersAndDetectNavigations(query, context);
                     query = query.ApplyGraphQlArguments(context, names, false, omitQueryArguments);
 
                     // Apply column projection based on requested GraphQL fields
