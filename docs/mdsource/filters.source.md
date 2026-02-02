@@ -86,7 +86,7 @@ snippet: nullable-value-type-projections
 Common nullable patterns:
 
 * **Has value check**: `quantity.HasValue && quantity.Value > 0`
-* **Null check**: `!quantity.HasValue`
+* **Null check**: `?quantity.HasValue`
 * **Exact match**: `isApproved == true` (not null or false)
 
 
@@ -201,12 +201,12 @@ The simplified API is syntactic sugar for the identity projection pattern:
 ```csharp
 // Simplified API
 filters.For<Accommodation>().Add(
-    filter: (_, _, _, a) => a.Id != Guid.Empty);
+    filter: (_, _, _, a) => a.Id ?= Guid.Empty);
 
 // Equivalent full API
 filters.For<Accommodation>().Add(
     projection: _ => _,  // Identity projection
-    filter: (_, _, _, a) => a.Id != Guid.Empty);
+    filter: (_, _, _, a) => a.Id ?= Guid.Empty);
 ```
 
 ### Analyzer Support
@@ -235,3 +235,96 @@ filters.For<Product>().Add(
 ```
 
 The simplified API makes intent clearer and reduces boilerplate while maintaining the same runtime behavior
+
+## Abstract Type Navigations
+
+When working with filters that access properties through abstract navigation properties, special care must be taken to avoid performance issues.
+
+### The Problem
+
+Abstract types cannot be instantiated in SQL projections. When EF Core encounters an abstract navigation in a projection, it falls back to using `Include()` which loads **all columns** from the navigation table, even when only one or two fields are required.
+
+### Example
+
+```csharp
+// Given:
+public abstract class BaseRequest  // Abstract class with many fields
+{
+    public Guid Id { get; set; }
+    public Guid GroupOwnerId { get; set; }
+    public RequestStatus HighestStatusAchieved { get; set; }
+    // ... 30+ more columns ...
+}
+
+public class Accommodation
+{
+    public Guid Id { get; set; }
+    public Guid TravelRequestId { get; set; }
+    public BaseRequest? TravelRequest { get; set; }  // Navigation to abstract type
+}
+
+// ❌ INEFFICIENT - Loads all 34 columns from BaseRequest:
+filters.For<Accommodation>().Add(
+    projection: _ => _,  // Identity projection
+    filter: (_, _, _, a) => a.TravelRequest?.GroupOwnerId == groupId);
+
+// ✅ EFFICIENT - Only loads Id, GroupOwnerId, HighestStatusAchieved:
+filters.For<Accommodation>().Add(
+    projection: a => new {
+        a.Id,
+        RequestOwnerId = a.TravelRequest?.GroupOwnerId,
+        RequestStatus = a.TravelRequest?.HighestStatusAchieved
+    },
+    filter: (_, _, _, proj) => proj.RequestOwnerId == groupId);
+```
+
+### Detection and Prevention
+
+The library provides both compile-time and runtime detection:
+
+**Compile-Time (Analyzer GQLEF007)**
+
+The analyzer detects when filters use identity projections with abstract navigation access:
+
+```csharp
+// This will show GQLEF007 error in the IDE:
+filters.For<Child>().Add(
+    projection: _ => _,
+    filter: (_, _, _, c) => c.AbstractParent?.Property == "value");
+```
+
+The code fixer can automatically convert this to an explicit projection.
+
+**Runtime (Exception)**
+
+If the analyzer is bypassed, runtime validation will throw an exception when the filter is registered:
+
+```csharp
+// Throws InvalidOperationException:
+// "Filter for 'Child' uses identity projection '_ => _' to access properties
+//  of abstract navigation 'Parent' (BaseEntity). This forces Include() to load
+//  all columns from BaseEntity. Extract only the required properties..."
+```
+
+### Best Practices
+
+1. **Always use explicit projections** when accessing abstract navigations
+2. **Extract only required properties** from the abstract navigation
+3. **Flatten navigation properties** in the projection (e.g., `ParentProperty` instead of nested access)
+4. **Update the filter** to use the flattened property names
+
+### Concrete Navigations
+
+This issue only affects **abstract** navigation types. Concrete navigation types work fine with identity projections:
+
+```csharp
+// ✅ WORKS - ConcreteParent is not abstract:
+filters.For<Child>().Add(
+    projection: _ => _,
+    filter: (_, _, _, c) => c.ConcreteParent?.Property == "value");
+```
+
+### See Also
+
+* [GQLEF007 Diagnostic Documentation](/docs/analyzers/GQLEF007.md)
+* [Identity Projection Filters](#simplified-filter-api)
