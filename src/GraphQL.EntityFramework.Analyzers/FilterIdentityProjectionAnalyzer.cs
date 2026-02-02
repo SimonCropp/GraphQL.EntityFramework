@@ -178,8 +178,8 @@ public class FilterIdentityProjectionAnalyzer : DiagnosticAnalyzer
         }
 
         // Find the projection and filter parameters
-        var projectionParameter = methodSymbol.Parameters.FirstOrDefault(p => p.Name == "projection");
-        var filterParameter = methodSymbol.Parameters.FirstOrDefault(p => p.Name == "filter");
+        var projectionParameter = methodSymbol.Parameters.FirstOrDefault(_ => _.Name == "projection");
+        var filterParameter = methodSymbol.Parameters.FirstOrDefault(_ => _.Name == "filter");
 
         if (projectionParameter == null && filterParameter == null)
         {

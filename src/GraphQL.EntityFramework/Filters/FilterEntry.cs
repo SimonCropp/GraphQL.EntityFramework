@@ -44,8 +44,8 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
     {
         // Extract navigation paths (e.g., "Parent.Property" -> navigation "Parent")
         var navigationPaths = requiredPropertyNames
-            .Where(p => p.Contains('.'))
-            .Select(p => p.Split('.')[0])
+            .Where(_ => _.Contains('.'))
+            .Select(_ => _.Split('.')[0])
             .Distinct()
             .ToList();
 

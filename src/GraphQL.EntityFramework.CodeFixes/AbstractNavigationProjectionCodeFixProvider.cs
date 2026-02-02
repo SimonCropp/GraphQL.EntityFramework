@@ -229,7 +229,7 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         string paramName,
         List<PropertyAccess> properties)
     {
-        // Build: e => new { e.Id, Prop1 = e.Nav.Prop1, ... }
+        // Build: _ => new { _.Id, Prop1 = _.Nav.Prop1, ... }
         var parameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(paramName));
 
         List<AnonymousObjectMemberDeclaratorSyntax> initializers = [];
@@ -280,7 +280,7 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         {
             // Replace e.Parent.Property with proj.ParentProperty
             newBody = newBody.ReplaceNodes(
-                newBody.DescendantNodesAndSelf().Where(n => n == prop.OriginalAccess),
+                newBody.DescendantNodesAndSelf().Where(_ => _ == prop.OriginalAccess),
                 (_, _) => SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.IdentifierName("proj"),
