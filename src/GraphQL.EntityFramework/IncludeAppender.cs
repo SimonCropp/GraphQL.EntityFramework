@@ -25,9 +25,9 @@
         IResolveFieldContext context,
         IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields)
         where TItem : class =>
-        AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields).query;
+        AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields);
 
-    internal (IQueryable<TItem> query, bool hasAbstractFilterNavigations) AddIncludesWithFiltersAndDetectNavigations<TItem>(
+    internal IQueryable<TItem> AddIncludesWithFiltersAndDetectNavigations<TItem>(
         IQueryable<TItem> query,
         IResolveFieldContext context,
         IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields)
@@ -37,20 +37,19 @@
         query = AddIncludes(query, context);
 
         // Then add includes for filter-required navigations
-        var hasAbstractFilterNavigations = false;
         if (allFilterFields is { Count: > 0 })
         {
             var type = typeof(TItem);
             if (navigations.TryGetValue(type, out var navigationProperties))
             {
-                (query, hasAbstractFilterNavigations) = AddFilterIncludes(query, allFilterFields, type, navigationProperties);
+                query = AddFilterIncludes(query, allFilterFields, type, navigationProperties);
             }
         }
 
-        return (query, hasAbstractFilterNavigations);
+        return query;
     }
 
-    static (IQueryable<TItem> query, bool hasFilterNavigations) AddFilterIncludes<TItem>(
+    static IQueryable<TItem> AddFilterIncludes<TItem>(
         IQueryable<TItem> query,
         IReadOnlyDictionary<Type, IReadOnlySet<string>> allFilterFields,
         Type entityType,
@@ -72,7 +71,7 @@
 
         if (relevantFilterFields.Count == 0)
         {
-            return (query, false);
+            return query;
         }
 
         // Extract navigation names from filter fields (e.g., "TravelRequest.GroupOwnerId" -> "TravelRequest")
@@ -86,26 +85,13 @@
             }
         }
 
-        // Only add Include for abstract filter-required navigations
-        // Non-abstract navigations are handled via the projection system in TryGetProjectionExpressionWithFilters
-        // which only selects the filter-required columns, not all columns
-        var hasAbstractNavigations = false;
-        foreach (var navName in filterNavigations)
-        {
-            if (navigationProperties.TryGetValue(navName, out var navMetadata))
-            {
-                if (navMetadata.Type.IsAbstract)
-                {
-                    // Abstract types cannot be projected (can't instantiate abstract class)
-                    // Must use Include which loads all columns
-                    query = query.Include(navName);
-                    hasAbstractNavigations = true;
-                }
-                // Non-abstract navigations: projection system handles them efficiently
-            }
-        }
+        // Note: Abstract filter navigations are now prevented by FilterEntry validation
+        // All filter-required navigations here should be from explicit projections
+        // that extract specific properties (not identity projections)
+        // These are handled via the projection system in TryGetProjectionExpressionWithFilters
+        // which only selects the required columns, not all columns
 
-        return (query, hasAbstractNavigations);
+        return query;
     }
 
     public FieldProjectionInfo? GetProjection<TItem>(IResolveFieldContext context)
