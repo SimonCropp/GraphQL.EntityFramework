@@ -287,9 +287,9 @@
             else
             {
                 // Create navigation projection for filter-only navigations
-                // Note: For abstract types, we still create the projection here
-                // If SelectExpressionBuilder can't handle it, TryBuild will return false
-                // and the Include added by AddFilterIncludes will be used instead
+                // Note: For abstract types, SelectExpressionBuilder.TryBuild will return false,
+                // causing the entire projection to fail. This is intentional - it ensures
+                // Include (added in AddFilterNavigationIncludes) is used instead of Select.
                 var navProjection = new FieldProjectionInfo(requiredProps, null, null, null);
                 navProjection = MergeFilterFieldsIntoProjection(navProjection, allFilterFields, navType);
                 mergedNavigations[navName] = new(navType, navMetadata.IsCollection, navProjection);
