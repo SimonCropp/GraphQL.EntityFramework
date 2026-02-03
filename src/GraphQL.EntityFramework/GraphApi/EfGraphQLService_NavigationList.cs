@@ -107,22 +107,13 @@ partial class EfGraphQLService<TDbContext>
                 return result;
             }
 
-            // If filter requires navigation properties, reload each item with those includes
+            // If filter requires navigation properties, batch reload items with those includes
             if (filterRequiredNavPaths.Count > 0)
             {
-                var reloadedItems = new List<TReturn>();
-                foreach (var item in result)
-                {
-                    var reloaded = await ReloadWithFilterNavigations(
-                        fieldContext.DbContext,
-                        item,
-                        filterRequiredNavPaths);
-                    if (reloaded != null)
-                    {
-                        reloadedItems.Add(reloaded);
-                    }
-                }
-                result = reloadedItems;
+                result = await BatchReloadWithFilterNavigations(
+                    fieldContext.DbContext,
+                    result,
+                    filterRequiredNavPaths);
             }
 
             return await fieldContext.Filters.ApplyFilter(result, context.UserContext, fieldContext.DbContext, context.User);

@@ -282,4 +282,98 @@ partial class EfGraphQLService<TDbContext>
         var lambdaExpr = Expression.Lambda<Func<TReturn, bool>>(predicate!, param);
         return await query.FirstOrDefaultAsync(lambdaExpr);
     }
+
+    /// <summary>
+    /// Batch reloads multiple entities from the database with the specified navigation properties included.
+    /// Uses a single query with WHERE Id IN (...) instead of N+1 queries.
+    /// </summary>
+    static async Task<IReadOnlyList<TReturn>> BatchReloadWithFilterNavigations<TReturn>(
+        TDbContext dbContext,
+        IEnumerable<TReturn> entities,
+        IReadOnlyList<string> navigationPaths)
+        where TReturn : class
+    {
+        var entityList = entities.ToList();
+        if (entityList.Count == 0 || navigationPaths.Count == 0)
+        {
+            return entityList;
+        }
+
+        // Get the entity's primary key metadata
+        var entityType = dbContext.Model.FindEntityType(typeof(TReturn));
+        if (entityType == null)
+        {
+            return entityList;
+        }
+
+        var primaryKey = entityType.FindPrimaryKey();
+        if (primaryKey == null)
+        {
+            return entityList;
+        }
+
+        var keyProperties = primaryKey.Properties.ToList();
+        if (keyProperties.Count != 1)
+        {
+            // For composite keys, fall back to individual reloads
+            var results = new List<TReturn>();
+            foreach (var entity in entityList)
+            {
+                var reloaded = await ReloadWithFilterNavigations(dbContext, entity, navigationPaths);
+                if (reloaded != null)
+                {
+                    results.Add(reloaded);
+                }
+            }
+            return results;
+        }
+
+        // Single key - can use IN clause
+        var keyProperty = keyProperties[0];
+        var keyValues = entityList
+            .Select(e => keyProperty.PropertyInfo?.GetValue(e) ?? keyProperty.FieldInfo?.GetValue(e))
+            .Where(v => v != null)
+            .ToList();
+
+        if (keyValues.Count == 0)
+        {
+            return entityList;
+        }
+
+        // Build a query with includes
+        IQueryable<TReturn> query = dbContext.Set<TReturn>();
+
+        foreach (var navPath in navigationPaths)
+        {
+            query = query.Include(navPath);
+        }
+
+        // Build WHERE Id IN (...) predicate
+        var parameter = Expression.Parameter(typeof(TReturn), "e");
+        var propertyAccess = Expression.Property(parameter, keyProperty.PropertyInfo!);
+
+        // Create a list of the key type and use Contains
+        var keyType = keyProperty.ClrType;
+        var typedKeyValues = typeof(Enumerable)
+            .GetMethod("Cast")!
+            .MakeGenericMethod(keyType)
+            .Invoke(null, [keyValues])!;
+        var keyList = typeof(Enumerable)
+            .GetMethod("ToList")!
+            .MakeGenericMethod(keyType)
+            .Invoke(null, [typedKeyValues])!;
+
+        var containsMethod = typeof(List<>)
+            .MakeGenericType(keyType)
+            .GetMethod("Contains", [keyType])!;
+
+        var containsCall = Expression.Call(
+            Expression.Constant(keyList),
+            containsMethod,
+            propertyAccess);
+
+        var lambda = Expression.Lambda<Func<TReturn, bool>>(containsCall, parameter);
+
+        return await query.Where(lambda).ToListAsync();
+    }
 }
