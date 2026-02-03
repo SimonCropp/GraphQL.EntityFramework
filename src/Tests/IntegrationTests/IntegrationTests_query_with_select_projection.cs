@@ -73,7 +73,7 @@ public partial class IntegrationTests
             projection: _ => new
             {
                 _.Id,
-                ParentId = _.IncludeNonQueryableB != null ? _.IncludeNonQueryableB.Id : (Guid?)null
+                ParentId = _.IncludeNonQueryableB.Id
             },
             filter: (_, _, _, data) => data.Id != Guid.Empty);
 

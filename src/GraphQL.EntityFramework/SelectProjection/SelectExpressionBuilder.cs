@@ -234,13 +234,16 @@ static class SelectExpressionBuilder
         var properties = GetEntityMetadata(entityType).Properties;
 
         // Add key properties
-        if (projection.KeyNames != null) foreach (var keyName in projection.KeyNames)
+        if (projection.KeyNames != null)
         {
-            if (properties.TryGetValue(keyName, out var metadata) &&
-                metadata.CanWrite &&
-                addedProperties.Add(keyName))
+            foreach (var keyName in projection.KeyNames)
             {
-                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
+                if (properties.TryGetValue(keyName, out var metadata) &&
+                    metadata.CanWrite &&
+                    addedProperties.Add(keyName))
+                {
+                    bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
+                }
             }
         }
 

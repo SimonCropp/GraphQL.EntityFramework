@@ -65,67 +65,65 @@
 
     static bool ContainsSelectMethod(Expression expression)
     {
-        switch (expression)
+        while (true)
         {
-            case MethodCallExpression methodCall:
-                // Check if this is a Select call
-                if (methodCall.Method.Name == "Select")
-                {
-                    return true;
-                }
-
-                // Check all arguments recursively
-                foreach (var arg in methodCall.Arguments)
-                {
-                    if (ContainsSelectMethod(arg))
+            switch (expression)
+            {
+                case MethodCallExpression methodCall:
+                    // Check if this is a Select call
+                    if (methodCall.Method.Name == "Select")
                     {
                         return true;
                     }
-                }
 
-                // Check the object (for instance method calls)
-                if (methodCall.Object != null && ContainsSelectMethod(methodCall.Object))
-                {
-                    return true;
-                }
+                    // Check all arguments recursively
+                    foreach (var arg in methodCall.Arguments)
+                    {
+                        if (ContainsSelectMethod(arg))
+                        {
+                            return true;
+                        }
+                    }
 
-                return false;
+                    // Check the object (for instance method calls)
+                    return methodCall.Object != null && ContainsSelectMethod(methodCall.Object);
 
-            case UnaryExpression unary:
-                return ContainsSelectMethod(unary.Operand);
+                case UnaryExpression unary:
+                    expression = unary.Operand;
+                    continue;
 
-            case LambdaExpression lambda:
-                return ContainsSelectMethod(lambda.Body);
+                case LambdaExpression lambda:
+                    expression = lambda.Body;
+                    continue;
 
-            case MemberExpression member:
-                return member.Expression != null && ContainsSelectMethod(member.Expression);
+                case MemberExpression member:
+                    return member.Expression != null && ContainsSelectMethod(member.Expression);
 
-            case BinaryExpression binary:
-                return ContainsSelectMethod(binary.Left) || ContainsSelectMethod(binary.Right);
+                case BinaryExpression binary:
+                    return ContainsSelectMethod(binary.Left) || ContainsSelectMethod(binary.Right);
 
-            case ConditionalExpression conditional:
-                return ContainsSelectMethod(conditional.Test) ||
-                       ContainsSelectMethod(conditional.IfTrue) ||
-                       ContainsSelectMethod(conditional.IfFalse);
+                case ConditionalExpression conditional:
+                    return ContainsSelectMethod(conditional.Test) || ContainsSelectMethod(conditional.IfTrue) || ContainsSelectMethod(conditional.IfFalse);
 
-            case InvocationExpression invocation:
-                if (ContainsSelectMethod(invocation.Expression))
-                {
-                    return true;
-                }
-
-                foreach (var arg in invocation.Arguments)
-                {
-                    if (ContainsSelectMethod(arg))
+                case InvocationExpression invocation:
+                    if (ContainsSelectMethod(invocation.Expression))
                     {
                         return true;
                     }
-                }
 
-                return false;
+                    foreach (var arg in invocation.Arguments)
+                    {
+                        if (ContainsSelectMethod(arg))
+                        {
+                            return true;
+                        }
+                    }
 
-            default:
-                return false;
+                    return false;
+
+                default:
+                    return false;
+            }
         }
     }
 
@@ -379,15 +377,18 @@
         }
 
         // Recursively process existing navigations
-        if (projection.Navigations != null) foreach (var (navName, navProjection) in projection.Navigations)
+        if (projection.Navigations != null)
         {
-            if (!mergedNavigations.ContainsKey(navName))
+            foreach (var (navName, navProjection) in projection.Navigations)
             {
-                var updated = MergeFilterFieldsIntoProjection(navProjection.Projection, allFilterFields, navProjection.EntityType);
-                mergedNavigations[navName] = navProjection with
+                if (!mergedNavigations.ContainsKey(navName))
                 {
-                    Projection = updated
-                };
+                    var updated = MergeFilterFieldsIntoProjection(navProjection.Projection, allFilterFields, navProjection.EntityType);
+                    mergedNavigations[navName] = navProjection with
+                    {
+                        Projection = updated
+                    };
+                }
             }
         }
 
