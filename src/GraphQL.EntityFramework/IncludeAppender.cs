@@ -315,48 +315,6 @@ class IncludeAppender(
             }
         }
 
-        // Check if this field has include metadata (fallback for abstract types, or legacy/obsolete approach)
-        if (TryGetIncludeMetadata(fieldInfo.FieldType, out var includeNames))
-        {
-            // It's a navigation field - include ALL navigation properties from metadata
-            var addedAny = false;
-            foreach (var navName in includeNames)
-            {
-                Navigation? navigation = null;
-                navigationProperties?.TryGetValue(navName, out navigation);
-
-                if (navigation != null && !navProjections.ContainsKey(navigation.Name))
-                {
-                    var navType = navigation.Type;
-                    navigations.TryGetValue(navType, out var nestedNavProps);
-                    keyNames.TryGetValue(navType, out var nestedKeys);
-                    foreignKeys.TryGetValue(navType, out var nestedFks);
-
-                    // Only the first (primary) navigation gets the nested projection from the query
-                    // Other navigations get empty projections (select all their keys and foreign keys)
-                    var nestedProjection = addedAny
-                        ? new([], nestedKeys ?? [], nestedFks ?? new HashSet<string>(), [])
-                        : GetNestedProjection(
-                            fieldInfo.Field.SelectionSet,
-                            nestedNavProps,
-                            nestedKeys,
-                            nestedFks,
-                            context);
-
-                    navProjections[navigation.Name] = new(
-                        navType,
-                        navigation.IsCollection,
-                        nestedProjection);
-                    addedAny = true;
-                }
-            }
-
-            if (addedAny)
-            {
-                return;
-            }
-        }
-
         // Check if this field is a navigation property by name
         Navigation? navByName = null;
         navigationProperties?.TryGetValue(fieldName, out navByName);
