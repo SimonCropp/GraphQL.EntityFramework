@@ -43,15 +43,6 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
         where TReturn : class =>
         GraphQlService.AddNavigationConnectionField(this, name, projection, graphType);
 
-    [Obsolete("Use the projection-based overload instead")]
-    public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn>(
-        string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn?>? resolve = null,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null)
-        where TReturn : class =>
-        GraphQlService.AddNavigationField(this, name, resolve, graphType, includeNames);
-
     public FieldBuilder<TSource, TReturn> AddNavigationField<TReturn, TProjection>(
         string name,
         Expression<Func<TSource, TProjection>> projection,
