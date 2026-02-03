@@ -25,20 +25,94 @@
         IResolveFieldContext context,
         IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields)
         where TItem : class =>
-        AddIncludesWithFiltersAndDetectNavigations(query, context);
+        AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields);
 
     internal IQueryable<TItem> AddIncludesWithFiltersAndDetectNavigations<TItem>(
         IQueryable<TItem> query,
-        IResolveFieldContext context)
+        IResolveFieldContext context,
+        IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields = null)
         where TItem : class
     {
         // Add includes from GraphQL query
         query = AddIncludes(query, context);
 
-        // Note: Filter-required navigations are now handled entirely by the projection system
-        // in TryGetProjectionExpressionWithFilters, which builds projections that include
-        // filter-required fields. Abstract navigation access is prevented by FilterEntry validation.
-        // No additional includes are needed here.
+        // Add includes for filter-required navigations.
+        // While projection handles most cases, abstract navigation types cannot be projected
+        // (can't do "new AbstractType { ... }"). In those cases, Include is needed as fallback.
+        if (allFilterFields is { Count: > 0 })
+        {
+            query = AddFilterNavigationIncludes(query, allFilterFields, typeof(TItem));
+        }
+
+        return query;
+    }
+
+    IQueryable<TItem> AddFilterNavigationIncludes<TItem>(
+        IQueryable<TItem> query,
+        IReadOnlyDictionary<Type, IReadOnlySet<string>> allFilterFields,
+        Type entityType)
+        where TItem : class
+    {
+        // Get filter fields for this entity type and its base types
+        var relevantFilterFields = new List<string>();
+        foreach (var (filterType, filterFields) in allFilterFields)
+        {
+            if (filterType.IsAssignableFrom(entityType))
+            {
+                relevantFilterFields.AddRange(filterFields);
+            }
+        }
+
+        if (relevantFilterFields.Count == 0)
+        {
+            return query;
+        }
+
+        // Get navigation metadata for this entity type
+        if (!navigations.TryGetValue(entityType, out var navigationProperties))
+        {
+            return query;
+        }
+
+        // Extract unique navigation names from filter fields (paths like "TravelRequest.Status" -> "TravelRequest")
+        var navigationNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var field in relevantFilterFields)
+        {
+            if (field.Contains('.'))
+            {
+                var navName = field[..field.IndexOf('.')];
+                navigationNames.Add(navName);
+            }
+        }
+
+        // Add Include for each filter-required navigation that has an abstract type
+        // (Non-abstract navigations can be handled by projection)
+        foreach (var navName in navigationNames)
+        {
+            // Find navigation in metadata (case-insensitive)
+            Navigation? navMetadata = null;
+            string? actualNavName = null;
+            foreach (var (key, value) in navigationProperties)
+            {
+                if (string.Equals(key, navName, StringComparison.OrdinalIgnoreCase))
+                {
+                    navMetadata = value;
+                    actualNavName = key;
+                    break;
+                }
+            }
+
+            if (navMetadata == null || actualNavName == null)
+            {
+                continue;
+            }
+
+            // Only add Include for abstract types - concrete types can use projection
+            if (navMetadata.Type.IsAbstract)
+            {
+                query = query.Include(navMetadata.Name);
+            }
+        }
 
         return query;
     }
