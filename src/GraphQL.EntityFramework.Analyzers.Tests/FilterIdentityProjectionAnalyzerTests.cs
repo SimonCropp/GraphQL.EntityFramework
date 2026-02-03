@@ -604,7 +604,7 @@ public class FilterIdentityProjectionAnalyzerTests
 
         // Filter to only GQLEF004, GQLEF005, GQLEF006, and GQLEF007 diagnostics
         return allDiagnostics
-            .Where(_ => _.Id == "GQLEF004" || _.Id == "GQLEF005" || _.Id == "GQLEF006" || _.Id == "GQLEF007")
+            .Where(_ => _.Id is "GQLEF004" or "GQLEF005" or "GQLEF006" or "GQLEF007")
             .ToArray();
     }
 

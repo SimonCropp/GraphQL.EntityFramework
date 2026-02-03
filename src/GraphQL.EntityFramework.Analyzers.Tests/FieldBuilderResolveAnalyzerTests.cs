@@ -557,7 +557,7 @@ public class FieldBuilderResolveAnalyzerTests
 
         // Filter to only GQLEF002 and GQLEF003 diagnostics
         return allDiagnostics
-            .Where(_ => _.Id == "GQLEF002" || _.Id == "GQLEF003")
+            .Where(_ => _.Id is "GQLEF002" or "GQLEF003")
             .ToArray();
     }
 }
