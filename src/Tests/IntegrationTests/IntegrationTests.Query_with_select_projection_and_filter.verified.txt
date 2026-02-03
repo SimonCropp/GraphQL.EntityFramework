@@ -1,0 +1,20 @@
+{
+  target:
+{
+  "data": {
+    "queryFieldWithInclude": [
+      {
+        "id": "Guid_1"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select i0.Id
+from   IncludeNonQueryableBs as i
+       inner join
+       IncludeNonQueryableAs as i0
+       on i.IncludeNonQueryableAId = i0.Id
+  }
+}

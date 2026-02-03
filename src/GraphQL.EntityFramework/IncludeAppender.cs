@@ -33,6 +33,13 @@
         IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields = null)
         where TItem : class
     {
+        // Include cannot be applied to queries that have already been projected (e.g., after Select).
+        // Check if the query is the result of a projection - the element type won't match the root entity.
+        if (IsProjectedQuery(query))
+        {
+            return query;
+        }
+
         // Add includes from GraphQL query
         query = AddIncludes(query, context);
 
@@ -45,6 +52,81 @@
         }
 
         return query;
+    }
+
+    /// <summary>
+    /// Checks if the query is the result of a projection (Select).
+    /// When a query has been projected via Select, Include cannot be applied.
+    /// We detect this by examining if the expression tree contains a Select call.
+    /// </summary>
+    static bool IsProjectedQuery<TItem>(IQueryable<TItem> query)
+        where TItem : class =>
+        ContainsSelectMethod(query.Expression);
+
+    static bool ContainsSelectMethod(Expression expression)
+    {
+        switch (expression)
+        {
+            case MethodCallExpression methodCall:
+                // Check if this is a Select call
+                if (methodCall.Method.Name == "Select")
+                {
+                    return true;
+                }
+
+                // Check all arguments recursively
+                foreach (var arg in methodCall.Arguments)
+                {
+                    if (ContainsSelectMethod(arg))
+                    {
+                        return true;
+                    }
+                }
+
+                // Check the object (for instance method calls)
+                if (methodCall.Object != null && ContainsSelectMethod(methodCall.Object))
+                {
+                    return true;
+                }
+
+                return false;
+
+            case UnaryExpression unary:
+                return ContainsSelectMethod(unary.Operand);
+
+            case LambdaExpression lambda:
+                return ContainsSelectMethod(lambda.Body);
+
+            case MemberExpression member:
+                return member.Expression != null && ContainsSelectMethod(member.Expression);
+
+            case BinaryExpression binary:
+                return ContainsSelectMethod(binary.Left) || ContainsSelectMethod(binary.Right);
+
+            case ConditionalExpression conditional:
+                return ContainsSelectMethod(conditional.Test) ||
+                       ContainsSelectMethod(conditional.IfTrue) ||
+                       ContainsSelectMethod(conditional.IfFalse);
+
+            case InvocationExpression invocation:
+                if (ContainsSelectMethod(invocation.Expression))
+                {
+                    return true;
+                }
+
+                foreach (var arg in invocation.Arguments)
+                {
+                    if (ContainsSelectMethod(arg))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+
+            default:
+                return false;
+        }
     }
 
     IQueryable<TItem> AddFilterNavigationIncludes<TItem>(
@@ -690,7 +772,22 @@
         where T : class
     {
         var paths = GetPaths(context, navigationProperties);
-        return paths.Aggregate(query, (current, path) => current.Include(path));
+        foreach (var path in paths)
+        {
+            try
+            {
+                query = query.Include(path);
+            }
+            catch (InvalidOperationException)
+            {
+                // Include cannot be applied to this query (e.g., it has already been projected).
+                // Skip adding Include and let the query execute without it.
+                // The filter will need to fetch the data separately if needed.
+                return query;
+            }
+        }
+
+        return query;
     }
 
     List<string> GetPaths(IResolveFieldContext context, IReadOnlyDictionary<string, Navigation> navigationProperty)
