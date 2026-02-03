@@ -42,7 +42,7 @@ class ProjectionSnippets
             Field<StringGraphType>("customerName")
                 .ResolveAsync(async context =>
                 {
-                    var data = base.ResolveDbContext(context);
+                    var data = ResolveDbContext(context);
                     // CustomerId is available even though it wasn't in the GraphQL query
                     var customer = await data.Customers
                         .Where(c => c.Id == context.Source.CustomerId)
