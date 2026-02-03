@@ -6,9 +6,14 @@ class ProjectionSnippets
 
     public class Order
     {
-        public int Id { get; set; }                    // Primary key
-        public int CustomerId { get; set; }            // Foreign key
-        public Customer Customer { get; set; } = null!;         // Navigation property
+        // Primary key
+        public int Id { get; set; }
+
+        // Foreign key
+        public int CustomerId { get; set; }
+
+        // Navigation property
+        public Customer Customer { get; set; } = null!;
         public string OrderNumber { get; set; } = null!;
         public decimal TotalAmount { get; set; }
         public string InternalNotes { get; set; } = null!;

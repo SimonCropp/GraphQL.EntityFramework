@@ -92,15 +92,20 @@ For example, given this entity:
 ```cs
 public class Order
 {
-    public int Id { get; set; }                    // Primary key
-    public int CustomerId { get; set; }            // Foreign key
-    public Customer Customer { get; set; } = null!;         // Navigation property
+    // Primary key
+    public int Id { get; set; }
+
+    // Foreign key
+    public int CustomerId { get; set; }
+
+    // Navigation property
+    public Customer Customer { get; set; } = null!;
     public string OrderNumber { get; set; } = null!;
     public decimal TotalAmount { get; set; }
     public string InternalNotes { get; set; } = null!;
 }
 ```
-<sup><a href='/src/Snippets/ProjectionSnippets.cs#L5-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionEntity' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L5-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionEntity' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 And this GraphQL query:
@@ -130,7 +135,7 @@ static void ProjectionExample(MyDbContext context) =>
         OrderNumber = o.OrderNumber
     });
 ```
-<sup><a href='/src/Snippets/ProjectionSnippets.cs#L19-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionExpression' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L24-L37' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionExpression' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Note that `TotalAmount` and `InternalNotes` are **not** loaded from the database since they weren't requested.
@@ -154,15 +159,14 @@ public class OrderGraph :
             {
                 var data = ResolveDbContext(context);
                 // CustomerId is available even though it wasn't in the GraphQL query
-                var customer = await data.Customers
+                return await data.Customers
                     .Where(c => c.Id == context.Source.CustomerId)
                     .Select(c => c.Name)
                     .SingleAsync();
-                return customer;
             });
 }
 ```
-<sup><a href='/src/Snippets/ProjectionSnippets.cs#L34-L55' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionCustomResolver' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L39-L59' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionCustomResolver' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0` (or `Guid.Empty` for Guid keys) if `customerId` wasn't explicitly requested in the GraphQL query, causing the query to fail.
