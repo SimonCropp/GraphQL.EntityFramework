@@ -119,28 +119,36 @@ partial class EfGraphQLService<TDbContext>
 
     /// <summary>
     /// Gets the navigation paths required by filters for reloading entities.
-    /// Returns just the navigation parts (not prefixed with field name).
+    /// Returns navigation names that have abstract types (these need Include for reload).
     /// </summary>
     IReadOnlyList<string> GetFilterRequiredNavPathsForReload<TReturn>()
         where TReturn : class
     {
         var filters = resolveFilters?.Invoke(null!);
-        if (filters == null)
+        if (filters == null || !filters.HasFilters)
         {
             return [];
         }
 
-        var requiredProps = filters.GetRequiredFilterProperties<TReturn>();
-        var navigationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var prop in requiredProps)
+        // Get navigation properties for TReturn
+        if (!Navigations.TryGetValue(typeof(TReturn), out var navigationProperties))
         {
-            var lastDot = prop.LastIndexOf('.');
-            if (lastDot > 0)
+            return [];
+        }
+
+        // Get all abstract navigation includes from filters that apply to TReturn
+        var relevantFilters = filters.GetFilters<TReturn>().ToList();
+        if (relevantFilters.Count == 0)
+        {
+            return [];
+        }
+
+        var navigationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var filter in relevantFilters)
+        {
+            foreach (var include in filter.GetAbstractNavigationIncludes(navigationProperties))
             {
-                // e.g., "TravelRequest.GroupOwnerId" -> "TravelRequest"
-                var navPath = prop[..lastDot];
-                navigationPaths.Add(navPath);
+                navigationPaths.Add(include);
             }
         }
 

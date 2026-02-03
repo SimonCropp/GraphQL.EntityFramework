@@ -1,4 +1,4 @@
-﻿class IncludeAppender(
+class IncludeAppender(
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames,
     IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys)
@@ -20,17 +20,19 @@
         return AddIncludes(query, context, navigationProperty);
     }
 
-    public IQueryable<TItem> AddIncludesWithFilters<TItem>(
+    public IQueryable<TItem> AddIncludesWithFilters<TDbContext, TItem>(
         IQueryable<TItem> query,
         IResolveFieldContext context,
-        IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields)
+        Filters<TDbContext>? filters)
+        where TDbContext : DbContext
         where TItem : class =>
-        AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields);
+        AddIncludesWithFiltersAndDetectNavigations(query, context, filters);
 
-    internal IQueryable<TItem> AddIncludesWithFiltersAndDetectNavigations<TItem>(
+    internal IQueryable<TItem> AddIncludesWithFiltersAndDetectNavigations<TDbContext, TItem>(
         IQueryable<TItem> query,
         IResolveFieldContext context,
-        IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields = null)
+        Filters<TDbContext>? filters = null)
+        where TDbContext : DbContext
         where TItem : class
     {
         // Include cannot be applied to queries that have already been projected (e.g., after Select).
@@ -46,9 +48,9 @@
         // Add includes for filter-required navigations.
         // While projection handles most cases, abstract navigation types cannot be projected
         // (can't do "new AbstractType { ... }"). In those cases, Include is needed as fallback.
-        if (allFilterFields is { Count: > 0 })
+        if (filters is { HasFilters: true })
         {
-            query = AddFilterNavigationIncludes(query, allFilterFields, typeof(TItem));
+            query = AddFilterNavigationIncludes(query, filters, typeof(TItem));
         }
 
         return query;
@@ -98,71 +100,40 @@
         return false;
     }
 
-    IQueryable<TItem> AddFilterNavigationIncludes<TItem>(
+    IQueryable<TItem> AddFilterNavigationIncludes<TDbContext, TItem>(
         IQueryable<TItem> query,
-        IReadOnlyDictionary<Type, IReadOnlySet<string>> allFilterFields,
+        Filters<TDbContext> filters,
         Type entityType)
+        where TDbContext : DbContext
         where TItem : class
     {
-        // Get filter fields for this entity type and its base types
-        var relevantFilterFields = new List<string>();
-        foreach (var (filterType, filterFields) in allFilterFields)
-        {
-            if (filterType.IsAssignableFrom(entityType))
-            {
-                relevantFilterFields.AddRange(filterFields);
-            }
-        }
-
-        if (relevantFilterFields.Count == 0)
-        {
-            return query;
-        }
-
         // Get navigation metadata for this entity type
         if (!navigations.TryGetValue(entityType, out var navigationProperties))
         {
             return query;
         }
 
-        // Extract unique navigation names from filter fields (paths like "TravelRequest.Status" -> "TravelRequest")
-        var navigationNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var field in relevantFilterFields)
+        // Get filters that apply to this entity type
+        var relevantFilters = filters.GetFilters(entityType).ToList();
+        if (relevantFilters.Count == 0)
         {
-            if (field.Contains('.'))
+            return query;
+        }
+
+        // Collect all abstract navigation includes from filters
+        var abstractIncludes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var filter in relevantFilters)
+        {
+            foreach (var include in filter.GetAbstractNavigationIncludes(navigationProperties))
             {
-                var navName = field[..field.IndexOf('.')];
-                navigationNames.Add(navName);
+                abstractIncludes.Add(include);
             }
         }
 
         // Add Include for each filter-required navigation that has an abstract type
-        // (Non-abstract navigations can be handled by projection)
-        foreach (var navName in navigationNames)
+        foreach (var navName in abstractIncludes)
         {
-            // Find navigation in metadata (case-insensitive)
-            Navigation? navMetadata = null;
-            string? actualNavName = null;
-            foreach (var (key, value) in navigationProperties)
-            {
-                if (string.Equals(key, navName, StringComparison.OrdinalIgnoreCase))
-                {
-                    navMetadata = value;
-                    actualNavName = key;
-                    break;
-                }
-            }
-
-            if (navMetadata == null || actualNavName == null)
-            {
-                continue;
-            }
-
-            // Only add Include for abstract types - concrete types can use projection
-            if (navMetadata.Type.IsAbstract)
-            {
-                query = query.Include(navMetadata.Name);
-            }
+            query = query.Include(navName);
         }
 
         return query;
@@ -184,10 +155,11 @@
         return GetProjectionInfo(context, navigationProperties, keys, fks);
     }
 
-    public bool TryGetProjectionExpressionWithFilters<TItem>(
+    public bool TryGetProjectionExpressionWithFilters<TDbContext, TItem>(
         IResolveFieldContext context,
-        IReadOnlyDictionary<Type, IReadOnlySet<string>>? allFilterFields,
+        Filters<TDbContext>? filters,
         [NotNullWhen(true)] out Expression<Func<TItem, TItem>>? expression)
+        where TDbContext : DbContext
         where TItem : class
     {
         expression = null;
@@ -199,176 +171,59 @@
         }
 
         // Merge filter fields if provided (recursively for navigations)
-        if (allFilterFields is { Count: > 0 })
+        if (filters is { HasFilters: true })
         {
-            projection = MergeFilterFieldsIntoProjection(projection, allFilterFields, typeof(TItem));
+            projection = MergeFilterFieldsIntoProjection(projection, filters, typeof(TItem));
         }
 
         return SelectExpressionBuilder.TryBuild(projection, keyNames, out expression);
     }
 
-    FieldProjectionInfo MergeFilterFieldsIntoProjection(
+    FieldProjectionInfo MergeFilterFieldsIntoProjection<TDbContext>(
         FieldProjectionInfo projection,
-        IReadOnlyDictionary<Type, IReadOnlySet<string>> allFilterFields,
+        Filters<TDbContext> filters,
         Type entityType)
+        where TDbContext : DbContext
     {
-        // Get filter fields for this entity type and its base types
-        var relevantFilterFields = new List<string>();
-        foreach (var (filterType, filterFields) in allFilterFields)
-        {
-            if (filterType.IsAssignableFrom(entityType))
-            {
-                relevantFilterFields.AddRange(filterFields);
-            }
-        }
-
-        if (relevantFilterFields.Count == 0)
-        {
-            return projection;
-        }
-
         // Get navigation metadata for this entity type
         navigations.TryGetValue(entityType, out var navigationProperties);
 
-        // Separate simple fields and navigation paths
-        var scalarFieldsToAdd = new List<string>();
-        var navigationPaths = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        // Get filters that apply to this entity type
+        var relevantFilters = filters.GetFilters(entityType).ToList();
 
-        foreach (var field in relevantFilterFields)
+        // Apply each filter's requirements to the projection
+        foreach (var filter in relevantFilters)
         {
-            if (field.Contains('.'))
-            {
-                // Navigation path like "Parent.Id"
-                var parts = field.Split('.', 2);
-                var navName = parts[0];
-                var navProperty = parts[1];
-
-                if (!navigationPaths.TryGetValue(navName, out var properties))
-                {
-                    properties = new(StringComparer.OrdinalIgnoreCase);
-                    navigationPaths[navName] = properties;
-                }
-
-                // Only add if it doesn't contain further dots (single-level navigation)
-                if (!navProperty.Contains('.'))
-                {
-                    properties.Add(navProperty);
-                }
-            }
-            else
-            {
-                // Simple field - check if it's a navigation property
-                var isNavigation = navigationProperties?.ContainsKey(field) == true;
-
-                if (isNavigation ||
-                    projection.ScalarFields.Contains(field) ||
-                    projection.KeyNames?.Contains(field, StringComparer.OrdinalIgnoreCase) == true)
-                {
-                    // Skip navigation names - they'll be handled via navigation paths
-                    continue;
-                }
-
-                scalarFieldsToAdd.Add(field);
-            }
-        }
-
-        // Merge scalar fields
-        var mergedScalars = new HashSet<string>(projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
-        foreach (var field in scalarFieldsToAdd) mergedScalars.Add(field);
-
-        // Merge navigations
-        var infos = projection.Navigations;
-        Dictionary<string, NavigationProjectionInfo> mergedNavigations;
-        if (infos == null)
-        {
-            mergedNavigations = [];
-        }
-        else
-        {
-            mergedNavigations = new(infos);
-        }
-
-
-        // Process navigation paths from filter fields
-        foreach (var (navName, requiredProps) in navigationPaths)
-        {
-            // Skip if no navigation metadata available for this entity type
-            if (navigationProperties == null)
-            {
-                continue;
-            }
-
-            // Try to find the navigation - use case-insensitive search
-            Navigation? navMetadata = null;
-            foreach (var (key, value) in navigationProperties)
-            {
-                if (string.Equals(key, navName, StringComparison.OrdinalIgnoreCase))
-                {
-                    navMetadata = value;
-                    break;
-                }
-            }
-
-            if (navMetadata == null)
-            {
-                continue;
-            }
-
-            var navType = navMetadata.Type;
-
-            if (mergedNavigations.TryGetValue(navName, out var existingNav))
-            {
-                // Navigation exists in GraphQL query - add filter-required properties to its projection
-                var updatedScalars = new HashSet<string>(existingNav.Projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
-                foreach (var prop in requiredProps)
-                {
-                    updatedScalars.Add(prop);
-                }
-
-                var updatedProjection = existingNav.Projection with
-                {
-                    ScalarFields = updatedScalars
-                };
-                updatedProjection = MergeFilterFieldsIntoProjection(updatedProjection, allFilterFields, navType);
-                mergedNavigations[navName] = existingNav with
-                {
-                    Projection = updatedProjection
-                };
-            }
-            else
-            {
-                // Create navigation projection for filter-only navigations
-                // Note: For abstract types, SelectExpressionBuilder.TryBuild will return false,
-                // causing the entire projection to fail. This is intentional - it ensures
-                // Include (added in AddFilterNavigationIncludes) is used instead of Select.
-                var navProjection = new FieldProjectionInfo(requiredProps, null, null, null);
-                navProjection = MergeFilterFieldsIntoProjection(navProjection, allFilterFields, navType);
-                mergedNavigations[navName] = new(navType, navMetadata.IsCollection, navProjection);
-            }
+            projection = filter.AddRequirements(projection, navigationProperties, keyNames, foreignKeys);
         }
 
         // Recursively process existing navigations
-        if (projection.Navigations != null)
+        if (projection.Navigations is { Count: > 0 })
         {
+            var updatedNavigations = new Dictionary<string, NavigationProjectionInfo>(projection.Navigations);
+
             foreach (var (navName, navProjection) in projection.Navigations)
             {
-                if (!mergedNavigations.ContainsKey(navName))
+                var updatedProjection = MergeFilterFieldsIntoProjection(navProjection.Projection, filters, navProjection.EntityType);
+                if (updatedProjection != navProjection.Projection)
                 {
-                    var updated = MergeFilterFieldsIntoProjection(navProjection.Projection, allFilterFields, navProjection.EntityType);
-                    mergedNavigations[navName] = navProjection with
+                    updatedNavigations[navName] = navProjection with
                     {
-                        Projection = updated
+                        Projection = updatedProjection
                     };
                 }
             }
+
+            if (updatedNavigations != projection.Navigations)
+            {
+                projection = projection with
+                {
+                    Navigations = updatedNavigations
+                };
+            }
         }
 
-        return projection
-            with
-            {
-                ScalarFields = mergedScalars,
-                Navigations = mergedNavigations
-            };
+        return projection;
     }
 
     FieldProjectionInfo GetProjectionInfo(
