@@ -109,10 +109,7 @@ partial class EfGraphQLService<TDbContext>
                         query = query.AsNoTracking();
                     }
 
-                    // Get filter-required fields early so we can add filter-required navigations via Include
-                    var allFilterFields = fieldContext.Filters?.GetAllRequiredFilterProperties();
-
-                    query = includeAppender.AddIncludesWithFiltersAndDetectNavigations(query, context, allFilterFields);
+                    query = includeAppender.AddIncludesWithFiltersAndDetectNavigations(query, context, fieldContext.Filters);
                     if (!omitQueryArguments)
                     {
                         query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
@@ -125,7 +122,7 @@ partial class EfGraphQLService<TDbContext>
                         // Try to build projection even with abstract filter navigations
                         // The projection system may handle them (e.g., TPH inheritance)
                         // If projection build fails, we fall back to Include (which was already added above)
-                        if (includeAppender.TryGetProjectionExpressionWithFilters<TReturn>(context, allFilterFields, out var selectExpr))
+                        if (includeAppender.TryGetProjectionExpressionWithFilters<TDbContext, TReturn>(context, fieldContext.Filters, out var selectExpr))
                         {
                             query = query.Select(selectExpr);
                         }

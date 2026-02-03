@@ -76,38 +76,36 @@ public class Filters<TDbContext>
 
     Dictionary<Type, IFilterEntry<TDbContext>> entries = [];
 
-    public IReadOnlySet<string> GetRequiredFilterProperties<TEntity>()
+    /// <summary>
+    /// Get all filters that apply to the specified entity type (including base type filters).
+    /// </summary>
+    internal IEnumerable<IFilterEntry<TDbContext>> GetFilters<TEntity>()
         where TEntity : class
     {
-        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var filterEntries = FindFilters<TEntity>();
-
-        foreach (var entry in filterEntries)
-        {
-            foreach (var prop in entry.RequiredPropertyNames)
-            {
-                result.Add(prop);
-            }
-        }
-
-        return result;
+        var type = typeof(TEntity);
+        return entries
+            .Where(_ => _.Key.IsAssignableFrom(type))
+            .Select(_ => _.Value);
     }
 
-    public IReadOnlyDictionary<Type, IReadOnlySet<string>> GetAllRequiredFilterProperties()
-    {
-        var result = new Dictionary<Type, IReadOnlySet<string>>();
+    /// <summary>
+    /// Get all filters that apply to the specified entity type (including base type filters).
+    /// </summary>
+    internal IEnumerable<IFilterEntry<TDbContext>> GetFilters(Type entityType) =>
+        entries
+            .Where(_ => _.Key.IsAssignableFrom(entityType))
+            .Select(_ => _.Value);
 
-        foreach (var (entityType, entry) in entries)
-        {
-            var props = entry.RequiredPropertyNames;
-            if (props.Count > 0)
-            {
-                result[entityType] = props;
-            }
-        }
+    /// <summary>
+    /// Get all registered filter entries.
+    /// </summary>
+    internal IEnumerable<IFilterEntry<TDbContext>> GetAllFilters() =>
+        entries.Values;
 
-        return result;
-    }
+    /// <summary>
+    /// Returns true if there are any filters registered.
+    /// </summary>
+    internal bool HasFilters => entries.Count > 0;
 
     internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(
         IEnumerable<TEntity> result,
@@ -121,7 +119,7 @@ public class Filters<TDbContext>
             return result;
         }
 
-        var filterEntries = FindFilters<TEntity>().ToList();
+        var filterEntries = GetFilters<TEntity>().ToList();
         if (filterEntries.Count == 0)
         {
             return result;
@@ -175,22 +173,12 @@ public class Filters<TDbContext>
             return true;
         }
 
-        var filterEntries = FindFilters<TEntity>().ToList();
+        var filterEntries = GetFilters<TEntity>().ToList();
         if (filterEntries.Count == 0)
         {
             return true;
         }
 
         return await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries);
-    }
-
-    List<IFilterEntry<TDbContext>> FindFilters<TEntity>()
-        where TEntity : class
-    {
-        var type = typeof(TEntity);
-        return entries
-            .Where(_ => _.Key.IsAssignableFrom(type))
-            .Select(_ => _.Value)
-            .ToList();
     }
 }
