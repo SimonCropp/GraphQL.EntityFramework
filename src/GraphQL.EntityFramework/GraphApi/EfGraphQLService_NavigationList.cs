@@ -77,6 +77,9 @@ partial class EfGraphQLService<TDbContext>
 
         var compiledProjection = projection.Compile();
 
+        // Get filter-required navigation paths at setup time for reloading if needed
+        var filterRequiredNavPaths = GetFilterRequiredNavPathsForReload<TReturn>();
+
         field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(async context =>
         {
             var fieldContext = BuildContext(context);
@@ -102,6 +105,24 @@ partial class EfGraphQLService<TDbContext>
             if (fieldContext.Filters == null)
             {
                 return result;
+            }
+
+            // If filter requires navigation properties, reload each item with those includes
+            if (filterRequiredNavPaths.Count > 0)
+            {
+                var reloadedItems = new List<TReturn>();
+                foreach (var item in result)
+                {
+                    var reloaded = await ReloadWithFilterNavigations(
+                        fieldContext.DbContext,
+                        item,
+                        filterRequiredNavPaths);
+                    if (reloaded != null)
+                    {
+                        reloadedItems.Add(reloaded);
+                    }
+                }
+                result = reloadedItems;
             }
 
             return await fieldContext.Filters.ApplyFilter(result, context.UserContext, fieldContext.DbContext, context.User);

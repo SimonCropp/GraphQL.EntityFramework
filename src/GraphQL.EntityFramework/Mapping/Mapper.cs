@@ -123,7 +123,7 @@ public static class Mapper<TDbContext>
         }
     }
 
-#pragma warning disable CS0618 // Obsolete - AutoMap needs to use legacy methods since it can't determine projections at runtime
+    // Use projection-based AddNavigationField which properly handles filters and includes
     static void AddNavigation<TSource, TReturn>(
         ObjectGraphType<TSource> graph,
         IEfGraphQLService<TDbContext> graphQlService,
@@ -131,8 +131,14 @@ public static class Mapper<TDbContext>
         where TReturn : class
     {
         var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type, navigation.IsNullable);
-        var compile = NavigationFunc<TSource, TReturn>(navigation.Name);
-        graphQlService.AddNavigationField(graph, navigation.Name, compile, graphTypeFromType);
+        var projection = NavigationProjection<TSource, TReturn>(navigation.Name);
+        // Use the projection + resolve overload to ensure filters are applied
+        graphQlService.AddNavigationField<TSource, TReturn, TReturn?>(
+            graph,
+            navigation.Name,
+            projection,
+            context => context.Projection!,
+            graphTypeFromType);
     }
 
     static void AddNavigationList<TSource, TReturn>(
@@ -142,35 +148,64 @@ public static class Mapper<TDbContext>
         where TReturn : class
     {
         var graphTypeFromType = GraphTypeFromType(navigation.Name, navigation.Type, false);
-        var compile = NavigationFunc<TSource, IEnumerable<TReturn>>(navigation.Name);
-        graphQlService.AddNavigationListField(graph, navigation.Name, compile, graphTypeFromType);
+        var projection = NavigationListProjection<TSource, TReturn>(navigation.Name);
+        // Use the projection + resolve overload to ensure filters are applied
+        graphQlService.AddNavigationListField<TSource, TReturn, IEnumerable<TReturn>?>(
+            graph,
+            navigation.Name,
+            projection,
+            context => context.Projection ?? [],
+            graphTypeFromType);
     }
-#pragma warning restore CS0618
 
     public record NavigationKey(Type Type, string Name);
 
-    static ConcurrentDictionary<NavigationKey, object> navigationFuncs = [];
+    static ConcurrentDictionary<NavigationKey, object> navigationProjections = [];
 
-    internal static Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn> NavigationFunc<TSource, TReturn>(string name)
+    /// <summary>
+    /// Creates a projection expression for a single navigation property: _ => _.NavigationProperty
+    /// </summary>
+    internal static Expression<Func<TSource, TReturn?>> NavigationProjection<TSource, TReturn>(string name)
+        where TReturn : class
     {
         var key = new NavigationKey(typeof(TSource), name);
 
-        return (Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>)navigationFuncs.GetOrAdd(
+        return (Expression<Func<TSource, TReturn?>>)navigationProjections.GetOrAdd(
             key,
-            _ => NavigationExpression<TSource, TReturn>(_.Name).Compile());
+            _ => BuildNavigationProjection<TSource, TReturn>(_.Name));
     }
 
-    internal static Expression<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>> NavigationExpression<TSource, TReturn>(string name)
+    static Expression<Func<TSource, TReturn?>> BuildNavigationProjection<TSource, TReturn>(string name)
+        where TReturn : class
     {
-        // TSource parameter
-        var type = typeof(ResolveEfFieldContext<TDbContext, TSource>);
-        var parameter = Expression.Parameter(type, "context");
-        var sourcePropertyInfo = type.GetProperty("Source", typeof(TSource))!;
-        var sourceProperty = Expression.Property(parameter, sourcePropertyInfo);
-        var property = Expression.Property(sourceProperty, name);
+        // _ => _.NavigationProperty
+        var parameter = Expression.Parameter(typeof(TSource), "_");
+        var property = Expression.Property(parameter, name);
+        return Expression.Lambda<Func<TSource, TReturn?>>(property, parameter);
+    }
 
-        //context => context.Source.Parent
-        return Expression.Lambda<Func<ResolveEfFieldContext<TDbContext, TSource>, TReturn>>(property, parameter);
+    /// <summary>
+    /// Creates a projection expression for a collection navigation property: _ => _.NavigationCollection
+    /// </summary>
+    internal static Expression<Func<TSource, IEnumerable<TReturn>?>> NavigationListProjection<TSource, TReturn>(string name)
+        where TReturn : class
+    {
+        var key = new NavigationKey(typeof(TSource), name);
+
+        return (Expression<Func<TSource, IEnumerable<TReturn>?>>)navigationProjections.GetOrAdd(
+            key,
+            _ => BuildNavigationListProjection<TSource, TReturn>(_.Name));
+    }
+
+    static Expression<Func<TSource, IEnumerable<TReturn>?>> BuildNavigationListProjection<TSource, TReturn>(string name)
+        where TReturn : class
+    {
+        // _ => _.NavigationCollection
+        var parameter = Expression.Parameter(typeof(TSource), "_");
+        var property = Expression.Property(parameter, name);
+        // Cast to IEnumerable<TReturn> if needed (e.g., IList<T> -> IEnumerable<T>)
+        var castToEnumerable = Expression.Convert(property, typeof(IEnumerable<TReturn>));
+        return Expression.Lambda<Func<TSource, IEnumerable<TReturn>?>>(castToEnumerable, parameter);
     }
 
     static void AddMember<TSource>(ComplexGraphType<TSource> graph, PropertyInfo property)

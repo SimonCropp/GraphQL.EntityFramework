@@ -85,24 +85,16 @@ public class MappingTests
     [Fact]
     public async Task NavigationProperty()
     {
-        await using var database = await sqlInstance.Build();
-        var context = database.Context;
-
         var child = new MappingChild();
         var parent = new MappingParent
         {
             Property = "value"
         };
         child.Parent = parent;
-        await database.AddData(child, parent);
-        var expression = Mapper<MappingContext>.NavigationExpression<MappingChild, MappingParent>("Parent");
+
+        var expression = Mapper<MappingContext>.NavigationProjection<MappingChild, MappingParent>("Parent");
         var compile = expression.Compile();
-        var result = compile(
-            new()
-            {
-                DbContext = context,
-                Source = child
-            });
+        var result = compile(child);
         await Verify(
             new
             {
