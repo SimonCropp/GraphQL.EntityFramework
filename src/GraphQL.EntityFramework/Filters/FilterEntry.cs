@@ -25,8 +25,6 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         }
     }
 
-    public Type EntityType => typeof(TEntity);
-
     public IReadOnlySet<string> RequiredPropertyNames => requiredPropertyNames;
 
     public FieldProjectionInfo AddRequirements(

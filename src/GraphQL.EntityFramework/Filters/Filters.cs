@@ -107,30 +107,6 @@ public class Filters<TDbContext>
     /// </summary>
     internal bool HasFilters => entries.Count > 0;
 
-    /// <summary>
-    /// Get the required property names for filters that apply to the specified entity type.
-    /// This aggregates raw property requirements from all applicable filters.
-    /// </summary>
-    public IReadOnlySet<string> GetRequiredFilterProperties<TEntity>()
-        where TEntity : class
-    {
-        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var entityType = typeof(TEntity);
-
-        foreach (var (filterType, entry) in entries)
-        {
-            if (filterType.IsAssignableFrom(entityType))
-            {
-                foreach (var prop in entry.RequiredPropertyNames)
-                {
-                    result.Add(prop);
-                }
-            }
-        }
-
-        return result;
-    }
-
     internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(
         IEnumerable<TEntity> result,
         object userContext,

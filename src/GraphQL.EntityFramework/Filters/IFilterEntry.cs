@@ -2,17 +2,6 @@ interface IFilterEntry<TDbContext>
     where TDbContext : DbContext
 {
     /// <summary>
-    /// The entity type this filter applies to.
-    /// </summary>
-    Type EntityType { get; }
-
-    /// <summary>
-    /// The raw property names extracted from the filter's projection expression.
-    /// Used for testing and diagnostics.
-    /// </summary>
-    IReadOnlySet<string> RequiredPropertyNames { get; }
-
-    /// <summary>
     /// Add this filter's requirements to the projection.
     /// Returns the updated projection with filter-required fields and navigations merged in.
     /// </summary>
