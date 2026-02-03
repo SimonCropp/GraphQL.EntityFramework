@@ -352,5 +352,10 @@
         AddSingleField(
             name: "filterReferenceEntity",
             resolve: _ => _.DbContext.FilterReferenceEntities);
+
+        AddSingleField(
+            name: "filterReferenceEntityNullable",
+            resolve: _ => _.DbContext.FilterReferenceEntities,
+            nullable: true);
     }
 }

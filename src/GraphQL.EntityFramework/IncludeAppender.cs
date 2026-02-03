@@ -57,74 +57,46 @@
     /// <summary>
     /// Checks if the query is the result of a projection (Select).
     /// When a query has been projected via Select, Include cannot be applied.
-    /// We detect this by examining if the expression tree contains a Select call.
+    /// We detect this by walking the LINQ method call chain (not lambda bodies).
     /// </summary>
     static bool IsProjectedQuery<TItem>(IQueryable<TItem> query)
         where TItem : class =>
-        ContainsSelectMethod(query.Expression);
+        HasSelectInQueryChain(query.Expression);
 
-    static bool ContainsSelectMethod(Expression expression)
+    /// <summary>
+    /// Walks the LINQ method call chain to find Select calls.
+    /// Only checks the source argument of LINQ operators, not lambda bodies.
+    /// </summary>
+    static bool HasSelectInQueryChain(Expression expression)
     {
-        while (true)
+        while (expression is MethodCallExpression methodCall)
         {
-            switch (expression)
+            // Check if this is a LINQ Select call
+            if (methodCall.Method.Name == "Select" &&
+                methodCall.Method.DeclaringType is { } declaringType &&
+                (declaringType == typeof(Queryable) || declaringType == typeof(Enumerable)))
             {
-                case MethodCallExpression methodCall:
-                    // Check if this is a Select call
-                    if (methodCall.Method.Name == "Select")
-                    {
-                        return true;
-                    }
+                return true;
+            }
 
-                    // Check all arguments recursively
-                    foreach (var arg in methodCall.Arguments)
-                    {
-                        if (ContainsSelectMethod(arg))
-                        {
-                            return true;
-                        }
-                    }
-
-                    // Check the object (for instance method calls)
-                    return methodCall.Object != null && ContainsSelectMethod(methodCall.Object);
-
-                case UnaryExpression unary:
-                    expression = unary.Operand;
-                    continue;
-
-                case LambdaExpression lambda:
-                    expression = lambda.Body;
-                    continue;
-
-                case MemberExpression member:
-                    return member.Expression != null && ContainsSelectMethod(member.Expression);
-
-                case BinaryExpression binary:
-                    return ContainsSelectMethod(binary.Left) || ContainsSelectMethod(binary.Right);
-
-                case ConditionalExpression conditional:
-                    return ContainsSelectMethod(conditional.Test) || ContainsSelectMethod(conditional.IfTrue) || ContainsSelectMethod(conditional.IfFalse);
-
-                case InvocationExpression invocation:
-                    if (ContainsSelectMethod(invocation.Expression))
-                    {
-                        return true;
-                    }
-
-                    foreach (var arg in invocation.Arguments)
-                    {
-                        if (ContainsSelectMethod(arg))
-                        {
-                            return true;
-                        }
-                    }
-
-                    return false;
-
-                default:
-                    return false;
+            // For LINQ extension methods, the source is the first argument
+            // Move to the source queryable to continue walking the chain
+            if (methodCall.Arguments.Count > 0)
+            {
+                expression = methodCall.Arguments[0];
+            }
+            else if (methodCall.Object != null)
+            {
+                // For instance methods, check the object
+                expression = methodCall.Object;
+            }
+            else
+            {
+                break;
             }
         }
+
+        return false;
     }
 
     IQueryable<TItem> AddFilterNavigationIncludes<TItem>(

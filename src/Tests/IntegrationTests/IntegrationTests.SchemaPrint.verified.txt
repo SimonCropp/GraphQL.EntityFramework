@@ -155,6 +155,7 @@
   filterChildEntity(id: ID, ids: [ID!], where: [WhereExpression!]): FilterChild!
   filterReferenceEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterReference!]!
   filterReferenceEntity(id: ID, ids: [ID!], where: [WhereExpression!]): FilterReference!
+  filterReferenceEntityNullable(id: ID, ids: [ID!], where: [WhereExpression!]): FilterReference
 }
 
 type CustomType {

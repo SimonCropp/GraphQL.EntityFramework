@@ -1,10 +1,28 @@
 ﻿{
-  target: {
-    Type: NullReferenceException,
-    Message: Object reference not set to an instance of an object.
-  },
-  sql: {
-    Text:
+  target:
+{
+  "data": {
+    "parentEntitiesFiltered": [
+      {
+        "property": "AllowedParent",
+        "children": [
+          {
+            "property": "Child4",
+            "age": 40,
+            "isActive": true
+          }
+        ]
+      },
+      {
+        "property": "BlockedParent",
+        "children": []
+      }
+    ]
+  }
+},
+  sql: [
+    {
+      Text:
 select   f.Id,
          f.Property,
          f0.Id,
@@ -16,5 +34,66 @@ from     FilterParentEntities as f
          FilterChildEntities as f0
          on f.Id = f0.ParentId
 order by f.Property, f.Id, f0.Id
-  }
+    },
+    {
+      Text:
+select   f.Id,
+         f.Age,
+         f.CreatedAt,
+         f.IsActive,
+         f.NullableAge,
+         f.NullableCreatedAt,
+         f.NullableIsActive,
+         f.ParentId,
+         f.Property,
+         f0.Id,
+         f0.Field1,
+         f0.Field10,
+         f0.Field2,
+         f0.Field3,
+         f0.Field4,
+         f0.Field5,
+         f0.Field6,
+         f0.Field7,
+         f0.Field8,
+         f0.Field9,
+         f0.Property
+from     FilterChildEntities as f
+         left outer join
+         FilterParentEntities as f0
+         on f.ParentId = f0.Id
+where    f.Id in ('Guid_1', 'Guid_2', 'Guid_3')
+order by f.Property
+    },
+    {
+      Text:
+select   f.Id,
+         f.Age,
+         f.CreatedAt,
+         f.IsActive,
+         f.NullableAge,
+         f.NullableCreatedAt,
+         f.NullableIsActive,
+         f.ParentId,
+         f.Property,
+         f0.Id,
+         f0.Field1,
+         f0.Field10,
+         f0.Field2,
+         f0.Field3,
+         f0.Field4,
+         f0.Field5,
+         f0.Field6,
+         f0.Field7,
+         f0.Field8,
+         f0.Field9,
+         f0.Property
+from     FilterChildEntities as f
+         left outer join
+         FilterParentEntities as f0
+         on f.ParentId = f0.Id
+where    f.Id = 'Guid_4'
+order by f.Property
+    }
+  ]
 }
