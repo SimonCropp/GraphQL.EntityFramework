@@ -18,16 +18,6 @@ public partial interface IEfGraphQLService<TDbContext>
         Type? graphType = null)
         where TReturn : class;
 
-    [Obsolete("Use the projection-based overload instead")]
-    FieldBuilder<TSource, TReturn> AddNavigationListField<TSource, TReturn>(
-        ComplexGraphType<TSource> graph,
-        string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
-        bool omitQueryArguments = false)
-        where TReturn : class;
-
     FieldBuilder<TSource, TReturn> AddNavigationListField<TSource, TReturn, TProjection>(
         ComplexGraphType<TSource> graph,
         string name,
