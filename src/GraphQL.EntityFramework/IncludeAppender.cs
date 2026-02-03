@@ -72,8 +72,7 @@
         while (expression is MethodCallExpression methodCall)
         {
             // Check if this is a LINQ Select call
-            if (methodCall.Method.Name == "Select" &&
-                methodCall.Method.DeclaringType is { } declaringType &&
+            if (methodCall.Method is { Name: "Select", DeclaringType: { } declaringType } &&
                 (declaringType == typeof(Queryable) || declaringType == typeof(Enumerable)))
             {
                 return true;
