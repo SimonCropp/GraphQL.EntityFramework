@@ -90,16 +90,18 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
                 }
             }
 
-            if (navType.IsAbstract)
+            if (!navType.IsAbstract)
             {
-                throw new InvalidOperationException(
-                    $"Filter for '{entityType.Name}' uses identity projection '_ => _' " +
-                    $"to access properties of abstract navigation '{navPath}' ({navType.Name}). " +
-                    $"This forces Include() to load all columns from {navType.Name}. " +
-                    $"Extract only the required properties in an explicit projection: " +
-                    $"projection: e => new {{ e.Id, {navPath}Property = e.{navPath}.PropertyName }}, " +
-                    $"filter: (_, _, _, proj) => proj.{navPath}Property == value");
+                continue;
             }
+
+            throw new(
+                $$"""
+                  Filter for '{{entityType.Name}}' uses identity projection '_ => _' to access properties of abstract navigation '{{navPath}}' ({{navType.Name}}).
+                  This forces Include() to load all columns from {{navType.Name}}.
+                  Extract only the required properties in an explicit projection:
+                  projection: e => new { e.Id, {{navPath}}Property = e.{{navPath}}.PropertyName }, filter: (_, _, _, proj) => proj.{{navPath}}Property == value
+                  """);
         }
     }
 
