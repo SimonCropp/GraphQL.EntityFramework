@@ -17,16 +17,6 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
     public void AutoMap(IReadOnlyList<string>? exclusions = null) =>
         Mapper<TDbContext>.AutoMap(this, GraphQlService, exclusions);
 
-    [Obsolete("Use the projection-based overload instead")]
-    public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn>(
-        string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
-        Type? graphType = null,
-        IEnumerable<string>? includeNames = null,
-        bool omitQueryArguments = false)
-        where TReturn : class =>
-        GraphQlService.AddNavigationConnectionField(this, name, resolve, graphType, includeNames, omitQueryArguments);
-
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TReturn, TProjection>(
         string name,
         Expression<Func<TSource, TProjection>> projection,
