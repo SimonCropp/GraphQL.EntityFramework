@@ -170,7 +170,7 @@ public partial class IntegrationTests
     /// BUG TEST: Reproduces the bug where TPH inheritance + entity filters on base type
     /// cause ALL columns to be selected from the navigation entity.
     ///
-    /// This matches the MinistersApi scenario:
+    /// This matches the scenario:
     /// - FilterReferenceEntity (like Accommodation) has a navigation to FilterBaseEntity
     /// - FilterBaseEntity (like BaseRequest) is an abstract base with TPH inheritance
     /// - FilterDerivedEntity (like TravelRequest) inherits from FilterBaseEntity

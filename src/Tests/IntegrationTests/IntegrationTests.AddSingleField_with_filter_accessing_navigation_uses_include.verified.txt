@@ -1,0 +1,24 @@
+﻿{
+  target:
+{
+  "data": {
+    "filterReferenceEntity": {
+      "id": "Guid_1",
+      "property": "Reference1"
+    }
+  }
+},
+  sql: {
+    Text:
+select top (2) f.Id,
+               f.BaseEntityId,
+               f.Property,
+               cast (0 as bit),
+               f0.CommonProperty
+from   FilterReferenceEntities as f
+       inner join
+       FilterBaseEntities as f0
+       on f.BaseEntityId = f0.Id
+where  f.Id = 'Guid_1'
+  }
+}

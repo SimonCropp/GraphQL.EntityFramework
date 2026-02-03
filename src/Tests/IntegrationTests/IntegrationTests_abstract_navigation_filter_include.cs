@@ -60,7 +60,7 @@ public partial class IntegrationTests
         var filters = new Filters<IntegrationDbContext>();
 
         // Filter projection accesses Status through abstract Parent navigation
-        // This mirrors the MinistersApi scenario:
+        // This mirrors the scenario:
         // _.TravelRequest != null ? _.TravelRequest.HighestStatusAchieved : null
         filters.For<DerivedChildEntity>().Add(
             projection: c => new AbstractNavStatusProjection(
@@ -152,7 +152,7 @@ public partial class IntegrationTests
 
     /// <summary>
     /// Tests that filter projection with multiple properties from abstract navigation works.
-    /// This matches the MinistersApi scenario more closely where both GroupOwnerId and
+    /// This matches the scenario more closely where both GroupOwnerId and
     /// HighestStatusAchieved are accessed from the abstract TravelRequest navigation.
     /// </summary>
     [Fact]
