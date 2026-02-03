@@ -1,0 +1,25 @@
+{
+  target:
+{
+  "data": {
+    "queryFieldWithInclude": [
+      {
+        "id": "Guid_1"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select i0.Id,
+       case when i1.Id is null then cast (1 as bit) else cast (0 as bit) end,
+       i1.Id
+from   IncludeNonQueryableBs as i
+       inner join
+       IncludeNonQueryableAs as i0
+       on i.IncludeNonQueryableAId = i0.Id
+       left outer join
+       IncludeNonQueryableBs as i1
+       on i0.Id = i1.IncludeNonQueryableAId
+  }
+}

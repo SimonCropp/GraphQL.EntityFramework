@@ -1,0 +1,26 @@
+{
+  target:
+{
+  "data": {
+    "childEntities": [
+      {
+        "id": "Guid_1",
+        "property": "Child1"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   c.Id,
+         c.ParentId,
+         c.Property,
+         case when p.Id is null then cast (1 as bit) else cast (0 as bit) end,
+         p.Property
+from     ChildEntities as c
+         left outer join
+         ParentEntities as p
+         on c.ParentId = p.Id
+order by c.Property
+  }
+}
