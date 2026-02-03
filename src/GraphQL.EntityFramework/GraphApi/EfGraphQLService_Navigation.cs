@@ -125,7 +125,7 @@ partial class EfGraphQLService<TDbContext>
         where TReturn : class
     {
         var filters = resolveFilters?.Invoke(null!);
-        if (filters == null || !filters.HasFilters)
+        if (filters is not {HasFilters: true})
         {
             return [];
         }
