@@ -154,15 +154,14 @@ public class OrderGraph :
             {
                 var data = ResolveDbContext(context);
                 // CustomerId is available even though it wasn't in the GraphQL query
-                var customer = await data.Customers
+                return await data.Customers
                     .Where(c => c.Id == context.Source.CustomerId)
                     .Select(c => c.Name)
                     .SingleAsync();
-                return customer;
             });
 }
 ```
-<sup><a href='/src/Snippets/ProjectionSnippets.cs#L34-L55' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionCustomResolver' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/ProjectionSnippets.cs#L34-L54' title='Snippet source file'>snippet source</a> | <a href='#snippet-ProjectionCustomResolver' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0` (or `Guid.Empty` for Guid keys) if `customerId` wasn't explicitly requested in the GraphQL query, causing the query to fail.
