@@ -31,9 +31,7 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
 
     public FieldProjectionInfo AddRequirements(
         FieldProjectionInfo projection,
-        IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        IReadOnlyDictionary<Type, List<string>> keyNames,
-        IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys)
+        IReadOnlyDictionary<string, Navigation>? navigationProperties)
     {
         if (requiredPropertyNames.Count == 0)
         {
@@ -127,9 +125,6 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             }
 
             var navType = navMetadata.Type;
-            keyNames.TryGetValue(navType, out var nestedKeys);
-            foreignKeys.TryGetValue(navType, out var nestedFks);
-
             if (mergedNavigations.TryGetValue(navName, out var existingNav))
             {
                 // Navigation exists in GraphQL query - add filter-required properties to its projection

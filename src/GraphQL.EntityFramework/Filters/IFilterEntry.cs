@@ -18,14 +18,10 @@ interface IFilterEntry<TDbContext>
     /// </summary>
     /// <param name="projection">The current projection to merge requirements into.</param>
     /// <param name="navigationProperties">Navigation property metadata for the entity type.</param>
-    /// <param name="keyNames">Key names for navigation types, used for nested projections.</param>
-    /// <param name="foreignKeys">Foreign key names for navigation types, used for nested projections.</param>
     /// <returns>Updated projection with filter requirements included.</returns>
     FieldProjectionInfo AddRequirements(
         FieldProjectionInfo projection,
-        IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        IReadOnlyDictionary<Type, List<string>> keyNames,
-        IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys);
+        IReadOnlyDictionary<string, Navigation>? navigationProperties);
 
     /// <summary>
     /// Get navigation names where the navigation type is abstract.

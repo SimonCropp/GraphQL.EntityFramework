@@ -194,7 +194,7 @@ class IncludeAppender(
         // Apply each filter's requirements to the projection
         foreach (var filter in relevantFilters)
         {
-            projection = filter.AddRequirements(projection, navigationProperties, keyNames, foreignKeys);
+            projection = filter.AddRequirements(projection, navigationProperties);
         }
 
         // Recursively process existing navigations
