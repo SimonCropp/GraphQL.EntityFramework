@@ -27,12 +27,14 @@
     <Using Include="GraphQL.Execution" />
     <Using Include="GraphQL.Builders" />
     <Using Include="System.Text.RegularExpressions" />
-    <ProjectReference Include="..\GraphQL.EntityFramework.Analyzers\GraphQL.EntityFramework.Analyzers.csproj">
+    <ProjectReference Condition="$(Configuration)=='Release'"
+                      Include="..\GraphQL.EntityFramework.Analyzers\GraphQL.EntityFramework.Analyzers.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
-    <ProjectReference Include="..\GraphQL.EntityFramework.CodeFixes\GraphQL.EntityFramework.CodeFixes.csproj">
+    <ProjectReference Condition="$(Configuration)=='Release'"
+                      Include="..\GraphQL.EntityFramework.CodeFixes\GraphQL.EntityFramework.CodeFixes.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
       <PrivateAssets>all</PrivateAssets>
