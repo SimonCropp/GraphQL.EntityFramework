@@ -678,18 +678,15 @@ class IncludeAppender(
         return name is "edges" or "items" or "node";
     }
 
-    public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string>? includeNames) =>
-        SetIncludeMetadata(fieldName, includeNames, fieldType.Metadata);
-
-    static void SetIncludeMetadata(string fieldName, IEnumerable<string>? includeNames, IDictionary<string, object?> metadata)
+    public static void SetIncludeMetadata(FieldType fieldType, string fieldName, IEnumerable<string>? includeNames)
     {
         if (includeNames is null)
         {
-            metadata["_EF_IncludeName"] = FieldNameToArray(fieldName);
+            fieldType.Metadata["_EF_IncludeName"] = FieldNameToArray(fieldName);
         }
         else
         {
-            metadata["_EF_IncludeName"] = includeNames.ToArray();
+            fieldType.Metadata["_EF_IncludeName"] = includeNames.ToArray();
         }
     }
 
