@@ -26,7 +26,7 @@ Notes:
 <!-- snippet: FiltersSignature -->
 <a id='snippet-FiltersSignature'></a>
 ```cs
-public partial class Filters<TDbContext>
+public class Filters<TDbContext>
     where TDbContext : DbContext
 {
     public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);

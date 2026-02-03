@@ -3,55 +3,11 @@
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
 {
-    static MethodInfo addEnumerableConnection = typeof(EfGraphQLService<TDbContext>)
-        .GetMethod("AddEnumerableConnection", BindingFlags.Instance | BindingFlags.NonPublic)!;
-
     static MethodInfo addEnumerableConnectionWithProjection = typeof(EfGraphQLService<TDbContext>)
         .GetMethod("AddEnumerableConnectionWithProjection", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
     static MethodInfo addEnumerableConnectionWithProjectionOnly = typeof(EfGraphQLService<TDbContext>)
         .GetMethod("AddEnumerableConnectionWithProjectionOnly", BindingFlags.Instance | BindingFlags.NonPublic)!;
-
-    [Obsolete("Use the projection-based overload instead")]
-    public ConnectionBuilder<TSource> AddNavigationConnectionField<TSource, TReturn>(
-        ComplexGraphType<TSource> graph,
-        string name,
-        Func<ResolveEfFieldContext<TDbContext, TSource>, IEnumerable<TReturn>>? resolve = null,
-        Type? itemGraphType = null,
-        IEnumerable<string>? includeNames = null,
-        bool omitQueryArguments = false)
-        where TReturn : class
-    {
-        Ensure.NotWhiteSpace(nameof(name), name);
-
-        itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();
-
-        var addConnectionT = addEnumerableConnection.MakeGenericMethod(typeof(TSource), itemGraphType, typeof(TReturn));
-
-        try
-        {
-            var arguments = new object?[]
-            {
-                graph,
-                name,
-                resolve,
-                includeNames,
-                omitQueryArguments
-            };
-            return (ConnectionBuilder<TSource>) addConnectionT.Invoke(this, arguments)!;
-        }
-        catch (Exception exception)
-        {
-            throw new(
-                $"""
-                 Failed to execute navigation connection for field `{name}`
-                 ItemGraphType: {itemGraphType.FullName}
-                 TSource: {typeof(TSource).FullName}
-                 TReturn: {typeof(TReturn).FullName}
-                 """,
-                exception);
-        }
-    }
 
     public ConnectionBuilder<TSource> AddNavigationConnectionField<TSource, TReturn, TProjection>(
         ComplexGraphType<TSource> graph,
