@@ -1,0 +1,21 @@
+﻿{
+  target:
+{
+  "data": {
+    "queryFieldWithManualAddIncludes": [
+      {
+        "id": "Guid_1"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select i0.Id,
+       i0.IncludeNonQueryableBId
+from   IncludeNonQueryableBs as i
+       inner join
+       IncludeNonQueryableAs as i0
+       on i.IncludeNonQueryableAId = i0.Id
+  }
+}

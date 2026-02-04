@@ -6,6 +6,12 @@ class IncludeAppender(
     public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
         where TItem : class
     {
+        // Include cannot be applied to queries that have already been projected (e.g., after Select).
+        if (IsProjectedQuery(query))
+        {
+            return query;
+        }
+
         if (context.SubFields is null)
         {
             return query;
@@ -17,7 +23,13 @@ class IncludeAppender(
             return query;
         }
 
-        return AddIncludes(query, context, navigationProperty);
+        var paths = GetPaths(context, navigationProperty);
+        foreach (var path in paths)
+        {
+            query = query.Include(path);
+        }
+
+        return query;
     }
 
     public IQueryable<TItem> AddIncludesWithFilters<TDbContext, TItem>(
@@ -551,28 +563,6 @@ class IncludeAppender(
                 navigation.IsCollection,
                 nestedProjection);
         }
-    }
-
-    IQueryable<T> AddIncludes<T>(IQueryable<T> query, IResolveFieldContext context, IReadOnlyDictionary<string, Navigation> navigationProperties)
-        where T : class
-    {
-        var paths = GetPaths(context, navigationProperties);
-        foreach (var path in paths)
-        {
-            try
-            {
-                query = query.Include(path);
-            }
-            catch (InvalidOperationException)
-            {
-                // Include cannot be applied to this query (e.g., it has already been projected).
-                // Skip adding Include and let the query execute without it.
-                // The filter will need to fetch the data separately if needed.
-                return query;
-            }
-        }
-
-        return query;
     }
 
     List<string> GetPaths(IResolveFieldContext context, IReadOnlyDictionary<string, Navigation> navigationProperty)
