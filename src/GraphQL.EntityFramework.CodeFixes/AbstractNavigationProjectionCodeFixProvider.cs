@@ -1,5 +1,3 @@
-using Microsoft.CodeAnalysis.CSharp;
-
 namespace GraphQL.EntityFramework.CodeFixes;
 
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AbstractNavigationProjectionCodeFixProvider))]
@@ -218,11 +216,11 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
     {
         // Replace all property accesses in a single pass
         var replacements = properties.ToDictionary(
-            _ => (SyntaxNode)_.OriginalAccess,
-            _ => (SyntaxNode)SyntaxFactory.MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression,
-                SyntaxFactory.IdentifierName("proj"),
-                SyntaxFactory.IdentifierName(_.FlatName)));
+            _ => _.OriginalAccess, SyntaxNode (_) =>
+                SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.IdentifierName("proj"),
+                    SyntaxFactory.IdentifierName(_.FlatName)));
 
         var newBody = originalFilter.Body.ReplaceNodes(
             replacements.Keys,
