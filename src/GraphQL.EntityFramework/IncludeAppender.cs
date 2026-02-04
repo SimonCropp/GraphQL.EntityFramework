@@ -299,7 +299,7 @@ class IncludeAppender(
         IResolveFieldContext context)
     {
         // Extract property paths from the projection expression
-        var accessedPaths = ProjectionPathAnalyzer.ExtractPropertyPaths(projection, sourceType);
+        var accessedPaths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
 
         // Group paths by their root navigation property
         var pathsByNavigation = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);

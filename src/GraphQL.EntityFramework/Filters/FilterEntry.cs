@@ -20,7 +20,7 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         {
             var compiled = projection.Compile();
             compiledProjection = entity => compiled((TEntity)entity);
-            requiredPropertyNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
+            requiredPropertyNames = ProjectionAnalyzer.ExtractPropertyPaths(projection);
         }
     }
 
