@@ -32,7 +32,7 @@ public static class FieldBuilderExtensions
         var field = builder.FieldType;
 
         // Store projection expression - flows through to Select expression builder
-        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
+        IncludeAppender.SetProjectionMetadata(field, projection);
 
         var compiledProjection = projection.Compile();
 
@@ -110,7 +110,7 @@ public static class FieldBuilderExtensions
         var field = builder.FieldType;
 
         // Store projection expression - flows through to Select expression builder
-        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
+        IncludeAppender.SetProjectionMetadata(field, projection);
 
         var compiledProjection = projection.Compile();
 
@@ -188,7 +188,7 @@ public static class FieldBuilderExtensions
         var field = builder.FieldType;
 
         // Store projection expression - flows through to Select expression builder
-        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
+        IncludeAppender.SetProjectionMetadata(field, projection);
 
         var compiledProjection = projection.Compile();
 
@@ -268,7 +268,7 @@ public static class FieldBuilderExtensions
         var field = builder.FieldType;
 
         // Store projection expression - flows through to Select expression builder
-        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
+        IncludeAppender.SetProjectionMetadata(field, projection);
 
         var compiledProjection = projection.Compile();
 

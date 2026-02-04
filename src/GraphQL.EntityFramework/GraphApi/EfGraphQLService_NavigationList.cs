@@ -22,7 +22,7 @@ partial class EfGraphQLService<TDbContext>
             Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false),
         };
 
-        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
+        IncludeAppender.SetProjectionMetadata(field, projection);
 
         var compiledProjection = projection.Compile();
 
@@ -78,7 +78,7 @@ partial class EfGraphQLService<TDbContext>
             Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false),
         };
 
-        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
+        IncludeAppender.SetProjectionMetadata(field, projection);
 
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
