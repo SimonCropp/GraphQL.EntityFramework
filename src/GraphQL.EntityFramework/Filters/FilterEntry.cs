@@ -20,8 +20,25 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         {
             var compiled = projection.Compile();
             compiledProjection = entity => compiled((TEntity)entity);
-            requiredPropertyNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
-            ValidateProjectionCompatibility(projection, requiredPropertyNames);
+
+            // Analyze projection in a single pass - extracts property paths and detects abstract navigation access
+            var (properties, abstractAccesses) = ProjectionAnalyzer.AnalyzeProjection(projection);
+            requiredPropertyNames = properties;
+
+            // Validate: identity projections cannot access abstract navigation properties
+            // (explicit projections that extract specific properties are allowed)
+            if (IsIdentityProjection(projection) && abstractAccesses.Count > 0)
+            {
+                var access = abstractAccesses[0];
+                var entityType = typeof(TEntity);
+                throw new(
+                    $$"""
+                      Filter for '{{entityType.Name}}' uses identity projection '_ => _' to access properties of abstract navigation '{{access.NavigationName}}' ({{access.AbstractType.Name}}).
+                      This forces Include() to load all columns from {{access.AbstractType.Name}}.
+                      Extract only the required properties in an explicit projection:
+                      projection: e => new { e.Id, {{access.NavigationName}}Property = e.{{access.NavigationName}}.PropertyName }, filter: (_, _, _, proj) => proj.{{access.NavigationName}}Property == value
+                      """);
+            }
         }
     }
 
@@ -219,73 +236,6 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             ? compiledProjection(entity)
             : default!;
         return filter(userContext, data, userPrincipal, projectedData);
-    }
-
-    static void ValidateProjectionCompatibility(
-        Expression<Func<TEntity, TProjection>> projection,
-        IReadOnlySet<string> requiredPropertyNames)
-    {
-        // Only validate identity projections (x => x)
-        // Explicit projections that extract specific properties from abstract navigations are ALLOWED
-        // because EF Core can project scalar properties through abstract navigations efficiently.
-        // The problem only occurs with identity projections where the filter accesses abstract nav properties,
-        // which forces Include() to load all columns.
-        if (!IsIdentityProjection(projection))
-        {
-            return;
-        }
-
-        // Extract navigation paths (e.g., "Parent.Property" -> navigation "Parent")
-        var navigationPaths = requiredPropertyNames
-            .Where(_ => _.Contains('.'))
-            .Select(_ => _.Split('.')[0])
-            .Distinct()
-            .ToList();
-
-        if (navigationPaths.Count == 0)
-        {
-            return;
-        }
-
-        var entityType = typeof(TEntity);
-
-        // Check each navigation for abstract types
-        foreach (var navPath in navigationPaths)
-        {
-            var navProperty = entityType.GetProperty(navPath);
-            if (navProperty == null)
-            {
-                continue;
-            }
-
-            var navType = navProperty.PropertyType;
-
-            // For collections, get the element type
-            if (navType.IsGenericType)
-            {
-                var genericDef = navType.GetGenericTypeDefinition();
-                if (genericDef == typeof(ICollection<>) ||
-                    genericDef == typeof(IList<>) ||
-                    genericDef == typeof(IEnumerable<>) ||
-                    genericDef == typeof(List<>))
-                {
-                    navType = navType.GetGenericArguments()[0];
-                }
-            }
-
-            if (!navType.IsAbstract)
-            {
-                continue;
-            }
-
-            throw new(
-                $$"""
-                  Filter for '{{entityType.Name}}' uses identity projection '_ => _' to access properties of abstract navigation '{{navPath}}' ({{navType.Name}}).
-                  This forces Include() to load all columns from {{navType.Name}}.
-                  Extract only the required properties in an explicit projection:
-                  projection: e => new { e.Id, {{navPath}}Property = e.{{navPath}}.PropertyName }, filter: (_, _, _, proj) => proj.{{navPath}}Property == value
-                  """);
-        }
     }
 
     // Detect: x => x (where body == parameter)
