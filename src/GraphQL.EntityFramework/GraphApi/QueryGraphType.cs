@@ -79,7 +79,4 @@ public class QueryGraphType<TDbContext>(IEfGraphQLService<TDbContext> graphQlSer
         where TReturn : class =>
         GraphQlService.AddFirstField(this, name, resolve, mutate, graphType, nullable, omitQueryArguments, idOnly);
 
-    public IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
-        where TItem : class =>
-        GraphQlService.AddIncludes(query, context);
 }

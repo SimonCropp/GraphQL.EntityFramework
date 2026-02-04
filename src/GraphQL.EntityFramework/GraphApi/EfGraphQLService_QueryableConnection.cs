@@ -155,7 +155,6 @@ partial class EfGraphQLService<TDbContext>
                         query = query.AsNoTracking();
                     }
 
-                    query = includeAppender.AddIncludes(query, context);
                     query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
 
                     if (includeAppender.TryGetProjectionExpressionWithFilters<TDbContext, TReturn>(context, fieldContext.Filters, out var selectExpr))
