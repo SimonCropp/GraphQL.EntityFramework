@@ -33,117 +33,66 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             return projection;
         }
 
-        // Separate simple fields and navigation paths
-        var scalarFieldsToAdd = new List<string>();
-        var navigationPaths = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        var mergedScalars = new HashSet<string>(projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
+        var navRequirements = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var field in requiredPropertyNames)
         {
-            if (field.Contains('.'))
+            var dotIndex = field.IndexOf('.');
+            if (dotIndex < 0)
             {
-                // Navigation path like "Parent.Id"
-                var parts = field.Split('.', 2);
-                var navName = parts[0];
-                var navProperty = parts[1];
-
-                if (!navigationPaths.TryGetValue(navName, out var properties))
+                // Scalar field - skip navigation property names
+                if (FindNavigation(navigationProperties, field) == null)
                 {
-                    properties = new(StringComparer.OrdinalIgnoreCase);
-                    navigationPaths[navName] = properties;
+                    mergedScalars.Add(field);
                 }
 
-                // Only add if it doesn't contain further dots (single-level navigation)
-                if (!navProperty.Contains('.'))
-                {
-                    properties.Add(navProperty);
-                }
+                continue;
             }
-            else
-            {
-                // Simple field - check if it's a navigation property
-                var isNavigation = navigationProperties?.ContainsKey(field) == true;
 
-                if (isNavigation ||
-                    projection.ScalarFields.Contains(field) ||
-                    projection.KeyNames?.Contains(field, StringComparer.OrdinalIgnoreCase) == true)
-                {
-                    // Skip navigation names - they'll be handled via navigation paths
-                    continue;
-                }
+            var navProperty = field[(dotIndex + 1)..];
 
-                scalarFieldsToAdd.Add(field);
-            }
-        }
-
-        // Merge scalar fields
-        var mergedScalars = new HashSet<string>(projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
-        foreach (var field in scalarFieldsToAdd)
-        {
-            mergedScalars.Add(field);
-        }
-
-        // Merge navigations
-        var infos = projection.Navigations;
-        Dictionary<string, NavigationProjectionInfo> mergedNavigations;
-        if (infos == null)
-        {
-            mergedNavigations = [];
-        }
-        else
-        {
-            mergedNavigations = new(infos);
-        }
-
-        // Process navigation paths from filter fields
-        foreach (var (navName, requiredProps) in navigationPaths)
-        {
-            // Skip if no navigation metadata available for this entity type
-            if (navigationProperties == null)
+            // Only handle single-level navigation paths
+            if (navProperty.Contains('.'))
             {
                 continue;
             }
 
-            // Try to find the navigation - use case-insensitive search
-            Navigation? navMetadata = null;
-            foreach (var (key, value) in navigationProperties)
+            var navName = field[..dotIndex];
+            if (!navRequirements.TryGetValue(navName, out var props))
             {
-                if (string.Equals(key, navName, StringComparison.OrdinalIgnoreCase))
-                {
-                    navMetadata = value;
-                    break;
-                }
+                props = new(StringComparer.OrdinalIgnoreCase);
+                navRequirements[navName] = props;
             }
 
+            props.Add(navProperty);
+        }
+
+        // Merge navigation requirements
+        var mergedNavigations = projection.Navigations != null
+            ? new Dictionary<string, NavigationProjectionInfo>(projection.Navigations)
+            : new Dictionary<string, NavigationProjectionInfo>();
+
+        foreach (var (navName, requiredProps) in navRequirements)
+        {
+            var navMetadata = FindNavigation(navigationProperties, navName);
             if (navMetadata == null)
             {
                 continue;
             }
 
-            var navType = navMetadata.Type;
             if (mergedNavigations.TryGetValue(navName, out var existingNav))
             {
-                // Navigation exists in GraphQL query - add filter-required properties to its projection
                 var updatedScalars = new HashSet<string>(existingNav.Projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
-                foreach (var prop in requiredProps)
-                {
-                    updatedScalars.Add(prop);
-                }
-
-                var updatedProjection = existingNav.Projection with
-                {
-                    ScalarFields = updatedScalars
-                };
+                updatedScalars.UnionWith(requiredProps);
                 mergedNavigations[navName] = existingNav with
                 {
-                    Projection = updatedProjection
+                    Projection = existingNav.Projection with { ScalarFields = updatedScalars }
                 };
             }
             else
             {
-                // Create navigation projection for filter-only navigations.
-                // Don't include key/FK columns - the filter only needs the specific properties it accesses.
-                var navProjection = new FieldProjectionInfo(requiredProps, null, null, null);
-                mergedNavigations[navName] = new(navType, navMetadata.IsCollection, navProjection);
+                mergedNavigations[navName] = new(navMetadata.Type, navMetadata.IsCollection, new(requiredProps, null, null, null));
             }
         }
 
@@ -152,6 +101,24 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             ScalarFields = mergedScalars,
             Navigations = mergedNavigations
         };
+    }
+
+    static Navigation? FindNavigation(IReadOnlyDictionary<string, Navigation>? properties, string name)
+    {
+        if (properties == null)
+        {
+            return null;
+        }
+
+        foreach (var (key, value) in properties)
+        {
+            if (string.Equals(key, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return value;
+            }
+        }
+
+        return null;
     }
 
     public Task<bool> ShouldIncludeWithProjection(
