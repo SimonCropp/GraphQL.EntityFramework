@@ -4,7 +4,7 @@ public partial class IntegrationTests
     public void Querying_abstract_type_throws_with_clear_message()
     {
         var projection = new FieldProjectionInfo(
-            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Property" },
+            new(StringComparer.OrdinalIgnoreCase) { "Property" },
             null,
             null,
             null);
