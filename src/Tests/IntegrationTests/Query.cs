@@ -164,6 +164,14 @@
             resolve: _ => _.DbContext.ReadOnlyEntities);
 
         AddQueryField(
+            name: "readOnlyParentEntities",
+            resolve: _ => _.DbContext.ReadOnlyParentEntities);
+
+        AddSingleField(
+            name: "readOnlyParentEntity",
+            resolve: _ => _.DbContext.ReadOnlyParentEntities);
+
+        AddQueryField(
             name: "manyToManyLeftEntities",
             resolve: _ => _.DbContext.ManyToManyLeftEntities);
 

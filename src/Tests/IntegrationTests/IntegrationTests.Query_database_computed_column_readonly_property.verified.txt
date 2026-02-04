@@ -22,7 +22,8 @@ select   r.Id,
          r.Age,
          r.ComputedInDb,
          r.FirstName,
-         r.LastName
+         r.LastName,
+         r.ReadOnlyParentId
 from     ReadOnlyEntities as r
 order by r.Id
   }

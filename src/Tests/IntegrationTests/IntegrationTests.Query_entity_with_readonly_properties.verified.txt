@@ -19,6 +19,7 @@
   sql: {
     Text:
 select   r.Id,
+         r.ReadOnlyParentId,
          r.FirstName,
          r.LastName,
          r.Age

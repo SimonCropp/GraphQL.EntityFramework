@@ -36,6 +36,7 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<ManyToManyShadowRightEntity> ManyToManyShadowRightEntities { get; set; } = null!;
     public DbSet<OwnedParent> OwnedParents { get; set; } = null!;
     public DbSet<ReadOnlyEntity> ReadOnlyEntities { get; set; } = null!;
+    public DbSet<ReadOnlyParentEntity> ReadOnlyParentEntities { get; set; } = null!;
     public DbSet<FieldBuilderProjectionEntity> FieldBuilderProjectionEntities { get; set; } = null!;
     public DbSet<FieldBuilderProjectionParentEntity> FieldBuilderProjectionParentEntities { get; set; } = null!;
     public DbSet<DepartmentEntity> Departments { get; set; } = null!;
@@ -103,6 +104,8 @@ public class IntegrationDbContext(DbContextOptions options) :
         modelBuilder.Entity<ReadOnlyEntity>()
             .Property(_ => _.ComputedInDb)
             .HasComputedColumnSql("Trim(Concat(Coalesce(FirstName, ''), ' ', Coalesce(LastName, '')))", stored: true);
+        modelBuilder.Entity<ReadOnlyParentEntity>()
+            .OrderBy(_ => _.Property);
         var fieldBuilderProjection = modelBuilder.Entity<FieldBuilderProjectionEntity>();
         fieldBuilderProjection.OrderBy(_ => _.Name);
         fieldBuilderProjection.Property(_ => _.Salary).HasPrecision(18, 2);

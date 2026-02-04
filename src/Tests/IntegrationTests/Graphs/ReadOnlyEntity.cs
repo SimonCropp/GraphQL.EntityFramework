@@ -14,4 +14,7 @@ public class ReadOnlyEntity
 
     // Read-only auto-property (simulates database computed column like User.DisplayName)
     public string ComputedInDb { get; } = null!;
+
+    public Guid? ReadOnlyParentId { get; set; }
+    public ReadOnlyParentEntity? ReadOnlyParent { get; set; }
 }

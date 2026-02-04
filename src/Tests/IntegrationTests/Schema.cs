@@ -34,6 +34,8 @@
         RegisterTypeMapping(typeof(ManyToManyRightEntity), typeof(ManyToManyRightGraphType));
         RegisterTypeMapping(typeof(ParentEntityView), typeof(ParentEntityViewGraphType));
         RegisterTypeMapping(typeof(OwnedParent), typeof(OwnedParentGraphType));
+        RegisterTypeMapping(typeof(ReadOnlyEntity), typeof(ReadOnlyEntityGraphType));
+        RegisterTypeMapping(typeof(ReadOnlyParentEntity), typeof(ReadOnlyParentGraphType));
         RegisterTypeMapping(typeof(OwnedChild), typeof(OwnedChildGraphType));
         RegisterTypeMapping(typeof(FieldBuilderProjectionEntity), typeof(FieldBuilderProjectionGraphType));
         RegisterTypeMapping(typeof(FieldBuilderProjectionParentEntity), typeof(FieldBuilderProjectionParentGraphType));

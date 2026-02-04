@@ -76,6 +76,8 @@
   derivedEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Derived!
   derivedChildEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
   readOnlyEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyEntity]!
+  readOnlyParentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyParent!]!
+  readOnlyParentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): ReadOnlyParent!
   manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
   manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
   parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentEntityView!]!
@@ -586,6 +588,7 @@ type Derived implements BaseEntity {
 }
 
 type ReadOnlyEntity {
+  readOnlyParent: ReadOnlyParent
   age: Int!
   computedInDb: String!
   displayName: String!
@@ -593,6 +596,13 @@ type ReadOnlyEntity {
   id: ID!
   isAdult: Boolean!
   lastName: String
+  readOnlyParentId: ID
+}
+
+type ReadOnlyParent {
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyEntity!]!
+  id: ID!
+  property: String
 }
 
 type ManyToManyLeft {
