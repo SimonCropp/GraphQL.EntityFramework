@@ -45,6 +45,13 @@ static class SelectExpressionBuilder
         where TEntity : class
     {
         var entityType = typeof(TEntity);
+
+        if (entityType.IsAbstract)
+        {
+            throw new InvalidOperationException(
+                $"Cannot project abstract type '{entityType.Name}'. Use .OfType<ConcreteType>() to query specific derived types.");
+        }
+
         var entityMetadata = GetEntityMetadata(entityType);
         var parameter = entityMetadata.Parameter;
         var properties = entityMetadata.Properties;
@@ -129,10 +136,18 @@ static class SelectExpressionBuilder
     static MemberBinding? BuildNavigationBinding(
         MemberExpression navAccess,
         NavigationProjectionInfo navProjection,
-        IReadOnlyDictionary<Type, List<string>> keyNames) =>
-        navProjection.IsCollection
+        IReadOnlyDictionary<Type, List<string>> keyNames)
+    {
+        if (navProjection.EntityType.IsAbstract)
+        {
+            throw new InvalidOperationException(
+                $"Cannot project abstract navigation type '{navProjection.EntityType.Name}'. Use an explicit projection to extract the required properties.");
+        }
+
+        return navProjection.IsCollection
             ? BuildCollectionNavigationBinding(navAccess, navProjection, keyNames)
             : BuildSingleNavigationBinding(navAccess, navProjection, keyNames);
+    }
 
     static MemberAssignment? BuildCollectionNavigationBinding(
         MemberExpression navAccess,
@@ -140,14 +155,6 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<Type, List<string>> keyNames)
     {
         var navType = navProjection.EntityType;
-
-        // Can't create NewExpression for abstract types
-        // (EF Core can't compile "new AbstractType { ... }")
-        if (navType.IsAbstract)
-        {
-            return null;
-        }
-
         var navMetadata = GetEntityMetadata(navType);
         var navParam = Expression.Parameter(navType, "n");
 
@@ -189,14 +196,6 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<Type, List<string>> keyNames)
     {
         var navType = navProjection.EntityType;
-
-        // Can't create NewExpression for abstract types
-        // (EF Core can't compile "new AbstractType { ... }")
-        if (navType.IsAbstract)
-        {
-            return null;
-        }
-
         var navMetadata = GetEntityMetadata(navType);
 
         // x.Parent == null
@@ -314,10 +313,10 @@ static class SelectExpressionBuilder
         binding = null;
         var navType = navProjection.EntityType;
 
-        // Can't create NewExpression for abstract types
         if (navType.IsAbstract)
         {
-            return false;
+            throw new InvalidOperationException(
+                $"Cannot project abstract navigation type '{navType.Name}'. Use an explicit projection to extract the required properties.");
         }
 
         if (navProjection.IsCollection)

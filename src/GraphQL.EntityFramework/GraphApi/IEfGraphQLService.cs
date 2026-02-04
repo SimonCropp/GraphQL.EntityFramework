@@ -5,8 +5,7 @@ public partial interface IEfGraphQLService<TDbContext>
 {
     TDbContext ResolveDbContext(IResolveFieldContext context);
 
-    IQueryable<TItem> AddIncludes<TItem>(IQueryable<TItem> query, IResolveFieldContext context)
-        where TItem : class;
+    Filters<TDbContext>? ResolveFilters(IResolveFieldContext context);
 
     public IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> Navigations { get; }
 }

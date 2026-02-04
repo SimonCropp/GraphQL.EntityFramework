@@ -1,5 +1,3 @@
-using Microsoft.CodeAnalysis.CSharp;
-
 namespace GraphQL.EntityFramework.CodeFixes;
 
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AbstractNavigationProjectionCodeFixProvider))]
@@ -23,9 +21,7 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         }
 
         var diagnostic = context.Diagnostics[0];
-        var diagnosticSpan = diagnostic.Location.SourceSpan;
-
-        var node = root.FindNode(diagnosticSpan);
+        var node = root.FindNode(diagnostic.Location.SourceSpan);
         var invocation = node as InvocationExpressionSyntax ?? node.FirstAncestorOrSelf<InvocationExpressionSyntax>();
 
         if (invocation == null)
@@ -73,50 +69,31 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
             }
         }
 
-        // If no explicit projection argument, this is 4-parameter syntax
-        var is4ParamSyntax = projectionArgumentIndex == -1;
-
         if (filterLambda == null)
         {
             return document;
         }
 
-        // Extract accessed properties from filter
-        var accessedProperties = ExtractAccessedProperties(filterLambda);
+        var entityParamName = GetLastParameterName(filterLambda);
+        if (entityParamName == null)
+        {
+            return document;
+        }
+
+        var accessedProperties = ExtractAccessedProperties(filterLambda.Body, entityParamName);
         if (accessedProperties.Count == 0)
         {
             return document;
         }
 
-        // Get the entity parameter name from the filter (last parameter)
-        string entityParamName;
-        if (filterLambda is SimpleLambdaExpressionSyntax simpleLambda)
-        {
-            entityParamName = simpleLambda.Parameter.Identifier.Text;
-        }
-        else if (filterLambda is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
-        {
-            var paramCount = parenthesizedLambda.ParameterList.Parameters.Count;
-            entityParamName = paramCount > 0
-                ? parenthesizedLambda.ParameterList.Parameters[paramCount - 1].Identifier.Text
-                : "entity";
-        }
-        else
-        {
-            return document;
-        }
-
-        // Build new projection lambda: e => new { e.Id, Prop1 = e.Nav.Prop1, ... }
         var newProjectionLambda = BuildProjectionLambda(entityParamName, accessedProperties);
-
-        // Build new filter lambda with renamed parameter: (_, _, _, proj) => proj.Prop1 == value
         var newFilterLambda = BuildFilterLambda(filterLambda, accessedProperties);
 
         // Replace arguments
         SyntaxNode newInvocation;
-        if (is4ParamSyntax)
+        if (projectionArgumentIndex == -1)
         {
-            // Add projection argument
+            // 4-parameter syntax: add projection argument
             var projectionArg = SyntaxFactory.Argument(newProjectionLambda)
                 .WithNameColon(SyntaxFactory.NameColon("projection"))
                 .WithLeadingTrivia(SyntaxFactory.Whitespace("\n            "));
@@ -131,22 +108,16 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         }
         else
         {
-            // Replace projection and filter arguments
+            // Replace existing projection and filter arguments
             var newArguments = arguments;
 
-            if (projectionArgumentIndex >= 0)
-            {
-                newArguments = newArguments.Replace(
-                    newArguments[projectionArgumentIndex],
-                    newArguments[projectionArgumentIndex].WithExpression(newProjectionLambda));
-            }
+            newArguments = newArguments.Replace(
+                newArguments[projectionArgumentIndex],
+                newArguments[projectionArgumentIndex].WithExpression(newProjectionLambda));
 
-            if (filterArgumentIndex >= 0)
-            {
-                newArguments = newArguments.Replace(
-                    newArguments[filterArgumentIndex],
-                    newArguments[filterArgumentIndex].WithExpression(newFilterLambda));
-            }
+            newArguments = newArguments.Replace(
+                newArguments[filterArgumentIndex],
+                newArguments[filterArgumentIndex].WithExpression(newFilterLambda));
 
             newInvocation = invocation.WithArgumentList(
                 invocation.ArgumentList.WithArguments(newArguments));
@@ -156,69 +127,47 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         return document.WithSyntaxRoot(newRoot);
     }
 
-    static List<PropertyAccess> ExtractAccessedProperties(LambdaExpressionSyntax filterLambda)
+    static string? GetLastParameterName(LambdaExpressionSyntax lambda) =>
+        lambda switch
+        {
+            SimpleLambdaExpressionSyntax simple => simple.Parameter.Identifier.Text,
+            ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters.Count: > 0 } parenthesized =>
+                parenthesized.ParameterList.Parameters[parenthesized.ParameterList.Parameters.Count - 1].Identifier.Text,
+            _ => null
+        };
+
+    static ExpressionSyntax UnwrapNullForgiving(ExpressionSyntax expression) =>
+        expression is PostfixUnaryExpressionSyntax { RawKind: (int)SyntaxKind.SuppressNullableWarningExpression } postfix
+            ? postfix.Operand
+            : expression;
+
+    static List<PropertyAccess> ExtractAccessedProperties(CSharpSyntaxNode body, string paramName)
     {
         var properties = new List<PropertyAccess>();
-        var body = filterLambda.Body;
 
-        // Get filter parameter name
-        string? paramName = null;
-        if (filterLambda is SimpleLambdaExpressionSyntax simpleLambda)
+        foreach (var memberAccess in body.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>())
         {
-            paramName = simpleLambda.Parameter.Identifier.Text;
-        }
-        else if (filterLambda is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
-        {
-            var paramCount = parenthesizedLambda.ParameterList.Parameters.Count;
-            if (paramCount > 0)
+            // Look for: e.Nav.Prop or e.Nav!.Prop
+            var inner = UnwrapNullForgiving(memberAccess.Expression);
+
+            if (inner is not MemberAccessExpressionSyntax nestedAccess)
             {
-                paramName = parenthesizedLambda.ParameterList.Parameters[paramCount - 1].Identifier.Text;
-            }
-        }
-
-        if (paramName == null)
-        {
-            return properties;
-        }
-
-        // Find all member accesses
-        var memberAccesses = body.DescendantNodesAndSelf()
-            .OfType<MemberAccessExpressionSyntax>();
-
-        foreach (var memberAccess in memberAccesses)
-        {
-            // Look for patterns like: e.Parent.Property or e.Parent!.Property (with null-forgiving operator)
-            // The null-forgiving operator creates a PostfixUnaryExpressionSyntax wrapper
-            var innerExpression = memberAccess.Expression;
-
-            // Unwrap null-forgiving operator if present: e.Parent! -> e.Parent
-            if (innerExpression is PostfixUnaryExpressionSyntax { RawKind: (int)SyntaxKind.SuppressNullableWarningExpression } postfix)
-            {
-                innerExpression = postfix.Operand;
+                continue;
             }
 
-            if (innerExpression is MemberAccessExpressionSyntax nestedAccess)
+            var root = UnwrapNullForgiving(nestedAccess.Expression);
+            if (root is not IdentifierNameSyntax identifier || identifier.Identifier.Text != paramName)
             {
-                // Check if the root is our parameter (possibly with null-forgiving)
-                var rootExpr = nestedAccess.Expression;
-                if (rootExpr is PostfixUnaryExpressionSyntax { RawKind: (int)SyntaxKind.SuppressNullableWarningExpression } rootPostfix)
-                {
-                    rootExpr = rootPostfix.Operand;
-                }
+                continue;
+            }
 
-                if (rootExpr is IdentifierNameSyntax identifier && identifier.Identifier.Text == paramName)
-                {
-                    // e.Parent.Property - extract as "Parent.Property"
-                    var navName = nestedAccess.Name.Identifier.Text;
-                    var propName = memberAccess.Name.Identifier.Text;
-                    var fullPath = $"{navName}.{propName}";
-                    var flatName = $"{navName}{propName}";
+            var navName = nestedAccess.Name.Identifier.Text;
+            var propName = memberAccess.Name.Identifier.Text;
+            var fullPath = $"{navName}.{propName}";
 
-                    if (!properties.Any(p => p.FullPath == fullPath))
-                    {
-                        properties.Add(new(fullPath, flatName, memberAccess));
-                    }
-                }
+            if (!properties.Any(_ => _.FullPath == fullPath))
+            {
+                properties.Add(new(fullPath, $"{navName}{propName}", memberAccess));
             }
         }
 
@@ -229,26 +178,20 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
         string paramName,
         List<PropertyAccess> properties)
     {
-        // Build: _ => new { _.Id, Prop1 = _.Nav.Prop1, ... }
-        var parameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(paramName));
-
-        List<AnonymousObjectMemberDeclaratorSyntax> initializers = [];
-
-        // Add Id property
-        initializers.Add(
+        var initializers = new List<AnonymousObjectMemberDeclaratorSyntax>
+        {
+            // Always include Id
             SyntaxFactory.AnonymousObjectMemberDeclarator(
                 SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.IdentifierName(paramName),
-                    SyntaxFactory.IdentifierName("Id"))));
+                    SyntaxFactory.IdentifierName("Id")))
+        };
 
-        // Add accessed properties with flattened names
         foreach (var prop in properties)
         {
-            var parts = prop.FullPath.Split('.');
             ExpressionSyntax expression = SyntaxFactory.IdentifierName(paramName);
-
-            foreach (var part in parts)
+            foreach (var part in prop.FullPath.Split('.'))
             {
                 expression = SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
@@ -262,38 +205,26 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
                     expression));
         }
 
-        var anonymousObject = SyntaxFactory.AnonymousObjectCreationExpression(
-            SyntaxFactory.SeparatedList(initializers));
-
-        return SyntaxFactory.SimpleLambdaExpression(parameter, anonymousObject);
+        return SyntaxFactory.SimpleLambdaExpression(
+            SyntaxFactory.Parameter(SyntaxFactory.Identifier(paramName)),
+            SyntaxFactory.AnonymousObjectCreationExpression(SyntaxFactory.SeparatedList(initializers)));
     }
 
     static LambdaExpressionSyntax BuildFilterLambda(
         LambdaExpressionSyntax originalFilter,
         List<PropertyAccess> properties)
     {
-        // Replace entity parameter references with proj and update property accesses
-        var newBody = originalFilter.Body;
-
-        // Replace each property access with flattened name
-        foreach (var prop in properties)
-        {
-            // Replace e.Parent.Property with proj.ParentProperty
-            newBody = newBody.ReplaceNodes(
-                newBody.DescendantNodesAndSelf().Where(_ => _ == prop.OriginalAccess),
-                (_, _) => SyntaxFactory.MemberAccessExpression(
+        // Replace all property accesses in a single pass
+        var replacements = properties.ToDictionary(
+            _ => _.OriginalAccess, SyntaxNode (_) =>
+                SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.IdentifierName("proj"),
-                    SyntaxFactory.IdentifierName(prop.FlatName)));
-        }
+                    SyntaxFactory.IdentifierName(_.FlatName)));
 
-        // Build new parameter list with "proj" as last parameter
-        if (originalFilter is SimpleLambdaExpressionSyntax)
-        {
-            return SyntaxFactory.SimpleLambdaExpression(
-                SyntaxFactory.Parameter(SyntaxFactory.Identifier("proj")),
-                newBody);
-        }
+        var newBody = originalFilter.Body.ReplaceNodes(
+            replacements.Keys,
+            (original, _) => replacements[original]);
 
         if (originalFilter is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
         {
@@ -306,20 +237,15 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
                 newBody);
         }
 
-        return originalFilter;
+        return SyntaxFactory.SimpleLambdaExpression(
+            SyntaxFactory.Parameter(SyntaxFactory.Identifier("proj")),
+            newBody);
     }
 
-    class PropertyAccess
+    class PropertyAccess(string fullPath, string flatName, SyntaxNode originalAccess)
     {
-        public PropertyAccess(string fullPath, string flatName, SyntaxNode originalAccess)
-        {
-            FullPath = fullPath;
-            FlatName = flatName;
-            OriginalAccess = originalAccess;
-        }
-
-        public string FullPath { get; }
-        public string FlatName { get; }
-        public SyntaxNode OriginalAccess { get; }
+        public string FullPath { get; } = fullPath;
+        public string FlatName { get; } = flatName;
+        public SyntaxNode OriginalAccess { get; } = originalAccess;
     }
 }

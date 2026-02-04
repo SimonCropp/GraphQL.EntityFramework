@@ -42,13 +42,14 @@ class ConnectionBuilderEx<TSourceType> : ConnectionBuilder<TSourceType>
         }
     }
 
-    public static ConnectionBuilderEx<TSourceType> Build<TNodeType>(string name)
-        where TNodeType : IGraphType
+    public static ConnectionBuilderEx<TSourceType> Build(string name, Type nodeType)
     {
+        var edgeType = typeof(EdgeType<>).MakeGenericType(nodeType);
+        var connectionType = typeof(ConnectionType<,>).MakeGenericType(nodeType, edgeType);
         var field = new FieldType
         {
             Name = name,
-            Type = typeof(ConnectionType<TNodeType, EdgeType<TNodeType>>),
+            Type = connectionType,
             Arguments = new(
                 new QueryArgument(typeof(StringGraphType))
                 {
@@ -62,5 +63,12 @@ class ConnectionBuilderEx<TSourceType> : ConnectionBuilder<TSourceType>
                 }),
         };
         return new(field);
+    }
+
+    public static Type NonNullConnectionType(Type nodeType)
+    {
+        var edgeType = typeof(EdgeType<>).MakeGenericType(nodeType);
+        var connectionType = typeof(ConnectionType<,>).MakeGenericType(nodeType, edgeType);
+        return typeof(NonNullGraphType<>).MakeGenericType(connectionType);
     }
 }

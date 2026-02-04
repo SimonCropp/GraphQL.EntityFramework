@@ -24,28 +24,6 @@
                     .Select(_ => _.IncludeNonQueryableA);
             });
 
-        // Field that manually calls AddIncludes on a projected query.
-        // This tests the exception handling path in IncludeAppender.AddIncludes
-        // where InvalidOperationException is caught when Include is called after Select.
-        Field<NonNullGraphType<ListGraphType<IncludeNonQueryableAGraphType>>>("queryFieldWithManualAddIncludes")
-            .Resolve(context =>
-            {
-                var dataContext = efGraphQlService.ResolveDbContext(context);
-                // Create a projected query (IncludeNonQueryableA via Select from B)
-                var projectedQuery = dataContext
-                    .IncludeNonQueryableBs.AsQueryable()
-                    .Select(_ => _.IncludeNonQueryableA);
-
-                // Manually call AddIncludes on the projected query.
-                // This will attempt to add Include for IncludeNonQueryableB navigation,
-                // which should throw InvalidOperationException because the query is projected.
-                // The exception handling in IncludeAppender.AddIncludes should catch this
-                // and return the query without modification.
-                var queryWithIncludes = efGraphQlService.AddIncludes(projectedQuery, context);
-
-                return queryWithIncludes.ToList();
-            });
-
         AddQueryField(
             name: "manyChildren",
             resolve: _ => _.DbContext.WithManyChildrenEntities);

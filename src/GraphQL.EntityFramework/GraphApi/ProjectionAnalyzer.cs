@@ -1,20 +1,22 @@
 static class ProjectionAnalyzer
 {
-    public static IReadOnlySet<string> ExtractRequiredProperties<TEntity, TProjection>(
-        Expression<Func<TEntity, TProjection>> projection)
+    public static IReadOnlySet<string> ExtractPropertyPaths<TEntity, TProjection>(
+        Expression<Func<TEntity, TProjection>> projection) =>
+        ExtractPropertyPaths((LambdaExpression)projection);
+
+    public static IReadOnlySet<string> ExtractPropertyPaths(LambdaExpression projection)
     {
-        var visitor = new PropertyAccessVisitor(typeof(TEntity));
+        var visitor = new PropertyAccessVisitor(projection.Parameters);
         visitor.Visit(projection);
         return visitor.AccessedProperties;
     }
 
-    sealed class PropertyAccessVisitor(Type entityType) : ExpressionVisitor
+    sealed class PropertyAccessVisitor(IReadOnlyCollection<ParameterExpression> parameters) : ExpressionVisitor
     {
         public HashSet<string> AccessedProperties { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            // Build the full property path by walking up the expression tree
             var path = new List<string>();
             Expression? current = node;
 
@@ -24,12 +26,10 @@ static class ProjectionAnalyzer
                 current = memberExpr.Expression;
             }
 
-            // Check if the root is a parameter of the entity type
             if (current is ParameterExpression param &&
-                param.Type == entityType &&
+                parameters.Contains(param) &&
                 path.Count > 0)
             {
-                // Add the full path (e.g., "Parent.Name" or just "Name")
                 AccessedProperties.Add(string.Join('.', path));
             }
 

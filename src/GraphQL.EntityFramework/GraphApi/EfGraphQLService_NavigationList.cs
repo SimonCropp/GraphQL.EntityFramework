@@ -22,16 +22,9 @@ partial class EfGraphQLService<TDbContext>
             Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false),
         };
 
-        // Store projection expression - flows through to Select expression builder
-        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
-        // Also set include metadata as fallback for abstract types where projection can't be built
-        var includeNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
-        IncludeAppender.SetIncludeMetadata(field, name, includeNames);
+        IncludeAppender.SetProjectionMetadata(field, projection);
 
         var compiledProjection = projection.Compile();
-
-        // Get filter-required navigation paths at setup time for reloading if needed
-        var filterRequiredNavPaths = GetFilterRequiredNavPathsForReload<TReturn>();
 
         field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(async context =>
         {
@@ -60,15 +53,6 @@ partial class EfGraphQLService<TDbContext>
                 return result;
             }
 
-            // If filter requires navigation properties, batch reload items with those includes
-            if (filterRequiredNavPaths.Count > 0)
-            {
-                result = await BatchReloadWithFilterNavigations(
-                    fieldContext.DbContext,
-                    result,
-                    filterRequiredNavPaths);
-            }
-
             return await fieldContext.Filters.ApplyFilter(result, context.UserContext, fieldContext.DbContext, context.User);
         });
 
@@ -94,11 +78,7 @@ partial class EfGraphQLService<TDbContext>
             Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false),
         };
 
-        // Store projection expression - flows through to Select expression builder
-        IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
-        // Also set include metadata as fallback for abstract types where projection can't be built
-        var includeNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
-        IncludeAppender.SetIncludeMetadata(field, name, includeNames);
+        IncludeAppender.SetProjectionMetadata(field, projection);
 
         graph.AddField(field);
         return new FieldBuilderEx<TSource, TReturn>(field);
