@@ -48,7 +48,7 @@ public static class FieldBuilderExtensions
                 }
 
                 var dbContext = graphQlService.ResolveDbContext(context);
-                var filters = ResolveFilters(graphQlService, context);
+                var filters = graphQlService.ResolveFilters(context);
                 var projected = compiledProjection(context.Source);
 
                 var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
@@ -126,7 +126,7 @@ public static class FieldBuilderExtensions
                 }
 
                 var dbContext = graphQlService.ResolveDbContext(context);
-                var filters = ResolveFilters(graphQlService, context);
+                var filters = graphQlService.ResolveFilters(context);
                 var projected = compiledProjection(context.Source);
 
                 var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
@@ -204,7 +204,7 @@ public static class FieldBuilderExtensions
                 }
 
                 var dbContext = graphQlService.ResolveDbContext(context);
-                var filters = ResolveFilters(graphQlService, context);
+                var filters = graphQlService.ResolveFilters(context);
                 var projected = compiledProjection(context.Source);
 
                 var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
@@ -284,7 +284,7 @@ public static class FieldBuilderExtensions
                 }
 
                 var dbContext = graphQlService.ResolveDbContext(context);
-                var filters = ResolveFilters(graphQlService, context);
+                var filters = graphQlService.ResolveFilters(context);
                 var projected = compiledProjection(context.Source);
 
                 var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
@@ -346,24 +346,6 @@ public static class FieldBuilderExtensions
         }
 
         return result;
-    }
-
-    static Filters<TDbContext>? ResolveFilters<TDbContext>(IEfGraphQLService<TDbContext> service, IResolveFieldContext context)
-        where TDbContext : DbContext
-    {
-        // Use reflection to access the protected/internal ResolveFilter method
-        // This is a workaround since we can't access it directly
-        var serviceType = service.GetType();
-        var method = serviceType.GetMethod("ResolveFilter",
-            BindingFlags.NonPublic | BindingFlags.Instance);
-
-        if (method is null)
-        {
-            return null;
-        }
-
-        var genericMethod = method.MakeGenericMethod(context.Source?.GetType() ?? typeof(object));
-        return genericMethod.Invoke(service, [context]) as Filters<TDbContext>;
     }
 
     static void ValidateProjection<TSource, TProjection>(Expression<Func<TSource, TProjection>> projection)

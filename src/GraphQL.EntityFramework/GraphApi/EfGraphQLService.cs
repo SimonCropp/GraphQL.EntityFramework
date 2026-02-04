@@ -52,7 +52,7 @@ public partial class EfGraphQLService<TDbContext> :
             SubFields = context.SubFields,
             Variables = context.Variables,
             DbContext = ResolveDbContext(context),
-            Filters = ResolveFilter(context),
+            Filters = ResolveFilters(context),
             RequestServices = context.RequestServices,
             ResponsePath = context.ResponsePath,
             ArrayPool = context.ArrayPool,
@@ -71,7 +71,7 @@ public partial class EfGraphQLService<TDbContext> :
         return resolveDbContext(userContext, requestServices);
     }
 
-    Filters<TDbContext>? ResolveFilter<TSource>(IResolveFieldContext<TSource> context) =>
+    public Filters<TDbContext>? ResolveFilters(IResolveFieldContext context) =>
         resolveFilters?.Invoke(context.UserContext);
 
     static string JoinKeys(IReadOnlyCollection<string>? names)
