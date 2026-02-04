@@ -33,9 +33,6 @@ public static class FieldBuilderExtensions
 
         // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
-        // Also set include metadata as fallback for abstract types where projection can't be built
-        var includeNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
-        IncludeAppender.SetIncludeMetadata(field, field.Name, includeNames);
 
         var compiledProjection = projection.Compile();
 
@@ -114,9 +111,6 @@ public static class FieldBuilderExtensions
 
         // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
-        // Also set include metadata as fallback for abstract types where projection can't be built
-        var includeNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
-        IncludeAppender.SetIncludeMetadata(field, field.Name, includeNames);
 
         var compiledProjection = projection.Compile();
 
@@ -195,9 +189,6 @@ public static class FieldBuilderExtensions
 
         // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
-        // Also set include metadata as fallback for abstract types where projection can't be built
-        var includeNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
-        IncludeAppender.SetIncludeMetadata(field, field.Name, includeNames);
 
         var compiledProjection = projection.Compile();
 
@@ -278,9 +269,6 @@ public static class FieldBuilderExtensions
 
         // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(field, projection, typeof(TSource));
-        // Also set include metadata as fallback for abstract types where projection can't be built
-        var includeNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
-        IncludeAppender.SetIncludeMetadata(field, field.Name, includeNames);
 
         var compiledProjection = projection.Compile();
 

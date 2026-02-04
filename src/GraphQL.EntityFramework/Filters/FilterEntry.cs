@@ -20,29 +20,9 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         {
             var compiled = projection.Compile();
             compiledProjection = entity => compiled((TEntity)entity);
-
-            // Analyze projection in a single pass - extracts property paths and detects abstract navigation access
-            var (properties, abstractAccesses) = ProjectionAnalyzer.AnalyzeProjection(projection);
-            requiredPropertyNames = properties;
-
-            // Validate: identity projections cannot access abstract navigation properties
-            // (explicit projections that extract specific properties are allowed)
-            if (IsIdentityProjection(projection) && abstractAccesses.Count > 0)
-            {
-                var access = abstractAccesses[0];
-                var entityType = typeof(TEntity);
-                throw new(
-                    $$"""
-                      Filter for '{{entityType.Name}}' uses identity projection '_ => _' to access properties of abstract navigation '{{access.NavigationName}}' ({{access.AbstractType.Name}}).
-                      This forces Include() to load all columns from {{access.AbstractType.Name}}.
-                      Extract only the required properties in an explicit projection:
-                      projection: e => new { e.Id, {{access.NavigationName}}Property = e.{{access.NavigationName}}.PropertyName }, filter: (_, _, _, proj) => proj.{{access.NavigationName}}Property == value
-                      """);
-            }
+            requiredPropertyNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
         }
     }
-
-    public IReadOnlySet<string> RequiredPropertyNames => requiredPropertyNames;
 
     public FieldProjectionInfo AddRequirements(
         FieldProjectionInfo projection,
@@ -160,12 +140,8 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             }
             else
             {
-                // Create navigation projection for filter-only navigations
-                // Note: For abstract types, SelectExpressionBuilder.TryBuild will return false,
-                // causing the entire projection to fail. This is intentional - it ensures
-                // Include (added in AddFilterNavigationIncludes) is used instead of Select.
-                // Don't include key/FK columns for filter-only navigations - the filter only
-                // needs the specific properties it accesses.
+                // Create navigation projection for filter-only navigations.
+                // Don't include key/FK columns - the filter only needs the specific properties it accesses.
                 var navProjection = new FieldProjectionInfo(requiredProps, null, null, null);
                 mergedNavigations[navName] = new(navType, navMetadata.IsCollection, navProjection);
             }
@@ -176,54 +152,6 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             ScalarFields = mergedScalars,
             Navigations = mergedNavigations
         };
-    }
-
-    public IEnumerable<string> GetAbstractNavigationIncludes(
-        IReadOnlyDictionary<string, Navigation>? navigationProperties)
-    {
-        if (navigationProperties == null)
-        {
-            yield break;
-        }
-
-        // Extract navigation names from filter fields (paths like "Parent.Property" -> "Parent")
-        var navigationNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var field in requiredPropertyNames)
-        {
-            if (field.Contains('.'))
-            {
-                var navName = field[..field.IndexOf('.')];
-                navigationNames.Add(navName);
-            }
-        }
-
-        // Return only navigations that have abstract types
-        foreach (var navName in navigationNames)
-        {
-            // Find navigation in metadata (case-insensitive)
-            Navigation? navMetadata = null;
-            string? actualNavName = null;
-            foreach (var (key, value) in navigationProperties)
-            {
-                if (string.Equals(key, navName, StringComparison.OrdinalIgnoreCase))
-                {
-                    navMetadata = value;
-                    actualNavName = key;
-                    break;
-                }
-            }
-
-            if (navMetadata == null || actualNavName == null)
-            {
-                continue;
-            }
-
-            // Only return abstract types - concrete types can use projection
-            if (navMetadata.Type.IsAbstract)
-            {
-                yield return navMetadata.Name;
-            }
-        }
     }
 
     public Task<bool> ShouldIncludeWithProjection(
@@ -237,8 +165,4 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             : default!;
         return filter(userContext, data, userPrincipal, projectedData);
     }
-
-    // Detect: x => x (where body == parameter)
-    static bool IsIdentityProjection(Expression<Func<TEntity, TProjection>> projection) =>
-        projection.Body == projection.Parameters[0];
 }

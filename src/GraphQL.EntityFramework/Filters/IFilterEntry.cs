@@ -12,16 +12,6 @@ interface IFilterEntry<TDbContext>
         FieldProjectionInfo projection,
         IReadOnlyDictionary<string, Navigation>? navigationProperties);
 
-    /// <summary>
-    /// Get navigation names where the navigation type is abstract.
-    /// These navigations need Include() instead of projection because
-    /// abstract types cannot be instantiated in a Select expression.
-    /// </summary>
-    /// <param name="navigationProperties">Navigation property metadata for the entity type.</param>
-    /// <returns>Navigation names that require Include due to abstract types.</returns>
-    IEnumerable<string> GetAbstractNavigationIncludes(
-        IReadOnlyDictionary<string, Navigation>? navigationProperties);
-
     Task<bool> ShouldIncludeWithProjection(
         object userContext,
         TDbContext data,

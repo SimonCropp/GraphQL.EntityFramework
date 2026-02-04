@@ -38,35 +38,7 @@ class IncludeAppender(
         Filters<TDbContext>? filters)
         where TDbContext : DbContext
         where TItem : class =>
-        AddIncludesWithFiltersAndDetectNavigations(query, context, filters);
-
-    internal IQueryable<TItem> AddIncludesWithFiltersAndDetectNavigations<TDbContext, TItem>(
-        IQueryable<TItem> query,
-        IResolveFieldContext context,
-        Filters<TDbContext>? filters = null)
-        where TDbContext : DbContext
-        where TItem : class
-    {
-        // Include cannot be applied to queries that have already been projected (e.g., after Select).
-        // Check if the query is the result of a projection - the element type won't match the root entity.
-        if (IsProjectedQuery(query))
-        {
-            return query;
-        }
-
-        // Add includes from GraphQL query
-        query = AddIncludes(query, context);
-
-        // Add includes for filter-required navigations.
-        // While projection handles most cases, abstract navigation types cannot be projected
-        // (can't do "new AbstractType { ... }"). In those cases, Include is needed as fallback.
-        if (filters is { HasFilters: true })
-        {
-            query = AddFilterNavigationIncludes(query, filters, typeof(TItem));
-        }
-
-        return query;
-    }
+        AddIncludes(query, context);
 
     /// <summary>
     /// Checks if the query is the result of a projection (Select).
@@ -110,45 +82,6 @@ class IncludeAppender(
         }
 
         return false;
-    }
-
-    IQueryable<TItem> AddFilterNavigationIncludes<TDbContext, TItem>(
-        IQueryable<TItem> query,
-        Filters<TDbContext> filters,
-        Type entityType)
-        where TDbContext : DbContext
-        where TItem : class
-    {
-        // Get navigation metadata for this entity type
-        if (!navigations.TryGetValue(entityType, out var navigationProperties))
-        {
-            return query;
-        }
-
-        // Get filters that apply to this entity type
-        var relevantFilters = filters.GetFilters(entityType).ToList();
-        if (relevantFilters.Count == 0)
-        {
-            return query;
-        }
-
-        // Collect all abstract navigation includes from filters
-        var abstractIncludes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var filter in relevantFilters)
-        {
-            foreach (var include in filter.GetAbstractNavigationIncludes(navigationProperties))
-            {
-                abstractIncludes.Add(include);
-            }
-        }
-
-        // Add Include for each filter-required navigation that has an abstract type
-        foreach (var navName in abstractIncludes)
-        {
-            query = query.Include(navName);
-        }
-
-        return query;
     }
 
     public FieldProjectionInfo? GetProjection<TItem>(IResolveFieldContext context)
@@ -311,7 +244,6 @@ class IncludeAppender(
         // Check if this field has a projection expression (new approach - flows to Select)
         if (TryGetProjectionMetadata(fieldInfo.FieldType, out var projection, out var sourceType))
         {
-            var countBefore = navProjections.Count;
             ProcessProjectionExpression(
                 fieldInfo,
                 projection,
@@ -319,12 +251,7 @@ class IncludeAppender(
                 navigationProperties,
                 navProjections,
                 context);
-            // Only return if we added navigations; otherwise fall through to include metadata
-            // This handles cases like abstract types where projection can't be built
-            if (navProjections.Count > countBefore)
-            {
-                return;
-            }
+            return;
         }
 
         // Check if this field is a navigation property by name

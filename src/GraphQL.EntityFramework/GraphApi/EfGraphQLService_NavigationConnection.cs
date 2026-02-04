@@ -175,11 +175,7 @@ partial class EfGraphQLService<TDbContext>
     {
         var builder = ConnectionBuilderEx<TSource>.Build<TGraph>(name);
 
-        // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(builder.FieldType, projection, typeof(TSource));
-        // Also set include metadata as fallback for abstract types where projection can't be built
-        var includeNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
-        IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
         var compiledProjection = projection.Compile();
 
@@ -263,11 +259,7 @@ partial class EfGraphQLService<TDbContext>
     {
         var builder = ConnectionBuilderEx<TSource>.Build<TGraph>(name);
 
-        // Store projection expression - flows through to Select expression builder
         IncludeAppender.SetProjectionMetadata(builder.FieldType, projection, typeof(TSource));
-        // Also set include metadata as fallback for abstract types where projection can't be built
-        var includeNames = ProjectionAnalyzer.ExtractRequiredProperties(projection);
-        IncludeAppender.SetIncludeMetadata(builder.FieldType, name, includeNames);
 
         // No resolver set - this overload is for interface types where the concrete types provide resolvers
         // The projection metadata flows through to the Select expression builder
