@@ -42,28 +42,6 @@ class ConnectionBuilderEx<TSourceType> : ConnectionBuilder<TSourceType>
         }
     }
 
-    public static ConnectionBuilderEx<TSourceType> Build<TNodeType>(string name)
-        where TNodeType : IGraphType
-    {
-        var field = new FieldType
-        {
-            Name = name,
-            Type = typeof(ConnectionType<TNodeType, EdgeType<TNodeType>>),
-            Arguments = new(
-                new QueryArgument(typeof(StringGraphType))
-                {
-                    Name = "after",
-                    Description = "Only return edges after the specified cursor.",
-                },
-                new QueryArgument(typeof(IntGraphType))
-                {
-                    Name = "first",
-                    Description = "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified.",
-                }),
-        };
-        return new(field);
-    }
-
     public static ConnectionBuilderEx<TSourceType> Build(string name, Type nodeType)
     {
         var edgeType = typeof(EdgeType<>).MakeGenericType(nodeType);
