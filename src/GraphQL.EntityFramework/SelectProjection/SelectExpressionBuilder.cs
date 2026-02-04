@@ -49,7 +49,7 @@ static class SelectExpressionBuilder
         if (entityType.IsAbstract)
         {
             throw new InvalidOperationException(
-                $"Cannot project abstract type '{entityType.Name}'. Use .OfType<ConcreteType>() to query specific derived types.");
+                $"Cannot project abstract type '{entityType.Name}'. Either change the type to be concrete, or use .OfType<ConcreteType>() to query specific derived types.");
         }
 
         var entityMetadata = GetEntityMetadata(entityType);
@@ -141,7 +141,7 @@ static class SelectExpressionBuilder
         if (navProjection.EntityType.IsAbstract)
         {
             throw new InvalidOperationException(
-                $"Cannot project abstract navigation type '{navProjection.EntityType.Name}'. Use an explicit projection to extract the required properties.");
+                $"Cannot project abstract navigation type '{navProjection.EntityType.Name}'. Either change the type to be concrete, or use an explicit projection to extract the required properties.");
         }
 
         return navProjection.IsCollection
@@ -316,7 +316,7 @@ static class SelectExpressionBuilder
         if (navType.IsAbstract)
         {
             throw new InvalidOperationException(
-                $"Cannot project abstract navigation type '{navType.Name}'. Use an explicit projection to extract the required properties.");
+                $"Cannot project abstract navigation type '{navType.Name}'. Either change the type to be concrete, or use an explicit projection to extract the required properties.");
         }
 
         if (navProjection.IsCollection)
