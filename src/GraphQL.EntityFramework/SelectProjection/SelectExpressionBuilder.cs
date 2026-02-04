@@ -121,8 +121,14 @@ static class SelectExpressionBuilder
                 var binding = BuildNavigationBinding(metadata.PropertyAccess, navProjection, keyNames);
                 if (binding == null)
                 {
-                    // Can't project navigation - return null to load full entity
-                    return null;
+                    if (!metadata.CanWrite)
+                    {
+                        continue;
+                    }
+
+                    // Can't project navigation (e.g. read-only properties on target entity)
+                    // Fall back to including the full navigation entity
+                    binding = BuildFullNavigationBinding(metadata, navProjection);
                 }
 
                 bindings.Add(binding);
@@ -219,6 +225,33 @@ static class SelectExpressionBuilder
         return Expression.Bind(navAccess.Member, conditional);
     }
 
+    static MemberBinding BuildFullNavigationBinding(
+        PropertyMetadata metadata,
+        NavigationProjectionInfo navProjection)
+    {
+        if (navProjection.IsCollection)
+        {
+            var navMetadata = GetEntityMetadata(navProjection.EntityType);
+            return Expression.Bind(metadata.Property, Expression.Call(null, navMetadata.ToListMethod, metadata.PropertyAccess));
+        }
+
+        return Expression.Bind(metadata.Property, metadata.PropertyAccess);
+    }
+
+    static MemberAssignment BuildFullNestedNavigationBinding(
+        PropertyInfo property,
+        MemberExpression navAccess,
+        NavigationProjectionInfo navProjection)
+    {
+        if (navProjection.IsCollection)
+        {
+            var navMetadata = GetEntityMetadata(navProjection.EntityType);
+            return Expression.Bind(property, Expression.Call(null, navMetadata.ToListMethod, navAccess));
+        }
+
+        return Expression.Bind(property, navAccess);
+    }
+
     static bool TryBuildNavigationBindings(
         Expression sourceExpression,
         Type entityType,
@@ -291,9 +324,15 @@ static class SelectExpressionBuilder
 
                 if (!TryBuildNestedNavigationBinding(sourceExpression, metadata.Property, nestedNavProjection, keyNames, out var binding))
                 {
-                    // Can't project navigation - return false to load full entity
-                    bindings = null;
-                    return false;
+                    if (!metadata.CanWrite)
+                    {
+                        continue;
+                    }
+
+                    // Can't project nested navigation (e.g. read-only properties on target entity)
+                    // Fall back to including the full navigation entity
+                    var navAccess = Expression.Property(sourceExpression, metadata.Property);
+                    binding = BuildFullNestedNavigationBinding(metadata.Property, navAccess, nestedNavProjection);
                 }
 
                 bindings.Add(binding);
