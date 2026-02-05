@@ -178,9 +178,54 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [derived, reference]);
     }
 
+    /// <summary>
+    /// Tests that filter projections accessing navigation properties of abstract types
+    /// do not throw InvalidOperationException. The projection system should fall back to
+    /// loading the full navigation entity when it cannot project an abstract type.
+    ///
+    /// This reproduces the scenario where:
+    /// - DerivedChildEntity (like Accommodation) has a navigation to BaseEntity (abstract)
+    /// - The filter projection accesses properties through the abstract navigation
+    /// - e.g. _.Parent.Property where Parent is of abstract type BaseEntity
+    /// </summary>
+    [Fact]
+    public async Task Filter_projection_with_abstract_navigation_should_not_throw()
+    {
+        var query =
+            """
+            {
+              derivedChildEntities
+              {
+                property
+              }
+            }
+            """;
+
+        var parent = new DerivedEntity { Property = "Allowed" };
+        var otherParent = new DerivedEntity { Property = "Denied" };
+
+        var child1 = new DerivedChildEntity { Property = "Child1", Parent = parent };
+        var child2 = new DerivedChildEntity { Property = "Child2", Parent = otherParent };
+        var child3 = new DerivedChildEntity { Property = "Child3", Parent = parent };
+
+        var filters = new Filters<IntegrationDbContext>();
+
+        // Filter accesses abstract navigation (BaseEntity) properties via projection
+        // This matches the pattern: _.TravelRequest.GroupOwnerId where TravelRequest is abstract
+        filters.For<DerivedChildEntity>().Add(
+            projection: _ => new AbstractNavFilterProjection(
+                _.Parent != null ? _.Parent.Property : null,
+                _.ParentId),
+            filter: (_, _, _, projection) => projection.ParentProperty == "Allowed");
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, filters, false, [parent, otherParent, child1, child2, child3]);
+    }
+
     // ReSharper disable NotAccessedPositionalProperty.Local
     record ChildFilterProjection(Guid? ParentId, string? ParentProperty, Guid ChildId);
     record FilterChildProjection(string? ParentProperty, Guid ChildId);
     record FilterReferenceProjection(string? BaseCommonProperty, Guid Id);
     record FilterBaseProjection(string? CommonProperty, Guid Id);
+    record AbstractNavFilterProjection(string? ParentProperty, Guid? ParentId);
 }

@@ -88,7 +88,7 @@ public partial class IntegrationTests
             new(StringComparer.OrdinalIgnoreCase) { "Property" },
             ["Id"],
             null,
-            new Dictionary<string, NavigationProjectionInfo>
+            new()
             {
                 ["Children"] = new(typeof(ReadOnlyEntity), true, navigationProjection)
             });
@@ -120,7 +120,7 @@ public partial class IntegrationTests
             new(StringComparer.OrdinalIgnoreCase) { "FirstName" },
             ["Id"],
             new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "ReadOnlyParentId" },
-            new Dictionary<string, NavigationProjectionInfo>
+            new()
             {
                 ["ReadOnlyParent"] = new(typeof(ReadOnlyParentEntity), false, navigationProjection)
             });
