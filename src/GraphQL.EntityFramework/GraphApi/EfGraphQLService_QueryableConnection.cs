@@ -89,7 +89,7 @@ partial class EfGraphQLService<TDbContext>
                 }
                 else
                 {
-                    query = includeAppender.AddIncludes<TDbContext, TReturn>(context, fieldContext.Filters, query);
+                    query = includeAppender.AddIncludes(context, fieldContext.Filters, query);
                 }
 
                 try
