@@ -146,8 +146,7 @@ static class SelectExpressionBuilder
     {
         if (navProjection.EntityType.IsAbstract)
         {
-            throw new InvalidOperationException(
-                $"Cannot project abstract navigation type '{navProjection.EntityType.Name}'. Either change the type to be concrete, or use an explicit projection to extract the required properties.");
+            return null;
         }
 
         return navProjection.IsCollection
@@ -354,8 +353,7 @@ static class SelectExpressionBuilder
 
         if (navType.IsAbstract)
         {
-            throw new InvalidOperationException(
-                $"Cannot project abstract navigation type '{navType.Name}'. Either change the type to be concrete, or use an explicit projection to extract the required properties.");
+            return false;
         }
 
         if (navProjection.IsCollection)

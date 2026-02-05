@@ -53,10 +53,10 @@ public static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor GQLEF007 = new(
         id: "GQLEF007",
         title: "Identity projection with abstract navigation access",
-        messageFormat: "Filter for '{0}' uses identity projection but accesses abstract navigation '{1}'. Abstract types cannot be projected and will throw at runtime. Either change the type to be concrete, or use explicit projection to extract only required properties.",
+        messageFormat: "Filter for '{0}' uses identity projection but accesses abstract navigation '{1}'. Abstract navigations cannot be projected and will fall back to loading the full entity. Use explicit projection to extract only required properties for better performance.",
         category: "Usage",
-        defaultSeverity: DiagnosticSeverity.Error,
+        defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Abstract types cannot be projected with Select() and will throw InvalidOperationException at runtime. Either change the type to be concrete, or use explicit projection to extract only required properties from abstract navigations.",
+        description: "Abstract types cannot be projected with Select(), so the full navigation entity will be loaded instead. Use explicit projection to extract only required properties from abstract navigations for better query performance.",
         helpLinkUri: "https://github.com/SimonCropp/GraphQL.EntityFramework#abstract-navigation-projections");
 }

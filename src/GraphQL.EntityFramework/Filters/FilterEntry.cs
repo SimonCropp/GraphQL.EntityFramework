@@ -69,9 +69,15 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
         }
 
         // Merge navigation requirements
-        var mergedNavigations = projection.Navigations != null
-            ? new Dictionary<string, NavigationProjectionInfo>(projection.Navigations)
-            : new Dictionary<string, NavigationProjectionInfo>();
+        Dictionary<string, NavigationProjectionInfo> mergedNavigations;
+        if (projection.Navigations == null)
+        {
+            mergedNavigations = [];
+        }
+        else
+        {
+            mergedNavigations = new(projection.Navigations);
+        }
 
         foreach (var (navName, requiredProps) in navRequirements)
         {

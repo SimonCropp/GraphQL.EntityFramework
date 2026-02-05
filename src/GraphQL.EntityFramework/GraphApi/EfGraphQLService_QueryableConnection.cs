@@ -22,7 +22,7 @@ partial class EfGraphQLService<TDbContext>
         Type? itemGraphType = null,
         bool omitQueryArguments = false)
         where TReturn : class =>
-        BuildQueryConnection<object, TReturn>(graph, name, resolve, itemGraphType, omitQueryArguments);
+        BuildQueryConnection(graph, name, resolve, itemGraphType, omitQueryArguments);
 
     public ConnectionBuilder<TSource> AddQueryConnectionField<TSource, TReturn>(
         IComplexGraphType graph,
@@ -43,7 +43,7 @@ partial class EfGraphQLService<TDbContext>
         Type? itemGraphType = null,
         bool omitQueryArguments = false)
         where TReturn : class =>
-        BuildQueryConnection<TSource, TReturn>(graph, name, resolve, itemGraphType, omitQueryArguments);
+        BuildQueryConnection(graph, name, resolve, itemGraphType, omitQueryArguments);
 
     ConnectionBuilder<TSource> BuildQueryConnection<TSource, TReturn>(
         IComplexGraphType graph,
