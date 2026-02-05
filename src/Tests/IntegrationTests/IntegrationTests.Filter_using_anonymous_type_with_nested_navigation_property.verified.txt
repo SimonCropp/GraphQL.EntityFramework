@@ -46,6 +46,8 @@ from     FilterParentEntities as f
                  FilterParentEntities as f1
                  on f0.ParentId = f1.Id) as s
          on f.Id = s.ParentId
-order by f.Property, f.Id, s.Id
+order by f.Property,
+         f.Id,
+         s.Id
   }
 }

@@ -45,7 +45,9 @@ from     (select   p.Id,
          left outer join
          ChildEntities as c
          on p0.Id = c.ParentId
-order by p0.Property, p0.Id, c.Id,
+order by p0.Property,
+         p0.Id,
+         c.Id,
       Parameters: {
         @p: 0,
         @p1: 10

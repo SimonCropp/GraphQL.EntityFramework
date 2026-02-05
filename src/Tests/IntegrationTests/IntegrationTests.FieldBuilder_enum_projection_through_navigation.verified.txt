@@ -1,4 +1,4 @@
-{
+﻿{
   target:
 {
   "data": {
@@ -21,6 +21,8 @@ from     FieldBuilderProjectionParentEntities as f
          left outer join
          FieldBuilderProjectionEntities as f0
          on f.Id = f0.ParentId
-order by f.Name, f.Id, f0.Id
+order by f.Name,
+         f.Id,
+         f0.Id
   }
 }

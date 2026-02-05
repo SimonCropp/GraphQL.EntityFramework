@@ -29,7 +29,9 @@ from     Departments as d
          Employees as e
          on d.Id = e.DepartmentId
 where    d.Name = N'Engineering'
-order by d.Name, d.Id, e.Id
+order by d.Name,
+         d.Id,
+         e.Id
     },
     {
       Text:

@@ -29,6 +29,7 @@ from     ReadOnlyParentEntities as r
          left outer join
          ReadOnlyEntities as r0
          on r.Id = r0.ReadOnlyParentId
-order by r.Property, r.Id
+order by r.Property,
+         r.Id
   }
 }

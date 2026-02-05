@@ -29,6 +29,7 @@ from     (select top (1) p.Id,
          left outer join
          ChildEntities as c
          on p0.Id = c.ParentId
-order by p0.Id, c.Id
+order by p0.Id,
+         c.Id
   }
 }

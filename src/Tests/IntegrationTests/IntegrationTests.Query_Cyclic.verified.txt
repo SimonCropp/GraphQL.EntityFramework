@@ -90,6 +90,9 @@ from     ChildEntities as c
                  ParentEntities as p0
                  on c0.ParentId = p0.Id) as s
          on p.Id = s.ParentId
-order by c.Property, c.Id, p.Id, s.Id
+order by c.Property,
+         c.Id,
+         p.Id,
+         s.Id
   }
 }
