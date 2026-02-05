@@ -1,0 +1,47 @@
+﻿{
+  target:
+{
+  "data": {
+    "parentEntity": {
+      "property": "Value1",
+      "children": [
+        {
+          "property": "Child1",
+          "parent": {
+            "property": "Value1"
+          }
+        }
+      ]
+    }
+  }
+},
+  sql: {
+    Text:
+select   p1.Id,
+         p1.Property,
+         s.Id,
+         s.ParentId,
+         s.Property,
+         s.c,
+         s.Id0,
+         s.Property0
+from     (select top (2) p.Id,
+                         p.Property
+          from   ParentEntities as p
+          where  p.Id = 'Guid_1') as p1
+         left outer join
+         (select c.Id,
+                 c.ParentId,
+                 c.Property,
+                 case when p0.Id is null then cast (1 as bit) else cast (0 as bit) end as c,
+                 p0.Id as Id0,
+                 p0.Property as Property0
+          from   ChildEntities as c
+                 left outer join
+                 ParentEntities as p0
+                 on c.ParentId = p0.Id) as s
+         on p1.Id = s.ParentId
+order by p1.Id,
+         s.Id
+  }
+}

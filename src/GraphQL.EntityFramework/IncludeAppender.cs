@@ -69,10 +69,18 @@ class IncludeAppender(
             return query;
         }
 
+        var visitedTypes = new HashSet<Type> { typeof(TItem) };
+
         foreach (var (navName, navProjection) in projection.Navigations)
         {
+            if (!visitedTypes.Add(navProjection.EntityType))
+            {
+                continue;
+            }
+
             query = query.Include(navName);
-            query = AddNestedIncludes(query, navName, navProjection.Projection);
+            query = AddNestedIncludes(query, navName, navProjection.Projection, visitedTypes);
+            visitedTypes.Remove(navProjection.EntityType);
         }
 
         return query;
@@ -81,7 +89,8 @@ class IncludeAppender(
     static IQueryable<TItem> AddNestedIncludes<TItem>(
         IQueryable<TItem> query,
         string includePath,
-        FieldProjectionInfo projection)
+        FieldProjectionInfo projection,
+        HashSet<Type> visitedTypes)
         where TItem : class
     {
         if (projection.Navigations is not { Count: > 0 })
@@ -91,9 +100,15 @@ class IncludeAppender(
 
         foreach (var (navName, navProjection) in projection.Navigations)
         {
+            if (!visitedTypes.Add(navProjection.EntityType))
+            {
+                continue;
+            }
+
             var nestedPath = $"{includePath}.{navName}";
             query = query.Include(nestedPath);
-            query = AddNestedIncludes(query, nestedPath, navProjection.Projection);
+            query = AddNestedIncludes(query, nestedPath, navProjection.Projection, visitedTypes);
+            visitedTypes.Remove(navProjection.EntityType);
         }
 
         return query;

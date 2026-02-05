@@ -1,0 +1,36 @@
+﻿{
+  target:
+{
+  "data": {
+    "readOnlyEntities": [
+      {
+        "firstName": "John",
+        "displayName": "John Smith",
+        "readOnlyParent": {
+          "property": "TheParent",
+          "children": [
+            {
+              "firstName": "John"
+            }
+          ]
+        }
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select r.Id,
+       r.Age,
+       r.ComputedInDb,
+       r.FirstName,
+       r.LastName,
+       r.ReadOnlyParentId,
+       r0.Id,
+       r0.Property
+from   ReadOnlyEntities as r
+       left outer join
+       ReadOnlyParentEntities as r0
+       on r.ReadOnlyParentId = r0.Id
+  }
+}

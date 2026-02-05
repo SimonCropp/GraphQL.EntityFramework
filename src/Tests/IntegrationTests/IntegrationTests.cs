@@ -19,7 +19,6 @@ public partial class IntegrationTests
             {
                 builder.ConfigureWarnings(_ =>
                     _.Ignore(
-                        CoreEventId.NavigationBaseIncludeIgnored,
                         CoreEventId.ShadowForeignKeyPropertyCreated,
                         CoreEventId.CollectionWithoutComparer));
                 return new(builder.Options);
