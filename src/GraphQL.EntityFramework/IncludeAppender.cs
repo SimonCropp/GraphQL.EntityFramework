@@ -32,6 +32,73 @@ class IncludeAppender(
         return SelectExpressionBuilder.TryBuild(projection, keyNames, out expression);
     }
 
+    public IQueryable<TItem> AddIncludes<TDbContext, TItem>(
+        IResolveFieldContext context,
+        Filters<TDbContext>? filters,
+        IQueryable<TItem> query)
+        where TDbContext : DbContext
+        where TItem : class
+    {
+        if (context.SubFields is null)
+        {
+            return query;
+        }
+
+        var type = typeof(TItem);
+        navigations.TryGetValue(type, out var navigationProperties);
+        keyNames.TryGetValue(type, out var keys);
+        foreignKeys.TryGetValue(type, out var fks);
+
+        var projection = GetProjectionInfo(context, navigationProperties, keys, fks);
+
+        if (filters is { HasFilters: true })
+        {
+            projection = MergeFilterFieldsIntoProjection(projection, filters, type);
+        }
+
+        return AddIncludesFromProjection(query, projection);
+    }
+
+    static IQueryable<TItem> AddIncludesFromProjection<TItem>(
+        IQueryable<TItem> query,
+        FieldProjectionInfo projection)
+        where TItem : class
+    {
+        if (projection.Navigations is not { Count: > 0 })
+        {
+            return query;
+        }
+
+        foreach (var (navName, navProjection) in projection.Navigations)
+        {
+            query = query.Include(navName);
+            query = AddNestedIncludes(query, navName, navProjection.Projection);
+        }
+
+        return query;
+    }
+
+    static IQueryable<TItem> AddNestedIncludes<TItem>(
+        IQueryable<TItem> query,
+        string includePath,
+        FieldProjectionInfo projection)
+        where TItem : class
+    {
+        if (projection.Navigations is not { Count: > 0 })
+        {
+            return query;
+        }
+
+        foreach (var (navName, navProjection) in projection.Navigations)
+        {
+            var nestedPath = $"{includePath}.{navName}";
+            query = query.Include(nestedPath);
+            query = AddNestedIncludes(query, nestedPath, navProjection.Projection);
+        }
+
+        return query;
+    }
+
     FieldProjectionInfo MergeFilterFieldsIntoProjection<TDbContext>(
         FieldProjectionInfo projection,
         Filters<TDbContext> filters,

@@ -1,7 +1,7 @@
 public partial class IntegrationTests
 {
     [Fact]
-    public void Querying_abstract_type_throws_with_clear_message()
+    public void Querying_abstract_type_returns_false()
     {
         var projection = new FieldProjectionInfo(
             new(StringComparer.OrdinalIgnoreCase) { "Property" },
@@ -11,11 +11,10 @@ public partial class IntegrationTests
 
         var keyNames = new Dictionary<Type, List<string>>();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-            SelectExpressionBuilder.TryBuild<BaseEntity>(projection, keyNames, out _));
+        var result = SelectExpressionBuilder.TryBuild<BaseEntity>(projection, keyNames, out var expression);
 
-        Assert.Contains("Cannot project abstract type", exception.Message);
-        Assert.Contains("BaseEntity", exception.Message);
+        Assert.False(result);
+        Assert.Null(expression);
     }
 
     [Fact]

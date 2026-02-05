@@ -48,8 +48,7 @@ static class SelectExpressionBuilder
 
         if (entityType.IsAbstract)
         {
-            throw new InvalidOperationException(
-                $"Cannot project abstract type '{entityType.Name}'. Either change the type to be concrete, or use .OfType<ConcreteType>() to query specific derived types.");
+            return null;
         }
 
         var entityMetadata = GetEntityMetadata(entityType);

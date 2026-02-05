@@ -169,6 +169,10 @@ partial class EfGraphQLService<TDbContext>
                     {
                         query = query.Select(selectExpr);
                     }
+                    else
+                    {
+                        query = includeAppender.AddIncludes<TDbContext, TReturn>(context, fieldContext.Filters, query);
+                    }
 
                     QueryLogger.Write(query);
 
