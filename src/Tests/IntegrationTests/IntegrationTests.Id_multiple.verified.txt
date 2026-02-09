@@ -17,7 +17,8 @@
 select   p.Id,
          p.Property
 from     ParentEntities as p
-where    p.Id in ('Guid_1', 'Guid_2')
+where    p.Id in ('Guid_1',
+                  'Guid_2')
 order by p.Property
   }
 }
