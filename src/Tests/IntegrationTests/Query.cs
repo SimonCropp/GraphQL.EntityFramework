@@ -365,5 +365,21 @@
             name: "filterReferenceEntityNullable",
             resolve: _ => _.DbContext.FilterReferenceEntities,
             nullable: true);
+
+        AddQueryField(
+            name: "discriminatorDerivedAEntities",
+            resolve: _ => _.DbContext.DiscriminatorDerivedAEntities);
+
+        AddSingleField(
+            name: "discriminatorDerivedAEntity",
+            resolve: _ => _.DbContext.DiscriminatorDerivedAEntities);
+
+        AddQueryField(
+            name: "discriminatorDerivedBEntities",
+            resolve: _ => _.DbContext.DiscriminatorDerivedBEntities);
+
+        AddSingleField(
+            name: "discriminatorDerivedBEntity",
+            resolve: _ => _.DbContext.DiscriminatorDerivedBEntities);
     }
 }

@@ -1,0 +1,19 @@
+﻿{
+  target:
+{
+  "data": {
+    "discriminatorDerivedAEntity": {
+      "property": "Value1"
+    }
+  }
+},
+  sql: {
+    Text:
+select top (2) d.Id,
+               d.EntityType,
+               d.Property
+from   DiscriminatorBaseEntities as d
+where  d.EntityType = 0
+       and d.Id = 'Guid_1'
+  }
+}

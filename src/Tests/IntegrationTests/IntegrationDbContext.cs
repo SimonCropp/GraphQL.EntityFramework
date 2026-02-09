@@ -44,6 +44,9 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<FilterBaseEntity> FilterBaseEntities { get; set; } = null!;
     public DbSet<FilterDerivedEntity> FilterDerivedEntities { get; set; } = null!;
     public DbSet<FilterReferenceEntity> FilterReferenceEntities { get; set; } = null!;
+    public DbSet<DiscriminatorBaseEntity> DiscriminatorBaseEntities { get; set; } = null!;
+    public DbSet<DiscriminatorDerivedAEntity> DiscriminatorDerivedAEntities { get; set; } = null!;
+    public DbSet<DiscriminatorDerivedBEntity> DiscriminatorDerivedBEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -126,5 +129,18 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasBaseType<FilterBaseEntity>();
         modelBuilder.Entity<FilterReferenceEntity>()
             .OrderBy(_ => _.Property);
+
+        // Configure TPH inheritance with CLR discriminator property for DiscriminatorBaseEntity hierarchy
+        modelBuilder.Entity<DiscriminatorBaseEntity>()
+            .OrderBy(_ => _.Property);
+        modelBuilder.Entity<DiscriminatorBaseEntity>()
+            .HasDiscriminator(_ => _.EntityType)
+            .HasValue<DiscriminatorDerivedAEntity>(DiscriminatorType.TypeA)
+            .HasValue<DiscriminatorDerivedBEntity>(DiscriminatorType.TypeB)
+            .IsComplete();
+        modelBuilder.Entity<DiscriminatorDerivedAEntity>()
+            .HasBaseType<DiscriminatorBaseEntity>();
+        modelBuilder.Entity<DiscriminatorDerivedBEntity>()
+            .HasBaseType<DiscriminatorBaseEntity>();
     }
 }
