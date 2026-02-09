@@ -132,15 +132,15 @@ public class IntegrationDbContext(DbContextOptions options) :
 
         // Configure TPH inheritance with CLR discriminator property for DiscriminatorBaseEntity hierarchy
         modelBuilder.Entity<DiscriminatorBaseEntity>()
+            .OrderBy(_ => _.Property);
+        modelBuilder.Entity<DiscriminatorBaseEntity>()
             .HasDiscriminator(_ => _.EntityType)
             .HasValue<DiscriminatorDerivedAEntity>(DiscriminatorType.TypeA)
             .HasValue<DiscriminatorDerivedBEntity>(DiscriminatorType.TypeB)
             .IsComplete();
         modelBuilder.Entity<DiscriminatorDerivedAEntity>()
-            .HasBaseType<DiscriminatorBaseEntity>()
-            .OrderBy(_ => _.Property);
+            .HasBaseType<DiscriminatorBaseEntity>();
         modelBuilder.Entity<DiscriminatorDerivedBEntity>()
-            .HasBaseType<DiscriminatorBaseEntity>()
-            .OrderBy(_ => _.Property);
+            .HasBaseType<DiscriminatorBaseEntity>();
     }
 }
