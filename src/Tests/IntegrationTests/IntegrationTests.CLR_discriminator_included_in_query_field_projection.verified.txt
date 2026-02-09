@@ -16,10 +16,11 @@
 },
   sql: {
     Text:
-select d.Id,
-       d.EntityType,
-       d.Property
-from   DiscriminatorBaseEntities as d
-where  d.EntityType = 0
+select   d.Id,
+         d.EntityType,
+         d.Property
+from     DiscriminatorBaseEntities as d
+where    d.EntityType = 0
+order by d.Property
   }
 }
