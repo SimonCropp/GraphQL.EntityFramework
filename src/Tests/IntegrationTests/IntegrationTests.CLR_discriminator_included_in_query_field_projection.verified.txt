@@ -1,0 +1,26 @@
+﻿{
+  target:
+{
+  "data": {
+    "discriminatorDerivedAEntities": [
+      {
+        "entityType": "TYPE_A",
+        "property": "First"
+      },
+      {
+        "entityType": "TYPE_A",
+        "property": "Second"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   d.Id,
+         d.EntityType,
+         d.Property
+from     DiscriminatorBaseEntities as d
+where    d.EntityType = 0
+order by d.Property
+  }
+}

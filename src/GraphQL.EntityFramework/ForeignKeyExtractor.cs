@@ -30,6 +30,15 @@ static class ForeignKeyExtractor
             }
         }
 
+        // Include TPH discriminator property so projected entities maintain correct type identity.
+        // Without this, projected entities get the default discriminator value (e.g. enum value 0)
+        // instead of the actual value, causing downstream code that switches on the discriminator to fail.
+        var discriminator = entity.FindDiscriminatorProperty();
+        if (discriminator != null)
+        {
+            foreignKeyNames.Add(discriminator.Name);
+        }
+
         return foreignKeyNames;
     }
 }

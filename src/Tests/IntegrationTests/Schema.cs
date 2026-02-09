@@ -44,6 +44,8 @@
         RegisterTypeMapping(typeof(FilterReferenceEntity), typeof(FilterReferenceGraphType));
         RegisterTypeMapping(typeof(FilterBaseEntity), typeof(FilterBaseGraphType));
         RegisterTypeMapping(typeof(FilterDerivedEntity), typeof(FilterDerivedGraphType));
+        RegisterTypeMapping(typeof(DiscriminatorDerivedAEntity), typeof(DiscriminatorDerivedAGraphType));
+        RegisterTypeMapping(typeof(DiscriminatorDerivedBEntity), typeof(DiscriminatorDerivedBGraphType));
         Query = (Query)resolver.GetService(typeof(Query))!;
         Mutation = (Mutation)resolver.GetService(typeof(Mutation))!;
         RegisterType(typeof(DerivedGraphType));

@@ -158,6 +158,10 @@
   filterReferenceEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterReference!]!
   filterReferenceEntity(id: ID, ids: [ID!], where: [WhereExpression!]): FilterReference!
   filterReferenceEntityNullable(id: ID, ids: [ID!], where: [WhereExpression!]): FilterReference
+  discriminatorDerivedAEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DiscriminatorDerivedA!]!
+  discriminatorDerivedAEntity(id: ID, ids: [ID!], where: [WhereExpression!]): DiscriminatorDerivedA!
+  discriminatorDerivedBEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DiscriminatorDerivedB!]!
+  discriminatorDerivedBEntity(id: ID, ids: [ID!], where: [WhereExpression!]): DiscriminatorDerivedB!
 }
 
 type CustomType {
@@ -755,6 +759,25 @@ type FilterBase {
   field8: Boolean!
   field9: Boolean!
   id: ID!
+}
+
+type DiscriminatorDerivedA {
+  derivedAProperty: String
+  entityType: DiscriminatorType!
+  id: ID!
+  property: String
+}
+
+enum DiscriminatorType {
+  TYPE_A
+  TYPE_B
+}
+
+type DiscriminatorDerivedB {
+  derivedBProperty: String
+  entityType: DiscriminatorType!
+  id: ID!
+  property: String
 }
 
 type Mutation {
