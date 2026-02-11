@@ -73,11 +73,12 @@ class IncludeAppender(
 
         foreach (var (navName, navProjection) in projection.Navigations)
         {
-            if (!visitedTypes.Add(navProjection.EntityType))
+            if (IsVisitedOrBaseType(navProjection.EntityType, visitedTypes))
             {
                 continue;
             }
 
+            visitedTypes.Add(navProjection.EntityType);
             query = query.Include(navName);
             query = AddNestedIncludes(query, navName, navProjection.Projection, visitedTypes);
             visitedTypes.Remove(navProjection.EntityType);
@@ -100,11 +101,12 @@ class IncludeAppender(
 
         foreach (var (navName, navProjection) in projection.Navigations)
         {
-            if (!visitedTypes.Add(navProjection.EntityType))
+            if (IsVisitedOrBaseType(navProjection.EntityType, visitedTypes))
             {
                 continue;
             }
 
+            visitedTypes.Add(navProjection.EntityType);
             var nestedPath = $"{includePath}.{navName}";
             query = query.Include(nestedPath);
             query = AddNestedIncludes(query, nestedPath, navProjection.Projection, visitedTypes);
@@ -113,6 +115,14 @@ class IncludeAppender(
 
         return query;
     }
+
+    // Skip if the type was already visited OR if it's a base type of any visited type.
+    // The latter prevents circular includes through TPH hierarchies where a navigation
+    // points back to a base type (e.g. ParliamentaryAbsenceEmailAttachment.Request -> BaseRequest
+    // when the root query is on TravelRequest which inherits from BaseRequest).
+    static bool IsVisitedOrBaseType(Type entityType, HashSet<Type> visitedTypes) =>
+        visitedTypes.Contains(entityType) ||
+        visitedTypes.Any(entityType.IsAssignableFrom);
 
     FieldProjectionInfo MergeFilterFieldsIntoProjection<TDbContext>(
         FieldProjectionInfo projection,
