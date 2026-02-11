@@ -47,6 +47,10 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<DiscriminatorBaseEntity> DiscriminatorBaseEntities { get; set; } = null!;
     public DbSet<DiscriminatorDerivedAEntity> DiscriminatorDerivedAEntities { get; set; } = null!;
     public DbSet<DiscriminatorDerivedBEntity> DiscriminatorDerivedBEntities { get; set; } = null!;
+    public DbSet<TphRootEntity> TphRootEntities { get; set; } = null!;
+    public DbSet<TphMiddleEntity> TphMiddleEntities { get; set; } = null!;
+    public DbSet<TphLeafEntity> TphLeafEntities { get; set; } = null!;
+    public DbSet<TphAttachmentEntity> TphAttachmentEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -142,5 +146,15 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasBaseType<DiscriminatorBaseEntity>();
         modelBuilder.Entity<DiscriminatorDerivedBEntity>()
             .HasBaseType<DiscriminatorBaseEntity>();
+
+        // Configure TPH inheritance for TphRootEntity -> TphMiddleEntity -> TphLeafEntity
+        modelBuilder.Entity<TphRootEntity>()
+            .OrderBy(_ => _.Property);
+        modelBuilder.Entity<TphMiddleEntity>()
+            .HasBaseType<TphRootEntity>();
+        modelBuilder.Entity<TphLeafEntity>()
+            .HasBaseType<TphMiddleEntity>();
+        modelBuilder.Entity<TphAttachmentEntity>()
+            .OrderBy(_ => _.Property);
     }
 }

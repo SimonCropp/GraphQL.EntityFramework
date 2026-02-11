@@ -46,10 +46,14 @@
         RegisterTypeMapping(typeof(FilterDerivedEntity), typeof(FilterDerivedGraphType));
         RegisterTypeMapping(typeof(DiscriminatorDerivedAEntity), typeof(DiscriminatorDerivedAGraphType));
         RegisterTypeMapping(typeof(DiscriminatorDerivedBEntity), typeof(DiscriminatorDerivedBGraphType));
+        RegisterTypeMapping(typeof(TphMiddleEntity), typeof(TphMiddleGraphType));
+        RegisterTypeMapping(typeof(TphLeafEntity), typeof(TphLeafGraphType));
+        RegisterTypeMapping(typeof(TphAttachmentEntity), typeof(TphAttachmentGraphType));
         Query = (Query)resolver.GetService(typeof(Query))!;
         Mutation = (Mutation)resolver.GetService(typeof(Mutation))!;
         RegisterType(typeof(DerivedGraphType));
         RegisterType(typeof(DerivedWithNavigationGraphType));
         RegisterType(typeof(FilterDerivedGraphType));
+        RegisterType(typeof(TphLeafGraphType));
     }
 }

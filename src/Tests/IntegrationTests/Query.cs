@@ -381,5 +381,15 @@
         AddSingleField(
             name: "discriminatorDerivedBEntity",
             resolve: _ => _.DbContext.DiscriminatorDerivedBEntities);
+
+        AddQueryField(
+            name: "tphMiddleEntities",
+            graphType: typeof(TphMiddleGraphType),
+            resolve: _ => _.DbContext.TphMiddleEntities);
+
+        AddSingleField(
+            name: "tphMiddleEntity",
+            graphType: typeof(TphMiddleGraphType),
+            resolve: _ => _.DbContext.TphMiddleEntities);
     }
 }

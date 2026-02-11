@@ -1,0 +1,35 @@
+﻿{
+  target:
+{
+  "data": {
+    "tphMiddleEntity": {
+      "property": "TheRequest",
+      "attachments": [
+        {
+          "property": "TheAttachment"
+        }
+      ]
+    }
+  }
+},
+  sql: {
+    Text:
+select   t1.Id,
+         t1.Discriminator,
+         t1.Property,
+         t1.LeafProperty,
+         t0.Id,
+         t0.Property,
+         t0.RequestId
+from     (select top (2) t.Id,
+                         t.Discriminator,
+                         t.Property,
+                         t.LeafProperty
+          from   TphRootEntities as t
+          where  t.Id = 'Guid_1') as t1
+         left outer join
+         TphAttachmentEntities as t0
+         on t1.Id = t0.RequestId
+order by t1.Id
+  }
+}

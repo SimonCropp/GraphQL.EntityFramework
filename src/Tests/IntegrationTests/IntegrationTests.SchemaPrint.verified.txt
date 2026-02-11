@@ -162,6 +162,8 @@
   discriminatorDerivedAEntity(id: ID, ids: [ID!], where: [WhereExpression!]): DiscriminatorDerivedA!
   discriminatorDerivedBEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DiscriminatorDerivedB!]!
   discriminatorDerivedBEntity(id: ID, ids: [ID!], where: [WhereExpression!]): DiscriminatorDerivedB!
+  tphMiddleEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphMiddleEntity]!
+  tphMiddleEntity(id: ID, ids: [ID!], where: [WhereExpression!]): TphMiddleEntity
 }
 
 type CustomType {
@@ -780,6 +782,18 @@ type DiscriminatorDerivedB {
   property: String
 }
 
+interface TphMiddleEntity {
+  id: ID!
+  property: String
+  attachments(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphAttachment!]!
+}
+
+type TphAttachment {
+  id: ID!
+  property: String
+  requestId: ID!
+}
+
 type Mutation {
   parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
 }
@@ -831,4 +845,11 @@ type FilterDerived {
   field8: Boolean!
   field9: Boolean!
   id: ID!
+}
+
+type TphLeaf implements TphMiddleEntity {
+  attachments(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphAttachment!]!
+  id: ID!
+  leafProperty: String
+  property: String
 }
