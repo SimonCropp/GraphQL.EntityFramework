@@ -156,6 +156,70 @@ public class Filters<TDbContext>
         return true;
     }
 
+    /// <summary>
+    /// Check if a single entity should be included based on registered filters.
+    /// Useful for testing entity filters directly without requiring a full GraphQL query.
+    /// Filters are matched using the runtime type of <paramref name="item"/> via <see cref="Type.IsAssignableFrom"/>,
+    /// so base type filters (e.g. on <c>BaseRequest</c>) will also apply to derived types.
+    /// </summary>
+    /// <param name="userContext">The GraphQL user context, typically <c>new Dictionary&lt;string, object?&gt;()</c> in tests.</param>
+    /// <param name="data">The <typeparamref name="TDbContext"/> instance.</param>
+    /// <param name="user">The <see cref="ClaimsPrincipal"/> representing the current user.</param>
+    /// <param name="item">The entity instance to evaluate. Navigation properties used by filter projections must be loaded.</param>
+    /// <returns><c>true</c> if all matching filters allow the entity; <c>false</c> if any filter excludes it.</returns>
+    /// <example>
+    /// <code>
+    /// var filters = new Filters&lt;MyDbContext&gt;();
+    /// MyEntityFilters.AddFilters(filters);
+    ///
+    /// var entity = await dbContext.FindAsync(entityType, entityId);
+    ///
+    /// // Load reference navigations needed by filter projections
+    /// var entry = dbContext.Entry(entity);
+    /// foreach (var nav in entry.Navigations)
+    /// {
+    ///     if (nav.Metadata is INavigation { IsCollection: false } &amp;&amp; !nav.IsLoaded)
+    ///     {
+    ///         await nav.LoadAsync();
+    ///     }
+    /// }
+    ///
+    /// var allowed = await filters.ShouldInclude(userContext, dbContext, user, entity);
+    /// </code>
+    /// </example>
+    #region ShouldIncludeSignature
+
+    public async Task<bool> ShouldInclude(
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? user,
+        object item)
+
+    #endregion
+
+    {
+        if (entries.Count == 0)
+        {
+            return true;
+        }
+
+        var filterEntries = GetFilters(item.GetType()).ToList();
+        if (filterEntries.Count == 0)
+        {
+            return true;
+        }
+
+        foreach (var entry in filterEntries)
+        {
+            if (!await entry.ShouldIncludeWithProjection(userContext, data, user, item))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     internal virtual async Task<bool> ShouldInclude<TEntity>(
         object userContext,
         TDbContext data,

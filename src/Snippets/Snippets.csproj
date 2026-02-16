@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="GraphQL" />
     <PackageReference Include="MarkdownSnippets.MsBuild" PrivateAssets="all" />
+    <PackageReference Include="EfLocalDb.Xunit.V3" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="xunit.v3" />
