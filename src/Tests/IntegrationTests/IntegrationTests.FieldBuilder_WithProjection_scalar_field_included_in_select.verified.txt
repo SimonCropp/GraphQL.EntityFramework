@@ -1,0 +1,25 @@
+﻿{
+  target:
+{
+  "data": {
+    "fieldBuilderProjectionEntities": [
+      {
+        "name": "ActiveEntity",
+        "statusViaWithProjection": "Active via WithProjection"
+      },
+      {
+        "name": "PendingEntity",
+        "statusViaWithProjection": "Pending via WithProjection"
+      }
+    ]
+  }
+},
+  sql: {
+    Text:
+select   f.Id,
+         f.Name,
+         f.Status
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+  }
+}

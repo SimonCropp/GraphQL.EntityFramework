@@ -670,6 +670,7 @@ type FieldBuilderProjection {
   nameUpper: String!
   statusDisplay: String!
   parentName: String!
+  statusViaWithProjection: String!
   age: Int!
   createdAt: DateTime!
   id: ID!
