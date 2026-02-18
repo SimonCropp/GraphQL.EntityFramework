@@ -63,6 +63,18 @@ public class FieldBuilderProjectionGraphType :
                 projection: _ => _.Parent,
                 resolve: _ => _.Projection?.Name ?? "No Parent");
 
+        // WithProjection sets metadata only (no resolver wrapping) — ensures scalar fields
+        // are included in the parent query's SELECT projection even when not explicitly queried
+        Field<NonNullGraphType<StringGraphType>, string>("statusViaWithProjection")
+            .WithProjection((Expression<Func<FieldBuilderProjectionEntity, EntityStatus>>)(_ => _.Status))
+            .Resolve(_ => _.Source.Status switch
+            {
+                EntityStatus.Active => "Active via WithProjection",
+                EntityStatus.Inactive => "Inactive via WithProjection",
+                EntityStatus.Pending => "Pending via WithProjection",
+                _ => "Unknown"
+            });
+
         AutoMap(exclusions: [nameof(FieldBuilderProjectionEntity.Parent)]);
     }
 }

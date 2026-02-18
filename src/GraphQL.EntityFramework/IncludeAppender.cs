@@ -224,7 +224,7 @@ class IncludeAppender(
     {
         if (TryGetProjectionMetadata(fieldInfo.FieldType, out var projection))
         {
-            ProcessProjectionExpression(fieldInfo, projection, navigationProperties, navProjections, context);
+            ProcessProjectionExpression(fieldInfo, projection, navigationProperties, scalarFields, navProjections, context);
             return;
         }
 
@@ -235,6 +235,7 @@ class IncludeAppender(
         (GraphQLField Field, FieldType FieldType) fieldInfo,
         LambdaExpression projection,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
+        HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
@@ -265,8 +266,14 @@ class IncludeAppender(
 
         foreach (var (navName, nestedPaths) in pathsByNavigation)
         {
-            if (!TryFindNavigation(navigationProperties, navName, out var navigation, out var actualNavName) ||
-                navProjections.ContainsKey(actualNavName))
+            if (!TryFindNavigation(navigationProperties, navName, out var navigation, out var actualNavName))
+            {
+                // Scalar field path (no navigation) — add root property to scalarFields
+                scalarFields.Add(navName);
+                continue;
+            }
+
+            if (navProjections.ContainsKey(actualNavName))
             {
                 continue;
             }
@@ -293,11 +300,11 @@ class IncludeAppender(
             else
             {
                 // Secondary navigation: include only projection-required fields
-                var scalarFields = nestedPaths
+                var nestedScalarFields = nestedPaths
                     .Where(_ => !_.Contains('.'))
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-                nestedProjection = new(scalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
+                nestedProjection = new(nestedScalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
             }
 
             navProjections[actualNavName] = new(navType, navigation.IsCollection, nestedProjection);

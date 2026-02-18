@@ -348,6 +348,22 @@ public static class FieldBuilderExtensions
         return result;
     }
 
+    /// <summary>
+    /// Sets projection metadata on a field without wrapping the resolver.
+    /// This ensures the parent query loads the required fields from the database,
+    /// even when the field has its own custom resolver.
+    /// </summary>
+    /// <param name="builder">The field builder</param>
+    /// <param name="projection">Expression describing the required entity data</param>
+    /// <returns>The field builder for chaining</returns>
+    public static FieldBuilder<TSource, TReturn> WithProjection<TSource, TReturn>(
+        this FieldBuilder<TSource, TReturn> builder,
+        LambdaExpression projection)
+    {
+        IncludeAppender.SetProjectionMetadata(builder.FieldType, projection);
+        return builder;
+    }
+
     static void ValidateProjection<TSource, TProjection>(Expression<Func<TSource, TProjection>> projection)
     {
         // Detect identity projection: _ => _

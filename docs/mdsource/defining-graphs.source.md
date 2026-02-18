@@ -158,6 +158,43 @@ Field<int>("ParentId")
 **Note:** A Roslyn analyzer (GQLEF002) warns at compile time when `Field().Resolve()` accesses properties other than primary keys and foreign keys. Only PK and FK properties are guaranteed to be loaded by the projection system - all other properties (including regular scalars like `Name`) require projection-based extension methods to ensure they are loaded.
 
 
+### Using WithProjection for Metadata-Only Fields
+
+When a field has its own custom resolver but still needs to declare data requirements for the parent query's projection, use `WithProjection`. Unlike the `Resolve<..., TProjection>` methods which both set metadata and wrap the resolver, `WithProjection` only sets projection metadata — ensuring the parent query loads the required columns without altering how the field resolves.
+
+This is useful for computed or permission-check fields that read from `context.Source` but aren't standard navigation or scalar fields.
+
+```cs
+// The parent query's SELECT projection will include Status,
+// even if the client doesn't explicitly request a "status" field.
+Field<NonNullGraphType<StringGraphType>, string>("statusLabel")
+    .WithProjection(
+        (Expression<Func<OrderEntity, OrderStatus>>)(_ => _.Status))
+    .Resolve(context => context.Source.Status switch
+    {
+        OrderStatus.Active => "Active",
+        OrderStatus.Cancelled => "Cancelled",
+        _ => "Unknown"
+    });
+```
+
+**How it works:**
+
+1. `WithProjection` stores the projection expression in the field's metadata (same key used by `Resolve<..., TProjection>`)
+2. When the parent entity query builds its SELECT projection, it analyzes all child field metadata — including this field
+3. Scalar properties referenced in the expression (e.g., `Status`) are added to the SELECT column list
+4. Navigation properties referenced in the expression trigger the appropriate `Include` calls
+
+**When to use `WithProjection` vs `Resolve<..., TProjection>`:**
+
+| Scenario | Use |
+|---|---|
+| Field resolver needs projected data passed in | `Resolve<..., TProjection>` |
+| Field has its own resolver but parent must load certain columns | `WithProjection` |
+| Permission/authorization fields that check entity state | `WithProjection` |
+| Fields resolved via reflection or external logic | `WithProjection` |
+
+
 ### When Projections Are Not Used
 
 Projections are bypassed and the full entity is loaded in these cases:

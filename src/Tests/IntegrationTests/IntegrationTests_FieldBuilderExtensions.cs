@@ -400,4 +400,35 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [parent, child1, child2]);
     }
+
+    [Fact]
+    public async Task FieldBuilder_WithProjection_scalar_field_included_in_select()
+    {
+        // Verifies that WithProjection (metadata-only, no resolver wrapping)
+        // causes the scalar field to be included in the parent query's SELECT projection
+        var query =
+            """
+            {
+              fieldBuilderProjectionEntities
+              {
+                name
+                statusViaWithProjection
+              }
+            }
+            """;
+
+        var entity1 = new FieldBuilderProjectionEntity
+        {
+            Name = "ActiveEntity",
+            Status = EntityStatus.Active
+        };
+        var entity2 = new FieldBuilderProjectionEntity
+        {
+            Name = "PendingEntity",
+            Status = EntityStatus.Pending
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
 }

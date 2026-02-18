@@ -27,6 +27,7 @@
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
     <PackageReference Include="GraphQL.MicrosoftDI" />
 
+    <Using Include="System.Linq.Expressions" />
     <Using Include="GraphQL.EntityFramework" />
     <Using Include="GraphQL" />
     <Using Include="GraphQL.Types" />
