@@ -20,10 +20,21 @@ static class ProjectionAnalyzer
             var path = new List<string>();
             Expression? current = node;
 
-            while (current is MemberExpression memberExpr)
+            while (current is MemberExpression or UnaryExpression)
             {
-                path.Insert(0, memberExpr.Member.Name);
-                current = memberExpr.Expression;
+                if (current is MemberExpression memberExpr)
+                {
+                    path.Insert(0, memberExpr.Member.Name);
+                    current = memberExpr.Expression;
+                }
+                else if (current is UnaryExpression { NodeType: ExpressionType.Convert or ExpressionType.TypeAs } unary)
+                {
+                    current = unary.Operand;
+                }
+                else
+                {
+                    break;
+                }
             }
 
             if (current is ParameterExpression param &&
