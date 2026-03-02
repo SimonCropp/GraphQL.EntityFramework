@@ -1,15 +1,14 @@
 ﻿{
-  target:
-{
-  "data": {
-    "simpleTypeFilterEntities": [
-      {
-        "name": "JustRight",
-        "intValue": 15
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      simpleTypeFilterEntities: [
+        {
+          name: JustRight,
+          intValue: 15
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   s.Id,

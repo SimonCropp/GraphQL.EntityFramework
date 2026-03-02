@@ -1,14 +1,13 @@
 ﻿{
-  target:
-{
-  "data": {
-    "enumEntities": [
-      {
-        "id": "Guid_1"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      enumEntities: [
+        {
+          id: Guid_1
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select e.Id

@@ -1,12 +1,11 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntity": {
-      "property": "Value1"
+  target: {
+    Data: {
+      parentEntity: {
+        property: Value1
+      }
     }
-  }
-},
+  },
   sql: {
     Text:
 select top (2) p.Id,

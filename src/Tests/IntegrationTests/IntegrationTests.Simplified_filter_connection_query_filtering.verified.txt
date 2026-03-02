@@ -1,23 +1,22 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntitiesConnectionFiltered": {
-      "edges": [
-        {
-          "node": {
-            "property": "Entity1"
+  target: {
+    Data: {
+      parentEntitiesConnectionFiltered: {
+        edges: [
+          {
+            node: {
+              property: Entity1
+            }
+          },
+          {
+            node: {
+              property: Entity3
+            }
           }
-        },
-        {
-          "node": {
-            "property": "Entity3"
-          }
-        }
-      ]
+        ]
+      }
     }
-  }
-},
+  },
   sql: [
     {
       Text:

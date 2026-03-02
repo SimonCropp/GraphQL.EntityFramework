@@ -134,6 +134,6 @@
     {
         var executer = new EfDocumentExecuter();
         var result = await executer.ExecuteWithErrorCheck(executionOptions);
-        await Verify(result.Serialize(), sourceFile: sourceFile).ScrubInlineGuids();
+        await Verify(result, sourceFile: sourceFile).ScrubInlineGuids();
     }
 }

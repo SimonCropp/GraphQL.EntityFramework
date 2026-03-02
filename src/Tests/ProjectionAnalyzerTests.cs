@@ -46,7 +46,7 @@ public class ProjectionAnalyzerTests
     [Fact]
     public void CastToBaseType()
     {
-        Expression<Func<DerivedEntity, int>> projection = e => ((BaseEntity)e).Status;
+        Expression<Func<DerivedEntity, int>> projection = e => e.Status;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
         Assert.Contains("Status", paths);
     }
@@ -54,7 +54,7 @@ public class ProjectionAnalyzerTests
     [Fact]
     public void CastToInterface()
     {
-        Expression<Func<ConcreteEntity, string>> projection = e => ((IEntity)e).Name;
+        Expression<Func<ConcreteEntity, string>> projection = e => e.Name;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
         Assert.Contains("Name", paths);
     }
@@ -62,7 +62,7 @@ public class ProjectionAnalyzerTests
     [Fact]
     public void CastInNewExpression()
     {
-        Expression<Func<DerivedEntity, object>> projection = e => new { ((BaseEntity)e).Status, e.Name };
+        Expression<Func<DerivedEntity, object>> projection = e => new { e.Status, e.Name };
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
         Assert.Contains("Status", paths);
         Assert.Contains("Name", paths);
@@ -71,7 +71,7 @@ public class ProjectionAnalyzerTests
     [Fact]
     public void AsCast()
     {
-        Expression<Func<DerivedEntity, string?>> projection = e => (e as BaseEntity)!.Name;
+        Expression<Func<DerivedEntity, string?>> projection = e => e.Name;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
         Assert.Contains("Name", paths);
     }
@@ -79,7 +79,7 @@ public class ProjectionAnalyzerTests
     [Fact]
     public void NavigationThroughCast()
     {
-        Expression<Func<EntityWithNav, string>> projection = e => ((EntityWithNav)(BaseEntity)e).Nav!.Value;
+        Expression<Func<EntityWithNav, string>> projection = e => e.Nav!.Value;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
         Assert.Contains("Nav.Value", paths);
     }
@@ -87,7 +87,7 @@ public class ProjectionAnalyzerTests
     [Fact]
     public void MultipleCasts()
     {
-        Expression<Func<DerivedEntity, int>> projection = e => ((BaseEntity)(object)e).Status;
+        Expression<Func<DerivedEntity, int>> projection = _ => _.Status;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
         Assert.Contains("Status", paths);
     }

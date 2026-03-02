@@ -1,12 +1,11 @@
 ﻿{
-  target:
-{
-  "data": {
-    "discriminatorDerivedAEntity": {
-      "property": "Value1"
+  target: {
+    Data: {
+      discriminatorDerivedAEntity: {
+        property: Value1
+      }
     }
-  }
-},
+  },
   sql: {
     Text:
 select top (2) d.Id,

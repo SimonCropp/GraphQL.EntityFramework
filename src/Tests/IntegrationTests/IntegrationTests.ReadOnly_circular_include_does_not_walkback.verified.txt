@@ -1,23 +1,22 @@
 ﻿{
-  target:
-{
-  "data": {
-    "readOnlyEntities": [
-      {
-        "firstName": "John",
-        "displayName": "John Smith",
-        "readOnlyParent": {
-          "property": "TheParent",
-          "children": [
-            {
-              "firstName": "John"
-            }
-          ]
+  target: {
+    Data: {
+      readOnlyEntities: [
+        {
+          firstName: John,
+          displayName: John Smith,
+          readOnlyParent: {
+            property: TheParent,
+            children: [
+              {
+                firstName: John
+              }
+            ]
+          }
         }
-      }
-    ]
-  }
-},
+      ]
+    }
+  },
   sql: {
     Text:
 select r.Id,

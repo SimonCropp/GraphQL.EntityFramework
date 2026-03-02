@@ -1,21 +1,20 @@
 ﻿{
-  target:
-{
-  "data": {
-    "readOnlyEntities": [
-      {
-        "firstName": "John",
-        "lastName": "Doe",
-        "age": 30
-      },
-      {
-        "firstName": "Jane",
-        "lastName": "Smith",
-        "age": 25
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      readOnlyEntities: [
+        {
+          firstName: John,
+          lastName: Doe,
+          age: 30
+        },
+        {
+          firstName: Jane,
+          lastName: Smith,
+          age: 25
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   r.Id,

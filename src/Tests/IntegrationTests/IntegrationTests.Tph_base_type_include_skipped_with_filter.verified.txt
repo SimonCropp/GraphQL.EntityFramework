@@ -1,19 +1,18 @@
 ﻿{
-  target:
-{
-  "data": {
-    "tphMiddleEntities": [
-      {
-        "property": "TheRequest",
-        "attachments": [
-          {
-            "property": "TheAttachment"
-          }
-        ]
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      tphMiddleEntities: [
+        {
+          property: TheRequest,
+          attachments: [
+            {
+              property: TheAttachment
+            }
+          ]
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   t.Id,

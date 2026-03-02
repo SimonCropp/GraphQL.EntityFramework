@@ -1,14 +1,13 @@
 ﻿{
-  target:
-{
-  "data": {
-    "dateEntities": [
-      {
-        "id": "Guid_1"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      dateEntities: [
+        {
+          id: Guid_1
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select d.Id

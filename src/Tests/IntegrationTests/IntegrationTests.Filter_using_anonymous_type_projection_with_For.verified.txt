@@ -1,21 +1,20 @@
 ﻿{
-  target:
-{
-  "data": {
-    "simpleTypeFilterEntities": [
-      {
-        "name": "AlsoPassesBoth",
-        "intValue": 30,
-        "boolValue": true
-      },
-      {
-        "name": "PassesBoth",
-        "intValue": 20,
-        "boolValue": true
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      simpleTypeFilterEntities: [
+        {
+          name: AlsoPassesBoth,
+          intValue: 30,
+          boolValue: true
+        },
+        {
+          name: PassesBoth,
+          intValue: 20,
+          boolValue: true
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   s.Id,

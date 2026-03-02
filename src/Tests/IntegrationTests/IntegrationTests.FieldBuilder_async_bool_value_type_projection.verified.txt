@@ -1,15 +1,14 @@
 ﻿{
-  target:
-{
-  "data": {
-    "fieldBuilderProjectionEntities": [
-      {
-        "name": "Child",
-        "hasParentAsync": true
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: Child,
+          hasParentAsync: true
+        }
+      ]
+    }
+  },
   sql: [
     {
       Text:

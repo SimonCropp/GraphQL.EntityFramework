@@ -1,19 +1,18 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntitiesFiltered": [
-      {
-        "property": "Value1",
-        "children": [
-          {
-            "property": "KeepMe"
-          }
-        ]
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      parentEntitiesFiltered: [
+        {
+          property: Value1,
+          children: [
+            {
+              property: KeepMe
+            }
+          ]
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

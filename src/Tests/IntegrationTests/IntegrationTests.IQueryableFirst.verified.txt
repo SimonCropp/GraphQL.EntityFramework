@@ -1,7 +1,7 @@
 ﻿{
-  "data": {
-    "iQueryableFirst": {
-      "property": "Foo"
+  Data: {
+    iQueryableFirst: {
+      property: Foo
     }
   }
 }

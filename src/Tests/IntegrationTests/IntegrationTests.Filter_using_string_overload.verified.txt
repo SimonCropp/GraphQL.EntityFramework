@@ -1,17 +1,16 @@
 ﻿{
-  target:
-{
-  "data": {
-    "simpleTypeFilterEntities": [
-      {
-        "name": "Alpha"
-      },
-      {
-        "name": "Gamma"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      simpleTypeFilterEntities: [
+        {
+          name: Alpha
+        },
+        {
+          name: Gamma
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   s.Id,

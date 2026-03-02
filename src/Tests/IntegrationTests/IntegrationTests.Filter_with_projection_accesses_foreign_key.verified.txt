@@ -1,29 +1,28 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntitiesConnection": {
-      "edges": [
-        {
-          "node": {
-            "property": "Parent1",
-            "children": [
-              {
-                "property": "Child1"
-              }
-            ]
+  target: {
+    Data: {
+      parentEntitiesConnection: {
+        edges: [
+          {
+            node: {
+              property: Parent1,
+              children: [
+                {
+                  property: Child1
+                }
+              ]
+            }
+          },
+          {
+            node: {
+              property: Parent2,
+              children: []
+            }
           }
-        },
-        {
-          "node": {
-            "property": "Parent2",
-            "children": []
-          }
-        }
-      ]
+        ]
+      }
     }
-  }
-},
+  },
   sql: [
     {
       Text:

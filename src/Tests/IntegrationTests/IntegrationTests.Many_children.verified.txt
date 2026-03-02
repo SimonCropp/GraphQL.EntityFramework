@@ -1,16 +1,15 @@
 ﻿{
-  target:
-{
-  "data": {
-    "manyChildren": [
-      {
-        "child1": {
-          "id": "Guid_1"
+  target: {
+    Data: {
+      manyChildren: [
+        {
+          child1: {
+            id: Guid_1
+          }
         }
-      }
-    ]
-  }
-},
+      ]
+    }
+  },
   sql: {
     Text:
 select w.Id,

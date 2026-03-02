@@ -1,16 +1,15 @@
 ﻿{
-  target:
-{
-  "data": {
-    "fieldBuilderProjectionEntities": [
-      {
-        "name": "Video",
-        "viewCount": 1234567890,
-        "viewCountDoubled": 2469135780
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: Video,
+          viewCount: 1234567890,
+          viewCountDoubled: 2469135780
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

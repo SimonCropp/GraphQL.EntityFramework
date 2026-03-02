@@ -1,13 +1,12 @@
 ﻿{
-  target:
-{
-  "data": {
-    "discriminatorDerivedBEntity": {
-      "entityType": "TYPE_B",
-      "property": "ValueB"
+  target: {
+    Data: {
+      discriminatorDerivedBEntity: {
+        entityType: TYPE_B,
+        property: ValueB
+      }
     }
-  }
-},
+  },
   sql: {
     Text:
 select top (2) d.Id,

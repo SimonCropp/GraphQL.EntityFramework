@@ -1,16 +1,15 @@
 ﻿{
-  target:
-{
-  "data": {
-    "fieldBuilderProjectionEntities": [
-      {
-        "name": "Test",
-        "createdAt": "2024-06-15T10:30:00",
-        "createdYear": "2024-01-01T00:00:00Z"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: Test,
+          createdAt: DateTimeOffset_1,
+          createdYear: DateTimeOffset_2
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

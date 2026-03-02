@@ -7,6 +7,7 @@
         VerifySqlServer.Initialize();
         VerifierSettings.IgnoreMember("HasTransaction");
         VerifierSettings.ScrubLinesWithReplace(_ => VersionRegex().Replace(_, "Version={Scrubbed}"));
+        VerifierSettings.InitializePlugins();
     }
 
     [GeneratedRegex(@"Version=[\d.]+")]

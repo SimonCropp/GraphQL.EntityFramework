@@ -1,15 +1,14 @@
 ﻿{
-  target:
-{
-  "data": {
-    "simpleTypeFilterEntities": [
-      {
-        "name": "Recent",
-        "nullableDateTimeValue": "2024-12-01T00:00:00"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      simpleTypeFilterEntities: [
+        {
+          name: Recent,
+          nullableDateTimeValue: DateTimeOffset_1
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   s.Id,

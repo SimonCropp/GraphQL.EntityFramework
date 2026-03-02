@@ -1,9 +1,9 @@
 ﻿{
-  "data": {
-    "nullTaskInnerQueryConnection": {
-      "totalCount": null,
-      "edges": null,
-      "items": null
+  Data: {
+    nullTaskInnerQueryConnection: {
+      totalCount: null,
+      edges: null,
+      items: null
     }
   }
 }

@@ -1,20 +1,19 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntitiesFiltered": [
-      {
-        "property": "Parent",
-        "children": [
-          {
-            "property": "HasAge",
-            "nullableAge": 30
-          }
-        ]
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      parentEntitiesFiltered: [
+        {
+          property: Parent,
+          children: [
+            {
+              property: HasAge,
+              nullableAge: 30
+            }
+          ]
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

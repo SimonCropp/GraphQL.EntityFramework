@@ -1,14 +1,13 @@
 ﻿{
-  target:
-{
-  "data": {
-    "namedEntities": [
-      {
-        "property": "Value1"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      namedEntities: [
+        {
+          property: Value1
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select n.NamedId,

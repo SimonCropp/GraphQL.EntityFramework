@@ -1,14 +1,13 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntities": [
-      {
-        "property": "Value2"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          property: Value2
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   p.Id,

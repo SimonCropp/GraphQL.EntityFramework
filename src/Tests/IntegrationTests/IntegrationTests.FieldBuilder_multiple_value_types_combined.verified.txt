@@ -1,24 +1,23 @@
 ﻿{
-  target:
-{
-  "data": {
-    "fieldBuilderProjectionEntities": [
-      {
-        "name": "Complete",
-        "age": 30,
-        "ageDoubled": 60,
-        "isAdult": true,
-        "salary": 75000.00,
-        "salaryWithBonus": 82500.000,
-        "score": 92.5,
-        "scoreNormalized": 0.925,
-        "viewCount": 999888777,
-        "viewCountDoubled": 1999777554,
-        "nameUpper": "COMPLETE"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: Complete,
+          age: 30,
+          ageDoubled: 60,
+          isAdult: true,
+          salary: 75000.00,
+          salaryWithBonus: 82500.000,
+          score: 92.5,
+          scoreNormalized: 0.925,
+          viewCount: 999888777,
+          viewCountDoubled: 1999777554,
+          nameUpper: COMPLETE
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

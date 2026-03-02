@@ -1,43 +1,42 @@
 ﻿{
-  target:
-{
-  "data": {
-    "departments": [
-      {
-        "id": "Guid_1",
-        "name": "Active Department",
-        "isActive": true,
-        "employees": [
-          {
-            "id": "Guid_2",
-            "name": "Alice",
-            "departmentId": "Guid_1",
-            "isInActiveDepartment": true
-          },
-          {
-            "id": "Guid_3",
-            "name": "Bob",
-            "departmentId": "Guid_1",
-            "isInActiveDepartment": true
-          }
-        ]
-      },
-      {
-        "id": "Guid_4",
-        "name": "Inactive Department",
-        "isActive": false,
-        "employees": [
-          {
-            "id": "Guid_5",
-            "name": "Charlie",
-            "departmentId": "Guid_4",
-            "isInActiveDepartment": false
-          }
-        ]
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      departments: [
+        {
+          id: Guid_1,
+          name: Active Department,
+          isActive: true,
+          employees: [
+            {
+              id: Guid_2,
+              name: Alice,
+              departmentId: Guid_1,
+              isInActiveDepartment: true
+            },
+            {
+              id: Guid_3,
+              name: Bob,
+              departmentId: Guid_1,
+              isInActiveDepartment: true
+            }
+          ]
+        },
+        {
+          id: Guid_4,
+          name: Inactive Department,
+          isActive: false,
+          employees: [
+            {
+              id: Guid_5,
+              name: Charlie,
+              departmentId: Guid_4,
+              isInActiveDepartment: false
+            }
+          ]
+        }
+      ]
+    }
+  },
   sql: [
     {
       Text:

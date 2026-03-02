@@ -1,10 +1,10 @@
 ﻿{
-  "data": {
-    "entity1": {
-      "property": "the entity1"
+  Data: {
+    entity1: {
+      property: the entity1
     },
-    "entity2": {
-      "property": "the entity2"
+    entity2: {
+      property: the entity2
     }
   }
 }

@@ -1,17 +1,16 @@
 ﻿{
-  target:
-{
-  "data": {
-    "fieldBuilderProjectionParents": [
-      {
-        "name": "Parent",
-        "children": {
-          "edges": []
+  target: {
+    Data: {
+      fieldBuilderProjectionParents: [
+        {
+          name: Parent,
+          children: {
+            edges: []
+          }
         }
-      }
-    ]
-  }
-},
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

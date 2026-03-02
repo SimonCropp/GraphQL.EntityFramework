@@ -1,15 +1,14 @@
 ﻿{
-  target:
-{
-  "data": {
-    "simpleTypeFilterEntities": [
-      {
-        "name": "HasValue",
-        "nullableIntValue": 42
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      simpleTypeFilterEntities: [
+        {
+          name: HasValue,
+          nullableIntValue: 42
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   s.Id,

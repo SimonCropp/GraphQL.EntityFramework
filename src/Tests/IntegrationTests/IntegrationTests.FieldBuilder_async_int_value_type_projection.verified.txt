@@ -1,23 +1,22 @@
 ﻿{
-  target:
-{
-  "data": {
-    "fieldBuilderProjectionEntities": [
-      {
-        "name": "Child1",
-        "siblingCountAsync": 0
-      },
-      {
-        "name": "Child2",
-        "siblingCountAsync": 0
-      },
-      {
-        "name": "Child3",
-        "siblingCountAsync": 0
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: Child1,
+          siblingCountAsync: 0
+        },
+        {
+          name: Child2,
+          siblingCountAsync: 0
+        },
+        {
+          name: Child3,
+          siblingCountAsync: 0
+        }
+      ]
+    }
+  },
   sql: [
     {
       Text:

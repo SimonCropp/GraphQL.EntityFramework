@@ -1,17 +1,16 @@
 ﻿{
-  target:
-{
-  "data": {
-    "customType": [
-      {
-        "property": 3
-      },
-      {
-        "property": 9223372036854775807
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      customType: [
+        {
+          property: 3
+        },
+        {
+          property: 9223372036854775807
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   c.Id,

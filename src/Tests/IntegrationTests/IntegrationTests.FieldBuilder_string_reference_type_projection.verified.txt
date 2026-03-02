@@ -1,15 +1,14 @@
 ﻿{
-  target:
-{
-  "data": {
-    "fieldBuilderProjectionEntities": [
-      {
-        "name": "lowercase",
-        "nameUpper": "LOWERCASE"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: lowercase,
+          nameUpper: LOWERCASE
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

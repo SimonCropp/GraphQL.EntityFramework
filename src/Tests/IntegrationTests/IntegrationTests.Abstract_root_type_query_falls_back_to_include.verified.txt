@@ -1,14 +1,13 @@
 ﻿{
-  target:
-{
-  "data": {
-    "baseEntities": [
-      {
-        "property": "Derived1"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      baseEntities: [
+        {
+          property: Derived1
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   b.Id,

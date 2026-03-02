@@ -1,17 +1,16 @@
 ﻿{
-  target:
-{
-  "data": {
-    "derivedChildEntities": [
-      {
-        "property": "Child1",
-        "parent": {
-          "property": "Parent1"
+  target: {
+    Data: {
+      derivedChildEntities: [
+        {
+          property: Child1,
+          parent: {
+            property: Parent1
+          }
         }
-      }
-    ]
-  }
-},
+      ]
+    }
+  },
   sql: {
     Text:
 select   d.Id,

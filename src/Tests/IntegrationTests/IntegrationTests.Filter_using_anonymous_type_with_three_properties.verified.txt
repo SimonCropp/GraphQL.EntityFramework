@@ -1,16 +1,15 @@
 ﻿{
-  target:
-{
-  "data": {
-    "simpleTypeFilterEntities": [
-      {
-        "name": "Perfect",
-        "intValue": 25,
-        "boolValue": true
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      simpleTypeFilterEntities: [
+        {
+          name: Perfect,
+          intValue: 25,
+          boolValue: true
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   s.Id,

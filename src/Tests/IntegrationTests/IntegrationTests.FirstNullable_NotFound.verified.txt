@@ -1,10 +1,9 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntityNullableFirst": null
-  }
-},
+  target: {
+    Data: {
+      parentEntityNullableFirst: null
+    }
+  },
   sql: {
     Text:
 select top (1) p.Id,

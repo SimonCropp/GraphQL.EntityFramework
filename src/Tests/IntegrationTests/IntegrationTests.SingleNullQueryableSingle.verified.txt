@@ -1,5 +1,5 @@
 ﻿{
-  "data": {
-    "nullQueryableSingle": null
+  Data: {
+    nullQueryableSingle: null
   }
 }

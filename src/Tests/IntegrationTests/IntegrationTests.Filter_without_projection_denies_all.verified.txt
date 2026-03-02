@@ -1,10 +1,9 @@
 ﻿{
-  target:
-{
-  "data": {
-    "simpleTypeFilterEntities": []
-  }
-},
+  target: {
+    Data: {
+      simpleTypeFilterEntities: []
+    }
+  },
   sql: {
     Text:
 select   s.Id,

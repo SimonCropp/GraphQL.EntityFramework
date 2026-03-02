@@ -1,6 +1,6 @@
 static class QueryExecutor
 {
-    public static async Task<string> ExecuteQuery<TDbContext>(
+    public static async Task<ExecutionResult> ExecuteQuery<TDbContext>(
         string query,
         ServiceCollection services,
         TDbContext data,
@@ -27,7 +27,6 @@ static class QueryExecutor
             RequestServices = provider,
         };
 
-        var result = await executer.ExecuteWithErrorCheck(options);
-        return await result.Serialize();
+        return await executer.ExecuteWithErrorCheck(options);
     }
 }

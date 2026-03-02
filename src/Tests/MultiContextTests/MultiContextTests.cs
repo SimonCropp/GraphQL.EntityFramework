@@ -73,6 +73,6 @@
         #endregion
 
         var result = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        await Verify(result.Serialize());
+        await Verify(result);
     }
 }

@@ -1,34 +1,33 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntitiesConnection": {
-      "totalCount": 8,
-      "edges": [
-        {
-          "cursor": "1",
-          "node": {
-            "property": "Value1"
+  target: {
+    Data: {
+      parentEntitiesConnection: {
+        totalCount: 8,
+        edges: [
+          {
+            cursor: 1,
+            node: {
+              property: Value1
+            }
+          },
+          {
+            cursor: 2,
+            node: {
+              property: Value2
+            }
           }
-        },
-        {
-          "cursor": "2",
-          "node": {
-            "property": "Value2"
+        ],
+        items: [
+          {
+            property: Value1
+          },
+          {
+            property: Value2
           }
-        }
-      ],
-      "items": [
-        {
-          "property": "Value1"
-        },
-        {
-          "property": "Value2"
-        }
-      ]
+        ]
+      }
     }
-  }
-},
+  },
   sql: [
     {
       Text:

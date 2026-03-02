@@ -1,10 +1,9 @@
 ﻿{
-  target:
-{
-  "data": {
-    "filterReferenceEntityNullable": null
-  }
-},
+  target: {
+    Data: {
+      filterReferenceEntityNullable: null
+    }
+  },
   sql: {
     Text:
 select top (2) f.Id,

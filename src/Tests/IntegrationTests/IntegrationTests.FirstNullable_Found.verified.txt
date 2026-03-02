@@ -1,12 +1,11 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntityNullableFirst": {
-      "property": "Value1"
+  target: {
+    Data: {
+      parentEntityNullableFirst: {
+        property: Value1
+      }
     }
-  }
-},
+  },
   sql: {
     Text:
 select top (1) p.Id,

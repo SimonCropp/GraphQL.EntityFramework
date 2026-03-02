@@ -1,19 +1,18 @@
 ﻿{
-  target:
-{
-  "data": {
-    "readOnlyParentEntity": {
-      "property": "TheParent",
-      "children": [
-        {
-          "firstName": "Jane",
-          "lastName": "Doe",
-          "computedInDb": "Jane Doe"
-        }
-      ]
+  target: {
+    Data: {
+      readOnlyParentEntity: {
+        property: TheParent,
+        children: [
+          {
+            firstName: Jane,
+            lastName: Doe,
+            computedInDb: Jane Doe
+          }
+        ]
+      }
     }
-  }
-},
+  },
   sql: {
     Text:
 select   r1.Id,

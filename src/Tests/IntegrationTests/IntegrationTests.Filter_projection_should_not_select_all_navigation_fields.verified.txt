@@ -1,12 +1,11 @@
 ﻿{
-  target:
-{
-  "data": {
-    "filterChildEntity": {
-      "id": "Guid_1"
+  target: {
+    Data: {
+      filterChildEntity: {
+        id: Guid_1
+      }
     }
-  }
-},
+  },
   sql: {
     Text:
 select top (2) f.Id,

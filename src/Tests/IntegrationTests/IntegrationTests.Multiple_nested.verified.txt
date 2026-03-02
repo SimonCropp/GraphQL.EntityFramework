@@ -1,18 +1,17 @@
 ﻿{
-  target:
-{
-  "data": {
-    "level1Entities": [
-      {
-        "level2Entity": {
-          "level3Entity": {
-            "property": "Value"
+  target: {
+    Data: {
+      level1Entities: [
+        {
+          level2Entity: {
+            level3Entity: {
+              property: Value
+            }
           }
         }
-      }
-    ]
-  }
-},
+      ]
+    }
+  },
   sql: {
     Text:
 select l.Id,

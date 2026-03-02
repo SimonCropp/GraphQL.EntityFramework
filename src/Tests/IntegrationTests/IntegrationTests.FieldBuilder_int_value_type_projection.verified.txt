@@ -1,16 +1,15 @@
 ﻿{
-  target:
-{
-  "data": {
-    "fieldBuilderProjectionEntities": [
-      {
-        "name": "John",
-        "age": 25,
-        "ageDoubled": 50
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: John,
+          age: 25,
+          ageDoubled: 50
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

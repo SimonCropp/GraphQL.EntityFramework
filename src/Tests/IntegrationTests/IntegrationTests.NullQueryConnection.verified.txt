@@ -1,9 +1,9 @@
 ﻿{
-  "data": {
-    "nullQueryConnection": {
-      "totalCount": null,
-      "edges": null,
-      "items": null
+  Data: {
+    nullQueryConnection: {
+      totalCount: null,
+      edges: null,
+      items: null
     }
   }
 }

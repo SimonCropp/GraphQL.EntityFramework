@@ -1,27 +1,26 @@
 ﻿{
-  target:
-{
-  "data": {
-    "stringEntities": [
-      {
-        "id": "Guid_1",
-        "property": "ab"
-      },
-      {
-        "id": "Guid_2",
-        "property": "abc"
-      },
-      {
-        "id": "Guid_3",
-        "property": "b"
-      },
-      {
-        "id": "Guid_4",
-        "property": "bc"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      stringEntities: [
+        {
+          id: Guid_1,
+          property: ab
+        },
+        {
+          id: Guid_2,
+          property: abc
+        },
+        {
+          id: Guid_3,
+          property: b
+        },
+        {
+          id: Guid_4,
+          property: bc
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   s.Id,

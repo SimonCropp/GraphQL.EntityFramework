@@ -3092,7 +3092,7 @@ public partial class IntegrationTests
 
         await using var context = database.NewDbContext();
         Recording.Start();
-        string result;
+        ExecutionResult result;
         try
         {
             result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking);

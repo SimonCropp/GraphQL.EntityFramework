@@ -1,22 +1,21 @@
 ﻿{
-  target:
-{
-  "data": {
-    "manyToManyLeftEntities": [
-      {
-        "leftName": "Left1",
-        "rights": [
-          {
-            "rightName": "Right1"
-          },
-          {
-            "rightName": "Right2"
-          }
-        ]
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      manyToManyLeftEntities: [
+        {
+          leftName: Left1,
+          rights: [
+            {
+              rightName: Right1
+            },
+            {
+              rightName: Right2
+            }
+          ]
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   m.Id,

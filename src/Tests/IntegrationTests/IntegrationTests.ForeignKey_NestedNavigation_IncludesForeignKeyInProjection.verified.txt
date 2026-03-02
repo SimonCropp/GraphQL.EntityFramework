@@ -1,21 +1,20 @@
 ﻿{
-  target:
-{
-  "data": {
-    "departments": [
-      {
-        "name": "Engineering",
-        "employees": [
-          {
-            "name": "Developer",
-            "departmentId": "Guid_1",
-            "isInActiveDepartment": true
-          }
-        ]
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      departments: [
+        {
+          name: Engineering,
+          employees: [
+            {
+              name: Developer,
+              departmentId: Guid_1,
+              isInActiveDepartment: true
+            }
+          ]
+        }
+      ]
+    }
+  },
   sql: [
     {
       Text:

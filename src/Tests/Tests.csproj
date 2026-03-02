@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="Verify.DiffPlex" />
     <PackageReference Include="EfOrderBy" />
+    <PackageReference Include="Verify.GraphQL" />
     <PackageReference Include="Verify.SqlServer" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="Verify.XunitV3" />

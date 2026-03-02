@@ -1,19 +1,18 @@
 ﻿{
-  target:
-{
-  "data": {
-    "fieldBuilderProjectionEntities": [
-      {
-        "name": "HasParent",
-        "parentName": "No Parent"
-      },
-      {
-        "name": "NoParent",
-        "parentName": "No Parent"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: HasParent,
+          parentName: No Parent
+        },
+        {
+          name: NoParent,
+          parentName: No Parent
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

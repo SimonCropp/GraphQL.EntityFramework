@@ -1,14 +1,13 @@
-{
-  target:
-{
-  "data": {
-    "queryFieldWithInclude": [
-      {
-        "id": "Guid_1"
-      }
-    ]
-  }
-},
+﻿{
+  target: {
+    Data: {
+      queryFieldWithInclude: [
+        {
+          id: Guid_1
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select i0.Id

@@ -1,26 +1,25 @@
 ﻿{
-  target:
-{
-  "data": {
-    "childEntities": [
-      {
-        "parentAlias": {
-          "property": "Value1"
+  target: {
+    Data: {
+      childEntities: [
+        {
+          parentAlias: {
+            property: Value1
+          }
+        },
+        {
+          parentAlias: {
+            property: Value1
+          }
+        },
+        {
+          parentAlias: {
+            property: Value4
+          }
         }
-      },
-      {
-        "parentAlias": {
-          "property": "Value1"
-        }
-      },
-      {
-        "parentAlias": {
-          "property": "Value4"
-        }
-      }
-    ]
-  }
-},
+      ]
+    }
+  },
   sql: {
     Text:
 select   c.Id,

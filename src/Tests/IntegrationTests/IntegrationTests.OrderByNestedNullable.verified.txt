@@ -1,17 +1,16 @@
 ﻿{
-  target:
-{
-  "data": {
-    "childEntities": [
-      {
-        "property": "Value3"
-      },
-      {
-        "property": "Value2"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      childEntities: [
+        {
+          property: Value3
+        },
+        {
+          property: Value2
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   c.Id,

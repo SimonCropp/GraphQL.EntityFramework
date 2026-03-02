@@ -1,15 +1,14 @@
-{
-  target:
-{
-  "data": {
-    "childEntities": [
-      {
-        "id": "Guid_1",
-        "property": "Child1"
-      }
-    ]
-  }
-},
+﻿{
+  target: {
+    Data: {
+      childEntities: [
+        {
+          id: Guid_1,
+          property: Child1
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   c.Id,

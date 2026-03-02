@@ -1,14 +1,13 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntitiesFiltered": [
-      {
-        "property": "Value1"
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      parentEntitiesFiltered: [
+        {
+          property: Value1
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   f.Id,

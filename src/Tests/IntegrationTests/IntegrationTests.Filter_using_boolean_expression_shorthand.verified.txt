@@ -1,19 +1,18 @@
 ﻿{
-  target:
-{
-  "data": {
-    "simpleTypeFilterEntities": [
-      {
-        "name": "Active",
-        "boolValue": true
-      },
-      {
-        "name": "AlsoActive",
-        "boolValue": true
-      }
-    ]
-  }
-},
+  target: {
+    Data: {
+      simpleTypeFilterEntities: [
+        {
+          name: Active,
+          boolValue: true
+        },
+        {
+          name: AlsoActive,
+          boolValue: true
+        }
+      ]
+    }
+  },
   sql: {
     Text:
 select   s.Id,

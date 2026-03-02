@@ -1,25 +1,24 @@
 ﻿{
-  target:
-{
-  "data": {
-    "parentEntitiesConnectionFiltered": {
-      "totalCount": 2,
-      "edges": [
-        {
-          "cursor": "0",
-          "node": {
-            "property": "Value1"
+  target: {
+    Data: {
+      parentEntitiesConnectionFiltered: {
+        totalCount: 2,
+        edges: [
+          {
+            cursor: 0,
+            node: {
+              property: Value1
+            }
           }
-        }
-      ],
-      "items": [
-        {
-          "property": "Value1"
-        }
-      ]
+        ],
+        items: [
+          {
+            property: Value1
+          }
+        ]
+      }
     }
-  }
-},
+  },
   sql: [
     {
       Text:
