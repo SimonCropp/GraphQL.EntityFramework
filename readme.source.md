@@ -15,11 +15,6 @@ include: intro
 include: sponsors
 
 
-### JetBrains
-
-[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSourceSupport)
-
-
 ## NuGet package
 
 https://nuget.org/packages/GraphQL.EntityFramework/
