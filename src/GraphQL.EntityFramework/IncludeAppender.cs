@@ -1,3 +1,5 @@
+using System.Reflection;
+
 class IncludeAppender(
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames,
@@ -64,28 +66,84 @@ class IncludeAppender(
         FieldProjectionInfo projection)
         where TItem : class
     {
-        if (projection.Navigations is not { Count: > 0 })
-        {
-            return query;
-        }
-
         var visitedTypes = new HashSet<Type> { typeof(TItem) };
 
-        foreach (var (navName, navProjection) in projection.Navigations)
+        if (projection.Navigations is { Count: > 0 })
         {
-            if (IsVisitedOrBaseType(navProjection.EntityType, visitedTypes))
+            foreach (var (navName, navProjection) in projection.Navigations)
             {
-                continue;
-            }
+                if (IsVisitedOrBaseType(navProjection.EntityType, visitedTypes))
+                {
+                    continue;
+                }
 
-            visitedTypes.Add(navProjection.EntityType);
-            query = query.Include(navName);
-            query = AddNestedIncludes(query, navName, navProjection.Projection, visitedTypes);
-            visitedTypes.Remove(navProjection.EntityType);
+                visitedTypes.Add(navProjection.EntityType);
+                query = query.Include(navName);
+                query = AddNestedIncludes(query, navName, navProjection.Projection, visitedTypes);
+                visitedTypes.Remove(navProjection.EntityType);
+            }
+        }
+
+        // Add derived-type navigation includes for TPH inline fragments
+        // e.g. query.Include(e => ((GroupAccessRule)e).Group)
+        if (projection.DerivedNavigations is { Count: > 0 })
+        {
+            query = AddDerivedTypeIncludes(query, projection.DerivedNavigations, visitedTypes);
         }
 
         return query;
     }
+
+    static IQueryable<TItem> AddDerivedTypeIncludes<TItem>(
+        IQueryable<TItem> query,
+        Dictionary<Type, Dictionary<string, NavigationProjectionInfo>> derivedNavigations,
+        HashSet<Type> visitedTypes)
+        where TItem : class
+    {
+        var itemType = typeof(TItem);
+        var parameter = Expression.Parameter(itemType, "e");
+
+        foreach (var (derivedType, navDict) in derivedNavigations)
+        {
+            // Cast: (DerivedType)e
+            var cast = Expression.Convert(parameter, derivedType);
+
+            foreach (var (navName, navProjection) in navDict)
+            {
+                if (IsVisitedOrBaseType(navProjection.EntityType, visitedTypes))
+                {
+                    continue;
+                }
+
+                // Property access: ((DerivedType)e).Navigation
+                var property = derivedType.GetProperty(navName);
+                if (property == null)
+                {
+                    continue;
+                }
+
+                var propertyAccess = Expression.Property(cast, property);
+
+                // Build lambda: e => ((DerivedType)e).Navigation
+                var lambda = Expression.Lambda(propertyAccess, parameter);
+
+                // Call EntityFrameworkQueryableExtensions.Include(query, lambda)
+                var includeMethod = GetIncludeMethod(itemType, property.PropertyType);
+                query = (IQueryable<TItem>)includeMethod.Invoke(null, [query, lambda])!;
+            }
+        }
+
+        return query;
+    }
+
+    static MethodInfo GetIncludeMethod(Type entityType, Type propertyType) =>
+        typeof(EntityFrameworkQueryableExtensions)
+            .GetMethods(BindingFlags.Static | BindingFlags.Public)
+            .First(_ => _.Name == "Include" &&
+                        _.GetGenericArguments().Length == 2 &&
+                        _.GetParameters().Length == 2 &&
+                        _.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(Expression<>))
+            .MakeGenericMethod(entityType, propertyType);
 
     static IQueryable<TItem> AddNestedIncludes<TItem>(
         IQueryable<TItem> query,
@@ -180,7 +238,195 @@ class IncludeAppender(
             }
         }
 
-        return new(scalarFields, keys, foreignKeyNames, navProjections);
+        // Scan for derived-type navigations from inline fragments (TPH support)
+        var derivedNavigations = GetDerivedNavigationsFromFragments(context);
+
+        return new(scalarFields, keys, foreignKeyNames, navProjections, derivedNavigations);
+    }
+
+    Dictionary<Type, Dictionary<string, NavigationProjectionInfo>>? GetDerivedNavigationsFromFragments(
+        IResolveFieldContext context)
+    {
+        var selectionSet = GetLeafSelectionSet(context);
+        if (selectionSet?.Selections is null)
+        {
+            return null;
+        }
+
+        Dictionary<Type, Dictionary<string, NavigationProjectionInfo>>? result = null;
+
+        foreach (var selection in selectionSet.Selections)
+        {
+            GraphQLTypeCondition? typeCondition;
+            GraphQLSelectionSet? fragmentSelectionSet;
+
+            switch (selection)
+            {
+                case GraphQLInlineFragment inlineFragment:
+                    typeCondition = inlineFragment.TypeCondition;
+                    fragmentSelectionSet = inlineFragment.SelectionSet;
+                    break;
+                case GraphQLFragmentSpread fragmentSpread:
+                {
+                    var name = fragmentSpread.FragmentName.Name;
+                    var fragmentDefinition = context.Document.Definitions
+                        .OfType<GraphQLFragmentDefinition>()
+                        .SingleOrDefault(_ => _.FragmentName.Name == name);
+                    if (fragmentDefinition is null)
+                    {
+                        continue;
+                    }
+
+                    typeCondition = fragmentDefinition.TypeCondition;
+                    fragmentSelectionSet = fragmentDefinition.SelectionSet;
+                    break;
+                }
+                default:
+                    continue;
+            }
+
+            if (typeCondition is null || fragmentSelectionSet?.Selections is null)
+            {
+                continue;
+            }
+
+            var typeName = typeCondition.Type.Name.StringValue;
+
+            // Find the CLR type for this GraphQL type name using the schema
+            if (!TryFindDerivedClrType(typeName, context.Schema, out var derivedType))
+            {
+                continue;
+            }
+
+            // Get navigation properties for this derived type
+            if (!navigations.TryGetValue(derivedType, out var derivedNavProps))
+            {
+                continue;
+            }
+
+            // Process fields in this fragment against the derived type's navigation properties
+            foreach (var field in fragmentSelectionSet.Selections.OfType<GraphQLField>())
+            {
+                var fieldName = field.Name.StringValue;
+                if (!derivedNavProps.TryGetValue(fieldName, out var navigation))
+                {
+                    continue;
+                }
+
+                result ??= [];
+                if (!result.TryGetValue(derivedType, out var derivedNavs))
+                {
+                    derivedNavs = [];
+                    result[derivedType] = derivedNavs;
+                }
+
+                if (derivedNavs.ContainsKey(navigation.Name))
+                {
+                    continue;
+                }
+
+                var navType = navigation.Type;
+                navigations.TryGetValue(navType, out var nestedNavProps);
+                keyNames.TryGetValue(navType, out var nestedKeys);
+                foreignKeys.TryGetValue(navType, out var nestedFks);
+
+                derivedNavs[navigation.Name] = new(
+                    navType,
+                    navigation.IsCollection,
+                    GetNestedProjection(field.SelectionSet, nestedNavProps, nestedKeys, nestedFks, context));
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Navigate through connection wrapper fields (edges/items/node) to find the leaf selection set
+    /// that contains the actual entity fields and inline fragments.
+    /// </summary>
+    static GraphQLSelectionSet? GetLeafSelectionSet(IResolveFieldContext context)
+    {
+        var selectionSet = context.FieldAst.SelectionSet;
+        if (selectionSet?.Selections is null)
+        {
+            return null;
+        }
+
+        // Drill through connection wrapper fields
+        while (true)
+        {
+            var found = false;
+            foreach (var selection in selectionSet.Selections)
+            {
+                if (selection is GraphQLField field && IsConnectionNodeName(field.Name.StringValue))
+                {
+                    if (field.SelectionSet is not null)
+                    {
+                        selectionSet = field.SelectionSet;
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                break;
+            }
+        }
+
+        return selectionSet;
+    }
+
+    bool TryFindDerivedClrType(string graphQlTypeName, ISchema schema, [NotNullWhen(true)] out Type? clrType)
+    {
+        clrType = null;
+
+        // Use the schema's type lookup to resolve GraphQL type name → CLR type
+        var graphType = schema.AllTypes.FirstOrDefault(_ => _.Name == graphQlTypeName);
+        if (graphType is not null)
+        {
+            // Walk the type hierarchy to find the CLR type from the generic arguments
+            var graphClrType = GetSourceType(graphType.GetType());
+            if (graphClrType is not null && navigations.ContainsKey(graphClrType))
+            {
+                clrType = graphClrType;
+                return true;
+            }
+        }
+
+        // Fallback: match CLR type name directly
+        foreach (var type in navigations.Keys)
+        {
+            if (string.Equals(type.Name, graphQlTypeName, StringComparison.OrdinalIgnoreCase))
+            {
+                clrType = type;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static Type? GetSourceType(Type graphType)
+    {
+        var type = graphType;
+        while (type is not null)
+        {
+            if (type.IsGenericType)
+            {
+                var genericDef = type.GetGenericTypeDefinition();
+                if (genericDef == typeof(ObjectGraphType<>) ||
+                    genericDef == typeof(InterfaceGraphType<>))
+                {
+                    return type.GenericTypeArguments[0];
+                }
+            }
+
+            type = type.BaseType;
+        }
+
+        return null;
     }
 
     void ProcessConnectionNodeFields(

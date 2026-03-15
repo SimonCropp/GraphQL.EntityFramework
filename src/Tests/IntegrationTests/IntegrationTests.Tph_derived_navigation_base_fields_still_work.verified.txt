@@ -1,0 +1,24 @@
+﻿{
+  target: {
+    Data: {
+      tphDerivedNavEntities: [
+        {
+          property: BaseOnly
+        },
+        {
+          property: BaseOnly2
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   t.Id,
+         t.Discriminator,
+         t.Property,
+         t.CategoryId,
+         t.RegionId
+from     TphDerivedNavBaseEntities as t
+order by t.Property
+  }
+}

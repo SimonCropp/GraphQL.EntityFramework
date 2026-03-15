@@ -164,6 +164,8 @@
   discriminatorDerivedBEntity(id: ID, ids: [ID!], where: [WhereExpression!]): DiscriminatorDerivedB!
   tphMiddleEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphMiddleEntity]!
   tphMiddleEntity(id: ID, ids: [ID!], where: [WhereExpression!]): TphMiddleEntity
+  tphDerivedNavEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphDerivedNavBaseEntity]!
+  tphDerivedNavEntity(id: ID, ids: [ID!], where: [WhereExpression!]): TphDerivedNavBaseEntity
 }
 
 type CustomType {
@@ -795,6 +797,11 @@ type TphAttachment {
   requestId: ID!
 }
 
+interface TphDerivedNavBaseEntity {
+  id: ID!
+  property: String
+}
+
 type Mutation {
   parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
 }
@@ -853,4 +860,28 @@ type TphLeaf implements TphMiddleEntity {
   id: ID!
   leafProperty: String
   property: String
+}
+
+type TphDerivedNavCategory implements TphDerivedNavBaseEntity {
+  category: Category
+  categoryId: ID
+  id: ID!
+  property: String
+}
+
+type Category {
+  id: ID!
+  name: String
+}
+
+type TphDerivedNavRegion implements TphDerivedNavBaseEntity {
+  region: Region
+  id: ID!
+  property: String
+  regionId: ID
+}
+
+type Region {
+  id: ID!
+  name: String
 }

@@ -1,0 +1,44 @@
+﻿{
+  target: {
+    Data: {
+      tphDerivedNavEntities: [
+        {
+          id: Guid_1,
+          property: CatMixed,
+          categoryId: Guid_2,
+          category: {
+            name: Art
+          }
+        },
+        {
+          id: Guid_3,
+          property: RegMixed,
+          regionId: Guid_4,
+          region: {
+            name: South
+          }
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   t.Id,
+         t.Discriminator,
+         t.Property,
+         t.CategoryId,
+         t.RegionId,
+         c.Id,
+         c.Name,
+         r.Id,
+         r.Name
+from     TphDerivedNavBaseEntities as t
+         left outer join
+         CategoryEntities as c
+         on t.CategoryId = c.Id
+         left outer join
+         RegionEntities as r
+         on t.RegionId = r.Id
+order by t.Property
+  }
+}
