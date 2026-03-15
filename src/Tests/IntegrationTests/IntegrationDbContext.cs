@@ -51,6 +51,9 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<TphMiddleEntity> TphMiddleEntities { get; set; } = null!;
     public DbSet<TphLeafEntity> TphLeafEntities { get; set; } = null!;
     public DbSet<TphAttachmentEntity> TphAttachmentEntities { get; set; } = null!;
+    public DbSet<TphDerivedNavBaseEntity> TphDerivedNavBaseEntities { get; set; } = null!;
+    public DbSet<CategoryEntity> CategoryEntities { get; set; } = null!;
+    public DbSet<RegionEntity> RegionEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -156,5 +159,23 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasBaseType<TphMiddleEntity>();
         modelBuilder.Entity<TphAttachmentEntity>()
             .OrderBy(_ => _.Property);
+
+        // Configure TPH inheritance with derived-type-specific navigations
+        modelBuilder.Entity<TphDerivedNavBaseEntity>()
+            .OrderBy(_ => _.Property);
+        modelBuilder.Entity<TphDerivedNavCategoryEntity>()
+            .HasBaseType<TphDerivedNavBaseEntity>()
+            .HasOne(_ => _.Category)
+            .WithMany()
+            .HasForeignKey(_ => _.CategoryId);
+        modelBuilder.Entity<TphDerivedNavRegionEntity>()
+            .HasBaseType<TphDerivedNavBaseEntity>()
+            .HasOne(_ => _.Region)
+            .WithMany()
+            .HasForeignKey(_ => _.RegionId);
+        modelBuilder.Entity<CategoryEntity>()
+            .OrderBy(_ => _.Name);
+        modelBuilder.Entity<RegionEntity>()
+            .OrderBy(_ => _.Name);
     }
 }

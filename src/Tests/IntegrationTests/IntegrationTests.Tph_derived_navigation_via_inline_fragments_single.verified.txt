@@ -1,0 +1,27 @@
+﻿{
+  target: {
+    Data: {
+      tphDerivedNavEntity: {
+        property: CategoryItem2,
+        category: {
+          name: History
+        }
+      }
+    }
+  },
+  sql: {
+    Text:
+select top (2) t.Id,
+               t.Discriminator,
+               t.Property,
+               t.CategoryId,
+               t.RegionId,
+               c.Id,
+               c.Name
+from   TphDerivedNavBaseEntities as t
+       left outer join
+       CategoryEntities as c
+       on t.CategoryId = c.Id
+where  t.Id = 'Guid_1'
+  }
+}

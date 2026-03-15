@@ -391,5 +391,15 @@
             name: "tphMiddleEntity",
             graphType: typeof(TphMiddleGraphType),
             resolve: _ => _.DbContext.TphMiddleEntities);
+
+        AddQueryField(
+            name: "tphDerivedNavEntities",
+            graphType: typeof(TphDerivedNavBaseGraphType),
+            resolve: _ => _.DbContext.TphDerivedNavBaseEntities);
+
+        AddSingleField(
+            name: "tphDerivedNavEntity",
+            graphType: typeof(TphDerivedNavBaseGraphType),
+            resolve: _ => _.DbContext.TphDerivedNavBaseEntities);
     }
 }
