@@ -5,8 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
-    <PackageVersion Include="coverlet.collector" Version="8.0.0" />
-    <PackageVersion Include="EfLocalDb" Version="23.7.0" />
+    <PackageVersion Include="coverlet.collector" Version="8.0.1" />
+    <PackageVersion Include="EfLocalDb" Version="24.0.0" />
     <PackageVersion Include="EfOrderBy" Version="1.0.0" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
     <PackageVersion Include="GraphQL" Version="8.8.4" />
@@ -17,25 +17,25 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.3.0" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.5" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.5" />
-    <PackageVersion Include="Polyfill" Version="9.21.0" />
+    <PackageVersion Include="Polyfill" Version="9.22.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.172" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="10.0.5" />
     <PackageVersion Include="Verify.DiffPlex" Version="3.1.2" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
     <PackageVersion Include="Verify.SqlServer" Version="11.3.1" />
-    <PackageVersion Include="Verify.XunitV3" Version="31.13.2" />
+    <PackageVersion Include="Verify.XunitV3" Version="31.13.4" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="Argon" Version="0.33.5" />
-    <PackageVersion Include="DiffEngine" Version="19.0.0" />
+    <PackageVersion Include="DiffEngine" Version="19.1.1" />
     <PackageVersion Include="EmptyFiles" Version="8.17.2" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.0" />
-    <PackageVersion Include="Verify" Version="31.13.2" />
+    <PackageVersion Include="Verify" Version="31.13.4" />
   </ItemGroup>
 </Project>
