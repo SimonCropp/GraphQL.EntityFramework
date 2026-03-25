@@ -441,7 +441,7 @@ class IncludeAppender(
             return;
         }
 
-        foreach (var selection in selectionSet.Selections.OfType<GraphQLField>())
+        foreach (var selection in EnumerateFields(selectionSet, context))
         {
             var fieldName = selection.Name.StringValue;
             if (IsConnectionNodeName(fieldName))
