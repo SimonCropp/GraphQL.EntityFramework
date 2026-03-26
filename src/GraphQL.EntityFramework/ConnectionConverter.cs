@@ -1,5 +1,27 @@
-﻿static class ConnectionConverter
+static class ConnectionConverter
 {
+    internal static bool HasOrderingInExpressionTree(Expression expression)
+    {
+        if (expression is MethodCallExpression methodCall)
+        {
+            var methodName = methodCall.Method.Name;
+            if (methodName is "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending")
+            {
+                return true;
+            }
+
+            foreach (var arg in methodCall.Arguments)
+            {
+                if (HasOrderingInExpressionTree(arg))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, string? afterString, int? last, string? beforeString)
         where T : class
     {
@@ -98,7 +120,7 @@
         where TItem : class
         where TDbContext : DbContext
     {
-        if (queryable is not IOrderedQueryable<TItem>)
+        if (queryable is not IOrderedQueryable<TItem> && !HasOrderingInExpressionTree(queryable.Expression))
         {
             throw new($"Connections require ordering. Either order the IQueryable being passed to AddQueryConnectionField, or use an orderBy in the query. Field: {context.FieldDefinition.Name}");
         }

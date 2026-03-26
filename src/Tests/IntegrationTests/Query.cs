@@ -80,6 +80,15 @@
             name: "childEntitiesConnection",
             resolve: _ => _.DbContext.ChildEntities.OrderBy(_ => _.Parent));
 
+        // Connection with entity that has read-only properties.
+        // Projection bails on read-only properties, falling back to AddIncludes.
+        // Include() strips IOrderedQueryable, testing that the ordering check
+        // handles this correctly.
+        efGraphQlService.AddQueryConnectionField<ReadOnlyEntityGraphType, ReadOnlyEntity>(
+            this,
+            name: "readOnlyEntitiesConnection",
+            resolve: _ => _.DbContext.ReadOnlyEntities.OrderBy(_ => _.FirstName));
+
         AddQueryField(
             name: "parentEntitiesFiltered",
             resolve: _ => _.DbContext.FilterParentEntities);
