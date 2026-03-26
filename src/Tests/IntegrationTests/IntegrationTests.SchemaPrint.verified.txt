@@ -37,6 +37,18 @@
     where: [WhereExpression!],
     orderBy: [OrderBy!],
     ids: [ID!]): ChildConnection!
+  readOnlyEntitiesConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: [WhereExpression!],
+    orderBy: [OrderBy!],
+    ids: [ID!]): ReadOnlyEntityConnection!
   parentEntitiesFiltered(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterParent!]!
   parentEntitiesConnectionFiltered(
     "Only return edges after the specified cursor."
@@ -413,6 +425,44 @@ type ParentEdge {
   node: Parent!
 }
 
+"A connection from an object to a list of objects of type `ReadOnlyEntity`."
+type ReadOnlyEntityConnection {
+  "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
+  totalCount: Int
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of all of the edges returned in the connection."
+  edges: [ReadOnlyEntityEdge]
+  "A list of all of the objects returned in the connection. This is a convenience field provided for quickly exploring the API; rather than querying for \"{ edges { node } }\" when no edge data is needed, this field can be used instead. Note that when clients like Relay need to fetch the \"cursor\" field on the edge to enable efficient pagination, this shortcut cannot be used, and the full \"{ edges { node } } \" version should be used instead."
+  items: [ReadOnlyEntity!]
+}
+
+"An edge in a connection from an object to another object of type `ReadOnlyEntity`."
+type ReadOnlyEntityEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: ReadOnlyEntity!
+}
+
+type ReadOnlyEntity {
+  readOnlyParent: ReadOnlyParent
+  age: Int!
+  computedInDb: String!
+  displayName: String!
+  firstName: String
+  id: ID!
+  isAdult: Boolean!
+  lastName: String
+  readOnlyParentId: ID
+}
+
+type ReadOnlyParent {
+  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyEntity!]!
+  id: ID!
+  property: String
+}
+
 type FilterParent {
   childrenConnection(
     "Only return edges after the specified cursor."
@@ -593,24 +643,6 @@ type Derived implements BaseEntity {
   id: ID!
   property: String
   status: String
-}
-
-type ReadOnlyEntity {
-  readOnlyParent: ReadOnlyParent
-  age: Int!
-  computedInDb: String!
-  displayName: String!
-  firstName: String
-  id: ID!
-  isAdult: Boolean!
-  lastName: String
-  readOnlyParentId: ID
-}
-
-type ReadOnlyParent {
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyEntity!]!
-  id: ID!
-  property: String
 }
 
 type ManyToManyLeft {

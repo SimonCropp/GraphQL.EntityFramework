@@ -1,0 +1,60 @@
+﻿{
+  target: {
+    Data: {
+      readOnlyEntitiesConnection: {
+        totalCount: 3,
+        items: [
+          {
+            firstName: Alice,
+            computedInDb: Alice A,
+            readOnlyParent: {
+              property: Parent1
+            }
+          },
+          {
+            firstName: Bob,
+            computedInDb: Bob B,
+            readOnlyParent: {
+              property: Parent1
+            }
+          }
+        ]
+      }
+    }
+  },
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   ReadOnlyEntities as r
+    },
+    {
+      Text:
+select   r1.Id,
+         r1.Age,
+         r1.ComputedInDb,
+         r1.FirstName,
+         r1.LastName,
+         r1.ReadOnlyParentId,
+         r0.Id,
+         r0.Property
+from     (select   r.Id,
+                   r.Age,
+                   r.ComputedInDb,
+                   r.FirstName,
+                   r.LastName,
+                   r.ReadOnlyParentId
+          from     ReadOnlyEntities as r
+          order by r.FirstName
+          offset @p rows fetch next @p1 rows only) as r1
+         left outer join
+         ReadOnlyParentEntities as r0
+         on r1.ReadOnlyParentId = r0.Id
+order by r1.FirstName,
+      Parameters: {
+        @p: 0,
+        @p1: 2
+      }
+    }
+  ]
+}
