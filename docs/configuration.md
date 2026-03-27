@@ -235,7 +235,7 @@ With the DbContext existing in the container, it can be resolved in the controll
 [Route("[controller]")]
 [ApiController]
 public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
-    Controller
+    ControllerBase
 {
     static GraphQLSerializer writer = new(true);
 

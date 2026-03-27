@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 [ApiController]
 public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
-    Controller
+    ControllerBase
 {
     static GraphQLSerializer writer = new(true);
 
