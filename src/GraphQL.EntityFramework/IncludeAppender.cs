@@ -1,5 +1,3 @@
-using System.Reflection;
-
 class IncludeAppender(
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames,
@@ -285,7 +283,7 @@ class IncludeAppender(
                     continue;
             }
 
-            if (typeCondition is null || fragmentSelectionSet?.Selections is null)
+            if (typeCondition is null)
             {
                 continue;
             }
