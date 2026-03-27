@@ -404,9 +404,9 @@ public class GraphQlControllerTests
 
     static GraphQlControllerTests()
     {
-        var server = GetTestServer();
-        client = server.CreateClient();
-        webSocket = server.CreateWebSocketClient();
+        var factory = new WebApplicationFactory<Program>();
+        client = factory.CreateClient();
+        webSocket = factory.Server.CreateWebSocketClient();
         webSocket.ConfigureRequest =
             request =>
             {
@@ -630,16 +630,9 @@ public class GraphQlControllerTests
         response.EnsureSuccessStatusCode();
         await Verify(result);
     }
-
-    static TestServer GetTestServer()
-    {
-        var builder = new WebHostBuilder();
-        builder.UseStartup<Startup>();
-        return new(builder);
-    }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L7-L252' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L6-L244' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
