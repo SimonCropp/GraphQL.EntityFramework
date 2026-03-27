@@ -62,7 +62,7 @@
 
         if (idOnly)
         {
-            return [IdArgumentNotNullable()];
+            return new(IdArgumentNotNullable());
         }
 
         if (omitQueryArguments)
