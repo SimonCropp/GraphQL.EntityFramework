@@ -1,4 +1,5 @@
-﻿using GraphQL;
+using GraphQL;
+using GraphQL.Types;
 
 public class SchemaPrint
 {
@@ -7,7 +8,23 @@ public class SchemaPrint
     {
         var services = new ServiceCollection();
         services.AddSingleton<ILoggerFactory>(_ => NullLoggerFactory.Instance);
-        new Startup().ConfigureServices(services);
+
+        EfGraphQLConventions.RegisterInContainer<SampleDbContext>(
+            services,
+            model: SampleDbContext.StaticModel);
+
+        foreach (var type in typeof(Program).Assembly
+                     .GetTypes()
+                     .Where(_ => !_.IsAbstract &&
+                                 (_.IsAssignableTo(typeof(IObjectGraphType)) ||
+                                  _.IsAssignableTo(typeof(IInputObjectGraphType)))))
+        {
+            services.AddSingleton(type);
+        }
+
+        services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
+        services.AddSingleton<ISchema, Schema>();
+        services.AddGraphQL(null);
 
         await using var provider = services.BuildServiceProvider();
         var schema = provider.GetRequiredService<ISchema>();

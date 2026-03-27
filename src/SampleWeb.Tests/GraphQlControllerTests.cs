@@ -1,8 +1,7 @@
-﻿using System.Net;
+using System.Net;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
-#pragma warning disable ASPDEPR008
-#pragma warning disable ASPDEPR004
 
 #region GraphQlControllerTests
 
@@ -14,9 +13,9 @@ public class GraphQlControllerTests
 
     static GraphQlControllerTests()
     {
-        var server = GetTestServer();
-        client = server.CreateClient();
-        webSocket = server.CreateWebSocketClient();
+        var factory = new WebApplicationFactory<Program>();
+        client = factory.CreateClient();
+        webSocket = factory.Server.CreateWebSocketClient();
         webSocket.ConfigureRequest =
             request =>
             {
@@ -239,13 +238,6 @@ public class GraphQlControllerTests
         var result = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
         await Verify(result);
-    }
-
-    static TestServer GetTestServer()
-    {
-        var builder = new WebHostBuilder();
-        builder.UseStartup<Startup>();
-        return new(builder);
     }
 }
 
