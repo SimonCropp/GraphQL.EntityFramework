@@ -1,7 +1,7 @@
 using GraphiQl;
 using GraphQL.Types;
 
-var builder = WebApplication.CreateBuilder();
+var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 

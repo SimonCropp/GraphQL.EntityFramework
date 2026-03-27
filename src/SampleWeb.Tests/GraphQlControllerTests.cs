@@ -13,7 +13,8 @@ public class GraphQlControllerTests
 
     static GraphQlControllerTests()
     {
-        var factory = new WebApplicationFactory<Program>();
+        var factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(_ => _.UseEnvironment("Testing"));
         client = factory.CreateClient();
         webSocket = factory.Server.CreateWebSocketClient();
         webSocket.ConfigureRequest =
