@@ -1,11 +1,7 @@
 ﻿{
   target: {
     Data: {
-      parentEntities: [
-        {
-          property: Value1
-        }
-      ]
+      parentEntities: []
     }
   },
   sql: {
@@ -13,10 +9,14 @@
 select   p.Id,
          p.Property
 from     ParentEntities as p
-where    p.Id = @p1
+where    p.Property = @p
 order by p.Property,
     Parameters: {
-      @p1: Guid_1
+      @p: {
+        Value: '; DROP TABLE ParentEntities; --,
+        Size: 4000,
+        IsNullable: true
+      }
     }
   }
 }

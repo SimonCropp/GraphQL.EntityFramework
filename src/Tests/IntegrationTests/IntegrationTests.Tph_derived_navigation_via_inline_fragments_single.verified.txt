@@ -22,6 +22,9 @@ from   TphDerivedNavBaseEntities as t
        left outer join
        CategoryEntities as c
        on t.CategoryId = c.Id
-where  t.Id = 'Guid_1'
+where  t.Id = @p1,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

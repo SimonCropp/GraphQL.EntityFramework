@@ -12,6 +12,12 @@
     Text:
 select e.Id
 from   EnumEntities as e
-where  e.Property = 4
+where  e.Property = @p,
+    Parameters: {
+      @p: {
+        Value: 4,
+        IsNullable: true
+      }
+    }
   }
 }

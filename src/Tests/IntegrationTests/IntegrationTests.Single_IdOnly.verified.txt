@@ -21,11 +21,14 @@ select   p0.Id,
 from     (select top (2) p.Id,
                          p.Property
           from   ParentEntities as p
-          where  p.Id = 'Guid_1') as p0
+          where  p.Id = @p1) as p0
          left outer join
          ChildEntities as c
          on p0.Id = c.ParentId
 order by p0.Id,
-         c.Id
+         c.Id,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

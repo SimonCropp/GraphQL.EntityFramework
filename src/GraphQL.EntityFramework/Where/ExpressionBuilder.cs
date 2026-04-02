@@ -228,11 +228,8 @@ public static partial class ExpressionBuilder<T>
 
     static MethodCallExpression MakeObjectListInComparision(string[] values, Property<T> property)
     {
-        // Attempt to convert the string values to the object type
         var objects = TypeConverter.ConvertStringsToList(values, property.Info);
-        // Make the object values a constant expression
-        var constant = Expression.Constant(objects);
-        // Build and return the expression body
+        var constant = MakeParameterizedConstant(objects, objects.GetType());
         return Expression.Call(constant, property.SafeListContains, property.Left);
     }
 
@@ -244,14 +241,14 @@ public static partial class ExpressionBuilder<T>
         var itemEvaluate = Expression.Lambda<Func<string, bool>>(equalsBody, ExpressionCache.StringParam);
 
         // Build Expression body to check if any string values match the property value
-        return Expression.Call(null, ReflectionCache.StringAny, Expression.Constant(values), itemEvaluate);
+        return Expression.Call(null, ReflectionCache.StringAny, MakeParameterizedConstant(values, typeof(string[])), itemEvaluate);
     }
 
     static Expression MakeSingleStringComparison(Comparison comparison, string? value, Property<T> property)
     {
         var left = property.Left;
 
-        var valueConstant = Expression.Constant(value, typeof(string));
+        var valueConstant = MakeParameterizedConstant(value, typeof(string));
         var nullCheck = Expression.NotEqual(left, ExpressionCache.Null);
 
         switch (comparison)
@@ -280,7 +277,7 @@ public static partial class ExpressionBuilder<T>
     static Expression MakeSingleObjectComparison(Comparison comparison, object? value, Property<T> property)
     {
         var left = property.Left;
-        var constant = Expression.Constant(value, left.Type);
+        var constant = MakeParameterizedConstant(value, left.Type);
 
         return comparison switch
         {
@@ -292,6 +289,15 @@ public static partial class ExpressionBuilder<T>
             Comparison.LessThanOrEqual => Expression.MakeBinary(ExpressionType.LessThanOrEqual, left, constant),
             _ => throw new($"Invalid comparison operator '{comparison}'.")
         };
+    }
+
+    // Wraps a value in a field access on a holder object so that EF Core
+    // emits a SQL parameter (@p0) instead of inlining the value as a literal.
+    static Expression MakeParameterizedConstant(object? value, Type targetType)
+    {
+        var holder = new ValueHolder(value);
+        Expression access = Expression.Field(Expression.Constant(holder), "Value");
+        return Expression.Convert(access, targetType);
     }
 
     static bool HasListPropertyInPath(string path) =>
@@ -310,4 +316,9 @@ public static partial class ExpressionBuilder<T>
 
     [GeneratedRegex(@"\[(.*)\]")]
     private static partial Regex ListPropertyRegex();
+}
+
+class ValueHolder(object? value)
+{
+    public object? Value = value;
 }

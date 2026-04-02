@@ -14,8 +14,20 @@ select   p.Id,
          p.Property
 from     ParentEntities as p
 where    p.Property is not null
-         and p.Property like N'Valu%'
-         and p.Property like N'%ue3'
-order by p.Property
+         and p.Property like @p_startswith escape N'\'
+         and p.Property like @p1_endswith escape N'\'
+order by p.Property,
+    Parameters: {
+      @p_startswith: {
+        Value: Valu%,
+        Size: 4000,
+        IsNullable: true
+      },
+      @p1_endswith: {
+        Value: %ue3,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
   }
 }

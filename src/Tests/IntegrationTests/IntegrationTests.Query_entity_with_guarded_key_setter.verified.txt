@@ -1,0 +1,19 @@
+﻿{
+  target: {
+    Data: {
+      guardedKeyEntities: [
+        {
+          id: Guid_1,
+          emailAddress: test@example.com
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   g.Id,
+         g.EmailAddress
+from     GuardedKeyEntities as g
+order by g.EmailAddress
+  }
+}

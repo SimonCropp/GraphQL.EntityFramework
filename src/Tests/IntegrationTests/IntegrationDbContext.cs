@@ -54,6 +54,7 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<TphDerivedNavBaseEntity> TphDerivedNavBaseEntities { get; set; } = null!;
     public DbSet<CategoryEntity> CategoryEntities { get; set; } = null!;
     public DbSet<RegionEntity> RegionEntities { get; set; } = null!;
+    public DbSet<GuardedKeyEntity> GuardedKeyEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -173,6 +174,11 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasOne(_ => _.Region)
             .WithMany()
             .HasForeignKey(_ => _.RegionId);
+        modelBuilder.Entity<GuardedKeyEntity>(entity =>
+        {
+            entity.Property(_ => _.Id).HasField("id");
+            entity.OrderBy(_ => _.EmailAddress);
+        });
         modelBuilder.Entity<CategoryEntity>()
             .OrderBy(_ => _.Name);
         modelBuilder.Entity<RegionEntity>()

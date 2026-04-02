@@ -1,5 +1,4 @@
 using GraphQL;
-using GraphQL.Types;
 
 public class SchemaPrint
 {

@@ -27,7 +27,14 @@ select   s.Id,
          s.Property
 from     StringEntities as s
 where    s.Property is not null
-         and cast (CHARINDEX(N'B', s.Property) as int) - 1 <> -1
-order by s.Property
+         and cast (CHARINDEX(@p, s.Property) as int) - case when @p = N'' then 0 else 1 end <> -1
+order by s.Property,
+    Parameters: {
+      @p: {
+        Value: B,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
   }
 }

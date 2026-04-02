@@ -402,6 +402,16 @@
             resolve: _ => _.DbContext.TphMiddleEntities);
 
         AddQueryField(
+            name: "guardedKeyEntities",
+            graphType: typeof(GuardedKeyEntityGraphType),
+            resolve: _ => _.DbContext.GuardedKeyEntities);
+
+        AddSingleField(
+            name: "guardedKeyEntity",
+            graphType: typeof(GuardedKeyEntityGraphType),
+            resolve: _ => _.DbContext.GuardedKeyEntities);
+
+        AddQueryField(
             name: "tphDerivedNavEntities",
             graphType: typeof(TphDerivedNavBaseGraphType),
             resolve: _ => _.DbContext.TphDerivedNavBaseEntities);

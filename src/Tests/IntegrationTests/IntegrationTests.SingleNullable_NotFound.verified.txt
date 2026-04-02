@@ -9,6 +9,9 @@
 select top (2) p.Id,
                p.Property
 from   ParentEntities as p
-where  p.Id = 'Guid_1'
+where  p.Id = @p1,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

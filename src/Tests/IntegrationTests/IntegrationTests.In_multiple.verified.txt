@@ -16,8 +16,20 @@
 select   p.Id,
          p.Property
 from     ParentEntities as p
-where    p.Property in (N'Value1',
-                        N'Value2')
-order by p.Property
+where    p.Property in (@p1,
+                        @p2)
+order by p.Property,
+    Parameters: {
+      @p1: {
+        Value: Value1,
+        Size: 4000,
+        IsNullable: true
+      },
+      @p2: {
+        Value: Value2,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
   }
 }

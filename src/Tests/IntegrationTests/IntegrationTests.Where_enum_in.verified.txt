@@ -12,6 +12,9 @@
     Text:
 select e.Id
 from   EnumEntities as e
-where  e.Property = 4
+where  e.Property = @p1,
+    Parameters: {
+      @p1: 4
+    }
   }
 }

@@ -41,9 +41,16 @@ where    exists (select 1
                         ManyToManyRightEntities as m1
                         on m0.ManyToManyRightEntityId = m1.Id
                  where  m.Id = m0.ManyToManyLeftEntityId
-                        and m1.RightName = N'Right2')
+                        and m1.RightName = @p)
 order by m.Id,
          s.Id,
-         s.ManyToManyLeftEntityId
+         s.ManyToManyLeftEntityId,
+    Parameters: {
+      @p: {
+        Value: Right2,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
   }
 }

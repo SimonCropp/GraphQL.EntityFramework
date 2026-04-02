@@ -21,8 +21,14 @@ from     ChildEntities as c
          left outer join
          ParentEntities as p
          on c.ParentId = p.Id
-where    c.ParentId <> 'Guid_1'
+where    c.ParentId <> @p
          or c.ParentId is null
-order by c.Property
+order by c.Property,
+    Parameters: {
+      @p: {
+        Value: Guid_1,
+        IsNullable: true
+      }
+    }
   }
 }

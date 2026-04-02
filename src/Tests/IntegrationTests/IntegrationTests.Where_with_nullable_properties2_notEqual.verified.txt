@@ -12,7 +12,13 @@
     Text:
 select w.Id
 from   WithNullableEntities as w
-where  w.Nullable <> 10
-       or w.Nullable is null
+where  w.Nullable <> @p
+       or w.Nullable is null,
+    Parameters: {
+      @p: {
+        Value: 10,
+        IsNullable: true
+      }
+    }
   }
 }

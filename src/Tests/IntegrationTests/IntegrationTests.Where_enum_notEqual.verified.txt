@@ -12,7 +12,13 @@
     Text:
 select e.Id
 from   EnumEntities as e
-where  e.Property <> 4
-       or e.Property is null
+where  e.Property <> @p
+       or e.Property is null,
+    Parameters: {
+      @p: {
+        Value: 4,
+        IsNullable: true
+      }
+    }
   }
 }

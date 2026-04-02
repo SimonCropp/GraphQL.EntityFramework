@@ -12,6 +12,12 @@
     Text:
 select w.Id
 from   WithNullableEntities as w
-where  w.Nullable = 10
+where  w.Nullable = @p,
+    Parameters: {
+      @p: {
+        Value: 10,
+        IsNullable: true
+      }
+    }
   }
 }

@@ -12,6 +12,12 @@
     Text:
 select d.Id
 from   DateEntities as d
-where  d.Property = '2020-10-01'
+where  d.Property = @p,
+    Parameters: {
+      @p: {
+        Value: Date_1,
+        IsNullable: true
+      }
+    }
   }
 }

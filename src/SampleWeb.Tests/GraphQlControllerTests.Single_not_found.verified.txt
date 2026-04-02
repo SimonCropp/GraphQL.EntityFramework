@@ -3,11 +3,15 @@
   Message:
 Not found.
 Query:
+DECLARE @p1 int = 99;
+
 SELECT [c].[Id]
 FROM [Companies] AS [c]
-WHERE [c].[Id] = 99,
+WHERE [c].[Id] = @p1,
   Query:
+DECLARE @p1 int = 99;
+
 SELECT [c].[Id]
 FROM [Companies] AS [c]
-WHERE [c].[Id] = 99
+WHERE [c].[Id] = @p1
 }

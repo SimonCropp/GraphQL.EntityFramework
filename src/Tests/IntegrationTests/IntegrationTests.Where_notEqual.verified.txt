@@ -13,8 +13,15 @@
 select   p.Id,
          p.Property
 from     ParentEntities as p
-where    p.Property <> N'value2'
+where    p.Property <> @p
          or p.Property is null
-order by p.Property
+order by p.Property,
+    Parameters: {
+      @p: {
+        Value: value2,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
   }
 }

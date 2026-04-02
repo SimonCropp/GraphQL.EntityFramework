@@ -19,7 +19,7 @@ static class SelectExpressionBuilder
 
     static ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
-    record PropertyMetadata(PropertyInfo Property, bool CanWrite, MemberExpression PropertyAccess, MemberBinding? Binding, MethodInfo OrderByMethod);
+    record PropertyMetadata(PropertyInfo Property, bool CanWrite, bool IsAutoProperty, MemberExpression PropertyAccess, MemberBinding? Binding, MethodInfo OrderByMethod);
 
     record EntityTypeMetadata(
         ParameterExpression Parameter,
@@ -67,9 +67,15 @@ static class SelectExpressionBuilder
             foreach (var keyName in projection.KeyNames)
             {
                 if (properties.TryGetValue(keyName, out var metadata) &&
-                    metadata.CanWrite &&
                     addedProperties.Add(keyName))
                 {
+                    if (!metadata.CanWrite || !metadata.IsAutoProperty)
+                    {
+                        // Key property has a custom setter that may throw during materialization,
+                        // or is read-only. Fall back to full entity loading so EF can use backing fields.
+                        return null;
+                    }
+
                     bindings.Add(metadata.Binding!);
                 }
             }
@@ -269,9 +275,16 @@ static class SelectExpressionBuilder
             foreach (var keyName in projection.KeyNames)
             {
                 if (properties.TryGetValue(keyName, out var metadata) &&
-                    metadata.CanWrite &&
                     addedProperties.Add(keyName))
                 {
+                    if (!metadata.CanWrite || !metadata.IsAutoProperty)
+                    {
+                        // Key property has a custom setter that may throw during materialization,
+                        // or is read-only. Can't use projection.
+                        bindings = null;
+                        return false;
+                    }
+
                     bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
                 }
             }
@@ -435,9 +448,12 @@ static class SelectExpressionBuilder
             foreach (var property in properties)
             {
                 var propertyAccess = Expression.Property(parameter, property);
-                var binding = property.CanWrite ? Expression.Bind(property, propertyAccess) : null;
+                var canWrite = property.CanWrite;
+                var isAutoProperty = canWrite &&
+                                     property.SetMethod!.IsDefined(typeof(CompilerGeneratedAttribute), false);
+                var binding = canWrite ? Expression.Bind(property, propertyAccess) : null;
                 var orderByMethod = SelectExpressionBuilder.orderByMethod.MakeGenericMethod(type, property.PropertyType);
-                dictionary[property.Name] = new(property, property.CanWrite, propertyAccess, binding, orderByMethod);
+                dictionary[property.Name] = new(property, canWrite, isAutoProperty, propertyAccess, binding, orderByMethod);
             }
 
             var newInstance = Expression.New(type);

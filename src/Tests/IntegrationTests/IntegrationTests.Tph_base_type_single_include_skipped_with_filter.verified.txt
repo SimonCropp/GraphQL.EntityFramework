@@ -25,10 +25,13 @@ from     (select top (2) t.Id,
                          t.Property,
                          t.LeafProperty
           from   TphRootEntities as t
-          where  t.Id = 'Guid_1') as t1
+          where  t.Id = @p1) as t1
          left outer join
          TphAttachmentEntities as t0
          on t1.Id = t0.RequestId
-order by t1.Id
+order by t1.Id,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

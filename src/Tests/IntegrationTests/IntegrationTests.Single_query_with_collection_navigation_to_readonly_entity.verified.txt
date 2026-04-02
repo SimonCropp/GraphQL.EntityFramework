@@ -26,10 +26,13 @@ select   r1.Id,
 from     (select top (2) r.Id,
                          r.Property
           from   ReadOnlyParentEntities as r
-          where  r.Id = 'Guid_1') as r1
+          where  r.Id = @p1) as r1
          left outer join
          ReadOnlyEntities as r0
          on r1.Id = r0.ReadOnlyParentId
-order by r1.Id
+order by r1.Id,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

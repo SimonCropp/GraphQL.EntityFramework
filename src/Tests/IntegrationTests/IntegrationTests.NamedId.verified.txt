@@ -13,6 +13,9 @@
 select n.NamedId,
        n.Property
 from   NamedEntities as n
-where  n.NamedId = 'Guid_1'
+where  n.NamedId = @p1,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

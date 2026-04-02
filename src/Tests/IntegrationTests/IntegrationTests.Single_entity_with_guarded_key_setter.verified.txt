@@ -1,0 +1,20 @@
+﻿{
+  target: {
+    Data: {
+      guardedKeyEntity: {
+        id: Guid_1,
+        emailAddress: test@example.com
+      }
+    }
+  },
+  sql: {
+    Text:
+select top (2) g.Id,
+               g.EmailAddress
+from   GuardedKeyEntities as g
+where  g.Id = @p1,
+    Parameters: {
+      @p1: Guid_1
+    }
+  }
+}

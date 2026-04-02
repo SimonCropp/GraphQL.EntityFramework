@@ -16,6 +16,9 @@ select top (2) o.Id,
                cast (0 as bit),
                o.Child1_Property
 from   OwnedParents as o
-where  o.Id = 'Guid_1'
+where  o.Id = @p1,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

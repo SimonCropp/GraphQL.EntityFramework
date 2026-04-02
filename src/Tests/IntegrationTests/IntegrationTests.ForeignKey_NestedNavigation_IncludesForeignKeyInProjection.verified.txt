@@ -27,10 +27,17 @@ from     Departments as d
          left outer join
          Employees as e
          on d.Id = e.DepartmentId
-where    d.Name = N'Engineering'
+where    d.Name = @p
 order by d.Name,
          d.Id,
-         e.Id
+         e.Id,
+      Parameters: {
+        @p: {
+          Value: Engineering,
+          Size: 4000,
+          IsNullable: true
+        }
+      }
     },
     {
       Text:

@@ -24,9 +24,12 @@ from     ParentEntities as p
          left outer join
          ChildEntities as c
          on p.Id = c.ParentId
-where    p.Id = 'Guid_1'
+where    p.Id = @p1
 order by p.Property,
          p.Id,
-         c.Id
+         c.Id,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

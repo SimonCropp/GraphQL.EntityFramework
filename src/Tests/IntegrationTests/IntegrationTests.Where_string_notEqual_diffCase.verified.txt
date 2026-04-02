@@ -18,8 +18,15 @@
 select   s.Id,
          s.Property
 from     StringEntities as s
-where    s.Property <> N'NotValue'
+where    s.Property <> @p
          or s.Property is null
-order by s.Property
+order by s.Property,
+    Parameters: {
+      @p: {
+        Value: NotValue,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
   }
 }

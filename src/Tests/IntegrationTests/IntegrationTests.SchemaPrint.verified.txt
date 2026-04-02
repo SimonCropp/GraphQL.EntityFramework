@@ -176,6 +176,8 @@
   discriminatorDerivedBEntity(id: ID, ids: [ID!], where: [WhereExpression!]): DiscriminatorDerivedB!
   tphMiddleEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphMiddleEntity]!
   tphMiddleEntity(id: ID, ids: [ID!], where: [WhereExpression!]): TphMiddleEntity
+  guardedKeyEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [GuardedKeyEntity]!
+  guardedKeyEntity(id: ID, ids: [ID!], where: [WhereExpression!]): GuardedKeyEntity
   tphDerivedNavEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphDerivedNavBaseEntity]!
   tphDerivedNavEntity(id: ID, ids: [ID!], where: [WhereExpression!]): TphDerivedNavBaseEntity
 }
@@ -827,6 +829,11 @@ type TphAttachment {
   id: ID!
   property: String
   requestId: ID!
+}
+
+type GuardedKeyEntity {
+  emailAddress: String
+  id: ID!
 }
 
 interface TphDerivedNavBaseEntity {

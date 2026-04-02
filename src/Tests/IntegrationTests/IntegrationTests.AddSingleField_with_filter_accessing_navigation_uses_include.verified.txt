@@ -18,6 +18,9 @@ from   FilterReferenceEntities as f
        inner join
        FilterBaseEntities as f0
        on f.BaseEntityId = f0.Id
-where  f.Id = 'Guid_1'
+where  f.Id = @p1,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

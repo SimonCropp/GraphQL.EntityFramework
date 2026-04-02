@@ -4,14 +4,18 @@
     Message:
 Not found.
 Query:
+DECLARE @p1 uniqueIdentifier = '00000000-0000-0000-0000-000000000001';
+
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-WHERE [p].[Id] = '00000000-0000-0000-0000-000000000001'
+WHERE [p].[Id] = @p1
 ORDER BY [p].[Property],
     Query:
+DECLARE @p1 uniqueIdentifier = '00000000-0000-0000-0000-000000000001';
+
 SELECT [p].[Id], [p].[Property]
 FROM [ParentEntities] AS [p]
-WHERE [p].[Id] = '00000000-0000-0000-0000-000000000001'
+WHERE [p].[Id] = @p1
 ORDER BY [p].[Property]
   },
   sql: {
@@ -19,6 +23,9 @@ ORDER BY [p].[Property]
 select top (1) p.Id,
                p.Property
 from   ParentEntities as p
-where  p.Id = '00000000-0000-0000-0000-000000000001'
+where  p.Id = @p1,
+    Parameters: {
+      @p1: Guid_1
+    }
   }
 }

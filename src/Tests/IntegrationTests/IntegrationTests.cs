@@ -1727,6 +1727,24 @@ public partial class IntegrationTests
     }
 
     [Fact]
+    public async Task Where_sql_injection()
+    {
+        var query =
+            """
+            {
+              parentEntities (where: {path: "Property", comparison: equal, value: "'; DROP TABLE ParentEntities; --"})
+              {
+                property
+              }
+            }
+            """;
+
+        var entity1 = new ParentEntity { Property = "Value1" };
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1]);
+    }
+
+    [Fact]
     public async Task Where_notEqual()
     {
         var query =
