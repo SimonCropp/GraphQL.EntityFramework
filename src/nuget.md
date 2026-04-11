@@ -33,4 +33,4 @@ Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/ap
 
 ### Developed using JetBrains IDEs
 
-[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSourceSupport)<!-- endInclude -->
+[![JetBrains logo.](https://raw.githubusercontent.com/SimonCropp/GraphQL.EntityFramework/main/docs/jetbrains.png)](https://jb.gg/OpenSourceSupport)<!-- endInclude -->
