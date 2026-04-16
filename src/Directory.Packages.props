@@ -12,7 +12,7 @@
     <PackageVersion Include="GraphQL" Version="8.8.4" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.4" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.4" />
-    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.1.0" />
+    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.2.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.6" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
@@ -29,13 +29,13 @@
     <PackageVersion Include="Verify.DiffPlex" Version="3.1.2" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
     <PackageVersion Include="Verify.SqlServer" Version="12.1.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="31.15.0" />
+    <PackageVersion Include="Verify.XunitV3" Version="31.16.1" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="Argon" Version="0.33.5" />
-    <PackageVersion Include="DiffEngine" Version="19.1.2" />
-    <PackageVersion Include="EmptyFiles" Version="8.17.2" />
+    <PackageVersion Include="DiffEngine" Version="19.1.3" />
+    <PackageVersion Include="EmptyFiles" Version="8.18.1" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.0" />
-    <PackageVersion Include="Verify" Version="31.15.0" />
+    <PackageVersion Include="Verify" Version="31.16.1" />
   </ItemGroup>
 </Project>
