@@ -21,14 +21,14 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.5" />
     <PackageVersion Include="Polyfill" Version="10.3.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.173" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="10.0.7" />
     <PackageVersion Include="Verify.DiffPlex" Version="3.1.2" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
-    <PackageVersion Include="Verify.SqlServer" Version="12.1.0" />
+    <PackageVersion Include="Verify.SqlServer" Version="12.1.1" />
     <PackageVersion Include="Verify.XunitV3" Version="31.16.2" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
