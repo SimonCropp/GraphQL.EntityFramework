@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="coverlet.collector" Version="10.0.0" />
-    <PackageVersion Include="EfLocalDb" Version="24.0.0" />
+    <PackageVersion Include="EfLocalDb" Version="24.1.0" />
     <PackageVersion Include="EfOrderBy" Version="1.0.0" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
     <PackageVersion Include="GraphQL" Version="8.8.4" />
