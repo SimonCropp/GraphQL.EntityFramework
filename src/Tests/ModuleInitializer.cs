@@ -3,8 +3,6 @@
     [ModuleInitializer]
     public static void Init()
     {
-        VerifyDiffPlex.Initialize(OutputType.Compact);
-        VerifySqlServer.Initialize();
         VerifierSettings.IgnoreMember("HasTransaction");
         VerifierSettings.ScrubLinesWithReplace(_ => VersionRegex().Replace(_, "Version={Scrubbed}"));
         VerifierSettings.InitializePlugins();
