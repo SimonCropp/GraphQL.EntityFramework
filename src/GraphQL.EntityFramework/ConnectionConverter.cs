@@ -46,7 +46,9 @@ static class ConnectionConverter
         int skip;
         if (before is null)
         {
-            skip = after.GetValueOrDefault(0);
+            // 'after' is an exclusive cursor, so start strictly after it.
+            // Matches the IQueryable overload below.
+            skip = after + 1 ?? 0;
         }
         else
         {
@@ -230,7 +232,7 @@ static class ConnectionConverter
             PageInfo = new()
             {
                 HasNextPage = count > take + skip,
-                HasPreviousPage = skip > 0 && take < count,
+                HasPreviousPage = skip > 0,
                 StartCursor = skip.ToString(),
                 EndCursor = Math.Min(count - 1, take - 1 + skip).ToString()
             }

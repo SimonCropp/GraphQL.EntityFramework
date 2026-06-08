@@ -77,6 +77,31 @@
         return Verify(connection).UseParameters(first, after, last, before);
     }
 
+    [Fact]
+    public void List_after_is_an_exclusive_cursor()
+    {
+        // 'after' is an exclusive cursor: results start strictly after the given index,
+        // matching the IQueryable path and the Relay connection spec.
+        var connection = ConnectionConverter.ApplyConnectionContext(list, first: 2, after: 1, last: null, before: null);
+        var items = connection.Items!
+            .Select(_ => _!)
+            .ToList();
+        Assert.Equal(new[] {"c", "d"}, items);
+    }
+
+    [Fact]
+    public void List_HasPreviousPage_true_when_page_size_covers_remaining_items()
+    {
+        // first(10) covers all remaining items, but after(0) skips the first item,
+        // so a previous page exists. Previously the 'take < count' guard hid this.
+        var connection = ConnectionConverter.ApplyConnectionContext(list, first: 10, after: 0, last: null, before: null);
+        Assert.True(connection.PageInfo!.HasPreviousPage);
+        var first = connection.Items!
+            .Select(_ => _!)
+            .First();
+        Assert.Equal("b", first);
+    }
+
     public class Entity
     {
         public Guid Id { get; set; } = Guid.NewGuid();

@@ -48,6 +48,20 @@
     /// <param name="propertyOrFieldName">Name of property or field</param>
     static MemberInfo GetPropertyOrField(Type type, string propertyOrFieldName)
     {
+        var propertyOrField = TryGetPropertyOrField(type, propertyOrFieldName);
+
+        // If property is still empty
+        if (propertyOrField is null)
+        {
+            // Property does not exist on current type
+            throw new ArgumentException($"'{propertyOrFieldName}' is not a member of type {type.FullName}");
+        }
+
+        return propertyOrField;
+    }
+
+    static MemberInfo? TryGetPropertyOrField(Type type, string propertyOrFieldName)
+    {
         // Member search binding flags
         const BindingFlags bindingFlagsPublic = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
         const BindingFlags bindingFlagsNonPublic = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
@@ -62,28 +76,19 @@
         // If not found
         propertyOrField ??= type.GetField(propertyOrFieldName, bindingFlagsNonPublic);
 
-        // If property/ field was not resolved
-        if (propertyOrField == null && type.IsInterface)
+        // If property/field was not resolved, search inherited interfaces.
+        // Interface member lookup is not flattened, so each base interface must be
+        // probed individually until a match is found.
+        if (propertyOrField is null && type.IsInterface)
         {
-            // Get All the implemented interfaces of the type
-            var baseInterfaces = new List<Type>(type.GetInterfaces());
-
-            // Iterate over inherited interfaces
-            foreach (var baseInterfaceType in baseInterfaces)
+            foreach (var baseInterfaceType in type.GetInterfaces())
             {
-                // Recurse looking in the parent interface for the property
-                propertyOrField = GetPropertyOrField(baseInterfaceType, propertyOrFieldName);
-
-                // property found
-                break;
+                propertyOrField = TryGetPropertyOrField(baseInterfaceType, propertyOrFieldName);
+                if (propertyOrField is not null)
+                {
+                    break;
+                }
             }
-        }
-
-        // If property is still empty
-        if (propertyOrField is null)
-        {
-            // Property does not exist on current type
-            throw new ArgumentException($"'{propertyOrFieldName}' is not a member of type {type.FullName}");
         }
 
         return propertyOrField;
