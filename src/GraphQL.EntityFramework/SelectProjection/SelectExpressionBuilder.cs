@@ -56,8 +56,8 @@ static class SelectExpressionBuilder
         var properties = entityMetadata.Properties;
 
         // Pre-size collections to avoid reallocations
-        var capacity = projection.KeyNames?.Count ?? 0 + projection.ForeignKeyNames?.Count ?? 0 +
-                      projection.ScalarFields.Count + projection.Navigations?.Count ?? 0;
+        var capacity = (projection.KeyNames?.Count ?? 0) + (projection.ForeignKeyNames?.Count ?? 0) +
+                      projection.ScalarFields.Count + (projection.Navigations?.Count ?? 0);
         var bindings = new List<MemberBinding>(capacity);
         var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
 
@@ -264,7 +264,7 @@ static class SelectExpressionBuilder
         [NotNullWhen(true)] out List<MemberBinding>? bindings)
     {
         // Pre-size collections to avoid reallocations
-        var capacity = projection.KeyNames?.Count ?? 0 + projection.ForeignKeyNames?.Count ?? 0 + projection.ScalarFields.Count + projection.Navigations?.Count ?? 0;
+        var capacity = (projection.KeyNames?.Count ?? 0) + (projection.ForeignKeyNames?.Count ?? 0) + projection.ScalarFields.Count + (projection.Navigations?.Count ?? 0);
         bindings = new(capacity);
         var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
         var properties = GetEntityMetadata(entityType).Properties;
