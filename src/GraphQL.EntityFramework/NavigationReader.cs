@@ -5,10 +5,7 @@
         var dictionary = new Dictionary<Type, IReadOnlyDictionary<string, Navigation>>();
         foreach (var property in model.GetEntityTypes())
         {
-            if (!dictionary.ContainsKey(property.ClrType))
-            {
-                dictionary[property.ClrType] = GetNavigations(property);
-            }
+            dictionary.TryAdd(property.ClrType, GetNavigations(property));
         }
 
         return dictionary;
