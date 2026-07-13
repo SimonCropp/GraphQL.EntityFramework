@@ -31,7 +31,7 @@
     <PackageVersion Include="Verify.SqlServer" Version="12.2.0" />
     <PackageVersion Include="Verify.XunitV3" Version="31.24.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
-    <PackageVersion Include="Argon" Version="0.35.0" />
+    <PackageVersion Include="Argon" Version="0.35.1" />
     <PackageVersion Include="DiffEngine" Version="19.3.2" />
     <PackageVersion Include="EmptyFiles" Version="8.18.2" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.0" />
