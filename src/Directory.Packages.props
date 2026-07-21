@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
-    <PackageVersion Include="EfLocalDb" Version="24.1.4" />
+    <PackageVersion Include="EfLocalDb" Version="25.0.0" />
     <PackageVersion Include="EfOrderBy" Version="1.0.0" />
     <PackageVersion Include="graphiql" Version="2.0.0" />
     <PackageVersion Include="GraphQL" Version="8.8.4" />
@@ -23,18 +23,18 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.10" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.5" />
-    <PackageVersion Include="Polyfill" Version="10.11.2" />
-    <PackageVersion Include="ProjectDefaults" Version="1.0.174" />
+    <PackageVersion Include="Polyfill" Version="11.0.1" />
+    <PackageVersion Include="ProjectDefaults" Version="1.0.175" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="10.0.10" />
     <PackageVersion Include="Verify.DiffPlex" Version="3.3.1" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
     <PackageVersion Include="Verify.SqlServer" Version="12.2.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="31.24.1" />
+    <PackageVersion Include="Verify.XunitV3" Version="31.26.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
-    <PackageVersion Include="Argon" Version="0.35.1" />
-    <PackageVersion Include="DiffEngine" Version="19.3.2" />
+    <PackageVersion Include="Argon" Version="0.35.2" />
+    <PackageVersion Include="DiffEngine" Version="19.3.3" />
     <PackageVersion Include="EmptyFiles" Version="8.18.2" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.0" />
-    <PackageVersion Include="Verify" Version="31.24.1" />
+    <PackageVersion Include="Verify" Version="31.26.0" />
   </ItemGroup>
 </Project>
