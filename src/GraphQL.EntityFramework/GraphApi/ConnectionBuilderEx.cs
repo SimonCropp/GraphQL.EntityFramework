@@ -50,17 +50,19 @@ class ConnectionBuilderEx<TSourceType> : ConnectionBuilder<TSourceType>
         {
             Name = name,
             Type = connectionType,
-            Arguments = new(
-                new QueryArgument(typeof(StringGraphType))
-                {
-                    Name = "after",
-                    Description = "Only return edges after the specified cursor.",
-                },
-                new QueryArgument(typeof(IntGraphType))
-                {
-                    Name = "first",
-                    Description = "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified.",
-                }),
+            Arguments =
+            [
+                with(new QueryArgument(typeof(StringGraphType))
+                    {
+                        Name = "after",
+                        Description = "Only return edges after the specified cursor.",
+                    },
+                    new QueryArgument(typeof(IntGraphType))
+                    {
+                        Name = "first",
+                        Description = "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified.",
+                    })
+            ],
         };
         return new(field);
     }

@@ -1,6 +1,6 @@
 using System.Net;
+using Argon;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
 #region GraphQlControllerTests

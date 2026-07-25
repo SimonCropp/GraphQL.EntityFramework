@@ -265,7 +265,7 @@ static class SelectExpressionBuilder
     {
         // Pre-size collections to avoid reallocations
         var capacity = (projection.KeyNames?.Count ?? 0) + (projection.ForeignKeyNames?.Count ?? 0) + projection.ScalarFields.Count + (projection.Navigations?.Count ?? 0);
-        bindings = new(capacity);
+        bindings = [with(capacity)];
         var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
         var properties = GetEntityMetadata(entityType).Properties;
 

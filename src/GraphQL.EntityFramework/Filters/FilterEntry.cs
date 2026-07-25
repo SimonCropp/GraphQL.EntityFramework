@@ -61,7 +61,7 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             var navName = field[..dotIndex];
             if (!navRequirements.TryGetValue(navName, out var props))
             {
-                props = new(StringComparer.OrdinalIgnoreCase);
+                props = [with(StringComparer.OrdinalIgnoreCase)];
                 navRequirements[navName] = props;
             }
 

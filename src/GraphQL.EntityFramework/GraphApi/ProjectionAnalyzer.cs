@@ -13,7 +13,7 @@ static class ProjectionAnalyzer
 
     sealed class PropertyAccessVisitor(IReadOnlyCollection<ParameterExpression> parameters) : ExpressionVisitor
     {
-        public HashSet<string> AccessedProperties { get; } = new(StringComparer.OrdinalIgnoreCase);
+        public HashSet<string> AccessedProperties { get; } = [with(StringComparer.OrdinalIgnoreCase)];
 
         protected override Expression VisitMember(MemberExpression node)
         {

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using Argon;
 
 public class MappingContext(DbContextOptions options) :
     DbContext(options)
@@ -12,7 +12,7 @@ public class MappingContext(DbContextOptions options) :
         parentBuilder.Property(_ => _.JsonProperty)
             .HasConversion(
                 v => JsonConvert.SerializeObject(v),
-                v => JsonConvert.DeserializeObject<IList<string>>(v)!);
+                v => JsonConvert.DeserializeObject<IList<string>>(v));
 
         modelBuilder.Entity<MappingChild>();
     }
