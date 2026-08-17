@@ -1,17 +1,13 @@
 ﻿{
-  Type: Exception,
-  Message:
-Failed to execute query for field `parentEntities`
-GraphType: GraphQL.Types.NonNullGraphType`1[[GraphQL.Types.ListGraphType`1[[GraphQL.Types.NonNullGraphType`1[[ParentGraphType, Tests, Version={Scrubbed}, Culture=neutral, PublicKeyToken=ef9e5a364f5893c5]], GraphQL, Version={Scrubbed}, Culture=neutral, PublicKeyToken=e6238258560628ee]], GraphQL, Version={Scrubbed}, Culture=neutral, PublicKeyToken=e6238258560628ee]]
-TSource: System.Object
-TReturn: ParentEntity
-DisableTracking: False
-HasId: True
-KeyNames: Id
-Query: Could not resolve ToQueryString: An error was generated for warning 'Microsoft.EntityFrameworkCore.Query.RowLimitingOperationWithoutOrderByWarning': The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased. This exception can be suppressed or logged by passing event ID 'CoreEventId.RowLimitingOperationWithoutOrderByWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.,
-  InnerException: {
-    $type: InvalidOperationException,
-    Type: InvalidOperationException,
-    Message: An error was generated for warning 'Microsoft.EntityFrameworkCore.Query.RowLimitingOperationWithoutOrderByWarning': The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased. This exception can be suppressed or logged by passing event ID 'CoreEventId.RowLimitingOperationWithoutOrderByWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+  target: If `take` is used an `orderBy` must be specified. Field: parentEntities,
+  sql: {
+    Text:
+select   top (@p) p.Id,
+                  p.Property
+from     ParentEntities as p
+order by p.Property,
+    Parameters: {
+      @p: 1
+    }
   }
 }
