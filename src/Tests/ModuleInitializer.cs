@@ -5,6 +5,7 @@
     {
         VerifierSettings.IgnoreMember("HasTransaction");
         VerifierSettings.ScrubLinesWithReplace(_ => VersionRegex().Replace(_, "Version={Scrubbed}"));
+        VerifierSettings.Inline(maxLines: 10, applyMaxLinesToExisting: true);
         VerifierSettings.InitializePlugins();
     }
 

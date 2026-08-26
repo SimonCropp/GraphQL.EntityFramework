@@ -4,6 +4,7 @@
     <NoWarn>$(NoWarn);EF1000;xUnit1051</NoWarn>
     <OutputType>Exe</OutputType>
     <RootNamespace>testing</RootNamespace>
+    <AssemblyName>GraphQL.EntityFramework.Tests</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" />
