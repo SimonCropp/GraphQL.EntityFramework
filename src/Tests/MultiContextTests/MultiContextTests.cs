@@ -73,6 +73,19 @@
         #endregion
 
         var result = await documentExecuter.ExecuteWithErrorCheck(executionOptions);
-        await Verify(result);
+        await Verify(result)
+            .Snapshot(
+                """
+                {
+                  Data: {
+                    entity1: {
+                      property: the entity1
+                    },
+                    entity2: {
+                      property: the entity2
+                    }
+                  }
+                }
+                """);
     }
 }

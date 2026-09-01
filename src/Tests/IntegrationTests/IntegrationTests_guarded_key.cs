@@ -47,7 +47,7 @@ public partial class IntegrationTests
         // TryBuild should return null to fall back to full entity loading,
         // because MemberInit expressions call property setters which would throw.
         var projection = new FieldProjectionInfo(
-            new(StringComparer.OrdinalIgnoreCase) { "EmailAddress" },
+            [with(StringComparer.OrdinalIgnoreCase), "EmailAddress"],
             ["Id"],
             null,
             null);

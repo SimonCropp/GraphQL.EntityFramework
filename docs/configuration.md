@@ -471,7 +471,17 @@ public class GraphQlControllerTests
 
         using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync())
+            .Snapshot(
+                """
+                {
+                  "data": {
+                    "company": {
+                      "id": 1
+                    }
+                  }
+                }
+                """);
     }
 
     [Fact]
@@ -561,7 +571,19 @@ public class GraphQlControllerTests
 
         using var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
         response.EnsureSuccessStatusCode();
-        await Verify(await response.Content.ReadAsStringAsync());
+        await Verify(await response.Content.ReadAsStringAsync())
+            .Snapshot(
+                """
+                {
+                  "data": {
+                    "companies": [
+                      {
+                        "id": 1
+                      }
+                    ]
+                  }
+                }
+                """);
     }
 
     [Fact]
@@ -633,7 +655,7 @@ public class GraphQlControllerTests
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L6-L245' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L6-L267' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

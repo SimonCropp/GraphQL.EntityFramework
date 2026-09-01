@@ -13,6 +13,7 @@
               }
             }
             """;
-        return Verify(Compress.Query(query));
+        return Verify(Compress.Query(query))
+            .Snapshot("query($id:String!){companies(ids:[$id]){id}}");
     }
 }

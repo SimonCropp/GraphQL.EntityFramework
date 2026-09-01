@@ -1,7 +1,0 @@
-﻿{
-  expression: _ => _.Parent,
-  result: {
-    Id: Guid_1,
-    Property: value
-  }
-}

@@ -79,13 +79,13 @@ public partial class IntegrationTests
         // When a collection navigation target has a read-only property,
         // TryBuild should succeed by falling back to including the full navigation entity.
         var navigationProjection = new FieldProjectionInfo(
-            new(StringComparer.OrdinalIgnoreCase) { "ComputedInDb" },
+            [with(StringComparer.OrdinalIgnoreCase), "ComputedInDb"],
             ["Id"],
             new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "ReadOnlyParentId" },
             null);
 
         var projection = new FieldProjectionInfo(
-            new(StringComparer.OrdinalIgnoreCase) { "Property" },
+            [with(StringComparer.OrdinalIgnoreCase), "Property"],
             ["Id"],
             null,
             new()
@@ -111,13 +111,13 @@ public partial class IntegrationTests
         // When a single navigation target has a read-only property,
         // TryBuild should succeed by falling back to including the full navigation entity.
         var navigationProjection = new FieldProjectionInfo(
-            new(StringComparer.OrdinalIgnoreCase) { "Property" },
+            [with(StringComparer.OrdinalIgnoreCase), "Property"],
             ["Id"],
             null,
             null);
 
         var projection = new FieldProjectionInfo(
-            new(StringComparer.OrdinalIgnoreCase) { "FirstName" },
+            [with(StringComparer.OrdinalIgnoreCase), "FirstName"],
             ["Id"],
             new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "ReadOnlyParentId" },
             new()
@@ -143,7 +143,7 @@ public partial class IntegrationTests
         // A read-only property at the ROOT entity level
         // still causes TryBuild to return null (load full entity).
         var projection = new FieldProjectionInfo(
-            new(StringComparer.OrdinalIgnoreCase) { "FirstName", "ComputedInDb" },
+            [with(StringComparer.OrdinalIgnoreCase), "FirstName", "ComputedInDb"],
             ["Id"],
             null,
             null);

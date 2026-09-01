@@ -1,3 +1,4 @@
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 public class ProjectionAnalyzerTests
 {
     class BaseEntity

@@ -63,7 +63,16 @@ public class MappingTests
             .Single(_ => _.Name == "children")
             .Resolver!
             .ResolveAsync(fieldContext);
-        await Verify(resolve);
+        await Verify(resolve)
+            .Snapshot(
+                """
+                [
+                  {
+                    Id: Guid_1,
+                    ParentId: Guid_2
+                  }
+                ]
+                """);
     }
 
     [Fact]
@@ -79,7 +88,14 @@ public class MappingTests
             {
                 expression,
                 result
-            });
+            })
+            .Snapshot(
+                """
+                {
+                  expression: source => Convert(source.Property, Object),
+                  result: value
+                }
+                """);
     }
 
     [Fact]
@@ -100,6 +116,16 @@ public class MappingTests
             {
                 expression,
                 result
-            });
+            })
+            .Snapshot(
+                """
+                {
+                  expression: _ => _.Parent,
+                  result: {
+                    Id: Guid_1,
+                    Property: value
+                  }
+                }
+                """);
     }
 }
