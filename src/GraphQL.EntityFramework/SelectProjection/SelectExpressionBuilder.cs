@@ -150,6 +150,8 @@ static class SelectExpressionBuilder
             }
         }
 
+        Sort(bindings);
+
         var memberInit = Expression.MemberInit(entityMetadata.NewInstance, bindings);
         return Expression.Lambda<Func<TEntity, TEntity>>(memberInit, parameter);
     }
@@ -360,8 +362,19 @@ static class SelectExpressionBuilder
             }
         }
 
+        Sort(bindings);
+
         return true;
     }
+
+    /// <summary>
+    /// Bindings are collected in the order the fields were requested, so the same set of fields
+    /// asked for in a different order produced a structurally different expression tree, and
+    /// therefore a separate entry in EF's compiled query cache for identical work. Ordering by
+    /// member name makes the tree depend only on which fields were requested.
+    /// </summary>
+    static void Sort(List<MemberBinding> bindings) =>
+        bindings.Sort((x, y) => string.CompareOrdinal(x.Member.Name, y.Member.Name));
 
     static bool TryBuildNestedNavigationBinding(
         Expression sourceExpression,

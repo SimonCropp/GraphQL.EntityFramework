@@ -16,10 +16,10 @@
   sql: {
     Text:
 select   p.Id,
-         p.Property,
          c.Id,
          c.ParentId,
-         c.Property
+         c.Property,
+         p.Property
 from     ParentEntities as p
          left outer join
          ChildEntities as c

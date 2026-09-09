@@ -11,9 +11,9 @@
   },
   sql: {
     Text:
-select   s.Id,
-         s.Name,
-         s.DateTimeValue
+select   s.DateTimeValue,
+         s.Id,
+         s.Name
 from     SimpleTypeFilterEntities as s
 order by s.Name
   }

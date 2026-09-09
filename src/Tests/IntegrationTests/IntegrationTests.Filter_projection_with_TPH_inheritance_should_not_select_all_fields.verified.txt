@@ -8,11 +8,11 @@
   },
   sql: {
     Text:
-select top (2) f.Id,
-               f.BaseEntityId,
-               cast (0 as bit),
+select top (2) cast (0 as bit),
                f0.CommonProperty,
-               f0.Id
+               f0.Id,
+               f.BaseEntityId,
+               f.Id
 from   FilterReferenceEntities as f
        inner join
        FilterBaseEntities as f0

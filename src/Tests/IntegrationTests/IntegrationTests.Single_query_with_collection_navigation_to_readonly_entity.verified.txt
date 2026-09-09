@@ -16,13 +16,13 @@
   sql: {
     Text:
 select   r1.Id,
-         r1.Property,
          r0.Id,
          r0.Age,
          r0.ComputedInDb,
          r0.FirstName,
          r0.LastName,
-         r0.ReadOnlyParentId
+         r0.ReadOnlyParentId,
+         r1.Property
 from     (select top (2) r.Id,
                          r.Property
           from   ReadOnlyParentEntities as r

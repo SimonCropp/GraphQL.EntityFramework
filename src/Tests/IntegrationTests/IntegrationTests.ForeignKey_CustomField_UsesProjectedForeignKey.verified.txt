@@ -41,11 +41,11 @@
     {
       Text:
 select   d.Id,
-         d.Name,
-         d.IsActive,
-         e.Id,
          e.DepartmentId,
-         e.Name
+         e.Id,
+         e.Name,
+         d.IsActive,
+         d.Name
 from     Departments as d
          left outer join
          Employees as e

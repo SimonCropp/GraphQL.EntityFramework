@@ -11,10 +11,10 @@
   },
   sql: {
     Text:
-select top (2) o.Id,
-               o.Property,
-               cast (0 as bit),
-               o.Child1_Property
+select top (2) cast (0 as bit),
+               o.Child1_Property,
+               o.Id,
+               o.Property
 from   OwnedParents as o
 where  o.Id = @p1,
     Parameters: {

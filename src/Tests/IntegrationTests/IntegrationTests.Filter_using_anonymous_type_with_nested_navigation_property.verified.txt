@@ -22,22 +22,22 @@
   sql: {
     Text:
 select   f.Id,
-         f.Property,
-         s.Id,
-         s.Property,
          s.Age,
+         s.Id,
          s.IsActive,
          s.c,
+         s.Property,
          s.Property0,
-         s.Id0
+         s.Id0,
+         f.Property
 from     FilterParentEntities as f
          left outer join
-         (select f0.Id,
-                 f0.Property,
-                 f0.Age,
+         (select f0.Age,
+                 f0.Id,
                  f0.IsActive,
                  case when f1.Id is null then cast (1 as bit) else cast (0 as bit) end as c,
-                 f1.Property as Property0,
+                 f1.Property,
+                 f0.Property as Property0,
                  f1.Id as Id0,
                  f0.ParentId
           from   FilterChildEntities as f0
