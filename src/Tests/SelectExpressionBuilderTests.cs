@@ -18,12 +18,12 @@
     static Expression<Func<Target, Target>> Build(params string[] scalarFields)
     {
         var projection = new FieldProjectionInfo(
-            new(scalarFields, StringComparer.OrdinalIgnoreCase),
+            [with(scalarFields, StringComparer.OrdinalIgnoreCase)],
             ["Id"],
             null,
             null);
         Assert.True(SelectExpressionBuilder.TryBuild<Target>(projection, keyNames, out var expression));
-        return expression!;
+        return expression;
     }
 
     [Fact]

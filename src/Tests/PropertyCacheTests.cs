@@ -88,7 +88,7 @@
         for (var i = 1; i <= 3000; i++)
         {
             var depth = (i % 9) + 1;
-            var path = string.Join('.', Enumerable.Repeat("Self", depth)) + $".Public";
+            var path = string.Join('.', Enumerable.Repeat("Self", depth)) + ".Public";
             PropertyCache<SelfReferencing>.GetProperty(path);
 
             // vary the casing to mint distinct keys for the same member
