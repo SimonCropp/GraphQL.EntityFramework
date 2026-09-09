@@ -85,6 +85,36 @@
             .UseParameters(first, after, last, before);
     }
 
+    [Theory]
+    [InlineData("not-a-number")]
+    [InlineData("")]
+    [InlineData("1.5")]
+    [InlineData("9999999999999999999")]
+    public void Malformed_cursor_reports_bad_input(string cursor)
+    {
+        // cursors are client supplied, so a malformed one must not surface as a raw FormatException
+        var exception = Assert.Throws<Exception>(
+            () => ConnectionConverter.ApplyConnectionContext(list, 2, cursor, null, null));
+        Assert.Contains("cursor must be an integer", exception.Message);
+    }
+
+    [Fact]
+    public void Negative_after_cursor_is_rejected()
+    {
+        // a negative cursor previously parsed happily and reached the database as a negative OFFSET
+        var exception = Assert.Throws<Exception>(
+            () => ConnectionConverter.ApplyConnectionContext(list, 2, "-5", null, null));
+        Assert.Contains("cursor cannot be negative", exception.Message);
+    }
+
+    [Fact]
+    public void Negative_before_cursor_is_rejected()
+    {
+        var exception = Assert.Throws<Exception>(
+            () => ConnectionConverter.ApplyConnectionContext(list, 2, null, null, "-5"));
+        Assert.Contains("cursor cannot be negative", exception.Message);
+    }
+
     [Fact]
     public void List_after_is_an_exclusive_cursor()
     {
