@@ -1,4 +1,4 @@
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
@@ -157,7 +157,7 @@ partial class EfGraphQLService<TDbContext>
                              DisableTracking: {disableTracking}
                              HasId: {hasId}
                              KeyNames: {JoinKeys(names)}
-                             Query: {query.SafeToQueryString()}
+                             Query: {QueryText(query)}
                              """,
                             exception);
                     }

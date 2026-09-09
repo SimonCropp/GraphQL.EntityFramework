@@ -1,22 +1,7 @@
 ﻿{
   target: {
     Type: FirstEntityNotFoundException,
-    Message:
-Not found.
-Query:
-DECLARE @p1 uniqueIdentifier = '00000000-0000-0000-0000-000000000001';
-
-SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-WHERE [p].[Id] = @p1
-ORDER BY [p].[Property],
-    Query:
-DECLARE @p1 uniqueIdentifier = '00000000-0000-0000-0000-000000000001';
-
-SELECT [p].[Id], [p].[Property]
-FROM [ParentEntities] AS [p]
-WHERE [p].[Id] = @p1
-ORDER BY [p].[Property]
+    Message: Not found
   },
   sql: {
     Text:

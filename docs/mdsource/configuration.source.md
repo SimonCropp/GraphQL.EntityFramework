@@ -1,4 +1,4 @@
-# Configuration
+﻿# Configuration
 
 
 ## Container Registration
@@ -52,6 +52,16 @@ Setting `disableTracking` to true results in the use of `EntityFrameworkQueryabl
 The Include path 'DataItems->Section' results in a cycle.
 Cycles are not allowed in no-tracking queries; either use a tracking query or remove the cycle.
 ```
+
+
+
+#### IncludeSqlInExceptions
+
+Setting `includeSqlInExceptions` to true appends the generated sql to the exception messages raised when a query fails, and to `SingleEntityNotFoundException` and `FirstEntityNotFoundException`.
+
+It defaults to false. Those messages can surface to clients as GraphQL errors, and the generated sql carries table and column names and, depending on the provider, the parameter values too. `SingleEntityNotFoundException` and `FirstEntityNotFoundException` are raised on the ordinary not found path, so this is reachable by querying an id that does not exist.
+
+Enable it in development, or where GraphQL errors are not returned to untrusted callers.
 
 
 ### Usage

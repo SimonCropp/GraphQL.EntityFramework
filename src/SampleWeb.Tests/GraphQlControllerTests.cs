@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using Argon;
 using Microsoft.AspNetCore.Mvc.Testing;
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
@@ -135,7 +135,14 @@ public class GraphQlControllerTests
         };
 
         await ThrowsTask(() => clientQueryExecutor.ExecuteGet(client, query, variables))
-            .IgnoreStackTrace();
+            .IgnoreStackTrace()
+            .Snapshot(
+                """
+                {
+                  Type: SingleEntityNotFoundException,
+                  Message: Not found
+                }
+                """);
     }
 
     [Fact]

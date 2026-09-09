@@ -22,9 +22,10 @@ public static void RegisterInContainer<TDbContext>(
         ResolveDbContext<TDbContext>? resolveDbContext = null,
         IModel? model = null,
         ResolveFilters<TDbContext>? resolveFilters = null,
-        bool disableTracking = false)
+        bool disableTracking = false,
+        bool includeSqlInExceptions = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L14-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L15-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
@@ -112,6 +113,16 @@ Cycles are not allowed in no-tracking queries; either use a tracking query or re
 ```
 
 
+
+#### IncludeSqlInExceptions
+
+Setting `includeSqlInExceptions` to true appends the generated sql to the exception messages raised when a query fails, and to `SingleEntityNotFoundException` and `FirstEntityNotFoundException`.
+
+It defaults to false. Those messages can surface to clients as GraphQL errors, and the generated sql carries table and column names and, depending on the provider, the parameter values too. `SingleEntityNotFoundException` and `FirstEntityNotFoundException` are raised on the ordinary not found path, so this is reachable by querying an id that does not exist.
+
+Enable it in development, or where GraphQL errors are not returned to untrusted callers.
+
+
 ### Usage
 
 <!-- snippet: RegisterInContainer -->
@@ -122,9 +133,10 @@ public static void RegisterInContainer<TDbContext>(
         ResolveDbContext<TDbContext>? resolveDbContext = null,
         IModel? model = null,
         ResolveFilters<TDbContext>? resolveFilters = null,
-        bool disableTracking = false)
+        bool disableTracking = false,
+        bool includeSqlInExceptions = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L14-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L15-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
@@ -526,7 +538,14 @@ public class GraphQlControllerTests
         };
 
         await ThrowsTask(() => clientQueryExecutor.ExecuteGet(client, query, variables))
-            .IgnoreStackTrace();
+            .IgnoreStackTrace()
+            .Snapshot(
+                """
+                {
+                  Type: SingleEntityNotFoundException,
+                  Message: Not found
+                }
+                """);
     }
 
     [Fact]
@@ -655,7 +674,7 @@ public class GraphQlControllerTests
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L6-L267' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L6-L274' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

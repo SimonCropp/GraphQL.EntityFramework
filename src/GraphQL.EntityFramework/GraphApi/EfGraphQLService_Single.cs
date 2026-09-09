@@ -1,4 +1,4 @@
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 partial class EfGraphQLService<TDbContext>
     where TDbContext : DbContext
@@ -207,7 +207,7 @@ partial class EfGraphQLService<TDbContext>
                              OmitQueryArguments: {omitQueryArguments}
                              Nullable: {nullable}
                              KeyNames: {JoinKeys(names)}
-                             Query: {query.SafeToQueryString()}
+                             Query: {QueryText(query)}
                              """,
                             exception);
                     }
@@ -238,6 +238,6 @@ partial class EfGraphQLService<TDbContext>
         return type;
 
         TReturn? ReturnNullable(IQueryable<TReturn>? query = null) =>
-            nullable ? null : throw new SingleEntityNotFoundException(query?.SafeToQueryString());
+            nullable ? null : throw new SingleEntityNotFoundException(NotFoundQueryText(query));
     }
 }
