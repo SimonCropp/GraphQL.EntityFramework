@@ -1,4 +1,4 @@
-static class ConnectionConverter
+﻿static class ConnectionConverter
 {
     internal static bool HasOrderingInExpressionTree(Expression expression)
     {
@@ -235,10 +235,11 @@ static class ConnectionConverter
             Edges = edges,
             PageInfo = new()
             {
-                HasNextPage = count > take + skip,
+                // long, since a large `first` makes take + skip overflow and wrap negative
+                HasNextPage = count > (long) take + skip,
                 HasPreviousPage = skip > 0,
                 StartCursor = skip.ToString(),
-                EndCursor = Math.Min(count - 1, take - 1 + skip).ToString()
+                EndCursor = Math.Min(count - 1, (long) take - 1 + skip).ToString()
             }
         };
     }
