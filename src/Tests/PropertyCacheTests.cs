@@ -1,4 +1,4 @@
-﻿public class PropertyCacheTests
+﻿﻿public class PropertyCacheTests
 {
     [Fact]
     public void Property()
@@ -122,6 +122,47 @@
     {
         public SelfReferencing? Self { get; set; }
         public string? Public { get; set; }
+    }
+
+    [Theory]
+    // paths come from the client, so non public members must not be resolvable
+    [InlineData("secretField")]
+    [InlineData("SecretProperty")]
+    // resolution is case insensitive, so casing must not be a way around it
+    [InlineData("SECRETFIELD")]
+    [InlineData("secretproperty")]
+    // nor may they be reached through a nested path
+    [InlineData("Child.secretField")]
+    public void NonPublicMembersAreNotResolved(string path)
+    {
+        var exception = Assert.Throws<Exception>(() => PropertyCache<TargetWithNonPublicMembers>.GetProperty(path));
+        Assert.Contains("Failed to create a member expression", exception.Message);
+    }
+
+    [Fact]
+    public void PublicMembersStillResolveOnTypeWithNonPublicMembers()
+    {
+        var target = new TargetWithNonPublicMembers
+        {
+            Public = "Value1"
+        };
+
+        var property = PropertyCache<TargetWithNonPublicMembers>.GetProperty("Public");
+        Assert.Equal("Value1", property.Func(target));
+    }
+
+    public class TargetWithNonPublicMembers
+    {
+        public string? Public { get; set; }
+        public TargetWithNonPublicMembers? Child { get; set; }
+
+        // ReSharper disable once UnusedMember.Local
+        string? secretField = "hunter2";
+
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
+        string? SecretProperty { get; set; } = "top-secret";
+
+        public string? ReadNonPublic() => secretField + SecretProperty;
     }
 
     public interface IHasA
