@@ -1994,6 +1994,59 @@
     }
 
     [Fact]
+    public async Task Aliased_scalar_field()
+    {
+        var query =
+            """
+            {
+              parentEntities (orderBy: {path: "property"})
+              {
+                renamed: property
+              }
+            }
+            """;
+
+        var entity = new ParentEntity
+        {
+            Property = "Value1"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity]);
+    }
+
+    [Fact]
+    public async Task Aliased_scalar_field_on_navigation()
+    {
+        var query =
+            """
+            {
+              childEntities (orderBy: {path: "property"})
+              {
+                renamedChild: property
+                parentAlias
+                {
+                  renamedParent: property
+                }
+              }
+            }
+            """;
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Value2",
+            Parent = entity1
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    [Fact]
     public async Task Navigation_list_where()
     {
         var query =

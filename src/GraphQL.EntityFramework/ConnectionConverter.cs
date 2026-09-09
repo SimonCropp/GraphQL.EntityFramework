@@ -61,19 +61,33 @@ static class ConnectionConverter
     static Connection<T> Last<T>(List<T> list, int last, int? after, int? before, int count)
         where T : class
     {
-        int skip;
-        if (after is null)
-        {
-            // last before
-            skip = before.GetValueOrDefault(count) - last;
-        }
-        else
+        var (skip, take) = LastRange(last, after, before, count);
+
+        return Range(list, skip, take, count, true);
+    }
+
+    /// <summary>
+    /// Resolve the skip/take for a `last` page. When `last` exceeds the number of items available before
+    /// the cursor, the start of the range clamps to zero and the page shrinks to what is available.
+    /// Without the clamp a negative skip reaches the database as a negative SQL OFFSET.
+    /// </summary>
+    static (int skip, int take) LastRange(int last, int? after, int? before, int count)
+    {
+        if (after is not null)
         {
             // last after
-            skip = after.Value + 1;
+            return (after.Value + 1, last);
         }
 
-        return Range(list, skip, take: last, count, true);
+        // last before
+        var start = before.GetValueOrDefault(count);
+        var skip = start - last;
+        if (skip < 0)
+        {
+            return (0, Math.Max(start, 0));
+        }
+
+        return (skip, last);
     }
 
     static Connection<T> Range<T>(
@@ -175,19 +189,9 @@ static class ConnectionConverter
         where TItem : class
         where TDbContext : DbContext
     {
-        int skip;
-        if (after is null)
-        {
-            // last before
-            skip = before.GetValueOrDefault(count) - last;
-        }
-        else
-        {
-            // last after
-            skip = after.Value + 1;
-        }
+        var (skip, take) = LastRange(last, after, before, count);
 
-        return Range(queryable, skip, take: last, count, context, filters, cancel, data);
+        return Range(queryable, skip, take, count, context, filters, cancel, data);
     }
 
     static async Task<Connection<TItem>> Range<TDbContext, TSource, TItem>(
