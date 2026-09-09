@@ -1,4 +1,4 @@
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 #region FiltersSignature
 
@@ -42,7 +42,7 @@ public class Filters<TDbContext>
         Expression<Func<TEntity, TProjection>>? projection,
         AsyncFilter<TProjection> filter)
         where TEntity : class =>
-        entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(
+        AddEntry<TEntity>(new FilterEntry<TDbContext, TEntity, TProjection>(
             async (userContext, data, userPrincipal, item) =>
             {
                 try
@@ -54,13 +54,13 @@ public class Filters<TDbContext>
                     throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                 }
             },
-            projection);
+            projection));
 
     internal void Add<TEntity, TProjection>(
         Expression<Func<TEntity, TProjection>>? projection,
         Filter<TProjection> filter)
         where TEntity : class =>
-        entries[typeof(TEntity)] = new FilterEntry<TDbContext, TEntity, TProjection>(
+        AddEntry<TEntity>(new FilterEntry<TDbContext, TEntity, TProjection>(
             (userContext, data, userPrincipal, item) =>
             {
                 try
@@ -72,9 +72,27 @@ public class Filters<TDbContext>
                     throw new($"Failed to execute filter. {nameof(TEntity)}: {typeof(TEntity)}.", exception);
                 }
             },
-            projection);
+            projection));
 
-    Dictionary<Type, IFilterEntry<TDbContext>> entries = [];
+    Dictionary<Type, List<IFilterEntry<TDbContext>>> entries = [];
+
+    /// <summary>
+    /// Filters registered for the same entity type are all applied, and a node is included only if
+    /// every one of them accepts it. This matches how a filter on a base type already composes with
+    /// a filter on a derived type.
+    /// </summary>
+    void AddEntry<TEntity>(IFilterEntry<TDbContext> entry)
+        where TEntity : class
+    {
+        var type = typeof(TEntity);
+        if (!entries.TryGetValue(type, out var forType))
+        {
+            forType = [];
+            entries[type] = forType;
+        }
+
+        forType.Add(entry);
+    }
 
     /// <summary>
     /// Get all filters that apply to the specified entity type (including base type filters).
@@ -85,7 +103,7 @@ public class Filters<TDbContext>
         var type = typeof(TEntity);
         return entries
             .Where(_ => _.Key.IsAssignableFrom(type))
-            .Select(_ => _.Value);
+            .SelectMany(_ => _.Value);
     }
 
     /// <summary>
@@ -94,13 +112,13 @@ public class Filters<TDbContext>
     internal IEnumerable<IFilterEntry<TDbContext>> GetFilters(Type entityType) =>
         entries
             .Where(_ => _.Key.IsAssignableFrom(entityType))
-            .Select(_ => _.Value);
+            .SelectMany(_ => _.Value);
 
     /// <summary>
     /// Get all registered filter entries.
     /// </summary>
     internal IEnumerable<IFilterEntry<TDbContext>> GetAllFilters() =>
-        entries.Values;
+        entries.Values.SelectMany(_ => _);
 
     /// <summary>
     /// Returns true if there are any filters registered.

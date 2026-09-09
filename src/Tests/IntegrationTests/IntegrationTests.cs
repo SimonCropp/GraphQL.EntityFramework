@@ -2082,6 +2082,37 @@
     }
 
     [Fact]
+    public async Task Multiple_filters_for_same_type_all_apply()
+    {
+        var filters = new Filters<IntegrationDbContext>();
+        filters.For<ParentEntity>().Add(_ => _.Property != "Hidden");
+        filters.For<ParentEntity>().Add(_ => _.Property != "Secret");
+
+        var query =
+            """
+            {
+              parentEntities (orderBy: {path: "property"})
+              {
+                property
+              }
+            }
+            """;
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(
+            database,
+            query,
+            null,
+            filters,
+            false,
+            [
+                new ParentEntity {Property = "Visible"},
+                new ParentEntity {Property = "Hidden"},
+                new ParentEntity {Property = "Secret"}
+            ]);
+    }
+
+    [Fact]
     public async Task Child_parent_with_alias()
     {
         var query =
