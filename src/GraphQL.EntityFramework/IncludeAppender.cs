@@ -1,4 +1,4 @@
-class IncludeAppender(
+﻿class IncludeAppender(
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames,
     IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys)
@@ -134,14 +134,24 @@ class IncludeAppender(
         return query;
     }
 
+    static MethodInfo includeMethodDefinition = typeof(EntityFrameworkQueryableExtensions)
+        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+        .First(_ => _.Name == "Include" &&
+                    _.GetGenericArguments().Length == 2 &&
+                    _.GetParameters().Length == 2 &&
+                    _.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(Expression<>));
+
+    static ConcurrentDictionary<(Type entity, Type property), MethodInfo> includeMethods = new();
+
+    /// <summary>
+    /// Both the scan over every public static method on EntityFrameworkQueryableExtensions and the
+    /// MakeGenericMethod were being repeated per request. The pairs are bounded by the model, so
+    /// they are safe to hold on to.
+    /// </summary>
     static MethodInfo GetIncludeMethod(Type entityType, Type propertyType) =>
-        typeof(EntityFrameworkQueryableExtensions)
-            .GetMethods(BindingFlags.Static | BindingFlags.Public)
-            .First(_ => _.Name == "Include" &&
-                        _.GetGenericArguments().Length == 2 &&
-                        _.GetParameters().Length == 2 &&
-                        _.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(Expression<>))
-            .MakeGenericMethod(entityType, propertyType);
+        includeMethods.GetOrAdd(
+            (entityType, propertyType),
+            _ => includeMethodDefinition.MakeGenericMethod(_.entity, _.property));
 
     static IQueryable<TItem> AddNestedIncludes<TItem>(
         IQueryable<TItem> query,
@@ -384,7 +394,8 @@ class IncludeAppender(
         clrType = null;
 
         // Use the schema's type lookup to resolve GraphQL type name → CLR type
-        var graphType = schema.AllTypes.FirstOrDefault(_ => _.Name == graphQlTypeName);
+        // Indexed by name, rather than a linear scan of every type in the schema per request
+        var graphType = schema.AllTypes[graphQlTypeName];
         if (graphType is not null)
         {
             // Walk the type hierarchy to find the CLR type from the generic arguments

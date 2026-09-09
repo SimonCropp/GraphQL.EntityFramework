@@ -1,4 +1,4 @@
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 static class SelectExpressionBuilder
 {
@@ -19,7 +19,17 @@ static class SelectExpressionBuilder
 
     static ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
-    record PropertyMetadata(PropertyInfo Property, bool CanWrite, bool IsAutoProperty, MemberExpression PropertyAccess, MemberBinding? Binding, MethodInfo OrderByMethod);
+    record PropertyMetadata(Type EntityType, PropertyInfo Property, bool CanWrite, bool IsAutoProperty, MemberExpression PropertyAccess, MemberBinding? Binding)
+    {
+        MethodInfo? cachedOrderBy;
+
+        /// <summary>
+        /// Only the key property of a collection navigation ever needs this, but it was being
+        /// constructed for every property of every entity type. MakeGenericMethod is not free.
+        /// </summary>
+        public MethodInfo OrderByMethod =>
+            cachedOrderBy ??= orderByMethod.MakeGenericMethod(EntityType, Property.PropertyType);
+    }
 
     record EntityTypeMetadata(
         ParameterExpression Parameter,
@@ -452,8 +462,7 @@ static class SelectExpressionBuilder
                 var isAutoProperty = canWrite &&
                                      property.SetMethod!.IsDefined(typeof(CompilerGeneratedAttribute), false);
                 var binding = canWrite ? Expression.Bind(property, propertyAccess) : null;
-                var orderByMethod = SelectExpressionBuilder.orderByMethod.MakeGenericMethod(type, property.PropertyType);
-                dictionary[property.Name] = new(property, canWrite, isAutoProperty, propertyAccess, binding, orderByMethod);
+                dictionary[property.Name] = new(type, property, canWrite, isAutoProperty, propertyAccess, binding);
             }
 
             var newInstance = Expression.New(type);

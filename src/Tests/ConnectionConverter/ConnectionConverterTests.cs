@@ -116,6 +116,16 @@
     }
 
     [Fact]
+    public void Large_first_does_not_overflow_page_info()
+    {
+        // take + skip overflowed to negative, so HasNextPage reported true on a fully covered page
+        var connection = ConnectionConverter.ApplyConnectionContext(list, int.MaxValue, after: 0, last: null, before: null);
+
+        Assert.False(connection.PageInfo!.HasNextPage);
+        Assert.Equal("9", connection.PageInfo.EndCursor);
+    }
+
+    [Fact]
     public void List_after_is_an_exclusive_cursor()
     {
         // 'after' is an exclusive cursor: results start strictly after the given index,
