@@ -1,4 +1,4 @@
-public class PropertyCacheTests
+﻿public class PropertyCacheTests
 {
     [Fact]
     public void Property()
@@ -62,6 +62,66 @@ public class PropertyCacheTests
 
         Assert.Equal("valueA", a);
         Assert.Equal("valueB", b);
+    }
+
+    [Fact]
+    public void DeepPathIsRejected()
+    {
+        // paths come from the client, and each segment becomes a join on the queryable paths
+        var path = string.Join('.', Enumerable.Repeat("Self", 11)) + ".Public";
+        var exception = Assert.Throws<Exception>(() => PropertyCache<SelfReferencing>.GetProperty(path));
+        Assert.Contains("exceeds the maximum depth", exception.Message);
+    }
+
+    [Fact]
+    public void PathAtMaximumDepthIsAllowed()
+    {
+        var path = string.Join('.', Enumerable.Repeat("Self", 9)) + ".Public";
+        var property = PropertyCache<SelfReferencing>.GetProperty(path);
+        Assert.Equal(typeof(string), property.PropertyType);
+    }
+
+    [Fact]
+    public void CacheDoesNotGrowWithoutBound()
+    {
+        // a self referencing navigation can mint unlimited distinct valid paths
+        for (var i = 1; i <= 3000; i++)
+        {
+            var depth = (i % 9) + 1;
+            var path = string.Join('.', Enumerable.Repeat("Self", depth)) + $".Public";
+            PropertyCache<SelfReferencing>.GetProperty(path);
+
+            // vary the casing to mint distinct keys for the same member
+            PropertyCache<SelfReferencing>.GetProperty(path.Replace("Self", i % 2 == 0 ? "self" : "SELF"));
+        }
+
+        Assert.True(
+            PropertyCache<SelfReferencing>.CachedCount <= 1000,
+            $"cache grew to {PropertyCache<SelfReferencing>.CachedCount}");
+    }
+
+    [Fact]
+    public void FuncStillWorksAfterBeingCompiledLazily()
+    {
+        var target = new SelfReferencing
+        {
+            Self = new()
+            {
+                Public = "Value1"
+            }
+        };
+
+        var property = PropertyCache<SelfReferencing>.GetProperty("Self.Public");
+
+        // invoked twice to cover the memoised path as well as the first compile
+        Assert.Equal("Value1", property.Func(target));
+        Assert.Equal("Value1", property.Func(target));
+    }
+
+    public class SelfReferencing
+    {
+        public SelfReferencing? Self { get; set; }
+        public string? Public { get; set; }
     }
 
     public interface IHasA
