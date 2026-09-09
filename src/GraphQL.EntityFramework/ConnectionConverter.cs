@@ -245,16 +245,32 @@ static class ConnectionConverter
 
     static void Parse(string? afterString, string? beforeString, out int? after, out int? before)
     {
-        after = null;
-        if (afterString is not null)
+        after = ParseCursor(afterString, "after");
+        before = ParseCursor(beforeString, "before");
+    }
+
+    /// <summary>
+    /// Cursors are client supplied, so a malformed one is bad input rather than a bug. Parsing with
+    /// int.Parse surfaced a raw FormatException or OverflowException, and a negative value parsed
+    /// happily and then reached the database as a negative SQL OFFSET.
+    /// </summary>
+    static int? ParseCursor(string? value, string name)
+    {
+        if (value is null)
         {
-            after = int.Parse(afterString);
+            return null;
         }
 
-        before = null;
-        if (beforeString is not null)
+        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var cursor))
         {
-            before = int.Parse(beforeString);
+            throw new($"The `{name}` cursor must be an integer. Value: {value}");
         }
+
+        if (cursor < 0)
+        {
+            throw new($"The `{name}` cursor cannot be negative. Value: {value}");
+        }
+
+        return cursor;
     }
 }
