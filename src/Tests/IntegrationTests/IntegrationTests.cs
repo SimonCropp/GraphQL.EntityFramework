@@ -1,4 +1,4 @@
-public partial class IntegrationTests
+﻿public partial class IntegrationTests
 {
     static SqlInstance<IntegrationDbContext> sqlInstance;
 
@@ -1991,6 +1991,41 @@ public partial class IntegrationTests
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
+    }
+
+    [Fact]
+    public async Task Navigation_list_where()
+    {
+        var query =
+            """
+            {
+              parentEntities (orderBy: {path: "property"})
+              {
+                children (where: {path: "property", comparison: equal, value: "Match"})
+                {
+                  property
+                }
+              }
+            }
+            """;
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity2 = new ChildEntity
+        {
+            Property = "Match",
+            Parent = entity1
+        };
+        var entity3 = new ChildEntity
+        {
+            Property = "NoMatch",
+            Parent = entity1
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
 
     [Fact]

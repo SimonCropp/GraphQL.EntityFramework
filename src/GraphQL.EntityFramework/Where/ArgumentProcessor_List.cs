@@ -20,14 +20,14 @@ public static partial class ArgumentProcessor
             if (ArgumentReader.TryReadIds(context, out var idValues))
             {
                 var predicate = ExpressionBuilder<TItem>.BuildIdPredicate("Id", idValues);
-                items = items.Where(predicate.Compile());
+                items = items.Where(Compile(predicate));
             }
         }
 
         if (ArgumentReader.TryReadWhere(context, out var wheres))
         {
             var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
-            items = items.Where(predicate.Compile());
+            items = items.Where(Compile(predicate));
         }
 
         var (orderedItems, order) = Order(items, context);
@@ -49,6 +49,15 @@ public static partial class ArgumentProcessor
 
         return items;
     }
+
+    /// <summary>
+    /// This path runs once per parent node, so a navigation list field is compiled as many times as there
+    /// are parents. Emitting IL costs ~700us a call and leaves behind a DynamicMethod that is never
+    /// collected, which dwarfs the cost of running the predicate over an in memory collection. Interpreting
+    /// is ~20x cheaper to construct and stays ahead until a collection reaches several thousand items.
+    /// </summary>
+    static Func<TItem, bool> Compile<TItem>(Expression<Func<TItem, bool>> predicate) =>
+        predicate.Compile(preferInterpretation: true);
 
     static (IEnumerable<TItem> items, bool order) Order<TItem>(IEnumerable<TItem> queryable, IResolveFieldContext context)
     {
