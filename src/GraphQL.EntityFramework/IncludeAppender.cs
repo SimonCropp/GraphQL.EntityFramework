@@ -223,8 +223,11 @@ class IncludeAppender(
 
         if (context.SubFields is not null)
         {
-            foreach (var (fieldName, fieldInfo) in context.SubFields)
+            foreach (var fieldInfo in context.SubFields.Values)
             {
+                // SubFields is keyed by response key, which is the alias when one is used.
+                // The name of the property to project has to come from the ast node.
+                var fieldName = fieldInfo.Field.Name.StringValue;
                 if (IsConnectionNodeName(fieldName))
                 {
                     ProcessConnectionNodeFields(fieldInfo.Field.SelectionSet, navigationProperties, scalarFields, navProjections, context);
