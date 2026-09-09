@@ -26,7 +26,9 @@ public class ClientQueryExecutor(Func<object, string> json, string uri = "graphq
         Ensure.NotWhiteSpace(nameof(query), query);
         var compressed = CompressQuery(query);
         var variablesString = ToJson(variables);
-        var getUri = $"{uri}?query={compressed}&variables={variablesString}";
+        // Escaped, since a query containing an `&` or a `#` would otherwise split into another
+        // query string parameter or be truncated as a fragment
+        var getUri = $"{uri}?query={Uri.EscapeDataString(compressed)}&variables={Uri.EscapeDataString(variablesString)}";
         var request = new HttpRequestMessage(HttpMethod.Get, getUri);
         headerAction?.Invoke(request.Headers);
         return client.SendAsync(request);
