@@ -1,4 +1,4 @@
-﻿﻿public class PropertyCacheTests
+﻿public class PropertyCacheTests
 {
     [Fact]
     public void Property()
@@ -160,6 +160,7 @@
         string? secretField = "hunter2";
 
         // ReSharper disable once UnusedAutoPropertyAccessor.Local
+        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
         string? SecretProperty { get; set; } = "top-secret";
 
         public string? ReadNonPublic() => secretField + SecretProperty;
