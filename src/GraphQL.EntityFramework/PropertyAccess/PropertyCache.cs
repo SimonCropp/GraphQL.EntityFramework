@@ -100,19 +100,15 @@
 
     static MemberInfo? TryGetPropertyOrField(Type type, string propertyOrFieldName)
     {
-        // Member search binding flags
+        // Member search binding flags.
+        // Only public members are resolved. Paths arrive from the client, so falling back to
+        // non public members would make anything the clr can read filterable, including members
+        // deliberately kept out of the graph.
         const BindingFlags bindingFlagsPublic = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
-        const BindingFlags bindingFlagsNonPublic = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
 
         // Attempt to get the public property
         var propertyOrField = type.GetProperty(propertyOrFieldName, bindingFlagsPublic) ??
                               (MemberInfo?)type.GetField(propertyOrFieldName, bindingFlagsPublic);
-
-        // If not found
-        propertyOrField ??= type.GetProperty(propertyOrFieldName, bindingFlagsNonPublic);
-
-        // If not found
-        propertyOrField ??= type.GetField(propertyOrFieldName, bindingFlagsNonPublic);
 
         // If property/field was not resolved, search inherited interfaces.
         // Interface member lookup is not flattened, so each base interface must be
