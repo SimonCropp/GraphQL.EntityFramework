@@ -4,9 +4,6 @@
       parentEntitiesFiltered: [
         {
           property: Entity1
-        },
-        {
-          property: Entity2
         }
       ]
     }
