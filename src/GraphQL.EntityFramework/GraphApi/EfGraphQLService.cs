@@ -1,4 +1,4 @@
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 public partial class EfGraphQLService<TDbContext> :
     IEfGraphQLService<TDbContext>
@@ -6,18 +6,22 @@ public partial class EfGraphQLService<TDbContext> :
 {
     ResolveFilters<TDbContext>? resolveFilters;
     bool disableTracking;
+    bool includeSqlInExceptions;
     ResolveDbContext<TDbContext> resolveDbContext;
     IReadOnlyDictionary<Type, List<string>> keyNames;
 
     /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
+    /// <param name="includeSqlInExceptions">Include the generated sql in exception messages. Off by default, since those messages can reach clients and the sql carries table and column names and, depending on the provider, parameter values.</param>
     public EfGraphQLService(
         IModel model,
         ResolveDbContext<TDbContext> resolveDbContext,
         ResolveFilters<TDbContext>? resolveFilters = null,
-        bool disableTracking = false)
+        bool disableTracking = false,
+        bool includeSqlInExceptions = false)
     {
         this.resolveFilters = resolveFilters;
         this.disableTracking = disableTracking;
+        this.includeSqlInExceptions = includeSqlInExceptions;
         this.resolveDbContext = resolveDbContext;
 
         keyNames = model.GetKeyNames();
@@ -73,6 +77,38 @@ public partial class EfGraphQLService<TDbContext> :
 
     public Filters<TDbContext>? ResolveFilters(IResolveFieldContext context) =>
         resolveFilters?.Invoke(context.UserContext);
+
+    /// <summary>
+    /// The generated sql carries table and column names and, depending on the provider, the parameter
+    /// values too. These messages surface as GraphQL errors, so the sql is opt in rather than default.
+    /// </summary>
+    string QueryText(IQueryable? query)
+    {
+        if (!includeSqlInExceptions)
+        {
+            return "(omitted, pass includeSqlInExceptions when registering to include the generated sql)";
+        }
+
+        if (query is null)
+        {
+            return "(none)";
+        }
+
+        return query.SafeToQueryString();
+    }
+
+    /// <summary>
+    /// The generated sql for a not found exception, or null when it should not be disclosed.
+    /// </summary>
+    string? NotFoundQueryText(IQueryable? query)
+    {
+        if (!includeSqlInExceptions)
+        {
+            return null;
+        }
+
+        return query?.SafeToQueryString();
+    }
 
     static string JoinKeys(IReadOnlyCollection<string>? names)
     {

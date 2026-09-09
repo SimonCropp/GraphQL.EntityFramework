@@ -1040,6 +1040,21 @@
     }
 
     [Fact]
+    public async Task Single_NotFound_with_sql_included()
+    {
+        var query =
+            """
+            {
+              parentEntity(id: "00000000-0000-0000-0000-000000000001") {
+                property
+              }
+            }
+            """;
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [], includeSqlInExceptions: true);
+    }
+
+    [Fact]
     public async Task First_NotFound()
     {
         var query =
@@ -3212,6 +3227,7 @@
         Filters<IntegrationDbContext>? filters,
         bool disableTracking,
         object[] entities,
+        bool includeSqlInExceptions = false,
         [CallerFilePath] string sourceFile = "")
     {
         var dbContext = database.Context;
@@ -3232,7 +3248,7 @@
         ExecutionResult result;
         try
         {
-            result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking);
+            result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking, includeSqlInExceptions);
         }
         catch (ExecutionError executionError)
         {

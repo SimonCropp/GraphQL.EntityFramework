@@ -113,7 +113,7 @@ partial class EfGraphQLService<TDbContext>
                          TSource: {typeof(TSource).FullName}
                          TReturn: {typeof(TReturn).FullName}
                          KeyNames: {JoinKeys(names)}
-                         Query: {query.SafeToQueryString()}
+                         Query: {QueryText(query)}
                          """,
                         exception);
                 }

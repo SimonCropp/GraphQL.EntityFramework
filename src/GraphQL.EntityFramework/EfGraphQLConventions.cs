@@ -1,4 +1,4 @@
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 public static class EfGraphQLConventions
 {
@@ -10,6 +10,7 @@ public static class EfGraphQLConventions
     /// <param name="model">The <see cref="IModel"/> to use. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
     /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
     /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
+    /// <param name="includeSqlInExceptions">Include the generated sql in exception messages. Off by default, since those messages can reach clients and the sql carries table and column names and, depending on the provider, parameter values.</param>
 
     #region RegisterInContainer
 
@@ -18,7 +19,8 @@ public static class EfGraphQLConventions
             ResolveDbContext<TDbContext>? resolveDbContext = null,
             IModel? model = null,
             ResolveFilters<TDbContext>? resolveFilters = null,
-            bool disableTracking = false)
+            bool disableTracking = false,
+            bool includeSqlInExceptions = false)
 
         #endregion
 
@@ -27,7 +29,7 @@ public static class EfGraphQLConventions
         RegisterScalarsAndArgs(services);
         services.AddHttpContextAccessor();
         services.AddTransient<HttpContextCapture>();
-        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking));
+        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, includeSqlInExceptions));
         services.AddSingleton<IEfGraphQLService<TDbContext>>(provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
     }
 
@@ -36,7 +38,8 @@ public static class EfGraphQLConventions
         IModel? model,
         ResolveFilters<TDbContext>? filters,
         IServiceProvider provider,
-        bool disableTracking)
+        bool disableTracking,
+        bool includeSqlInExceptions)
         where TDbContext : DbContext
     {
         model ??= ResolveModel<TDbContext>(provider);
@@ -47,7 +50,8 @@ public static class EfGraphQLConventions
             model,
             dbContextResolver,
             filters,
-            disableTracking);
+            disableTracking,
+            includeSqlInExceptions);
     }
 
     static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider, IServiceProvider? requestServices)
