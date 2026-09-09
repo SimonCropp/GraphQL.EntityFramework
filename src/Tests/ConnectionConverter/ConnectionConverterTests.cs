@@ -37,6 +37,10 @@
 
     //last after
     [InlineData(null, 7, 2, null)]
+
+    //last larger than the available range
+    [InlineData(null, null, 20, null)]
+    [InlineData(null, null, 5, 2)]
     public async Task Queryable(int? first, int? after, int? last, int? before)
     {
         var fieldContext = new ResolveFieldContext<string>();
@@ -71,6 +75,9 @@
     //last after
     [InlineData(null, 7, 2, null)]
 
+    //last larger than the available range
+    [InlineData(null, null, 20, null)]
+    [InlineData(null, null, 5, 2)]
     public Task List(int? first, int? after, int? last, int? before)
     {
         var connection = ConnectionConverter.ApplyConnectionContext(list, first, after, last, before);
