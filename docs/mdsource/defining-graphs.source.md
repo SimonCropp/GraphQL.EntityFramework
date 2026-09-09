@@ -111,7 +111,7 @@ Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0
 
 ### Using Projection-Based Resolve
 
-When using `Field().Resolve()` or `Field().ResolveAsync()` in graph types, navigation properties on `context.Source` may not be loaded if the projection system didn't include them. To safely access navigation properties in custom resolvers, use the projection-based extension methods:
+When using `Field().Resolve()` or `Field().ResolveAsync()` in graph types, navigation properties on `context.Source` may not be loaded if the projection system didn't include them. To safely access navigation properties in custom resolvers, use the projection-based resolve methods:
 
 ```cs
 public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntity>
@@ -119,18 +119,22 @@ public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntit
     public ChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService) =>
         Field<int>("ParentId")
-            .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
-                projection: x => x.Parent,
-                resolve: ctx => ctx.Projection.Id);
+            .Resolve(
+                projection: _ => _.Parent,
+                resolve: _ => _.Projection.Id);
 }
 ```
 
-**Available Extension Methods:**
+**Available Methods:**
 
-- `Resolve<TDbContext, TSource, TReturn, TProjection>()` - Synchronous resolver with projection
-- `ResolveAsync<TDbContext, TSource, TReturn, TProjection>()` - Async resolver with projection
-- `ResolveList<TDbContext, TSource, TReturn, TProjection>()` - List resolver with projection
-- `ResolveListAsync<TDbContext, TSource, TReturn, TProjection>()` - Async list resolver with projection
+Inside an `EfObjectGraphType` or `EfInterfaceGraphType`, the `Field` methods return an `EfFieldBuilder<TDbContext, TSource, TReturn>` that already knows the `IEfGraphQLService<TDbContext>`. It adds:
+
+- `Resolve(projection, resolve)` - Synchronous resolver with projection
+- `ResolveAsync(projection, resolve)` - Async resolver with projection
+
+Only `TProjection` is inferred, from the projection expression; the other type arguments come from the graph type. The builder's fluent methods (`Description`, `Argument`, `Configure`, etc.) are overridden to keep returning `EfFieldBuilder`, so the projection-based methods remain available anywhere in the chain. Extension methods from other libraries return the base `FieldBuilder`, so call those after the projection-based resolve.
+
+For a plain `ObjectGraphType`, or for the list variants, the equivalent extension methods on `FieldBuilder` take the service as their first argument: `Resolve(graphQlService, projection, resolve)`, `ResolveAsync(...)`, `ResolveList(...)` and `ResolveListAsync(...)`. The service is used at execution time to resolve the `DbContext` and filters.
 
 The projection-based extension methods ensure required data is loaded by:
 
@@ -150,9 +154,9 @@ Field<int>("ParentId")
 
 ```cs
 Field<int>("ParentId")
-    .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
-        projection: x => x.Parent,
-        resolve: ctx => ctx.Projection.Id); // Parent is guaranteed to be loaded
+    .Resolve(
+        projection: _ => _.Parent,
+        resolve: _ => _.Projection.Id); // Parent is guaranteed to be loaded
 ```
 
 **Note:** A Roslyn analyzer (GQLEF002) warns at compile time when `Field().Resolve()` accesses properties other than primary keys and foreign keys. Only PK and FK properties are guaranteed to be loaded by the projection system - all other properties (including regular scalars like `Name`) require projection-based extension methods to ensure they are loaded.
@@ -168,8 +172,7 @@ This is useful for computed or permission-check fields that read from `context.S
 // The parent query's SELECT projection will include Status,
 // even if the client doesn't explicitly request a "status" field.
 Field<NonNullGraphType<StringGraphType>, string>("statusLabel")
-    .WithProjection(
-        (Expression<Func<OrderEntity, OrderStatus>>)(_ => _.Status))
+    .WithProjection(_ => _.Status)
     .Resolve(context => context.Source.Status switch
     {
         OrderStatus.Active => "Active",

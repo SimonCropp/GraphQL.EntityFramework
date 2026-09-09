@@ -47,7 +47,7 @@ public class FieldBuilderProjectionGraphType :
 
         // Enum projection - demonstrates projecting scalar enum types
         Field<NonNullGraphType<StringGraphType>, string>("statusDisplay")
-            .Resolve<IntegrationDbContext, FieldBuilderProjectionEntity, string, EntityStatus>(
+            .Resolve(
                 projection: _ => _.Status,
                 resolve: _ => _.Projection switch
                 {
@@ -59,14 +59,14 @@ public class FieldBuilderProjectionGraphType :
 
         // Navigation property access DOES use projection-based resolve
         Field<NonNullGraphType<StringGraphType>, string>("parentName")
-            .Resolve<IntegrationDbContext, FieldBuilderProjectionEntity, string, FieldBuilderProjectionParentEntity?>(
+            .Resolve(
                 projection: _ => _.Parent,
                 resolve: _ => _.Projection?.Name ?? "No Parent");
 
         // WithProjection sets metadata only (no resolver wrapping) — ensures scalar fields
         // are included in the parent query's SELECT projection even when not explicitly queried
         Field<NonNullGraphType<StringGraphType>, string>("statusViaWithProjection")
-            .WithProjection((Expression<Func<FieldBuilderProjectionEntity, EntityStatus>>)(_ => _.Status))
+            .WithProjection(_ => _.Status)
             .Resolve(_ => _.Source.Status switch
             {
                 EntityStatus.Active => "Active via WithProjection",

@@ -226,7 +226,7 @@ public class FieldBuilderResolveAnalyzerTests
                 public ChildGraphType(IEfGraphQLService<TestDbContext> graphQlService) : base(graphQlService)
                 {
                     Field<string>("ParentName")
-                        .Resolve<TestDbContext, ChildEntity, string, ParentEntity>(
+                        .Resolve(
                             projection: _ => _.Parent,
                             resolve: _ => _.Projection.Name);
                 }
@@ -265,7 +265,7 @@ public class FieldBuilderResolveAnalyzerTests
                 public ChildGraphType(IEfGraphQLService<TestDbContext> graphQlService) : base(graphQlService)
                 {
                     Field<string>("ParentName")
-                        .ResolveAsync<TestDbContext, ChildEntity, string, ParentEntity>(
+                        .ResolveAsync(
                             projection: _ => _.Parent,
                             resolve: async ctx => await Task.FromResult(ctx.Projection.Name));
                 }
@@ -473,10 +473,76 @@ public class FieldBuilderResolveAnalyzerTests
         Assert.Equal("GQLEF002", diagnostics[0].Id);
     }
 
-    // NOTE: Analyzer tests for GQLEF003 (identity projection detection) are skipped
-    // because the analyzer implementation has issues detecting identity projections in test scenarios.
-    // However, runtime validation works perfectly and catches identity projections immediately when code runs.
-    // See FieldBuilderExtensionsTests for runtime validation tests.
+    [Fact]
+    public async Task DetectsIdentityProjectionInProjectionBasedResolve()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using GraphQL.Types;
+            using Microsoft.EntityFrameworkCore;
+
+            public class ParentEntity { public int Id { get; set; } }
+            public class ChildEntity
+            {
+                public int Id { get; set; }
+                public int ParentId { get; set; }
+                public ParentEntity Parent { get; set; } = null!;
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class ChildGraphType : EfObjectGraphType<TestDbContext, ChildEntity>
+            {
+                public ChildGraphType(IEfGraphQLService<TestDbContext> graphQlService) : base(graphQlService)
+                {
+                    Field<int>("ParentId")
+                        .Resolve(
+                            projection: _ => _,
+                            resolve: _ => _.Projection.ParentId);
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        Assert.Single(diagnostics);
+        Assert.Equal("GQLEF003", diagnostics[0].Id);
+    }
+
+    [Fact]
+    public async Task DetectsIdentityProjectionInProjectionBasedResolveAsyncWithPositionalArguments()
+    {
+        var source = """
+            using GraphQL.EntityFramework;
+            using GraphQL.Types;
+            using Microsoft.EntityFrameworkCore;
+            using System.Threading.Tasks;
+
+            public class ParentEntity { public int Id { get; set; } }
+            public class ChildEntity
+            {
+                public int Id { get; set; }
+                public int ParentId { get; set; }
+                public ParentEntity Parent { get; set; } = null!;
+            }
+
+            public class TestDbContext : DbContext { }
+
+            public class ChildGraphType : EfObjectGraphType<TestDbContext, ChildEntity>
+            {
+                public ChildGraphType(IEfGraphQLService<TestDbContext> graphQlService) : base(graphQlService)
+                {
+                    Field<int>("ParentId")
+                        .ResolveAsync(
+                            _ => _,
+                            _ => Task.FromResult(_.Projection.ParentId));
+                }
+            }
+            """;
+
+        var diagnostics = await GetDiagnosticsAsync(source);
+        Assert.Single(diagnostics);
+        Assert.Equal("GQLEF003", diagnostics[0].Id);
+    }
 
     static async Task<Diagnostic[]> GetDiagnosticsAsync(string source)
     {
@@ -548,7 +614,9 @@ public class FieldBuilderResolveAnalyzerTests
         var allDiagnostics = await compilationWithAnalyzers.GetAllDiagnosticsAsync();
 
         // Check for compilation errors
-        var compilationErrors = allDiagnostics.Where(_ => _.Severity == DiagnosticSeverity.Error).ToArray();
+        var compilationErrors = allDiagnostics
+            .Where(_ => _.Severity == DiagnosticSeverity.Error && !_.Id.StartsWith("GQLEF"))
+            .ToArray();
         if (compilationErrors.Length > 0)
         {
             var errorMessages = string.Join("\n", compilationErrors.Select(_ => $"{_.Id}: {_.GetMessage()}"));

@@ -29,7 +29,7 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        // Check if the lambda already uses projection-based extension methods (has 4 type parameters)
+        // Check if the lambda already uses projection-based extension methods (has a projection parameter)
         var isProjectionBased = IsProjectionBasedResolve(invocation, context.SemanticModel);
 
         if (isProjectionBased)
@@ -88,14 +88,9 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        // Check if the containing type is FieldBuilder<,>
-        var containingType = methodSymbol.ContainingType;
-        if (containingType == null)
-        {
-            return false;
-        }
-
-        var baseType = containingType;
+        // The receiver is FieldBuilder<,> both for its instance methods and for the
+        // projection-based extension methods, where it is the `this` parameter type
+        var baseType = GetReceiverType(methodSymbol);
         while (baseType != null)
         {
             if (baseType.Name == "FieldBuilder" &&
@@ -120,6 +115,23 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         return false;
     }
 
+    static ITypeSymbol? GetReceiverType(IMethodSymbol method)
+    {
+        if (!method.IsExtensionMethod)
+        {
+            return method.ContainingType;
+        }
+
+        // Reduced form: builder.Resolve(...)
+        if (method.ReducedFrom != null)
+        {
+            return method.ReceiverType;
+        }
+
+        // Static form: FieldBuilderExtensions.Resolve(builder, ...)
+        return method.Parameters.FirstOrDefault()?.Type;
+    }
+
     static bool IsProjectionBasedResolve(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
     {
         var symbolInfo = semanticModel.GetSymbolInfo(invocation);
@@ -128,11 +140,9 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        // Projection-based extension methods have 4 type parameters:
-        // TDbContext, TSource, TReturn, TProjection
-        // AND have a parameter named "projection"
-        return methodSymbol.TypeArguments.Length == 4 &&
-               methodSymbol.Parameters.Any(_ => _.Name == "projection") &&
+        // Projection-based methods (extension methods on FieldBuilder and instance
+        // methods on EfFieldBuilder) are identified by their "projection" parameter
+        return methodSymbol.Parameters.Any(_ => _.Name == "projection") &&
                methodSymbol.ContainingNamespace?.ToString() == "GraphQL.EntityFramework";
     }
 

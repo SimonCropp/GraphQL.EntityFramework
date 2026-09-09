@@ -152,11 +152,11 @@ The library supports EF projections where you can use `Select()` to project to D
 
 The library provides projection-based extension methods on `FieldBuilder` to safely access navigation properties in custom resolvers:
 
-**Extension Methods** (`src/GraphQL.EntityFramework/GraphApi/FieldBuilderExtensions.cs`)
-- `Resolve<TDbContext, TSource, TReturn, TProjection>()` - Synchronous resolver with projection
-- `ResolveAsync<TDbContext, TSource, TReturn, TProjection>()` - Async resolver with projection
-- `ResolveList<TDbContext, TSource, TReturn, TProjection>()` - List resolver with projection
-- `ResolveListAsync<TDbContext, TSource, TReturn, TProjection>()` - Async list resolver with projection
+**Methods**
+- `Resolve(projection, resolve)` - Synchronous resolver with projection
+- `ResolveAsync(projection, resolve)` - Async resolver with projection
+
+Inside `EfObjectGraphType` and `EfInterfaceGraphType`, the `Field` methods return `EfFieldBuilder<TDbContext, TSource, TReturn>` (`src/GraphQL.EntityFramework/GraphApi/EfFieldBuilder.cs`), which carries the `IEfGraphQLService<TDbContext>` and exposes these as instance methods with only `TProjection` inferred. Its fluent methods are overridden to keep returning `EfFieldBuilder`. Equivalent extension methods on `FieldBuilder` (`Resolve`, `ResolveAsync`, `ResolveList`, `ResolveListAsync`) take the service as their first argument, for plain graph types and list results.
 
 **Why Use These Methods:**
 When using `Field().Resolve()` or `Field().ResolveAsync()` directly, navigation properties on `context.Source` may be null if the projection system didn't include them. The projection-based extension methods ensure required data is loaded by:
@@ -171,9 +171,9 @@ public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntit
 {
     public ChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) : base(graphQlService) =>
         Field<int>("ParentId")
-            .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
-                projection: x => x.Parent!,
-                resolve: ctx => ctx.Projection.Id);
+            .Resolve(
+                projection: _ => _.Parent!,
+                resolve: _ => _.Projection.Id);
 }
 ```
 

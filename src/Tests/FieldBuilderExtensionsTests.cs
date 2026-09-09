@@ -8,6 +8,9 @@ public class FieldBuilderExtensionsTests
 
     class TestDbContext(DbContextOptions options) : DbContext(options);
 
+    // Identity projections are rejected before the service is touched, so no real service is required
+    static readonly IEfGraphQLService<TestDbContext> graphQlService = null!;
+
     [Fact]
     public void Resolve_ThrowsArgumentException_WhenIdentityProjectionUsed()
     {
@@ -15,9 +18,10 @@ public class FieldBuilderExtensionsTests
         var field = graphType.Field<int>("test");
 
         var exception = Assert.Throws<ArgumentException>(() =>
-            field.Resolve<TestDbContext, TestEntity, int, TestEntity>(
-            projection: _ => _,
-            resolve: _ => _.Projection.Id));
+            field.Resolve(
+                graphQlService,
+                projection: _ => _,
+                resolve: _ => _.Projection.Id));
 
         Assert.Contains("Identity projection", exception.Message);
         Assert.Contains("_ => _", exception.Message);
@@ -30,9 +34,10 @@ public class FieldBuilderExtensionsTests
         var field = graphType.Field<int>("test");
 
         var exception = Assert.Throws<ArgumentException>(() =>
-            field.Resolve<TestDbContext, TestEntity, int, TestEntity>(
-            projection: _ => _,
-            resolve: _ => _.Projection.Id));
+            field.Resolve(
+                graphQlService,
+                projection: _ => _,
+                resolve: _ => _.Projection.Id));
 
         Assert.Contains("Identity projection", exception.Message);
     }
@@ -44,9 +49,10 @@ public class FieldBuilderExtensionsTests
         var field = graphType.Field<int>("test");
 
         var exception = Assert.Throws<ArgumentException>(() =>
-            field.ResolveAsync<TestDbContext, TestEntity, int, TestEntity>(
-            projection: _ => _,
-            resolve: _ => Task.FromResult(_.Projection.Id)));
+            field.ResolveAsync(
+                graphQlService,
+                projection: _ => _,
+                resolve: _ => Task.FromResult(_.Projection.Id)));
 
         Assert.Contains("Identity projection", exception.Message);
     }
@@ -58,9 +64,10 @@ public class FieldBuilderExtensionsTests
         var field = graphType.Field<IEnumerable<int>>("test");
 
         var exception = Assert.Throws<ArgumentException>(() =>
-            field.ResolveList<TestDbContext, TestEntity, int, TestEntity>(
-            projection: _ => _,
-            resolve: _ => [_.Projection.Id]));
+            field.ResolveList(
+                graphQlService,
+                projection: _ => _,
+                resolve: _ => [_.Projection.Id]));
 
         Assert.Contains("Identity projection", exception.Message);
     }
@@ -72,7 +79,8 @@ public class FieldBuilderExtensionsTests
         var field = graphType.Field<IEnumerable<int>>("test");
 
         var exception = Assert.Throws<ArgumentException>(() =>
-            field.ResolveListAsync<TestDbContext, TestEntity, int, TestEntity>(
+            field.ResolveListAsync(
+                graphQlService,
                 projection: _ => _,
                 resolve: _ => Task.FromResult<IEnumerable<int>>([_.Projection.Id])));
 
