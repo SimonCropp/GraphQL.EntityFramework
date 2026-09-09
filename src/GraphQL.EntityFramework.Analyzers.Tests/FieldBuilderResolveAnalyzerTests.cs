@@ -227,7 +227,6 @@ public class FieldBuilderResolveAnalyzerTests
                 {
                     Field<string>("ParentName")
                         .Resolve(
-                            graphQlService,
                             projection: _ => _.Parent,
                             resolve: _ => _.Projection.Name);
                 }
@@ -267,7 +266,6 @@ public class FieldBuilderResolveAnalyzerTests
                 {
                     Field<string>("ParentName")
                         .ResolveAsync(
-                            graphQlService,
                             projection: _ => _.Parent,
                             resolve: async ctx => await Task.FromResult(ctx.Projection.Name));
                 }
@@ -499,7 +497,6 @@ public class FieldBuilderResolveAnalyzerTests
                 {
                     Field<int>("ParentId")
                         .Resolve(
-                            graphQlService,
                             projection: _ => _,
                             resolve: _ => _.Projection.ParentId);
                 }
@@ -536,7 +533,6 @@ public class FieldBuilderResolveAnalyzerTests
                 {
                     Field<int>("ParentId")
                         .ResolveAsync(
-                            graphQlService,
                             _ => _,
                             _ => Task.FromResult(_.Projection.ParentId));
                 }

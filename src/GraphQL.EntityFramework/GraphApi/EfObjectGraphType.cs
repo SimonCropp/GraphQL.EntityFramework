@@ -6,6 +6,44 @@ public class EfObjectGraphType<TDbContext, TSource>(IEfGraphQLService<TDbContext
 {
     public IEfGraphQLService<TDbContext> GraphQlService { get; } = graphQlService;
 
+    // The Field methods return an EfFieldBuilder so projection-based resolvers
+    // can be configured without passing the service
+    public override EfFieldBuilder<TDbContext, TSource, TReturnType> Field<TGraphType, TReturnType>(string name) =>
+        Wrap(base.Field<TGraphType, TReturnType>(name));
+
+    public override EfFieldBuilder<TDbContext, TSource, object> Field<TGraphType>(string name) =>
+        Wrap(base.Field<TGraphType>(name));
+
+    public override EfFieldBuilder<TDbContext, TSource, TReturnType> Field<TReturnType>(string name, bool nullable = false) =>
+        Wrap(base.Field<TReturnType>(name, nullable));
+
+    public override EfFieldBuilder<TDbContext, TSource, object> Field(string name, Type type) =>
+        Wrap(base.Field(name, type));
+
+    public override EfFieldBuilder<TDbContext, TSource, object> Field(string name, IGraphType type) =>
+        Wrap(base.Field(name, type));
+
+    public override EfFieldBuilder<TDbContext, TSource, TProperty> Field<TProperty>(string name, Expression<Func<TSource, TProperty>> expression) =>
+        Wrap(base.Field(name, expression));
+
+    public override EfFieldBuilder<TDbContext, TSource, TProperty> Field<TProperty>(string name, Expression<Func<TSource, TProperty>> expression, bool nullable) =>
+        Wrap(base.Field(name, expression, nullable));
+
+    public override EfFieldBuilder<TDbContext, TSource, TProperty> Field<TProperty>(string name, Expression<Func<TSource, TProperty>> expression, Type type) =>
+        Wrap(base.Field(name, expression, type));
+
+    public override EfFieldBuilder<TDbContext, TSource, TProperty> Field<TProperty>(Expression<Func<TSource, TProperty>> expression) =>
+        Wrap(base.Field(expression));
+
+    public override EfFieldBuilder<TDbContext, TSource, TProperty> Field<TProperty>(Expression<Func<TSource, TProperty>> expression, bool nullable) =>
+        Wrap(base.Field(expression, nullable));
+
+    public override EfFieldBuilder<TDbContext, TSource, TProperty> Field<TProperty>(Expression<Func<TSource, TProperty>> expression, Type type) =>
+        Wrap(base.Field(expression, type));
+
+    EfFieldBuilder<TDbContext, TSource, TReturn> Wrap<TReturn>(FieldBuilder<TSource, TReturn> builder) =>
+        builder as EfFieldBuilder<TDbContext, TSource, TReturn> ?? new(builder.FieldType, GraphQlService);
+
     /// <summary>
     /// Map all un-mapped properties. Underlying behaviour is:
     ///

@@ -152,13 +152,11 @@ The library supports EF projections where you can use `Select()` to project to D
 
 The library provides projection-based extension methods on `FieldBuilder` to safely access navigation properties in custom resolvers:
 
-**Extension Methods** (`src/GraphQL.EntityFramework/GraphApi/FieldBuilderExtensions.cs`)
-- `Resolve(graphQlService, projection, resolve)` - Synchronous resolver with projection
-- `ResolveAsync(graphQlService, projection, resolve)` - Async resolver with projection
-- `ResolveList(graphQlService, projection, resolve)` - List resolver with projection
-- `ResolveListAsync(graphQlService, projection, resolve)` - Async list resolver with projection
+**Methods**
+- `Resolve(projection, resolve)` - Synchronous resolver with projection
+- `ResolveAsync(projection, resolve)` - Async resolver with projection
 
-All type arguments are inferred. `TDbContext` comes from the `IEfGraphQLService<TDbContext>` argument (the `GraphQlService` property inside an `EfObjectGraphType`), which is also used at execution time to resolve the `DbContext` and filters.
+Inside `EfObjectGraphType` and `EfInterfaceGraphType`, the `Field` methods return `EfFieldBuilder<TDbContext, TSource, TReturn>` (`src/GraphQL.EntityFramework/GraphApi/EfFieldBuilder.cs`), which carries the `IEfGraphQLService<TDbContext>` and exposes these as instance methods with only `TProjection` inferred. Its fluent methods are overridden to keep returning `EfFieldBuilder`. Equivalent extension methods on `FieldBuilder` (`Resolve`, `ResolveAsync`, `ResolveList`, `ResolveListAsync`) take the service as their first argument, for plain graph types and list results.
 
 **Why Use These Methods:**
 When using `Field().Resolve()` or `Field().ResolveAsync()` directly, navigation properties on `context.Source` may be null if the projection system didn't include them. The projection-based extension methods ensure required data is loaded by:
@@ -174,7 +172,6 @@ public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntit
     public ChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) : base(graphQlService) =>
         Field<int>("ParentId")
             .Resolve(
-                graphQlService,
                 projection: _ => _.Parent!,
                 resolve: _ => _.Projection.Id);
 }

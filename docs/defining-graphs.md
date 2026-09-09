@@ -174,7 +174,7 @@ Without automatic foreign key inclusion, `context.Source.CustomerId` would be `0
 
 ### Using Projection-Based Resolve
 
-When using `Field().Resolve()` or `Field().ResolveAsync()` in graph types, navigation properties on `context.Source` may not be loaded if the projection system didn't include them. To safely access navigation properties in custom resolvers, use the projection-based extension methods:
+When using `Field().Resolve()` or `Field().ResolveAsync()` in graph types, navigation properties on `context.Source` may not be loaded if the projection system didn't include them. To safely access navigation properties in custom resolvers, use the projection-based resolve methods:
 
 ```cs
 public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntity>
@@ -183,20 +183,21 @@ public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntit
         base(graphQlService) =>
         Field<int>("ParentId")
             .Resolve(
-                graphQlService,
                 projection: _ => _.Parent,
                 resolve: _ => _.Projection.Id);
 }
 ```
 
-**Available Extension Methods:**
+**Available Methods:**
 
-- `Resolve(graphQlService, projection, resolve)` - Synchronous resolver with projection
-- `ResolveAsync(graphQlService, projection, resolve)` - Async resolver with projection
-- `ResolveList(graphQlService, projection, resolve)` - List resolver with projection
-- `ResolveListAsync(graphQlService, projection, resolve)` - Async list resolver with projection
+Inside an `EfObjectGraphType` or `EfInterfaceGraphType`, the `Field` methods return an `EfFieldBuilder<TDbContext, TSource, TReturn>` that already knows the `IEfGraphQLService<TDbContext>`. It adds:
 
-All type arguments are inferred: `TSource` and `TReturn` from the field builder, `TDbContext` from the `IEfGraphQLService<TDbContext>` argument, and `TProjection` from the projection expression. The service is used at execution time to resolve the `DbContext` and filters. Inside an `EfObjectGraphType` it is available as the `GraphQlService` property.
+- `Resolve(projection, resolve)` - Synchronous resolver with projection
+- `ResolveAsync(projection, resolve)` - Async resolver with projection
+
+Only `TProjection` is inferred, from the projection expression; the other type arguments come from the graph type. The builder's fluent methods (`Description`, `Argument`, `Configure`, etc.) are overridden to keep returning `EfFieldBuilder`, so the projection-based methods remain available anywhere in the chain. Extension methods from other libraries return the base `FieldBuilder`, so call those after the projection-based resolve.
+
+For a plain `ObjectGraphType`, or for the list variants, the equivalent extension methods on `FieldBuilder` take the service as their first argument: `Resolve(graphQlService, projection, resolve)`, `ResolveAsync(...)`, `ResolveList(...)` and `ResolveListAsync(...)`. The service is used at execution time to resolve the `DbContext` and filters.
 
 The projection-based extension methods ensure required data is loaded by:
 
@@ -217,7 +218,6 @@ Field<int>("ParentId")
 ```cs
 Field<int>("ParentId")
     .Resolve(
-        graphQlService,
         projection: _ => _.Parent,
         resolve: _ => _.Projection.Id); // Parent is guaranteed to be loaded
 ```

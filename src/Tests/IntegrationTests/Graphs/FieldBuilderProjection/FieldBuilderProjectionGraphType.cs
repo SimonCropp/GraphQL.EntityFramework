@@ -48,7 +48,6 @@ public class FieldBuilderProjectionGraphType :
         // Enum projection - demonstrates projecting scalar enum types
         Field<NonNullGraphType<StringGraphType>, string>("statusDisplay")
             .Resolve(
-                graphQlService,
                 projection: _ => _.Status,
                 resolve: _ => _.Projection switch
                 {
@@ -61,7 +60,6 @@ public class FieldBuilderProjectionGraphType :
         // Navigation property access DOES use projection-based resolve
         Field<NonNullGraphType<StringGraphType>, string>("parentName")
             .Resolve(
-                graphQlService,
                 projection: _ => _.Parent,
                 resolve: _ => _.Projection?.Name ?? "No Parent");
 
