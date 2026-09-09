@@ -12,13 +12,13 @@
   },
   sql: {
     Text:
-select w.Id,
-       case when c.Id is null then cast (1 as bit) else cast (0 as bit) end,
+select case when c.Id is null then cast (1 as bit) else cast (0 as bit) end,
        c.Id,
        c.ParentId,
        case when c0.Id is null then cast (1 as bit) else cast (0 as bit) end,
        c0.Id,
-       c0.ParentId
+       c0.ParentId,
+       w.Id
 from   WithManyChildrenEntities as w
        left outer join
        Child1Entities as c

@@ -17,10 +17,10 @@
   sql: {
     Text:
 select   p0.Id,
-         p0.Property,
          c.Id,
          c.ParentId,
-         c.Property
+         c.Property,
+         p0.Property
 from     (select top (2) p.Id,
                          p.Property
           from   ParentEntities as p

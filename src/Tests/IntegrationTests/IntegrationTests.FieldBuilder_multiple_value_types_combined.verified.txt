@@ -20,9 +20,9 @@
   },
   sql: {
     Text:
-select   f.Id,
+select   f.Age,
+         f.Id,
          f.Name,
-         f.Age,
          f.Salary,
          f.Score,
          f.ViewCount

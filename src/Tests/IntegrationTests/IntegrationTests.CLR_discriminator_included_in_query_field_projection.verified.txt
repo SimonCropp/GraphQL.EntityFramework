@@ -15,8 +15,8 @@
   },
   sql: {
     Text:
-select   d.Id,
-         d.EntityType,
+select   d.EntityType,
+         d.Id,
          d.Property
 from     DiscriminatorBaseEntities as d
 where    d.EntityType = 0

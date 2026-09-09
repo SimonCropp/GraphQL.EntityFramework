@@ -17,24 +17,24 @@
   sql: {
     Text:
 select   p1.Id,
-         p1.Property,
          s.Id,
-         s.ParentId,
-         s.Property,
          s.c,
          s.Id0,
-         s.Property0
+         s.Property,
+         s.ParentId,
+         s.Property0,
+         p1.Property
 from     (select top (2) p.Id,
                          p.Property
           from   ParentEntities as p
           where  p.Id = @p1) as p1
          left outer join
          (select c.Id,
-                 c.ParentId,
-                 c.Property,
                  case when p0.Id is null then cast (1 as bit) else cast (0 as bit) end as c,
                  p0.Id as Id0,
-                 p0.Property as Property0
+                 p0.Property,
+                 c.ParentId,
+                 c.Property as Property0
           from   ChildEntities as c
                  left outer join
                  ParentEntities as p0

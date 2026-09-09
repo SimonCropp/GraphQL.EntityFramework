@@ -14,13 +14,13 @@
   sql: {
     Text:
 select   d.Id,
-         d.ParentId,
-         d.TypedParentId,
-         d.Property,
          b.Id,
          b.Discriminator,
          b.Property,
-         b.Status
+         b.Status,
+         d.ParentId,
+         d.Property,
+         d.TypedParentId
 from     DerivedChildEntities as d
          left outer join
          BaseEntities as b

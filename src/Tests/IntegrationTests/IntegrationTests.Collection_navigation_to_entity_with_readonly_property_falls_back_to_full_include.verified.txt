@@ -17,13 +17,13 @@
   sql: {
     Text:
 select   r.Id,
-         r.Property,
          r0.Id,
          r0.Age,
          r0.ComputedInDb,
          r0.FirstName,
          r0.LastName,
-         r0.ReadOnlyParentId
+         r0.ReadOnlyParentId,
+         r.Property
 from     ReadOnlyParentEntities as r
          left outer join
          ReadOnlyEntities as r0

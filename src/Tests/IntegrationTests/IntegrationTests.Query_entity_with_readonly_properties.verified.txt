@@ -17,11 +17,11 @@
   },
   sql: {
     Text:
-select   r.Id,
-         r.ReadOnlyParentId,
+select   r.Age,
          r.FirstName,
+         r.Id,
          r.LastName,
-         r.Age
+         r.ReadOnlyParentId
 from     ReadOnlyEntities as r
 order by r.Id
   }

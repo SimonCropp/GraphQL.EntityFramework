@@ -38,9 +38,9 @@ from   FilterParentEntities as f
     {
       Text:
 select   f1.Id,
-         f1.Property,
          f0.Id,
-         f0.Property
+         f0.Property,
+         f1.Property
 from     (select   f.Id,
                    f.Property
           from     FilterParentEntities as f

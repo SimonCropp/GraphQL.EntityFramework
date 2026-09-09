@@ -12,8 +12,8 @@
   sql: {
     Text:
 select   s.Id,
-         s.Name,
-         s.IntValue
+         s.IntValue,
+         s.Name
 from     SimpleTypeFilterEntities as s
 order by s.Name
   }

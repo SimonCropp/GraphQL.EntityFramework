@@ -8,8 +8,8 @@
   },
   sql: {
     Text:
-select top (2) d.Id,
-               d.EntityType,
+select top (2) d.EntityType,
+               d.Id,
                d.Property
 from   DiscriminatorBaseEntities as d
 where  d.EntityType = 0

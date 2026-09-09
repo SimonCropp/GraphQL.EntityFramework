@@ -19,10 +19,10 @@
     {
       Text:
 select   d.Id,
-         d.Name,
-         e.Id,
          e.DepartmentId,
-         e.Name
+         e.Id,
+         e.Name,
+         d.Name
 from     Departments as d
          left outer join
          Employees as e

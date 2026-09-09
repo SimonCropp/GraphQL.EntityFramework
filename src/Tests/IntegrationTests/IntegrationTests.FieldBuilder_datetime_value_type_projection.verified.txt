@@ -12,9 +12,9 @@
   },
   sql: {
     Text:
-select   f.Id,
-         f.Name,
-         f.CreatedAt
+select   f.CreatedAt,
+         f.Id,
+         f.Name
 from     FieldBuilderProjectionEntities as f
 order by f.Name
   }

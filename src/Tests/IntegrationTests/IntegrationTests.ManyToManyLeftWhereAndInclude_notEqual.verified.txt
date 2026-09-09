@@ -27,11 +27,11 @@
   sql: {
     Text:
 select   m.Id,
-         m.RightName,
          s.Id,
          s.LeftName,
          s.ManyToManyLeftEntityId,
-         s.ManyToManyRightEntityId
+         s.ManyToManyRightEntityId,
+         m.RightName
 from     ManyToManyRightEntities as m
          left outer join
          (select m3.Id,

@@ -17,9 +17,9 @@
   },
   sql: {
     Text:
-select   f.Id,
-         f.Name,
-         f.Age
+select   f.Age,
+         f.Id,
+         f.Name
 from     FieldBuilderProjectionEntities as f
 order by f.Name
   }
