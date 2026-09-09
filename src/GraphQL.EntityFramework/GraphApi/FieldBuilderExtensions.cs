@@ -13,6 +13,7 @@ public static class FieldBuilderExtensions
     /// <typeparam name="TReturn">The return type</typeparam>
     /// <typeparam name="TProjection">The projected data type</typeparam>
     /// <param name="builder">The field builder</param>
+    /// <param name="graphQlService">The service used to resolve the DbContext and filters</param>
     /// <param name="projection">Expression to project required data from source</param>
     /// <param name="resolve">Function to resolve field value from projected data</param>
     /// <returns>The field builder for chaining</returns>
@@ -23,6 +24,7 @@ public static class FieldBuilderExtensions
     /// </remarks>
     public static FieldBuilder<TSource, TReturn> Resolve<TDbContext, TSource, TReturn, TProjection>(
         this FieldBuilder<TSource, TReturn> builder,
+        IEfGraphQLService<TDbContext> graphQlService,
         Expression<Func<TSource, TProjection>> projection,
         Func<ResolveProjectionContext<TDbContext, TProjection>, TReturn> resolve)
         where TDbContext : DbContext
@@ -39,26 +41,7 @@ public static class FieldBuilderExtensions
         field.Resolver = new FuncFieldResolver<TSource, TReturn>(
             async context =>
             {
-                // Resolve service from request services
-                var executionContext = context.ExecutionContext;
-                var requestServices = executionContext.RequestServices ?? executionContext.ExecutionOptions.RequestServices;
-               if (requestServices?.GetService(typeof(IEfGraphQLService<TDbContext>)) is not IEfGraphQLService<TDbContext> graphQlService)
-                {
-                    throw new InvalidOperationException($"IEfGraphQLService<{typeof(TDbContext).Name}> not found in request services. Ensure it's registered in the container.");
-                }
-
-                var dbContext = graphQlService.ResolveDbContext(context);
-                var filters = graphQlService.ResolveFilters(context);
-                var projected = compiledProjection(context.Source);
-
-                var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
-                {
-                    Projection = projected,
-                    DbContext = dbContext,
-                    User = context.User,
-                    Filters = filters,
-                    FieldContext = context
-                };
+                var projectionContext = BuildProjectionContext(graphQlService, compiledProjection, context);
 
                 TReturn result;
                 try
@@ -77,7 +60,7 @@ public static class FieldBuilderExtensions
                         exception);
                 }
 
-                return await ApplyFilters(filters, context, dbContext, result);
+                return await ApplyFilters(projectionContext.Filters, context, projectionContext.DbContext, result);
             });
 
         return builder;
@@ -91,6 +74,7 @@ public static class FieldBuilderExtensions
     /// <typeparam name="TReturn">The return type</typeparam>
     /// <typeparam name="TProjection">The projected data type</typeparam>
     /// <param name="builder">The field builder</param>
+    /// <param name="graphQlService">The service used to resolve the DbContext and filters</param>
     /// <param name="projection">Expression to project required data from source</param>
     /// <param name="resolve">Async function to resolve field value from projected data</param>
     /// <returns>The field builder for chaining</returns>
@@ -101,6 +85,7 @@ public static class FieldBuilderExtensions
     /// </remarks>
     public static FieldBuilder<TSource, TReturn> ResolveAsync<TDbContext, TSource, TReturn, TProjection>(
         this FieldBuilder<TSource, TReturn> builder,
+        IEfGraphQLService<TDbContext> graphQlService,
         Expression<Func<TSource, TProjection>> projection,
         Func<ResolveProjectionContext<TDbContext, TProjection>, Task<TReturn>> resolve)
         where TDbContext : DbContext
@@ -117,26 +102,7 @@ public static class FieldBuilderExtensions
         field.Resolver = new FuncFieldResolver<TSource, TReturn>(
             async context =>
             {
-                // Resolve service from request services
-                var executionContext = context.ExecutionContext;
-                var requestServices = executionContext.RequestServices ?? executionContext.ExecutionOptions.RequestServices;
-               if (requestServices?.GetService(typeof(IEfGraphQLService<TDbContext>)) is not IEfGraphQLService<TDbContext> graphQlService)
-                {
-                    throw new InvalidOperationException($"IEfGraphQLService<{typeof(TDbContext).Name}> not found in request services. Ensure it's registered in the container.");
-                }
-
-                var dbContext = graphQlService.ResolveDbContext(context);
-                var filters = graphQlService.ResolveFilters(context);
-                var projected = compiledProjection(context.Source);
-
-                var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
-                {
-                    Projection = projected,
-                    DbContext = dbContext,
-                    User = context.User,
-                    Filters = filters,
-                    FieldContext = context
-                };
+                var projectionContext = BuildProjectionContext(graphQlService, compiledProjection, context);
 
                 TReturn result;
                 try
@@ -155,7 +121,7 @@ public static class FieldBuilderExtensions
                         exception);
                 }
 
-                return await ApplyFilters(filters, context, dbContext, result);
+                return await ApplyFilters(projectionContext.Filters, context, projectionContext.DbContext, result);
             });
 
         return builder;
@@ -169,6 +135,7 @@ public static class FieldBuilderExtensions
     /// <typeparam name="TReturn">The return item type</typeparam>
     /// <typeparam name="TProjection">The projected data type</typeparam>
     /// <param name="builder">The field builder</param>
+    /// <param name="graphQlService">The service used to resolve the DbContext and filters</param>
     /// <param name="projection">Expression to project required data from source</param>
     /// <param name="resolve">Function to resolve list of field values from projected data</param>
     /// <returns>The field builder for chaining</returns>
@@ -179,6 +146,7 @@ public static class FieldBuilderExtensions
     /// </remarks>
     public static FieldBuilder<TSource, IEnumerable<TReturn>> ResolveList<TDbContext, TSource, TReturn, TProjection>(
         this FieldBuilder<TSource, IEnumerable<TReturn>> builder,
+        IEfGraphQLService<TDbContext> graphQlService,
         Expression<Func<TSource, TProjection>> projection,
         Func<ResolveProjectionContext<TDbContext, TProjection>, IEnumerable<TReturn>> resolve)
         where TDbContext : DbContext
@@ -195,26 +163,7 @@ public static class FieldBuilderExtensions
         field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
             context =>
             {
-                // Resolve service from request services
-                var executionContext = context.ExecutionContext;
-                var requestServices = executionContext.RequestServices ?? executionContext.ExecutionOptions.RequestServices;
-               if (requestServices?.GetService(typeof(IEfGraphQLService<TDbContext>)) is not IEfGraphQLService<TDbContext> graphQlService)
-                {
-                    throw new InvalidOperationException($"IEfGraphQLService<{typeof(TDbContext).Name}> not found in request services. Ensure it's registered in the container.");
-                }
-
-                var dbContext = graphQlService.ResolveDbContext(context);
-                var filters = graphQlService.ResolveFilters(context);
-                var projected = compiledProjection(context.Source);
-
-                var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
-                {
-                    Projection = projected,
-                    DbContext = dbContext,
-                    User = context.User,
-                    Filters = filters,
-                    FieldContext = context
-                };
+                var projectionContext = BuildProjectionContext(graphQlService, compiledProjection, context);
 
                 IEnumerable<TReturn> result;
                 try
@@ -249,6 +198,7 @@ public static class FieldBuilderExtensions
     /// <typeparam name="TReturn">The return item type</typeparam>
     /// <typeparam name="TProjection">The projected data type</typeparam>
     /// <param name="builder">The field builder</param>
+    /// <param name="graphQlService">The service used to resolve the DbContext and filters</param>
     /// <param name="projection">Expression to project required data from source</param>
     /// <param name="resolve">Async function to resolve list of field values from projected data</param>
     /// <returns>The field builder for chaining</returns>
@@ -259,6 +209,7 @@ public static class FieldBuilderExtensions
     /// </remarks>
     public static FieldBuilder<TSource, IEnumerable<TReturn>> ResolveListAsync<TDbContext, TSource, TReturn, TProjection>(
         this FieldBuilder<TSource, IEnumerable<TReturn>> builder,
+        IEfGraphQLService<TDbContext> graphQlService,
         Expression<Func<TSource, TProjection>> projection,
         Func<ResolveProjectionContext<TDbContext, TProjection>, Task<IEnumerable<TReturn>>> resolve)
         where TDbContext : DbContext
@@ -275,26 +226,7 @@ public static class FieldBuilderExtensions
         field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
             async context =>
             {
-                // Resolve service from request services
-                var executionContext = context.ExecutionContext;
-                var requestServices = executionContext.RequestServices ?? executionContext.ExecutionOptions.RequestServices;
-               if (requestServices?.GetService(typeof(IEfGraphQLService<TDbContext>)) is not IEfGraphQLService<TDbContext> graphQlService)
-                {
-                    throw new InvalidOperationException($"IEfGraphQLService<{typeof(TDbContext).Name}> not found in request services. Ensure it's registered in the container.");
-                }
-
-                var dbContext = graphQlService.ResolveDbContext(context);
-                var filters = graphQlService.ResolveFilters(context);
-                var projected = compiledProjection(context.Source);
-
-                var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
-                {
-                    Projection = projected,
-                    DbContext = dbContext,
-                    User = context.User,
-                    Filters = filters,
-                    FieldContext = context
-                };
+                var projectionContext = BuildProjectionContext(graphQlService, compiledProjection, context);
 
                 IEnumerable<TReturn> result;
                 try
@@ -320,6 +252,20 @@ public static class FieldBuilderExtensions
 
         return builder;
     }
+
+    static ResolveProjectionContext<TDbContext, TProjection> BuildProjectionContext<TDbContext, TSource, TProjection>(
+        IEfGraphQLService<TDbContext> graphQlService,
+        Func<TSource, TProjection> compiledProjection,
+        IResolveFieldContext<TSource> context)
+        where TDbContext : DbContext =>
+        new()
+        {
+            DbContext = graphQlService.ResolveDbContext(context),
+            Filters = graphQlService.ResolveFilters(context),
+            Projection = compiledProjection(context.Source),
+            User = context.User,
+            FieldContext = context
+        };
 
     static async Task<TReturn> ApplyFilters<TDbContext, TReturn>(
         Filters<TDbContext>? filters,
@@ -353,13 +299,17 @@ public static class FieldBuilderExtensions
     /// This ensures the parent query loads the required fields from the database,
     /// even when the field has its own custom resolver.
     /// </summary>
+    /// <typeparam name="TSource">The source entity type</typeparam>
+    /// <typeparam name="TReturn">The return type</typeparam>
+    /// <typeparam name="TProjection">The projected data type</typeparam>
     /// <param name="builder">The field builder</param>
     /// <param name="projection">Expression describing the required entity data</param>
     /// <returns>The field builder for chaining</returns>
-    public static FieldBuilder<TSource, TReturn> WithProjection<TSource, TReturn>(
+    public static FieldBuilder<TSource, TReturn> WithProjection<TSource, TReturn, TProjection>(
         this FieldBuilder<TSource, TReturn> builder,
-        LambdaExpression projection)
+        Expression<Func<TSource, TProjection>> projection)
     {
+        ValidateProjection(projection);
         IncludeAppender.SetProjectionMetadata(builder.FieldType, projection);
         return builder;
     }

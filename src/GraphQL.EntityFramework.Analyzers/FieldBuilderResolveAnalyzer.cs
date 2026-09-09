@@ -88,14 +88,9 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        // Check if the containing type is FieldBuilder<,>
-        var containingType = methodSymbol.ContainingType;
-        if (containingType == null)
-        {
-            return false;
-        }
-
-        var baseType = containingType;
+        // The receiver is FieldBuilder<,> both for its instance methods and for the
+        // projection-based extension methods, where it is the `this` parameter type
+        var baseType = GetReceiverType(methodSymbol);
         while (baseType != null)
         {
             if (baseType.Name == "FieldBuilder" &&
@@ -118,6 +113,23 @@ public class FieldBuilderResolveAnalyzer : DiagnosticAnalyzer
         }
 
         return false;
+    }
+
+    static ITypeSymbol? GetReceiverType(IMethodSymbol method)
+    {
+        if (!method.IsExtensionMethod)
+        {
+            return method.ContainingType;
+        }
+
+        // Reduced form: builder.Resolve(...)
+        if (method.ReducedFrom != null)
+        {
+            return method.ReceiverType;
+        }
+
+        // Static form: FieldBuilderExtensions.Resolve(builder, ...)
+        return method.Parameters.FirstOrDefault()?.Type;
     }
 
     static bool IsProjectionBasedResolve(InvocationExpressionSyntax invocation, SemanticModel semanticModel)

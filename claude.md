@@ -153,10 +153,12 @@ The library supports EF projections where you can use `Select()` to project to D
 The library provides projection-based extension methods on `FieldBuilder` to safely access navigation properties in custom resolvers:
 
 **Extension Methods** (`src/GraphQL.EntityFramework/GraphApi/FieldBuilderExtensions.cs`)
-- `Resolve<TDbContext, TSource, TReturn, TProjection>()` - Synchronous resolver with projection
-- `ResolveAsync<TDbContext, TSource, TReturn, TProjection>()` - Async resolver with projection
-- `ResolveList<TDbContext, TSource, TReturn, TProjection>()` - List resolver with projection
-- `ResolveListAsync<TDbContext, TSource, TReturn, TProjection>()` - Async list resolver with projection
+- `Resolve(graphQlService, projection, resolve)` - Synchronous resolver with projection
+- `ResolveAsync(graphQlService, projection, resolve)` - Async resolver with projection
+- `ResolveList(graphQlService, projection, resolve)` - List resolver with projection
+- `ResolveListAsync(graphQlService, projection, resolve)` - Async list resolver with projection
+
+All type arguments are inferred. `TDbContext` comes from the `IEfGraphQLService<TDbContext>` argument (the `GraphQlService` property inside an `EfObjectGraphType`), which is also used at execution time to resolve the `DbContext` and filters.
 
 **Why Use These Methods:**
 When using `Field().Resolve()` or `Field().ResolveAsync()` directly, navigation properties on `context.Source` may be null if the projection system didn't include them. The projection-based extension methods ensure required data is loaded by:
@@ -171,9 +173,10 @@ public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntit
 {
     public ChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) : base(graphQlService) =>
         Field<int>("ParentId")
-            .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
-                projection: x => x.Parent!,
-                resolve: ctx => ctx.Projection.Id);
+            .Resolve(
+                graphQlService,
+                projection: _ => _.Parent!,
+                resolve: _ => _.Projection.Id);
 }
 ```
 

@@ -119,18 +119,21 @@ public class ChildGraphType : EfObjectGraphType<IntegrationDbContext, ChildEntit
     public ChildGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
         base(graphQlService) =>
         Field<int>("ParentId")
-            .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
-                projection: x => x.Parent,
-                resolve: ctx => ctx.Projection.Id);
+            .Resolve(
+                graphQlService,
+                projection: _ => _.Parent,
+                resolve: _ => _.Projection.Id);
 }
 ```
 
 **Available Extension Methods:**
 
-- `Resolve<TDbContext, TSource, TReturn, TProjection>()` - Synchronous resolver with projection
-- `ResolveAsync<TDbContext, TSource, TReturn, TProjection>()` - Async resolver with projection
-- `ResolveList<TDbContext, TSource, TReturn, TProjection>()` - List resolver with projection
-- `ResolveListAsync<TDbContext, TSource, TReturn, TProjection>()` - Async list resolver with projection
+- `Resolve(graphQlService, projection, resolve)` - Synchronous resolver with projection
+- `ResolveAsync(graphQlService, projection, resolve)` - Async resolver with projection
+- `ResolveList(graphQlService, projection, resolve)` - List resolver with projection
+- `ResolveListAsync(graphQlService, projection, resolve)` - Async list resolver with projection
+
+All type arguments are inferred: `TSource` and `TReturn` from the field builder, `TDbContext` from the `IEfGraphQLService<TDbContext>` argument, and `TProjection` from the projection expression. The service is used at execution time to resolve the `DbContext` and filters. Inside an `EfObjectGraphType` it is available as the `GraphQlService` property.
 
 The projection-based extension methods ensure required data is loaded by:
 
@@ -150,9 +153,10 @@ Field<int>("ParentId")
 
 ```cs
 Field<int>("ParentId")
-    .Resolve<IntegrationDbContext, ChildEntity, int, ParentEntity>(
-        projection: x => x.Parent,
-        resolve: ctx => ctx.Projection.Id); // Parent is guaranteed to be loaded
+    .Resolve(
+        graphQlService,
+        projection: _ => _.Parent,
+        resolve: _ => _.Projection.Id); // Parent is guaranteed to be loaded
 ```
 
 **Note:** A Roslyn analyzer (GQLEF002) warns at compile time when `Field().Resolve()` accesses properties other than primary keys and foreign keys. Only PK and FK properties are guaranteed to be loaded by the projection system - all other properties (including regular scalars like `Name`) require projection-based extension methods to ensure they are loaded.
@@ -168,8 +172,7 @@ This is useful for computed or permission-check fields that read from `context.S
 // The parent query's SELECT projection will include Status,
 // even if the client doesn't explicitly request a "status" field.
 Field<NonNullGraphType<StringGraphType>, string>("statusLabel")
-    .WithProjection(
-        (Expression<Func<OrderEntity, OrderStatus>>)(_ => _.Status))
+    .WithProjection(_ => _.Status)
     .Resolve(context => context.Source.Status switch
     {
         OrderStatus.Active => "Active",
