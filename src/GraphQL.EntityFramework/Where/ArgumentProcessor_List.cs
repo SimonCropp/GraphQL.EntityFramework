@@ -63,14 +63,14 @@ public static partial class ArgumentProcessor
 
         if (ArgumentReader.TryReadSkip(context, out var skip))
         {
-            EnsureOrderForSkip(order|| alreadyOrdered, context);
+            EnsureOrderForSkip(order || alreadyOrdered, context);
 
             items = items.Skip(skip);
         }
 
         if (ArgumentReader.TryReadTake(context, out var take))
         {
-            EnsureOrderForTake(order|| alreadyOrdered, context);
+            EnsureOrderForTake(order || alreadyOrdered, context);
 
             items = items.Take(take);
         }
