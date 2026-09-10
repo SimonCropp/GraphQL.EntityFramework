@@ -1,4 +1,4 @@
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 /// <summary>
 /// Extension methods for FieldBuilder to support projection-based resolvers.
@@ -38,8 +38,10 @@ public static class FieldBuilderExtensions
 
         var compiledProjection = projection.Compile();
 
+        // A sync resolve completes synchronously unless a filter has to run, so the resolver
+        // returns a ValueTask rather than allocating an async state machine per field per row
         field.Resolver = new FuncFieldResolver<TSource, TReturn>(
-            async context =>
+            context =>
             {
                 var projectionContext = BuildProjectionContext(graphQlService, compiledProjection, context);
 
@@ -60,7 +62,7 @@ public static class FieldBuilderExtensions
                         exception);
                 }
 
-                return await ApplyFilters(projectionContext.Filters, context, projectionContext.DbContext, result);
+                return ApplyFilters(projectionContext.Filters, context, projectionContext.DbContext, result);
             });
 
         return builder;
@@ -267,7 +269,7 @@ public static class FieldBuilderExtensions
             FieldContext = context
         };
 
-    static async Task<TReturn> ApplyFilters<TDbContext, TReturn>(
+    static ValueTask<TReturn?> ApplyFilters<TDbContext, TReturn>(
         Filters<TDbContext>? filters,
         IResolveFieldContext context,
         TDbContext dbContext,
@@ -275,18 +277,28 @@ public static class FieldBuilderExtensions
         where TDbContext : DbContext
     {
         // Value types don't support filtering - return as-is
-        if (typeof(TReturn).IsValueType)
+        if (typeof(TReturn).IsValueType ||
+            filters is not { HasFilters: true } ||
+            result is null)
         {
-            return result;
+            return new(result);
         }
 
+        return ApplyFiltersAsync(filters, context, dbContext, result);
+    }
+
+    static async ValueTask<TReturn?> ApplyFiltersAsync<TDbContext, TReturn>(
+        Filters<TDbContext> filters,
+        IResolveFieldContext context,
+        TDbContext dbContext,
+        TReturn result)
+        where TDbContext : DbContext
+    {
         // For reference types, apply filters if available. Matched on the runtime type of the
         // result, so a field typed as object is filtered the same as a typed one.
-        if (filters != null &&
-            result is not null &&
-            !await filters.ShouldInclude(context.UserContext, dbContext, context.User, (object)result))
+        if (!await filters.ShouldInclude(context.UserContext, dbContext, context.User, (object)result!))
         {
-            return default!;
+            return default;
         }
 
         return result;

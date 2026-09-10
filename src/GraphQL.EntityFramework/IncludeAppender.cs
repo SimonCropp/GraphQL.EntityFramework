@@ -197,14 +197,21 @@
             return projection;
         }
 
-        var updatedNavigations = new Dictionary<string, NavigationProjectionInfo>(projection.Navigations);
+        // Copied only when a nested projection changed, since most do not
+        Dictionary<string, NavigationProjectionInfo>? updatedNavigations = null;
         foreach (var (navName, navProjection) in projection.Navigations)
         {
             var updatedProjection = MergeFilterFieldsIntoProjection(navProjection.Projection, filters, navProjection.EntityType);
-            if (updatedProjection != navProjection.Projection)
+            if (!ReferenceEquals(updatedProjection, navProjection.Projection))
             {
+                updatedNavigations ??= new(projection.Navigations);
                 updatedNavigations[navName] = navProjection with { Projection = updatedProjection };
             }
+        }
+
+        if (updatedNavigations is null)
+        {
+            return projection;
         }
 
         return projection with { Navigations = updatedNavigations };
@@ -588,9 +595,7 @@
                 case GraphQLFragmentSpread fragmentSpread:
                 {
                     var name = fragmentSpread.FragmentName.Name;
-                    var fragmentDefinition = context.Document.Definitions
-                        .OfType<GraphQLFragmentDefinition>()
-                        .SingleOrDefault(_ => _.FragmentName.Name == name);
+                    var fragmentDefinition = FindFragment(context.Document, name);
 
                     if (fragmentDefinition?.SelectionSet.Selections is null)
                     {
@@ -614,6 +619,24 @@
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Validation already rejects duplicate fragment names, so the first match is the definition.
+    /// SingleOrDefault kept scanning the rest of the document after finding it.
+    /// </summary>
+    static GraphQLFragmentDefinition? FindFragment(GraphQLDocument document, GraphQLName name)
+    {
+        foreach (var definition in document.Definitions)
+        {
+            if (definition is GraphQLFragmentDefinition fragment &&
+                fragment.FragmentName.Name == name)
+            {
+                return fragment;
+            }
+        }
+
+        return null;
     }
 
     static IComplexGraphType? ResolveTypeCondition(
