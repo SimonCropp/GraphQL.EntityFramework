@@ -1,4 +1,4 @@
-class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
+﻿class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
     where TDbContext : DbContext
     where TEntity : class
 {
@@ -33,8 +33,10 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             return projection;
         }
 
-        var mergedScalars = new HashSet<string>(projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
-        var navRequirements = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        // Most filters ask for fields the query already selected, so the copies are deferred
+        // until a field is actually added. Otherwise every filter copied the projection per request.
+        HashSet<string>? mergedScalars = null;
+        Dictionary<string, HashSet<string>>? navRequirements = null;
 
         foreach (var field in requiredPropertyNames)
         {
@@ -42,8 +44,10 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             if (dotIndex < 0)
             {
                 // Scalar field - skip navigation property names
-                if (FindNavigation(navigationProperties, field) == null)
+                if (FindNavigation(navigationProperties, field) == null &&
+                    !projection.ScalarFields.Contains(field))
                 {
+                    mergedScalars ??= new(projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
                     mergedScalars.Add(field);
                 }
 
@@ -59,6 +63,14 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             }
 
             var navName = field[..dotIndex];
+            if (projection.Navigations is not null &&
+                projection.Navigations.TryGetValue(navName, out var existing) &&
+                existing.Projection.ScalarFields.Contains(navProperty))
+            {
+                continue;
+            }
+
+            navRequirements ??= new(StringComparer.OrdinalIgnoreCase);
             if (!navRequirements.TryGetValue(navName, out var props))
             {
                 props = [with(StringComparer.OrdinalIgnoreCase)];
@@ -68,60 +80,55 @@ class FilterEntry<TDbContext, TEntity, TProjection> : IFilterEntry<TDbContext>
             props.Add(navProperty);
         }
 
+        if (mergedScalars is null && navRequirements is null)
+        {
+            return projection;
+        }
+
         // Merge navigation requirements
-        Dictionary<string, NavigationProjectionInfo> mergedNavigations;
-        if (projection.Navigations == null)
+        var mergedNavigations = projection.Navigations;
+        if (navRequirements is not null)
         {
-            mergedNavigations = [];
-        }
-        else
-        {
-            mergedNavigations = new(projection.Navigations);
-        }
-
-        foreach (var (navName, requiredProps) in navRequirements)
-        {
-            var navMetadata = FindNavigation(navigationProperties, navName);
-            if (navMetadata == null)
+            mergedNavigations = mergedNavigations is null ? [] : new(mergedNavigations);
+            foreach (var (navName, requiredProps) in navRequirements)
             {
-                continue;
-            }
-
-            if (mergedNavigations.TryGetValue(navName, out var existingNav))
-            {
-                var updatedScalars = new HashSet<string>(existingNav.Projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
-                updatedScalars.UnionWith(requiredProps);
-                mergedNavigations[navName] = existingNav with
+                var navMetadata = FindNavigation(navigationProperties, navName);
+                if (navMetadata == null)
                 {
-                    Projection = existingNav.Projection with { ScalarFields = updatedScalars }
-                };
-            }
-            else
-            {
-                mergedNavigations[navName] = new(navMetadata.Type, navMetadata.IsCollection, new(requiredProps, null, null, null));
+                    continue;
+                }
+
+                if (mergedNavigations.TryGetValue(navName, out var existingNav))
+                {
+                    var updatedScalars = new HashSet<string>(existingNav.Projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
+                    updatedScalars.UnionWith(requiredProps);
+                    mergedNavigations[navName] = existingNav with
+                    {
+                        Projection = existingNav.Projection with { ScalarFields = updatedScalars }
+                    };
+                }
+                else
+                {
+                    mergedNavigations[navName] = new(navMetadata.Type, navMetadata.IsCollection, new(requiredProps, null, null, null));
+                }
             }
         }
 
         return projection with
         {
-            ScalarFields = mergedScalars,
+            ScalarFields = mergedScalars ?? projection.ScalarFields,
             Navigations = mergedNavigations
         };
     }
 
+    // The navigation dictionaries are built with a case insensitive comparer, so a lookup
+    // is enough. This was a linear scan comparing every key.
     static Navigation? FindNavigation(IReadOnlyDictionary<string, Navigation>? properties, string name)
     {
-        if (properties == null)
+        if (properties is not null &&
+            properties.TryGetValue(name, out var navigation))
         {
-            return null;
-        }
-
-        foreach (var (key, value) in properties)
-        {
-            if (string.Equals(key, name, StringComparison.OrdinalIgnoreCase))
-            {
-                return value;
-            }
+            return navigation;
         }
 
         return null;
