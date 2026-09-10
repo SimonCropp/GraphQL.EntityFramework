@@ -1,4 +1,4 @@
-using GraphQL.Execution;
+﻿using GraphQL.Execution;
 
 public class ArgumentProcessorTests
 {
@@ -52,15 +52,42 @@ public class ArgumentProcessorTests
         Assert.Equal(["two"], result.Select(_ => _.Property));
     }
 
-    static ResolveFieldContext BuildContext(Guid id) =>
+    // A null ids was dereferenced for its type name in the unsupported type error
+    [Fact]
+    public void Null_ids_is_the_same_as_no_ids()
+    {
+        var context = BuildContext(null);
+
+        var result = new List<ParentEntity>
+            {
+                new()
+                {
+                    Property = "one"
+                },
+                new()
+                {
+                    Property = "two"
+                }
+            }
+            .ApplyGraphQlArguments(true, context, false)
+            .ToList();
+
+        Assert.Equal(["one", "two"], result.Select(_ => _.Property));
+    }
+
+    static ResolveFieldContext BuildContext(Guid? id) =>
         new()
         {
             Arguments = new Dictionary<string, ArgumentValue>
             {
-                ["ids"] = new(new object[]
-                {
-                    id.ToString()
-                }, ArgumentSource.Literal)
+                ["ids"] = new(
+                    id is null
+                        ? null
+                        : new object[]
+                        {
+                            id.ToString()!
+                        },
+                    ArgumentSource.Literal)
             },
             FieldDefinition = new()
             {

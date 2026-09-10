@@ -20,7 +20,7 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = MakeListGraphType<TReturn>(itemGraphType),
-            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false),
+            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false, omitQueryArguments),
         };
 
         IncludeAppender.SetProjectionMetadata(field, projection);
@@ -76,7 +76,7 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = MakeListGraphType<TReturn>(itemGraphType),
-            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false),
+            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false, omitQueryArguments),
         };
 
         IncludeAppender.SetProjectionMetadata(field, projection);

@@ -80,6 +80,12 @@
             name: "childEntitiesConnection",
             resolve: _ => _.DbContext.ChildEntities.OrderBy(_ => _.Parent));
 
+        efGraphQlService.AddQueryConnectionField<ChildGraphType, ChildEntity>(
+            this,
+            name: "childEntitiesConnectionOmitQueryArguments",
+            resolve: _ => _.DbContext.ChildEntities.OrderBy(_ => _.Property),
+            omitQueryArguments: true);
+
         // Connection with entity that has read-only properties.
         // Projection bails on read-only properties, falling back to AddIncludes.
         // Include() strips IOrderedQueryable, testing that the ordering check

@@ -13,6 +13,11 @@
             projection: _ => _.Children,
             resolve: _ => _.Projection,
             omitQueryArguments: true);
+        AddNavigationListField(
+            name: "childrenOmitQueryArguments",
+            projection: _ => _.Children,
+            resolve: _ => _.Projection,
+            omitQueryArguments: true);
         AutoMap();
     }
 }

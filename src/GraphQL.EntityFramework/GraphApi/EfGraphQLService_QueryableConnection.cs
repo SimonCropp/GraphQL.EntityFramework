@@ -117,8 +117,12 @@ partial class EfGraphQLService<TDbContext>
         builder.FieldType.Type = ConnectionBuilderEx<TSource>.NonNullConnectionType(itemGraphType);
         var field = graph.AddField(builder.FieldType);
 
-        var hasId = keyNames.ContainsKey(typeof(TReturn));
-        field.AddWhereArgument(hasId);
+        if (!omitQueryArguments)
+        {
+            var hasId = keyNames.ContainsKey(typeof(TReturn));
+            field.AddWhereArgument(hasId);
+        }
+
         return builder;
     }
 }
