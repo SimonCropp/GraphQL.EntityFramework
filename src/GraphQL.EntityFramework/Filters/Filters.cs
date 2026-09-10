@@ -92,33 +92,34 @@ public class Filters<TDbContext>
         }
 
         forType.Add(entry);
+        filtersByType.Clear();
     }
 
     /// <summary>
-    /// Get all filters that apply to the specified entity type (including base type filters).
+    /// Filters are matched against the runtime type of each item rather than the type of the field
+    /// that returned it, so a filter on a derived type applies to derived instances in a base typed
+    /// list, and a field typed as object is filtered the same as a typed one. Looked up per item,
+    /// so the result is cached per type; the cache is reset when a filter is added.
     /// </summary>
-    internal IEnumerable<IFilterEntry<TDbContext>> GetFilters<TEntity>()
-        where TEntity : class
-    {
-        var type = typeof(TEntity);
-        return entries
-            .Where(_ => _.Key.IsAssignableFrom(type))
-            .SelectMany(_ => _.Value);
-    }
+    ConcurrentDictionary<Type, List<IFilterEntry<TDbContext>>> filtersByType = new();
+
+    List<IFilterEntry<TDbContext>> GetFilters(Type entityType) =>
+        filtersByType.GetOrAdd(
+            entityType,
+            type => entries
+                .Where(_ => _.Key.IsAssignableFrom(type))
+                .SelectMany(_ => _.Value)
+                .ToList());
 
     /// <summary>
-    /// Get all filters that apply to the specified entity type (including base type filters).
+    /// The filters whose projection requirements a query for <paramref name="entityType"/> has to
+    /// load: those on the type and its base types, which apply to every item, and those on derived
+    /// types, which apply to the derived items the query can return.
     /// </summary>
-    internal IEnumerable<IFilterEntry<TDbContext>> GetFilters(Type entityType) =>
+    internal IEnumerable<IFilterEntry<TDbContext>> GetFiltersForHierarchy(Type entityType) =>
         entries
-            .Where(_ => _.Key.IsAssignableFrom(entityType))
+            .Where(_ => _.Key.IsAssignableFrom(entityType) || entityType.IsAssignableFrom(_.Key))
             .SelectMany(_ => _.Value);
-
-    /// <summary>
-    /// Get all registered filter entries.
-    /// </summary>
-    internal IEnumerable<IFilterEntry<TDbContext>> GetAllFilters() =>
-        entries.Values.SelectMany(_ => _);
 
     /// <summary>
     /// Returns true if there are any filters registered.
@@ -137,16 +138,10 @@ public class Filters<TDbContext>
             return result;
         }
 
-        var filterEntries = GetFilters<TEntity>().ToList();
-        if (filterEntries.Count == 0)
-        {
-            return result;
-        }
-
         var list = new List<TEntity>();
         foreach (var item in result)
         {
-            if (await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries))
+            if (await ShouldIncludeItem(userContext, data, userPrincipal, item))
             {
                 list.Add(item);
             }
@@ -155,15 +150,13 @@ public class Filters<TDbContext>
         return list;
     }
 
-    static async Task<bool> ShouldIncludeItem<TEntity>(
+    async Task<bool> ShouldIncludeItem(
         object userContext,
         TDbContext data,
         ClaimsPrincipal? userPrincipal,
-        TEntity item,
-        List<IFilterEntry<TDbContext>> filterEntries)
-        where TEntity : class
+        object item)
     {
-        foreach (var entry in filterEntries)
+        foreach (var entry in GetFilters(item.GetType()))
         {
             if (!await entry.ShouldIncludeWithProjection(userContext, data, userPrincipal, item))
             {
@@ -174,29 +167,30 @@ public class Filters<TDbContext>
         return true;
     }
 
-    internal virtual async Task<bool> ShouldInclude<TEntity>(
+    internal virtual Task<bool> ShouldInclude<TEntity>(
         object userContext,
         TDbContext data,
         ClaimsPrincipal? userPrincipal,
         TEntity? item)
-        where TEntity : class
+        where TEntity : class =>
+        ShouldInclude(userContext, data, userPrincipal, (object?)item);
+
+    internal Task<bool> ShouldInclude(
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal,
+        object? item)
     {
         if (item is null)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         if (entries.Count == 0)
         {
-            return true;
+            return Task.FromResult(true);
         }
 
-        var filterEntries = GetFilters<TEntity>().ToList();
-        if (filterEntries.Count == 0)
-        {
-            return true;
-        }
-
-        return await ShouldIncludeItem(userContext, data, userPrincipal, item, filterEntries);
+        return ShouldIncludeItem(userContext, data, userPrincipal, item);
     }
 }

@@ -9,6 +9,12 @@
             projection: _ => _.Parent,
             resolve: _ => _.Projection,
             graphType: typeof(ParentGraphType));
+        // Field<TGraphType> builds an object typed builder, so the filter applied has to be
+        // chosen by the runtime type of the result
+        Field<ParentGraphType>("parentObject")
+            .Resolve(
+                projection: _ => _.Parent,
+                resolve: _ => _.Projection!);
         AutoMap();
     }
 }
