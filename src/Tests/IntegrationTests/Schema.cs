@@ -54,6 +54,8 @@
         RegisterTypeMapping(typeof(TphDerivedNavRegionEntity), typeof(TphDerivedNavRegionGraphType));
         RegisterTypeMapping(typeof(CategoryEntity), typeof(CategoryGraphType));
         RegisterTypeMapping(typeof(RegionEntity), typeof(RegionGraphType));
+        RegisterTypeMapping(typeof(ConcreteTphBaseEntity), typeof(ConcreteTphBaseGraphType));
+        RegisterTypeMapping(typeof(ConcreteTphDerivedEntity), typeof(ConcreteTphDerivedGraphType));
         Query = (Query)resolver.GetService(typeof(Query))!;
         Mutation = (Mutation)resolver.GetService(typeof(Mutation))!;
         RegisterType(typeof(DerivedGraphType));
@@ -62,5 +64,7 @@
         RegisterType(typeof(TphLeafGraphType));
         RegisterType(typeof(TphDerivedNavCategoryGraphType));
         RegisterType(typeof(TphDerivedNavRegionGraphType));
+        RegisterType(typeof(ConcreteTphBaseGraphType));
+        RegisterType(typeof(ConcreteTphDerivedGraphType));
     }
 }

@@ -28,7 +28,29 @@ public partial class EfGraphQLService<TDbContext> :
         var foreignKeys = ForeignKeyExtractor.GetForeignKeyProperties(model);
 
         Navigations = NavigationReader.GetNavigationProperties(model);
-        includeAppender = new(Navigations, keyNames, foreignKeys);
+
+        // A type with derived types is projected as a chain of type tests, most derived first,
+        // so the derived types are listed base most first for wrapping
+        var derivedTypes = model.GetEntityTypes()
+            .Where(_ => _.GetDirectlyDerivedTypes().Any())
+            .ToDictionary(
+                _ => _.ClrType,
+                _ => (IReadOnlyList<Type>)_.GetDerivedTypes()
+                    .OrderBy(derived => Depth(derived.ClrType))
+                    .Select(derived => derived.ClrType)
+                    .ToList());
+        includeAppender = new(Navigations, keyNames, foreignKeys, derivedTypes);
+    }
+
+    static int Depth(Type type)
+    {
+        var depth = 0;
+        for (var current = type.BaseType; current is not null; current = current.BaseType)
+        {
+            depth++;
+        }
+
+        return depth;
     }
 
     public IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> Navigations { get; }

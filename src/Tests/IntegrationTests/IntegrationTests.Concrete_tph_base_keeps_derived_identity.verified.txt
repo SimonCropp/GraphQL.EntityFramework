@@ -1,0 +1,26 @@
+﻿{
+  target: {
+    Data: {
+      concreteTphEntities: [
+        {
+          __typename: ConcreteTphBase,
+          property: Value1
+        },
+        {
+          __typename: ConcreteTphDerived,
+          property: Value2,
+          derivedProperty: Derived
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   case when c.Discriminator = N'ConcreteTphDerivedEntity' then cast (1 as bit) else cast (0 as bit) end,
+         c.DerivedProperty,
+         c.Id,
+         c.Property
+from     ConcreteTphEntities as c
+order by c.Property
+  }
+}
