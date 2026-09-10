@@ -130,7 +130,7 @@ partial class EfGraphQLService<TDbContext>
         if (!omitQueryArguments)
         {
             var hasId = keyNames.ContainsKey(typeof(TReturn));
-            field.AddWhereArgument(hasId);
+            field.AddWhereArgument(typeof(TReturn), hasId);
         }
 
         return builder;

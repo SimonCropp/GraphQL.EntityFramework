@@ -651,7 +651,7 @@ class IncludeAppender(
         IResolveFieldContext context)
     {
         if (field.Arguments is not { Count: > 0 } ||
-            fieldType.Arguments?.Find("where")?.ResolvedType?.GetNamedType() is not WhereExpressionGraph)
+            fieldType.Arguments?.Find("where")?.ResolvedType?.GetNamedType() is not IWhereGraph)
         {
             return null;
         }

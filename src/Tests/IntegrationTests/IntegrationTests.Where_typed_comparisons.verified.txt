@@ -1,0 +1,40 @@
+﻿{
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: Match,
+          age: 30,
+          isActive: true,
+          status: ACTIVE,
+          viewCount: 5
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   f.Age,
+         f.Id,
+         f.IsActive,
+         f.Name,
+         f.Status,
+         f.ViewCount
+from     FieldBuilderProjectionEntities as f
+where    f.Age > @p
+         and f.Age <= @p1
+         and f.IsActive = @p2
+         and f.Status in (@p31,
+                          @p32)
+         and f.ViewCount <> @p4
+order by f.Name,
+    Parameters: {
+      @p: 20,
+      @p1: 40,
+      @p2: true,
+      @p31: 0,
+      @p32: 2,
+      @p4: 0
+    }
+  }
+}

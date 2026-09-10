@@ -52,7 +52,7 @@ public class Query :
         #region ManuallyApplyWhere
 
         Field<ListGraphType<EmployeeSummaryGraphType>>("employeeSummary")
-            .Argument<ListGraphType<WhereExpressionGraph>>("where")
+            .Argument<WhereGraph<Employee>>("where")
             .Resolve(context =>
             {
                 var dbContext = ResolveDbContext(context);
@@ -60,9 +60,9 @@ public class Query :
 
                 if (context.HasArgument("where"))
                 {
-                    var wheres = context.GetArgument<List<WhereExpression>>("where");
+                    var where = context.GetArgument<WhereExpression>("where");
 
-                    var predicate = ExpressionBuilder<Employee>.BuildPredicate(wheres);
+                    var predicate = ExpressionBuilder<Employee>.BuildPredicate(where);
                     query = query.Where(predicate);
                 }
 

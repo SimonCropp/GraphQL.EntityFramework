@@ -1,0 +1,33 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          property: AllMatch
+        },
+        {
+          property: SomeMatch
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+where    exists (select 1
+                 from   ChildEntities as c
+                 where  p.Id = c.ParentId
+                        and c.Property is not null
+                        and c.Property like @p_startswith escape N'\')
+order by p.Property,
+    Parameters: {
+      @p_startswith: {
+        Value: Match%,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
+  }
+}

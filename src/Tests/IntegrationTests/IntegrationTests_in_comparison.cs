@@ -8,7 +8,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              dateEntities (where: {path: "Property", comparison: in, value: ["2020-01-01", "2020-01-03"]}, orderBy: {path: "property"})
+              dateEntities (where: {property: {in: ["2020-01-01", "2020-01-03"]}}, orderBy: {property: ascending})
               {
                 property
               }
@@ -38,7 +38,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              timeEntities (where: {path: "Property", comparison: in, value: ["10:00:00"]})
+              timeEntities (where: {property: {in: ["10:00:00"]}})
               {
                 property
               }
@@ -65,7 +65,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              fieldBuilderProjectionEntities (where: {path: "Salary", comparison: in, value: ["10.5", "30"]})
+              fieldBuilderProjectionEntities (where: {salary: {in: [10.5, 30]}})
               {
                 name
                 salary

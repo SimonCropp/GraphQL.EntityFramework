@@ -1,13 +1,13 @@
-﻿static class ArgumentAppender
+static class ArgumentAppender
 {
-    static QueryArgument<ListGraphType<NonNullGraphType<WhereExpressionGraph>>> WhereArgument() =>
-        new()
+    static QueryArgument WhereArgument(Type entityType) =>
+        new(typeof(WhereGraph<>).MakeGenericType(entityType))
         {
             Name = "where"
         };
 
-    static QueryArgument<ListGraphType<NonNullGraphType<OrderByGraph>>> OrderByArgument() =>
-        new()
+    static QueryArgument OrderByArgument(Type entityType) =>
+        new(typeof(ListGraphType<>).MakeGenericType(typeof(NonNullGraphType<>).MakeGenericType(typeof(OrderByGraph<>).MakeGenericType(entityType))))
         {
             Name = "orderBy"
         };
@@ -42,18 +42,18 @@
             Name = "take"
         };
 
-    public static void AddWhereArgument(this FieldType field, bool hasId)
+    public static void AddWhereArgument(this FieldType field, Type entityType, bool hasId)
     {
         var arguments = field.Arguments!;
-        arguments.Add(WhereArgument());
-        arguments.Add(OrderByArgument());
+        arguments.Add(WhereArgument(entityType));
+        arguments.Add(OrderByArgument(entityType));
         if (hasId)
         {
             arguments.Add(IdsArgument());
         }
     }
 
-    public static QueryArguments? GetQueryArguments(bool hasId, bool applyOrder, bool idOnly, bool omitQueryArguments = false)
+    public static QueryArguments? GetQueryArguments(Type entityType, bool hasId, bool applyOrder, bool idOnly, bool omitQueryArguments = false)
     {
         if (omitQueryArguments && idOnly)
         {
@@ -77,10 +77,10 @@
             arguments.Add(IdsArgument());
         }
 
-        arguments.Add(WhereArgument());
+        arguments.Add(WhereArgument(entityType));
         if (applyOrder)
         {
-            arguments.Add(OrderByArgument());
+            arguments.Add(OrderByArgument(entityType));
             arguments.Add(SkipArgument());
             arguments.Add(TakeArgument());
         }

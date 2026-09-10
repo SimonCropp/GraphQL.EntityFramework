@@ -9,13 +9,13 @@ public partial class IntegrationTests
         var query =
             """
             {
-              derivedChildEntities(where: {path: "property", comparison: equal, value: "Child1"})
+              derivedChildEntities(where: {property: {equal: "Child1"}})
               {
                 property
                 parent
                 {
                   property
-                  childrenFromInterface(orderBy: {path: "property"})
+                  childrenFromInterface(orderBy: {property: ascending})
                   {
                     items
                     {

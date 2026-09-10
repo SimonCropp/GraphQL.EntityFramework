@@ -3,13 +3,13 @@
 }
 
 type MappingQuery {
-  child(id: ID, ids: [ID!], where: [WhereExpression!]): MappingChild!
-  childFirst(id: ID, ids: [ID!], where: [WhereExpression!]): MappingChild!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
+  child(id: ID, ids: [ID!], where: MappingChildWhere): MappingChild!
+  childFirst(id: ID, ids: [ID!], where: MappingChildWhere): MappingChild!
+  children(id: ID, ids: [ID!], where: MappingChildWhere, orderBy: [MappingChildOrderBy!], skip: Int, take: Int): [MappingChild!]!
   childrenOmitQueryArguments: [MappingChild!]!
-  parent(id: ID, ids: [ID!], where: [WhereExpression!]): MappingParent!
-  parentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): MappingParent!
-  parents(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingParent!]!
+  parent(id: ID, ids: [ID!], where: MappingParentWhere): MappingParent!
+  parentFirst(id: ID, ids: [ID!], where: MappingParentWhere): MappingParent!
+  parents(id: ID, ids: [ID!], where: MappingParentWhere, orderBy: [MappingParentOrderBy!], skip: Int, take: Int): [MappingParent!]!
 }
 
 type MappingChild {
@@ -20,43 +20,72 @@ type MappingChild {
 }
 
 type MappingParent {
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [MappingChild!]!
+  children(id: ID, ids: [ID!], where: MappingChildWhere, orderBy: [MappingChildOrderBy!], skip: Int, take: Int): [MappingChild!]!
   id: ID!
   jsonProperty: [String!]!
   property: String
 }
 
-input WhereExpression {
-  path: String
-  comparison: Comparison
-  negate: Boolean
-  value: [String]
-  connector: Connector
-  groupedExpressions: [WhereExpression]
+input MappingChildWhere {
+  and: [MappingChildWhere!]
+  or: [MappingChildWhere!]
+  not: MappingChildWhere
+  id: GuidComparison
+  parent: MappingParentWhere
+  parentId: GuidComparison
+  property: StringComparison
 }
 
-enum Comparison {
-  contains
-  endsWith
-  equal
-  notEqual
-  greaterThan
-  greaterThanOrEqual
-  "Negation Property used with the 'in' comparison should be used in place of this"
-  notIn
-  in
-  lessThan
-  lessThanOrEqual
-  like
-  startsWith
+input GuidComparison {
+  equal: ID
+  notEqual: ID
+  in: [ID]
+  greaterThan: ID
+  greaterThanOrEqual: ID
+  lessThan: ID
+  lessThanOrEqual: ID
 }
 
-enum Connector {
-  and
-  or
+input MappingParentWhere {
+  and: [MappingParentWhere!]
+  or: [MappingParentWhere!]
+  not: MappingParentWhere
+  children: MappingChildCollectionWhere
+  id: GuidComparison
+  ignoreByName: StringComparison
+  property: StringComparison
 }
 
-input OrderBy {
-  path: String!
-  descending: Boolean
+input MappingChildCollectionWhere {
+  any: MappingChildWhere
+  all: MappingChildWhere
+  none: MappingChildWhere
+}
+
+input StringComparison {
+  equal: String
+  notEqual: String
+  in: [String]
+  startsWith: String
+  endsWith: String
+  contains: String
+  like: String
+}
+
+input MappingChildOrderBy {
+  id: SortDirection
+  parent: MappingParentOrderBy
+  parentId: SortDirection
+  property: SortDirection
+}
+
+enum SortDirection {
+  ascending
+  descending
+}
+
+input MappingParentOrderBy {
+  id: SortDirection
+  ignoreByName: SortDirection
+  property: SortDirection
 }

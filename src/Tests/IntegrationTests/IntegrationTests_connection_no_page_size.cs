@@ -8,7 +8,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              childEntitiesConnection(orderBy: {path: "property"})
+              childEntitiesConnection(orderBy: {property: ascending})
               {
                 totalCount
                 pageInfo

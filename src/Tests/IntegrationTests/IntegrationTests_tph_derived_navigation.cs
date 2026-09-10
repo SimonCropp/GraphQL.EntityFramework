@@ -108,7 +108,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              tphDerivedNavEntities(orderBy: {path: "property"})
+              tphDerivedNavEntities(orderBy: {property: ascending})
               {
                 id
                 property

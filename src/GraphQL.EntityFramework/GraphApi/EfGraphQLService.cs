@@ -23,6 +23,7 @@ public partial class EfGraphQLService<TDbContext> :
         this.disableTracking = disableTracking;
         this.includeSqlInExceptions = includeSqlInExceptions;
         this.resolveDbContext = resolveDbContext;
+        Model = model;
 
         keyNames = model.GetKeyNames();
         var foreignKeys = ForeignKeyExtractor.GetForeignKeyProperties(model);
@@ -54,6 +55,8 @@ public partial class EfGraphQLService<TDbContext> :
     }
 
     public IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> Navigations { get; }
+
+    public IModel Model { get; }
 
     IncludeAppender includeAppender;
 

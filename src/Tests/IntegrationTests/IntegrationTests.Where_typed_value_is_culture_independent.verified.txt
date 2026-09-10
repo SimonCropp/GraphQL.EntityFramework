@@ -1,0 +1,28 @@
+﻿{
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: Match,
+          salary: 10.50
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   f.Id,
+         f.Name,
+         f.Salary
+from     FieldBuilderProjectionEntities as f
+where    f.Salary = @p
+order by f.Name,
+    Parameters: {
+      @p: {
+        Value: 10.5,
+        Precision: 18,
+        Scale: 2
+      }
+    }
+  }
+}

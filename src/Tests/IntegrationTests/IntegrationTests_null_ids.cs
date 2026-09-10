@@ -9,7 +9,7 @@ public partial class IntegrationTests
             """
             query($ids: [ID!])
             {
-              parentEntities(ids: $ids, orderBy: {path: "property"})
+              parentEntities(ids: $ids, orderBy: {property: ascending})
               {
                 property
               }

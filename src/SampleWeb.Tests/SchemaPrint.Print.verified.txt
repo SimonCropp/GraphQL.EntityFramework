@@ -1,8 +1,8 @@
 ﻿type Query {
-  companies(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Company!]!
-  company(id: ID, ids: [ID!], where: [WhereExpression!]): Company!
+  companies(id: ID, ids: [ID!], where: CompanyWhere, orderBy: [CompanyOrderBy!], skip: Int, take: Int): [Company!]!
+  company(id: ID, ids: [ID!], where: CompanyWhere): Company!
   companyById(id: ID!): Company!
-  companyOrNull(id: ID, ids: [ID!], where: [WhereExpression!]): Company
+  companyOrNull(id: ID, ids: [ID!], where: CompanyWhere): Company
   companiesConnection(
     "Only return edges after the specified cursor."
     after: String,
@@ -12,11 +12,11 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: CompanyWhere,
+    orderBy: [CompanyOrderBy!],
     ids: [ID!]): CompanyConnection!
-  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
-  employeesByArgument(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int, content: String): [Employee!]!
+  employees(id: ID, ids: [ID!], where: EmployeeWhere, orderBy: [EmployeeOrderBy!], skip: Int, take: Int): [Employee!]!
+  employeesByArgument(id: ID, ids: [ID!], where: EmployeeWhere, orderBy: [EmployeeOrderBy!], skip: Int, take: Int, content: String): [Employee!]!
   employeesConnection(
     "Only return edges after the specified cursor."
     after: String,
@@ -26,14 +26,14 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: EmployeeWhere,
+    orderBy: [EmployeeOrderBy!],
     ids: [ID!]): EmployeeConnection!
-  employeeSummary(where: [WhereExpression]): [EmployeeSummary]
+  employeeSummary(where: EmployeeWhere): [EmployeeSummary]
 }
 
 type Company {
-  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
+  employees(id: ID, ids: [ID!], where: EmployeeWhere, orderBy: [EmployeeOrderBy!], skip: Int, take: Int): [Employee!]!
   employeesConnection(
     "Only return edges after the specified cursor."
     after: String,
@@ -43,8 +43,8 @@ type Company {
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: EmployeeWhere,
+    orderBy: [EmployeeOrderBy!],
     ids: [ID!]): EmployeeConnection!
   content: String
   id: Int!
@@ -52,7 +52,7 @@ type Company {
 
 type Employee {
   company: Company!
-  devices(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Device!]!
+  devices(id: ID, ids: [ID!], where: DeviceWhere, orderBy: [DeviceOrderBy!], skip: Int, take: Int): [Device!]!
   age: Int!
   companyId: Int!
   content: String
@@ -60,44 +60,94 @@ type Employee {
 }
 
 type Device {
-  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
+  employees(id: ID, ids: [ID!], where: EmployeeWhere, orderBy: [EmployeeOrderBy!], skip: Int, take: Int): [Employee!]!
   id: Int!
   name: String!
 }
 
-input WhereExpression {
-  path: String
-  comparison: Comparison
-  negate: Boolean
-  value: [String]
-  connector: Connector
-  groupedExpressions: [WhereExpression]
+input EmployeeWhere {
+  and: [EmployeeWhere!]
+  or: [EmployeeWhere!]
+  not: EmployeeWhere
+  age: Int32Comparison
+  company: CompanyWhere
+  companyId: Int32Comparison
+  content: StringComparison
+  devices: DeviceCollectionWhere
+  id: Int32Comparison
 }
 
-enum Comparison {
-  contains
-  endsWith
-  equal
-  notEqual
-  greaterThan
-  greaterThanOrEqual
-  "Negation Property used with the 'in' comparison should be used in place of this"
-  notIn
-  in
-  lessThan
-  lessThanOrEqual
-  like
-  startsWith
+input Int32Comparison {
+  equal: Int
+  notEqual: Int
+  in: [Int]
+  greaterThan: Int
+  greaterThanOrEqual: Int
+  lessThan: Int
+  lessThanOrEqual: Int
 }
 
-enum Connector {
-  and
-  or
+input CompanyWhere {
+  and: [CompanyWhere!]
+  or: [CompanyWhere!]
+  not: CompanyWhere
+  content: StringComparison
+  employees: EmployeeCollectionWhere
+  id: Int32Comparison
 }
 
-input OrderBy {
-  path: String!
-  descending: Boolean
+input StringComparison {
+  equal: String
+  notEqual: String
+  in: [String]
+  startsWith: String
+  endsWith: String
+  contains: String
+  like: String
+}
+
+input EmployeeCollectionWhere {
+  any: EmployeeWhere
+  all: EmployeeWhere
+  none: EmployeeWhere
+}
+
+input DeviceCollectionWhere {
+  any: DeviceWhere
+  all: DeviceWhere
+  none: DeviceWhere
+}
+
+input DeviceWhere {
+  and: [DeviceWhere!]
+  or: [DeviceWhere!]
+  not: DeviceWhere
+  employees: EmployeeCollectionWhere
+  id: Int32Comparison
+  name: StringComparison
+}
+
+input EmployeeOrderBy {
+  age: SortDirection
+  company: CompanyOrderBy
+  companyId: SortDirection
+  content: SortDirection
+  id: SortDirection
+}
+
+enum SortDirection {
+  ascending
+  descending
+}
+
+input CompanyOrderBy {
+  content: SortDirection
+  id: SortDirection
+}
+
+input DeviceOrderBy {
+  id: SortDirection
+  name: SortDirection
 }
 
 "A connection from an object to a list of objects of type `Employee`."

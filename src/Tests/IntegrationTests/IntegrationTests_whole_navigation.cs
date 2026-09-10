@@ -32,7 +32,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              childEntities(orderBy: {path: "property"})
+              childEntities(orderBy: {property: ascending})
               {
                 property
               }

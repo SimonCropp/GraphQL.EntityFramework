@@ -11,7 +11,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                childrenNoResolve(where: {path: "property", comparison: startsWith, value: "Value"}, orderBy: {path: "property", descending: true})
+                childrenNoResolve(where: {property: {startsWith: "Value"}}, orderBy: {property: descending})
                 {
                   property
                 }
@@ -59,7 +59,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                childrenConnectionNoResolve(first: 1, orderBy: {path: "property"})
+                childrenConnectionNoResolve(first: 1, orderBy: {property: ascending})
                 {
                   totalCount
                   items
@@ -98,7 +98,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              childEntities(orderBy: {path: "property"})
+              childEntities(orderBy: {property: ascending})
               {
                 property
                 parentNoResolve
