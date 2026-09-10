@@ -1,0 +1,18 @@
+﻿{
+  target: {
+    Type: SingleEntityNotFoundException,
+    Message: Not found
+  },
+  sql: {
+    Text:
+select top (2) t.Id,
+               t.Discriminator,
+               t.Property,
+               t.LeafProperty
+from   TphRootEntities as t
+where  t.Id = @p1,
+    Parameters: {
+      @p1: Guid_1
+    }
+  }
+}

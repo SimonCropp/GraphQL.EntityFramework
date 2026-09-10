@@ -280,15 +280,13 @@ public static class FieldBuilderExtensions
             return result;
         }
 
-        // For reference types, apply filters if available
-        if (filters != null && result is not null)
+        // For reference types, apply filters if available. Matched on the runtime type of the
+        // result, so a field typed as object is filtered the same as a typed one.
+        if (filters != null &&
+            result is not null &&
+            !await filters.ShouldInclude(context.UserContext, dbContext, context.User, (object)result))
         {
-            // Use dynamic to work around the class constraint on ShouldInclude
-            dynamic dynamicFilters = filters;
-            if (!await dynamicFilters.ShouldInclude(context.UserContext, dbContext, context.User, result))
-            {
-                return default!;
-            }
+            return default!;
         }
 
         return result;

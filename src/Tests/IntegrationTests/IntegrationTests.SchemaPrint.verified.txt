@@ -364,6 +364,7 @@ type ChildEdge {
 
 type Child {
   parentAlias: Parent
+  parentObject: Parent
   parent: Parent
   id: ID!
   nullable: Int

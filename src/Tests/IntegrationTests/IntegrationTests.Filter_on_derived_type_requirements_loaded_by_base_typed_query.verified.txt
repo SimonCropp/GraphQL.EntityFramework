@@ -1,0 +1,34 @@
+﻿{
+  target: {
+    Data: {
+      interfaceGraphConnection: {
+        items: [
+          {
+            property: Value2
+          }
+        ]
+      }
+    }
+  },
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   BaseEntities as b
+    },
+    {
+      Text:
+select   b.Id,
+         b.Discriminator,
+         b.Property,
+         b.Status
+from     BaseEntities as b
+order by b.Property
+offset @p rows fetch next @p1 rows only,
+      Parameters: {
+        @p: 0,
+        @p1: 10
+      }
+    }
+  ]
+}

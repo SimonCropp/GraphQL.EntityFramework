@@ -198,7 +198,7 @@
     {
         navigations.TryGetValue(entityType, out var navigationProperties);
 
-        foreach (var filter in filters.GetFilters(entityType))
+        foreach (var filter in filters.GetFiltersForHierarchy(entityType))
         {
             projection = filter.AddRequirements(projection, navigationProperties);
         }
