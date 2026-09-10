@@ -27,6 +27,13 @@
             .ResolveList(GraphQlService, projection: _ => _.Children, resolve: _ => _.Projection);
         Field<ListGraphType<ChildGraphType>, IEnumerable<ChildEntity>>("childrenViaResolveListAsync")
             .ResolveListAsync(GraphQlService, projection: _ => _.Children, resolve: _ => Task.FromResult<IEnumerable<ChildEntity>>(_.Projection));
+        // The resolver-less overloads on an object type
+        AddNavigationListField(
+            name: "childrenNoResolve",
+            projection: _ => _.Children);
+        AddNavigationConnectionField(
+            name: "childrenConnectionNoResolve",
+            projection: _ => _.Children);
         AutoMap();
     }
 }

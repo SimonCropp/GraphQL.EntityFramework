@@ -15,6 +15,10 @@
             .Resolve(
                 projection: _ => _.Parent,
                 resolve: _ => _.Projection!);
+        AddNavigationField(
+            name: "parentNoResolve",
+            projection: _ => _.Parent,
+            graphType: typeof(ParentGraphType));
         AutoMap();
     }
 }

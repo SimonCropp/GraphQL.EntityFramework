@@ -438,6 +438,31 @@ class IncludeAppender(
         return false;
     }
 
+    /// <summary>
+    /// The clr type of what a field returns, through a list or connection. Null when the graph
+    /// type is not one of the library's typed graph types.
+    /// </summary>
+    static Type? FieldItemType(FieldType fieldType)
+    {
+        var namedType = fieldType.ResolvedType?.GetNamedType();
+        if (namedType is null)
+        {
+            return null;
+        }
+
+        var graphType = namedType.GetType();
+        for (var type = graphType; type is not null; type = type.BaseType)
+        {
+            if (type.IsGenericType &&
+                type.GetGenericTypeDefinition() == typeof(ConnectionType<,>))
+            {
+                return GetSourceType(type.GenericTypeArguments[0]);
+            }
+        }
+
+        return GetSourceType(graphType);
+    }
+
     static Type? GetSourceType(Type graphType)
     {
         var type = graphType;
@@ -545,6 +570,11 @@ class IncludeAppender(
             primaryNavigation ??= rootProperty;
         }
 
+        // The field's selection set applies to the navigations of the type the field returns.
+        // It used to go to whichever path the analyzer visited first, so with `new { _.Child2,
+        // _.Child1 }` resolving Child1, Child2 got the selection and Child1 got nothing under it.
+        var itemType = FieldItemType(fieldType);
+
         foreach (var (navName, nestedPaths) in pathsByNavigation)
         {
             if (!TryFindNavigation(navigationProperties, navName, out var navigation))
@@ -553,6 +583,10 @@ class IncludeAppender(
                 scalarFields.Add(navName);
                 continue;
             }
+
+            var receivesSelection = itemType is null
+                ? navName == primaryNavigation
+                : itemType.IsAssignableFrom(navigation.Type) || navigation.Type.IsAssignableFrom(itemType);
 
             var navType = navigation.Type;
             navigations.TryGetValue(navType, out var nestedNavProps);
@@ -567,7 +601,7 @@ class IncludeAppender(
             // projected with only its keys, so the resolver saw every other property as null.
             var isWhole = nestedPaths.Count == 0;
 
-            if (navName == primaryNavigation && field.SelectionSet is not null)
+            if (receivesSelection && field.SelectionSet is not null)
             {
                 // A navigation list or connection field projecting the collection itself. Its ids,
                 // where and orderBy are applied inside the collection subquery.
