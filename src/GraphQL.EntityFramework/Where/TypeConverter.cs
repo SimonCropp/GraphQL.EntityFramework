@@ -1,42 +1,30 @@
 ﻿static class TypeConverter
 {
-    static FrozenDictionary<Type, Func<IEnumerable<string>, IList>> listConverters =
-        FrozenDictionary.Create<Type, Func<IEnumerable<string>, IList>>(
-        [
-            new(typeof(Guid), values => values.Select(Guid.Parse).ToList()),
-            new(typeof(Guid?), values => values.Select(_ => (Guid?)new Guid(_)).ToList()),
-            new(typeof(bool), values => values.Select(ParseBoolean).ToList()),
-            new(typeof(bool?), values => values.Select(_ => (bool?)ParseBoolean(_)).ToList()),
-            new(typeof(int), values => values.Select(int.Parse).ToList()),
-            new(typeof(int?), values => values.Select(_ => (int?)int.Parse(_)).ToList()),
-            new(typeof(short), values => values.Select(short.Parse).ToList()),
-            new(typeof(short?), values => values.Select(_ => (short?)short.Parse(_)).ToList()),
-            new(typeof(long), values => values.Select(long.Parse).ToList()),
-            new(typeof(long?), values => values.Select(_ => (long?)long.Parse(_)).ToList()),
-            new(typeof(uint), values => values.Select(uint.Parse).ToList()),
-            new(typeof(uint?), values => values.Select(_ => (uint?)uint.Parse(_)).ToList()),
-            new(typeof(ushort), values => values.Select(ushort.Parse).ToList()),
-            new(typeof(ushort?), values => values.Select(_ => (ushort?)ushort.Parse(_)).ToList()),
-            new(typeof(ulong), values => values.Select(ulong.Parse).ToList()),
-            new(typeof(ulong?), values => values.Select(_ => (ulong?)ulong.Parse(_)).ToList()),
-            new(typeof(DateTime), values => values.Select(DateTime.Parse).ToList()),
-            new(typeof(DateTime?), values => values.Select(_ => (DateTime?)DateTime.Parse(_)).ToList()),
-            new(typeof(Time), values => values.Select(Time.Parse).ToList()),
-            new(typeof(Time?), values => values.Select(_ => (Time?)Time.Parse(_)).ToList()),
-            new(typeof(Date), values => values.Select(_ => Date.ParseExact(_, "yyyy-MM-dd")).ToList()),
-            new(typeof(Date?), values => values.Select(_ => (Date?)Date.ParseExact(_, "yyyy-MM-dd")).ToList()),
-            new(typeof(DateTimeOffset), values => values.Select(DateTimeOffset.Parse).ToList()),
-            new(typeof(DateTimeOffset?), values => values.Select(_ => (DateTimeOffset?)DateTimeOffset.Parse(_)).ToList()),
-        ]);
+    static CultureInfo invariant = CultureInfo.InvariantCulture;
 
-    static FrozenDictionary<Type, Func<string, object>> singleConverters =
+    // Every parse is invariant. Where values are query text, so a server running under de-DE must
+    // read "1.5" the same way as one running under en-US. The date and time types go through
+    // GraphQL.NET's converters so a single comparison and an `in` list accept the same literals.
+    static FrozenDictionary<Type, Func<string, object>> converters =
         FrozenDictionary.Create<Type, Func<string, object>>(
         [
-            new(typeof(DateTime), value => ValueConverter.ConvertTo<DateTime>(value)),
-            new(typeof(Date), value => ValueConverter.ConvertTo<Date>(value)),
-            new(typeof(Time), value => ValueConverter.ConvertTo<Time>(value)),
-            new(typeof(DateTimeOffset), value => ValueConverter.ConvertTo<DateTimeOffset>(value)),
-            new(typeof(Guid), value => new Guid(value)),
+            new(typeof(Guid), _ => Guid.Parse(_)),
+            new(typeof(bool), _ => ParseBoolean(_)),
+            new(typeof(byte), _ => byte.Parse(_, NumberStyles.Integer, invariant)),
+            new(typeof(sbyte), _ => sbyte.Parse(_, NumberStyles.Integer, invariant)),
+            new(typeof(short), _ => short.Parse(_, NumberStyles.Integer, invariant)),
+            new(typeof(ushort), _ => ushort.Parse(_, NumberStyles.Integer, invariant)),
+            new(typeof(int), _ => int.Parse(_, NumberStyles.Integer, invariant)),
+            new(typeof(uint), _ => uint.Parse(_, NumberStyles.Integer, invariant)),
+            new(typeof(long), _ => long.Parse(_, NumberStyles.Integer, invariant)),
+            new(typeof(ulong), _ => ulong.Parse(_, NumberStyles.Integer, invariant)),
+            new(typeof(float), _ => float.Parse(_, NumberStyles.Float | NumberStyles.AllowThousands, invariant)),
+            new(typeof(double), _ => double.Parse(_, NumberStyles.Float | NumberStyles.AllowThousands, invariant)),
+            new(typeof(decimal), _ => decimal.Parse(_, NumberStyles.Number, invariant)),
+            new(typeof(DateTime), _ => ValueConverter.ConvertTo<DateTime>(_)),
+            new(typeof(Date), _ => ValueConverter.ConvertTo<Date>(_)),
+            new(typeof(Time), _ => ValueConverter.ConvertTo<Time>(_)),
+            new(typeof(DateTimeOffset), _ => ValueConverter.ConvertTo<DateTimeOffset>(_)),
         ]);
 
     public static IList ConvertStringsToList(string?[] values, MemberInfo property)
@@ -60,7 +48,17 @@
             throw new($"Null passed to In expression for non nullable type '{type.FullName}'.");
         }
 
-        var list = ConvertStringsToListInternal(values.Where(_ => _ is not null).Select(_ => _!), type);
+        // The list is of the member type, nullable included, since the Contains resolved for the
+        // comparison is ICollection<MemberType>.Contains
+        var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type))!;
+        foreach (var value in values)
+        {
+            if (value is not null)
+            {
+                list.Add(ConvertStringToType(value, type));
+            }
+        }
+
         if (hasNull)
         {
             list.Add(null);
@@ -77,72 +75,6 @@
             _ => bool.Parse(value)
         };
 
-    static IList ConvertStringsToListInternal(IEnumerable<string> values, Type type)
-    {
-        // Try dictionary lookup first for common types
-        if (listConverters.TryGetValue(type, out var converter))
-        {
-            return converter(values);
-        }
-
-        // Handle enums
-        if (type.IsEnum)
-        {
-            var getList = enumListMethod.MakeGenericMethod(type);
-            return (IList)getList.Invoke(null, [values])!;
-        }
-
-        if (type.TryGetEnumType(out var enumType))
-        {
-            var getList = nullableEnumListMethod.MakeGenericMethod(enumType);
-            return (IList)getList.Invoke(null, [values])!;
-        }
-
-        // Anything else the single value conversion handles, such as decimal or double, is
-        // converted item by item into a list of the property type
-        var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type))!;
-        foreach (var value in values)
-        {
-            list.Add(ConvertStringToType(value, type));
-        }
-
-        return list;
-    }
-
-    static MethodInfo enumListMethod = typeof(TypeConverter)
-        .GetMethod("GetEnumList", BindingFlags.Static | BindingFlags.NonPublic)!;
-
-    // Use via reflection
-    // ReSharper disable once UnusedMember.Local
-    static List<T> GetEnumList<T>(IEnumerable<string> values)
-        where T : struct
-    {
-        var list = new List<T>();
-        foreach (var value in values)
-        {
-            list.Add(Enum.Parse<T>(value, true));
-        }
-
-        return list;
-    }
-
-    static MethodInfo nullableEnumListMethod = typeof(TypeConverter)
-        .GetMethod("GetNullableEnumList", BindingFlags.Static | BindingFlags.NonPublic)!;
-
-    // Use via reflection
-    // ReSharper disable once UnusedMember.Local
-    static List<T?> GetNullableEnumList<T>(IEnumerable<string> values)
-        where T : struct
-    {
-        var list = new List<T?>();
-        foreach (var value in values)
-        {
-            list.Add(Enum.Parse<T>(value, true));
-        }
-
-        return list;
-    }
-
     public static object? ConvertStringToType(string? value, Type type)
     {
         var underlyingType = Nullable.GetUnderlyingType(type);
@@ -156,8 +88,7 @@
             type = underlyingType;
         }
 
-        // Try dictionary lookup first for common types
-        if (singleConverters.TryGetValue(type, out var converter))
+        if (converters.TryGetValue(type, out var converter))
         {
             return converter(value!);
         }
@@ -167,6 +98,6 @@
             return Enum.Parse(type, value!, true);
         }
 
-        return Convert.ChangeType(value, type);
+        return Convert.ChangeType(value, type, invariant);
     }
 }
