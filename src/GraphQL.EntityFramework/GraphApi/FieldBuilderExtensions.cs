@@ -184,9 +184,7 @@ public static class FieldBuilderExtensions
                         exception);
                 }
 
-                // Note: For list results, we don't apply filters on the collection itself
-                // Filters would be applied to individual items if needed
-                return result;
+                return ApplyListFilters(projectionContext.Filters, context, projectionContext.DbContext, result);
             });
 
         return builder;
@@ -247,9 +245,7 @@ public static class FieldBuilderExtensions
                         exception);
                 }
 
-                // Note: For list results, we don't apply filters on the collection itself
-                // Filters would be applied to individual items if needed
-                return result;
+                return await ApplyListFilters(projectionContext.Filters, context, projectionContext.DbContext, result);
             });
 
         return builder;
@@ -285,6 +281,46 @@ public static class FieldBuilderExtensions
         }
 
         return ApplyFiltersAsync(filters, context, dbContext, result);
+    }
+
+    /// <summary>
+    /// The items of a list resolve are filtered the same way every other list path filters them.
+    /// They were returned as is, so a filter that excluded an item elsewhere let it through here.
+    /// </summary>
+    static ValueTask<IEnumerable<TReturn>?> ApplyListFilters<TDbContext, TReturn>(
+        Filters<TDbContext>? filters,
+        IResolveFieldContext context,
+        TDbContext dbContext,
+        IEnumerable<TReturn> result)
+        where TDbContext : DbContext
+    {
+        if (typeof(TReturn).IsValueType ||
+            filters is not { HasFilters: true })
+        {
+            return new(result);
+        }
+
+        return ApplyListFiltersAsync(filters, context, dbContext, result);
+    }
+
+    static async ValueTask<IEnumerable<TReturn>?> ApplyListFiltersAsync<TDbContext, TReturn>(
+        Filters<TDbContext> filters,
+        IResolveFieldContext context,
+        TDbContext dbContext,
+        IEnumerable<TReturn> result)
+        where TDbContext : DbContext
+    {
+        var list = new List<TReturn>();
+        foreach (var item in result)
+        {
+            if (item is null ||
+                await filters.ShouldInclude(context.UserContext, dbContext, context.User, (object) item))
+            {
+                list.Add(item);
+            }
+        }
+
+        return list;
     }
 
     static async ValueTask<TReturn?> ApplyFiltersAsync<TDbContext, TReturn>(

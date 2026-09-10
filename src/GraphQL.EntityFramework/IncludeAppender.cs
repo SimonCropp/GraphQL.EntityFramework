@@ -263,7 +263,7 @@ class IncludeAppender(
         // The name of the property to project has to come from the ast node.
         var fieldName = field.Name.StringValue;
 
-        if (IsConnectionNodeName(fieldName))
+        if (IsConnectionWrapper(parentGraphType, fieldName))
         {
             // edges, items and node are wrappers with no property of their own.
             // The entity fields are in the selection set below them.
@@ -395,7 +395,7 @@ class IncludeAppender(
             foreach (var selection in selectionSet.Selections)
             {
                 if (selection is GraphQLField { SelectionSet: not null } field &&
-                    IsConnectionNodeName(field.Name.StringValue))
+                    IsConnectionWrapper(graphType, field.Name.StringValue))
                 {
                     graphType = GetComplexGraphType(graphType?.GetField(field.Name.Value));
                     selectionSet = field.SelectionSet;
@@ -458,6 +458,52 @@ class IncludeAppender(
 
         return null;
     }
+
+    /// <summary>
+    /// Whether a field is a connection wrapper, edges, items or node, with the entity fields in
+    /// the selection set below it. Decided by the graph type the field is selected from, since an
+    /// entity can have a navigation with one of those names, and matching on the name alone left
+    /// such a navigation never projected. The name is only relied on when the graph type could
+    /// not be resolved.
+    /// </summary>
+    static bool IsConnectionWrapper(IComplexGraphType? parentGraphType, string fieldName)
+    {
+        if (!IsConnectionNodeName(fieldName))
+        {
+            return false;
+        }
+
+        if (parentGraphType is null)
+        {
+            return true;
+        }
+
+        return IsConnectionOrEdgeType(parentGraphType.GetType());
+    }
+
+    static ConcurrentDictionary<Type, bool> connectionTypes = new();
+
+    static bool IsConnectionOrEdgeType(Type graphType) =>
+        connectionTypes.GetOrAdd(
+            graphType,
+            _ =>
+            {
+                for (var type = _; type is not null; type = type.BaseType)
+                {
+                    if (type.IsGenericType)
+                    {
+                        var definition = type.GetGenericTypeDefinition();
+                        if (definition == typeof(ConnectionType<,>) ||
+                            definition == typeof(ConnectionType<>) ||
+                            definition == typeof(EdgeType<>))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            });
 
     static bool IsConnectionNodeName(string fieldName) =>
         fieldName.Equals("edges", StringComparison.OrdinalIgnoreCase) ||

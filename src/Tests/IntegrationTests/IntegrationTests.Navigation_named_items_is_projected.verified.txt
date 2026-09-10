@@ -1,0 +1,30 @@
+﻿{
+  target: {
+    Data: {
+      withItems: [
+        {
+          property: Parent,
+          items: [
+            {
+              property: Item
+            }
+          ]
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   w.Id,
+         i.Id,
+         i.ParentId,
+         i.Property,
+         w.Property
+from     WithItemsEntities as w
+         left outer join
+         ItemEntities as i
+         on w.Id = i.ParentId
+order by w.Id,
+         i.Id
+  }
+}

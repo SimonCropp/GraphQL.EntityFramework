@@ -3,6 +3,7 @@
   skipLevel(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SkipLevelGraph]!
   queryFieldWithInclude(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [IncludeNonQueryableA!]!
   manyChildren(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithManyChildren!]!
+  withItems(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithItems!]!
   level1Entities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Level1!]!
   withNullableEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithNullable!]!
   namedEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [NamedId!]!
@@ -283,6 +284,18 @@ type Child2 {
   parentId: ID
 }
 
+type WithItems {
+  items(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Item!]!
+  id: ID!
+  property: String
+}
+
+type Item {
+  id: ID!
+  parentId: ID
+  property: String
+}
+
 type Level1 {
   level2Entity: Level2
   id: ID!
@@ -335,6 +348,8 @@ type Parent {
     last: Int): ChildConnection!
   childrenOmitQueryArguments: [Child!]!
   childrenReversed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
+  childrenViaResolveList: [Child]
+  childrenViaResolveListAsync: [Child]
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   id: ID!
   property: String

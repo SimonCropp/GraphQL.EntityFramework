@@ -56,6 +56,8 @@
     public DbSet<RegionEntity> RegionEntities { get; set; } = null!;
     public DbSet<GuardedKeyEntity> GuardedKeyEntities { get; set; } = null!;
     public DbSet<ConcreteTphBaseEntity> ConcreteTphEntities { get; set; } = null!;
+    public DbSet<WithItemsEntity> WithItemsEntities { get; set; } = null!;
+    public DbSet<ItemEntity> ItemEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
