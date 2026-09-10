@@ -1,0 +1,37 @@
+﻿{
+  target: {
+    Data: {
+      manyChildren: [
+        {
+          child1Second: {
+            id: Guid_1,
+            parent: {
+              id: Guid_2
+            }
+          }
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select case when c.Id is null then cast (1 as bit) else cast (0 as bit) end,
+       c.Id,
+       case when w0.Id is null then cast (1 as bit) else cast (0 as bit) end,
+       w0.Id,
+       c.ParentId,
+       c0.Id,
+       c0.ParentId,
+       w.Id
+from   WithManyChildrenEntities as w
+       left outer join
+       Child1Entities as c
+       on w.Id = c.ParentId
+       left outer join
+       WithManyChildrenEntities as w0
+       on c.ParentId = w0.Id
+       left outer join
+       Child2Entities as c0
+       on w.Id = c0.ParentId
+  }
+}

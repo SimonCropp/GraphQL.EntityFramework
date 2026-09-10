@@ -13,6 +13,11 @@
                 Assert.NotNull(ctx.Projection.Child1);
                 return ctx.Projection.Child1;
             });
+        // Child1 is not the first path in the projection
+        AddNavigationField(
+            name: "child1Second",
+            projection: _ => new { _.Child2, _.Child1 },
+            resolve: _ => _.Projection.Child1);
         AutoMap();
     }
 }

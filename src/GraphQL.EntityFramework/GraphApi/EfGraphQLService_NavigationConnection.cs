@@ -97,6 +97,14 @@ partial class EfGraphQLService<TDbContext>
         Type? itemGraphType = null)
         where TReturn : class
     {
+        // On an object type a field with no resolver falls back to GraphQL.NET's name resolver,
+        // which returns the raw property rather than a connection. The projection is what should
+        // be paged, so it gets the resolver AutoMap uses. An interface field declares the shape only.
+        if (graph is IObjectGraphType)
+        {
+            return AddNavigationConnectionField(graph, name, projection, _ => _.Projection ?? [], itemGraphType);
+        }
+
         Ensure.NotWhiteSpace(nameof(name), name);
 
         itemGraphType ??= GraphTypeFinder.FindGraphType<TReturn>();

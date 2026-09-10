@@ -72,6 +72,15 @@ partial class EfGraphQLService<TDbContext>
         bool omitQueryArguments = false)
         where TReturn : class
     {
+        // On an object type a field with no resolver falls back to GraphQL.NET's name resolver,
+        // which returns the raw property, ignores the arguments the field advertises, and applies
+        // no filters. The projection is what should be returned, so it gets the resolver AutoMap
+        // uses. An interface field declares the shape only.
+        if (graph is IObjectGraphType)
+        {
+            return AddNavigationListField(graph, name, projection, _ => _.Projection ?? [], itemGraphType, omitQueryArguments);
+        }
+
         Ensure.NotWhiteSpace(nameof(name), name);
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
