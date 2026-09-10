@@ -16,7 +16,7 @@ static class PushDown
             return;
         }
 
-        var key = Key(context);
+        var key = context.ExecutionContextOrNull();
         if (key is null)
         {
             return;
@@ -31,12 +31,9 @@ static class PushDown
 
     public static bool IsApplied(IResolveFieldContext context)
     {
-        var key = Key(context);
+        var key = context.ExecutionContextOrNull();
         return key is not null &&
                applied.TryGetValue(key, out var set) &&
                set.ContainsKey(context.FieldAst);
     }
-
-    static object? Key(IResolveFieldContext context) =>
-        context.ExecutionContext;
 }

@@ -23,7 +23,7 @@
     /// </summary>
     public static bool HasArguments(IResolveFieldContext context)
     {
-        var field = context.FieldAst;
+        var field = context.FieldAstOrNull();
         if (field is null)
         {
             return context.Arguments is { Count: > 0 };
