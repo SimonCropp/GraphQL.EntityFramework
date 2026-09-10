@@ -1,0 +1,21 @@
+﻿{
+  target: {
+    Data: {
+      timeEntities: [
+        {
+          property: 10:00:00
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select t.Id,
+       t.Property
+from   TimeEntities as t
+where  t.Property = @p1,
+    Parameters: {
+      @p1: Time_1
+    }
+  }
+}

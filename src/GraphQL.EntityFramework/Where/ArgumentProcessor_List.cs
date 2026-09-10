@@ -6,6 +6,17 @@ public static partial class ArgumentProcessor
         this IEnumerable<TItem> items,
         bool hasId,
         IResolveFieldContext context,
+        bool omitQueryArguments) =>
+        items.ApplyGraphQlArguments(hasId ? ["Id"] : null, context, omitQueryArguments);
+
+    /// <summary>
+    /// The key name comes from the model, the same as on the queryable path. The overload above
+    /// assumed the key is named Id, so an entity keyed by anything else failed on the ids argument.
+    /// </summary>
+    public static IEnumerable<TItem> ApplyGraphQlArguments<TItem>(
+        this IEnumerable<TItem> items,
+        List<string>? keyNames,
+        IResolveFieldContext context,
         bool omitQueryArguments)
     {
         if (omitQueryArguments)
@@ -15,11 +26,12 @@ public static partial class ArgumentProcessor
 
         var alreadyOrdered = items is ICollection<TItem>;
 
-        if (hasId)
+        if (keyNames is not null)
         {
             if (ArgumentReader.TryReadIds(context, out var idValues))
             {
-                var predicate = ExpressionBuilder<TItem>.BuildIdPredicate("Id", idValues);
+                var keyName = GetKeyName(keyNames);
+                var predicate = ExpressionBuilder<TItem>.BuildIdPredicate(keyName, idValues);
                 items = items.Where(Compile(predicate));
             }
         }

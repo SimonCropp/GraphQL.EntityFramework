@@ -1,0 +1,27 @@
+﻿{
+  target: {
+    Data: {
+      dateEntities: [
+        {
+          property: 2020-01-01
+        },
+        {
+          property: 2020-01-03
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   d.Id,
+         d.Property
+from     DateEntities as d
+where    d.Property in (@p1,
+                        @p2)
+order by d.Property,
+    Parameters: {
+      @p1: Date_1,
+      @p2: Date_2
+    }
+  }
+}
