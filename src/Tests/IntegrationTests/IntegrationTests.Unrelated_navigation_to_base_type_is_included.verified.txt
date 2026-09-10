@@ -1,0 +1,60 @@
+﻿{
+  target: {
+    Data: {
+      tphMiddleEntities: [
+        {
+          property: TheRequest,
+          attachments: [
+            {
+              property: TheAttachment,
+              relatedRequest: {
+                property: Related
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   t.Id,
+         t.Discriminator,
+         t.Property,
+         t.LeafProperty,
+         s.Id,
+         s.Property,
+         s.RelatedRequestId,
+         s.RequestId,
+         s.Id0,
+         s.Discriminator,
+         s.Property0,
+         s.LeafProperty
+from     TphRootEntities as t
+         left outer join
+         (select t0.Id,
+                 t0.Property,
+                 t0.RelatedRequestId,
+                 t0.RequestId,
+                 t1.Id as Id0,
+                 t1.Discriminator,
+                 t1.Property as Property0,
+                 t1.LeafProperty
+          from   TphAttachmentEntities as t0
+                 left outer join
+                 TphRootEntities as t1
+                 on t0.RelatedRequestId = t1.Id) as s
+         on t.Id = s.RequestId
+where    t.Property = @p
+order by t.Property,
+         t.Id,
+         s.Id,
+    Parameters: {
+      @p: {
+        Value: TheRequest,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
+  }
+}

@@ -6,5 +6,6 @@ public record Navigation
     string Name,
     Type Type,
     bool IsNullable,
-    bool IsCollection
+    bool IsCollection,
+    string? InverseName = null
 );

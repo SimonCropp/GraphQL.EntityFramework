@@ -47,26 +47,17 @@
         return query.Select(expression);
     }
 
-    static IQueryable<TItem> AddIncludesFromProjection<TItem>(
+    IQueryable<TItem> AddIncludesFromProjection<TItem>(
         IQueryable<TItem> query,
         FieldProjectionInfo projection)
         where TItem : class
     {
-        var visitedTypes = new HashSet<Type> { typeof(TItem) };
-
         if (projection.Navigations is { Count: > 0 })
         {
             foreach (var (navName, navProjection) in projection.Navigations)
             {
-                if (IsVisitedOrBaseType(navProjection.EntityType, visitedTypes))
-                {
-                    continue;
-                }
-
-                visitedTypes.Add(navProjection.EntityType);
                 query = query.Include(navName);
-                query = AddNestedIncludes(query, navName, navProjection.Projection, visitedTypes);
-                visitedTypes.Remove(navProjection.EntityType);
+                query = AddNestedIncludes(query, navName, typeof(TItem), navName, navProjection);
             }
         }
 
@@ -74,7 +65,7 @@
         // e.g. query.Include(e => ((GroupAccessRule)e).Group)
         if (projection.DerivedNavigations is { Count: > 0 })
         {
-            query = AddDerivedTypeIncludes(query, projection.DerivedNavigations, visitedTypes);
+            query = AddDerivedTypeIncludes(query, projection.DerivedNavigations);
         }
 
         return query;
@@ -82,8 +73,7 @@
 
     static IQueryable<TItem> AddDerivedTypeIncludes<TItem>(
         IQueryable<TItem> query,
-        Dictionary<Type, Dictionary<string, NavigationProjectionInfo>> derivedNavigations,
-        HashSet<Type> visitedTypes)
+        Dictionary<Type, Dictionary<string, NavigationProjectionInfo>> derivedNavigations)
         where TItem : class
     {
         var itemType = typeof(TItem);
@@ -94,13 +84,8 @@
             // Cast: (DerivedType)e
             var cast = Expression.Convert(parameter, derivedType);
 
-            foreach (var (navName, navProjection) in navDict)
+            foreach (var (navName, _) in navDict)
             {
-                if (IsVisitedOrBaseType(navProjection.EntityType, visitedTypes))
-                {
-                    continue;
-                }
-
                 // Property access: ((DerivedType)e).Navigation
                 var property = derivedType.GetProperty(navName);
                 if (property == null)
@@ -141,42 +126,54 @@
             (entityType, propertyType),
             _ => includeMethodDefinition.MakeGenericMethod(_.entity, _.property));
 
-    static IQueryable<TItem> AddNestedIncludes<TItem>(
+    /// <summary>
+    /// The one nested include EF rejects, in a no tracking query, is the inverse of the navigation
+    /// just traversed: Attachments then Request, where Request is the other end of Attachments.
+    /// EF fixes that inverse up while materializing the include anyway, so skipping it loses
+    /// nothing. This used to skip every navigation to a type already on the path, or to a base of
+    /// one, which dropped legitimate includes such as a second, unrelated navigation to the root's
+    /// base type.
+    /// </summary>
+    IQueryable<TItem> AddNestedIncludes<TItem>(
         IQueryable<TItem> query,
         string includePath,
-        FieldProjectionInfo projection,
-        HashSet<Type> visitedTypes)
+        Type parentType,
+        string navName,
+        NavigationProjectionInfo navProjection)
         where TItem : class
     {
+        var projection = navProjection.Projection;
         if (projection.Navigations is not { Count: > 0 })
         {
             return query;
         }
 
-        foreach (var (navName, navProjection) in projection.Navigations)
+        var inverseName = InverseName(parentType, navName);
+        foreach (var (nestedName, nestedProjection) in projection.Navigations)
         {
-            if (IsVisitedOrBaseType(navProjection.EntityType, visitedTypes))
+            if (string.Equals(nestedName, inverseName, StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
-            visitedTypes.Add(navProjection.EntityType);
-            var nestedPath = $"{includePath}.{navName}";
+            var nestedPath = $"{includePath}.{nestedName}";
             query = query.Include(nestedPath);
-            query = AddNestedIncludes(query, nestedPath, navProjection.Projection, visitedTypes);
-            visitedTypes.Remove(navProjection.EntityType);
+            query = AddNestedIncludes(query, nestedPath, navProjection.EntityType, nestedName, nestedProjection);
         }
 
         return query;
     }
 
-    // Skip if the type was already visited OR if it's a base type of any visited type.
-    // The latter prevents circular includes through TPH hierarchies where a navigation
-    // points back to a base type (e.g. ParliamentaryAbsenceEmailAttachment.Request -> BaseRequest
-    // when the root query is on TravelRequest which inherits from BaseRequest).
-    static bool IsVisitedOrBaseType(Type entityType, HashSet<Type> visitedTypes) =>
-        visitedTypes.Contains(entityType) ||
-        visitedTypes.Any(entityType.IsAssignableFrom);
+    string? InverseName(Type entityType, string navName)
+    {
+        if (navigations.TryGetValue(entityType, out var properties) &&
+            properties.TryGetValue(navName, out var navigation))
+        {
+            return navigation.InverseName;
+        }
+
+        return null;
+    }
 
     FieldProjectionInfo MergeFilterFieldsIntoProjection<TDbContext>(
         FieldProjectionInfo projection,
@@ -511,7 +508,12 @@
 
             FieldProjectionInfo nestedProjection;
 
-            if (navName == primaryNavigation)
+            // A navigation accessed as a whole, with nothing read from it in the expression and no
+            // selection set to say which fields are wanted, needs the whole entity. It was
+            // projected with only its keys, so the resolver saw every other property as null.
+            var isWhole = nestedPaths.Count == 0;
+
+            if (navName == primaryNavigation && field.SelectionSet is not null)
             {
                 // Primary navigation: merge GraphQL fields with projection-required fields
                 nestedProjection = GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), nestedNavProps, nestedKeys, nestedFks, context);
@@ -522,6 +524,8 @@
                         nestedProjection.ScalarFields.Add(nestedPath);
                     }
                 }
+
+                isWhole = false;
             }
             else
             {
@@ -533,7 +537,7 @@
                 nestedProjection = new(nestedScalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
             }
 
-            AddNavigation(navProjections, navigation.Name, new(navType, navigation.IsCollection, nestedProjection));
+            AddNavigation(navProjections, navigation.Name, new(navType, navigation.IsCollection, nestedProjection, isWhole));
         }
     }
 

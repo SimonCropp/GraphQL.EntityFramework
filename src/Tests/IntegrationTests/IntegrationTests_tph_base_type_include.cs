@@ -1,9 +1,9 @@
-public partial class IntegrationTests
+﻿public partial class IntegrationTests
 {
     // Reproduces bug where a filter on a child entity adds a navigation back to a TPH base type,
     // causing a circular include (e.g. TravelRequest -> Attachment -> BaseRequest).
-    // The fix in IsVisitedOrBaseType detects that the navigation target is a base type
-    // of an already-visited type and skips the include.
+    // The include path skips the inverse of the navigation it came through, which is the one
+    // nested include EF rejects in a no tracking query.
     [Fact]
     public async Task Tph_base_type_include_skipped_with_filter()
     {
@@ -22,8 +22,8 @@ public partial class IntegrationTests
 
         // Query the abstract middle type (TphMiddleEntity) which triggers the includes path.
         // The filter on TphAttachmentEntity accesses _.Request.Property, adding a navigation
-        // back to TphRootEntity. Without the fix, this would cause:
-        //   .Include("Attachments.Request") -> circular back to TphRootEntity (base of TphMiddleEntity)
+        // back to TphRootEntity. Without the skip, this would cause:
+        //   .Include("Attachments.Request") -> the inverse of Attachments, a cycle EF rejects
         var query =
             """
             {

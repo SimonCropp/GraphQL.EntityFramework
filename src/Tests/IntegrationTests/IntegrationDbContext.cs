@@ -1,4 +1,4 @@
-public class IntegrationDbContext(DbContextOptions options) :
+﻿public class IntegrationDbContext(DbContextOptions options) :
     DbContext(options)
 {
     protected override void OnConfiguring(DbContextOptionsBuilder builder) =>
@@ -161,6 +161,14 @@ public class IntegrationDbContext(DbContextOptions options) :
             .HasBaseType<TphMiddleEntity>();
         modelBuilder.Entity<TphAttachmentEntity>()
             .OrderBy(_ => _.Property);
+        modelBuilder.Entity<TphAttachmentEntity>()
+            .HasOne(_ => _.Request)
+            .WithMany(_ => _.Attachments)
+            .HasForeignKey(_ => _.RequestId);
+        modelBuilder.Entity<TphAttachmentEntity>()
+            .HasOne(_ => _.RelatedRequest)
+            .WithMany()
+            .HasForeignKey(_ => _.RelatedRequestId);
 
         // Configure TPH inheritance with derived-type-specific navigations
         modelBuilder.Entity<TphDerivedNavBaseEntity>()
