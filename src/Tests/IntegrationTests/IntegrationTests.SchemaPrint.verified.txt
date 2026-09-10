@@ -334,6 +334,7 @@ type Parent {
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int): ChildConnection!
   childrenOmitQueryArguments: [Child!]!
+  childrenReversed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
   id: ID!
   property: String

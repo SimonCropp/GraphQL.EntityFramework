@@ -30,7 +30,7 @@ from     Departments as d
 where    d.Name = @p
 order by d.Name,
          d.Id,
-         e.Id,
+         e.Name,
       Parameters: {
         @p: {
           Value: Engineering,

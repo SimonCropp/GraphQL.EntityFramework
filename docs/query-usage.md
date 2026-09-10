@@ -15,6 +15,13 @@ The arguments supported are `ids`, `where`, `orderBy` , `skip`, and `take`.
 Arguments are executed in that order.
 
 
+### Navigation fields
+
+Navigation list and connection fields accept the same arguments. When the parent entity is loaded through a projection, `ids`, `where` and `orderBy` are applied inside the query, as part of the subquery that loads the collection, so the database evaluates them. `skip`, `take` and the connection paging are applied in memory to the collection that was loaded.
+
+The arguments are evaluated in memory instead when the same navigation is selected more than once with different arguments, when the field's resolver returns something other than the projected collection, or when the parent could not be projected. In memory, string comparisons ignore case, matching the default SQL Server collation, and `like` supports `%`, `_` and `[]`.
+
+
 ### Ids
 
 Queries entities by id. Currently the only supported identity member (property or field) name is `Id`.

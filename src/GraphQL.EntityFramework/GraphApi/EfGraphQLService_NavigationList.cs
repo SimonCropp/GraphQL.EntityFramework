@@ -48,7 +48,10 @@ partial class EfGraphQLService<TDbContext>
                 throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryField.");
             }
 
-            result = result.ApplyGraphQlArguments(names, context, omitQueryArguments);
+            // The collection arrives with ids, where and orderBy already applied when the parent
+            // was loaded through a projection and the resolver returned that collection as is
+            var applied = ReferenceEquals(result, projected) && PushDown.IsApplied(context);
+            result = result.ApplyGraphQlArguments(names, context, omitQueryArguments, applied);
             if (fieldContext.Filters == null)
             {
                 return result;

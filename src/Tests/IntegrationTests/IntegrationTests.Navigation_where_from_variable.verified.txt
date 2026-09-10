@@ -3,10 +3,9 @@
     Data: {
       parentEntities: [
         {
-          property: Value1,
           children: [
             {
-              property: Child1
+              id: Guid_1
             }
           ]
         }
@@ -17,22 +16,23 @@
     Text:
 select   p.Id,
          c0.Id,
-         c0.ParentId,
-         c0.Property,
-         p.Property
+         c0.ParentId
 from     ParentEntities as p
          left outer join
          (select c.Id,
-                 c.ParentId,
-                 c.Property
+                 c.ParentId
           from   ChildEntities as c
-          where  c.Id = @p1) as c0
+          where  c.Property = @p) as c0
          on p.Id = c0.ParentId
 order by p.Property,
          p.Id,
          c0.Id,
     Parameters: {
-      @p1: Guid_1
+      @p: {
+        Value: Value2,
+        Size: 4000,
+        IsNullable: true
+      }
     }
   }
 }

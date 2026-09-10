@@ -1,10 +1,17 @@
-﻿record Property<TInput>(
+﻿interface IProperty
+{
+    Expression Left { get; }
+    ParameterExpression SourceParameter { get; }
+}
+
+record Property<TInput>(
     Expression Left,
     Expression<Func<TInput, object>> Lambda,
     ParameterExpression SourceParameter,
     Type PropertyType,
     MemberInfo Info,
-    MethodInfo? ListContains)
+    MethodInfo? ListContains) :
+    IProperty
 {
     Func<TInput, object>? func;
 

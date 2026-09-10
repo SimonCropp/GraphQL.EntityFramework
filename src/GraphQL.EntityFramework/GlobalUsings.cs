@@ -6,3 +6,4 @@ global using Microsoft.EntityFrameworkCore.Metadata;
 global using Microsoft.EntityFrameworkCore.Query;
 global using Microsoft.Extensions.DependencyInjection;
 global using System.Runtime.CompilerServices;
+global using System.Runtime.ExceptionServices;

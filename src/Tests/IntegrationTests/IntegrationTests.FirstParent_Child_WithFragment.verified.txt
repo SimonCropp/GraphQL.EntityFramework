@@ -31,7 +31,7 @@ from     (select   top (1) p.Id,
          on p0.Id = c.ParentId
 order by p0.Property,
          p0.Id,
-         c.Id,
+         c.Property,
     Parameters: {
       @p1: Guid_1
     }

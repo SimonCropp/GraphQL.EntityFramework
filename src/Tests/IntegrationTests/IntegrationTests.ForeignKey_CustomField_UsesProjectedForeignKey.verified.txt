@@ -52,7 +52,7 @@ from     Departments as d
          on d.Id = e.DepartmentId
 order by d.Name,
          d.Id,
-         e.Id
+         e.Name
     },
     {
       Text:

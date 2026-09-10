@@ -1,0 +1,34 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          first: [
+            {
+              property: Value1
+            }
+          ],
+          second: [
+            {
+              property: Value2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         c.Id,
+         c.ParentId,
+         c.Property
+from     ParentEntities as p
+         left outer join
+         ChildEntities as c
+         on p.Id = c.ParentId
+order by p.Property,
+         p.Id,
+         c.Id
+  }
+}

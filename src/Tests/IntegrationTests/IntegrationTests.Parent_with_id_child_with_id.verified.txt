@@ -16,20 +16,25 @@
   sql: {
     Text:
 select   p.Id,
-         c.Id,
-         c.ParentId,
-         c.Property,
+         c0.Id,
+         c0.ParentId,
+         c0.Property,
          p.Property
 from     ParentEntities as p
          left outer join
-         ChildEntities as c
-         on p.Id = c.ParentId
-where    p.Id = @p1
+         (select c.Id,
+                 c.ParentId,
+                 c.Property
+          from   ChildEntities as c
+          where  c.Id = @p11) as c0
+         on p.Id = c0.ParentId
+where    p.Id = @p2
 order by p.Property,
          p.Id,
-         c.Id,
+         c0.Id,
     Parameters: {
-      @p1: Guid_1
+      @p11: Guid_1,
+      @p2: Guid_2
     }
   }
 }

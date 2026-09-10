@@ -92,6 +92,7 @@ from     ChildEntities as c
 order by c.Property,
          c.Id,
          p.Id,
+         s.Property0,
          s.Id
   }
 }

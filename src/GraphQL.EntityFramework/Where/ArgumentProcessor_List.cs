@@ -17,7 +17,20 @@ public static partial class ArgumentProcessor
         this IEnumerable<TItem> items,
         List<string>? keyNames,
         IResolveFieldContext context,
-        bool omitQueryArguments)
+        bool omitQueryArguments) =>
+        items.ApplyGraphQlArguments(keyNames, context, omitQueryArguments, false);
+
+    /// <param name="argumentsAppliedInQuery">
+    /// The ids, where and orderBy were applied inside the query that loaded the collection, so
+    /// only skip and take remain. Applying the rest again would page twice, and would evaluate the
+    /// where under the in memory comparison rules after the database already applied its own.
+    /// </param>
+    public static IEnumerable<TItem> ApplyGraphQlArguments<TItem>(
+        this IEnumerable<TItem> items,
+        List<string>? keyNames,
+        IResolveFieldContext context,
+        bool omitQueryArguments,
+        bool argumentsAppliedInQuery)
     {
         if (omitQueryArguments)
         {
@@ -25,25 +38,28 @@ public static partial class ArgumentProcessor
         }
 
         var alreadyOrdered = items is ICollection<TItem>;
+        var order = argumentsAppliedInQuery;
 
-        if (keyNames is not null)
+        if (!argumentsAppliedInQuery)
         {
-            if (ArgumentReader.TryReadIds(context, out var idValues))
+            if (keyNames is not null)
             {
-                var keyName = GetKeyName(keyNames);
-                var predicate = ExpressionBuilder<TItem>.BuildIdPredicate(keyName, idValues);
+                if (ArgumentReader.TryReadIds(context, out var idValues))
+                {
+                    var keyName = GetKeyName(keyNames);
+                    var predicate = ExpressionBuilder<TItem>.BuildIdPredicate(keyName, idValues);
+                    items = items.Where(Compile(predicate));
+                }
+            }
+
+            if (ArgumentReader.TryReadWhere(context, out var wheres))
+            {
+                var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
                 items = items.Where(Compile(predicate));
             }
-        }
 
-        if (ArgumentReader.TryReadWhere(context, out var wheres))
-        {
-            var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
-            items = items.Where(Compile(predicate));
+            (items, order) = Order(items, context);
         }
-
-        var (orderedItems, order) = Order(items, context);
-        items = orderedItems;
 
         if (ArgumentReader.TryReadSkip(context, out var skip))
         {
@@ -69,7 +85,7 @@ public static partial class ArgumentProcessor
     /// is ~20x cheaper to construct and stays ahead until a collection reaches several thousand items.
     /// </summary>
     static Func<TItem, bool> Compile<TItem>(Expression<Func<TItem, bool>> predicate) =>
-        predicate.Compile(preferInterpretation: true);
+        InMemoryStringComparison.Rewrite(predicate).Compile(preferInterpretation: true);
 
     static (IEnumerable<TItem> items, bool order) Order<TItem>(IEnumerable<TItem> queryable, IResolveFieldContext context)
     {

@@ -59,7 +59,8 @@ partial class EfGraphQLService<TDbContext>
                 throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryConnectionField.");
             }
 
-            enumerable = enumerable.ApplyGraphQlArguments(names, context, omitQueryArguments);
+            var applied = ReferenceEquals(enumerable, projected) && PushDown.IsApplied(context);
+            enumerable = enumerable.ApplyGraphQlArguments(names, context, omitQueryArguments, applied);
             if (efFieldContext.Filters != null)
             {
                 enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext, efFieldContext.DbContext, context.User);
