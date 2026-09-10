@@ -36,8 +36,11 @@
             return false;
         }
 
-        if (ids.Source == ArgumentSource.FieldDefault &&
-            id.Source == ArgumentSource.FieldDefault)
+        // A null ids, whether literal or from a variable, is the same as not passing it.
+        // It was dereferenced for its type name in the error below.
+        var hasIds = ids.Source != ArgumentSource.FieldDefault && ids.Value is not null;
+        var hasId = id.Source != ArgumentSource.FieldDefault;
+        if (!hasIds && !hasId)
         {
             idValues = null;
             return false;
@@ -45,7 +48,7 @@
 
         var expressions = new List<string>();
 
-        if (id.Source != ArgumentSource.FieldDefault)
+        if (hasId)
         {
             var idValue = id.Value;
             if (idValue == null)
@@ -56,7 +59,7 @@
             expressions.Add(ArgumentToExpression(idValue));
         }
 
-        if (ids.Source != ArgumentSource.FieldDefault)
+        if (hasIds)
         {
             if (ids.Value is not IEnumerable<object> objCollection)
             {

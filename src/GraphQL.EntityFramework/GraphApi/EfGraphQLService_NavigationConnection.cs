@@ -79,7 +79,13 @@ partial class EfGraphQLService<TDbContext>
         builder.FieldType.Type = ConnectionBuilderEx<TSource>.NonNullConnectionType(itemGraphType);
         var field = graph.AddField(builder.FieldType);
 
-        field.AddWhereArgument(hasId);
+        // The arguments were added regardless, so omitQueryArguments only stopped them being
+        // applied while the schema still advertised them
+        if (!omitQueryArguments)
+        {
+            field.AddWhereArgument(hasId);
+        }
+
         return builder;
     }
 
