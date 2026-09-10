@@ -238,7 +238,12 @@ class IncludeAppender(
         }
 
         // Scan for derived-type navigations from inline fragments (TPH support)
-        var derivedNavigations = GetDerivedNavigationsFromFragments(context, entityType, scalarFields);
+        var derivedNavigations = GetDerivedNavigationsFromFragments(
+            context.FieldAst.SelectionSet,
+            GetComplexGraphType(context.FieldDefinition),
+            entityType,
+            scalarFields,
+            context);
 
         return new(scalarFields, keys, foreignKeyNames, navProjections, derivedNavigations);
     }
@@ -312,14 +317,20 @@ class IncludeAppender(
     /// Navigations selected through a fragment on a type derived from the entity type. They do
     /// not exist on the entity type itself, so they are collected per derived type and included
     /// with a cast. Fragments on the entity type itself, or on one of its base types, select
-    /// navigations the main projection already covers, so they are skipped.
+    /// navigations the main projection already covers, so they are skipped. Runs for the root
+    /// selection and for every nested one; it used to run for the root only, so a derived
+    /// navigation under a fragment below a navigation fell through to the scalar path and was
+    /// dropped.
     /// </summary>
     Dictionary<Type, Dictionary<string, NavigationProjectionInfo>>? GetDerivedNavigationsFromFragments(
-        IResolveFieldContext context,
+        GraphQLSelectionSet? selectionSet,
+        IComplexGraphType? graphType,
         Type entityType,
-        HashSet<string> scalarFields)
+        HashSet<string> scalarFields,
+        IResolveFieldContext context)
     {
-        var (selectionSet, leafGraphType) = GetLeafSelection(context);
+        IComplexGraphType? leafGraphType;
+        (selectionSet, leafGraphType) = GetLeafSelection(selectionSet, graphType);
         if (selectionSet?.Selections is null)
         {
             return null;
@@ -349,6 +360,11 @@ class IncludeAppender(
                 continue;
             }
 
+            // Below the root, the selection set walk sees the field before this does, and with
+            // only the base type's navigations to match against records it as a scalar. It is a
+            // navigation of the derived type, so it is projected as one and not as a member.
+            scalarFields.Remove(field.Name.StringValue);
+
             result ??= [];
             if (!result.TryGetValue(derivedType, out var derivedNavs))
             {
@@ -368,7 +384,7 @@ class IncludeAppender(
                 new(
                     navType,
                     navigation.IsCollection,
-                    GetNestedProjection(field.SelectionSet, navGraphType, nestedNavProps, nestedKeys, nestedFks, context)));
+                    GetNestedProjection(field.SelectionSet, navGraphType, navType, nestedNavProps, nestedKeys, nestedFks, context)));
         }
 
         return result;
@@ -378,15 +394,14 @@ class IncludeAppender(
     /// Navigate through connection wrapper fields (edges/items/node) to find the leaf selection set
     /// that contains the actual entity fields and inline fragments, and the graph type it selects from.
     /// </summary>
-    static (GraphQLSelectionSet? SelectionSet, IComplexGraphType? GraphType) GetLeafSelection(IResolveFieldContext context)
+    static (GraphQLSelectionSet? SelectionSet, IComplexGraphType? GraphType) GetLeafSelection(
+        GraphQLSelectionSet? selectionSet,
+        IComplexGraphType? graphType)
     {
-        var selectionSet = context.FieldAst.SelectionSet;
         if (selectionSet?.Selections is null)
         {
             return (null, null);
         }
-
-        var graphType = GetComplexGraphType(context.FieldDefinition);
 
         // Drill through connection wrapper fields
         while (true)
@@ -613,7 +628,7 @@ class IncludeAppender(
                 }
 
                 // Primary navigation: merge GraphQL fields with projection-required fields
-                nestedProjection = GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), nestedNavProps, nestedKeys, nestedFks, context);
+                nestedProjection = GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), navType, nestedNavProps, nestedKeys, nestedFks, context);
                 foreach (var nestedPath in nestedPaths)
                 {
                     if (!nestedPath.Contains('.'))
@@ -705,6 +720,7 @@ class IncludeAppender(
     FieldProjectionInfo GetNestedProjection(
         GraphQLSelectionSet? selectionSet,
         IComplexGraphType? graphType,
+        Type entityType,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
         List<string>? keys,
         IReadOnlySet<string>? foreignKeyNames,
@@ -715,7 +731,9 @@ class IncludeAppender(
 
         ProcessSelectionSet(selectionSet, graphType, navigationProperties, scalarFields, navProjections, context);
 
-        return new(scalarFields, keys, foreignKeyNames, navProjections);
+        var derivedNavigations = GetDerivedNavigationsFromFragments(selectionSet, graphType, entityType, scalarFields, context);
+
+        return new(scalarFields, keys, foreignKeyNames, navProjections, derivedNavigations);
     }
 
     /// <summary>
@@ -836,7 +854,7 @@ class IncludeAppender(
             new(
                 navType,
                 navigation.IsCollection,
-                GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), nestedNavProps, nestedKeys, nestedFks, context)));
+                GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), navType, nestedNavProps, nestedKeys, nestedFks, context)));
     }
 
     /// <summary>

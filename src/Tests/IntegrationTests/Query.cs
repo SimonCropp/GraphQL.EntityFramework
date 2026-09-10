@@ -440,5 +440,9 @@
             name: "tphDerivedNavEntity",
             graphType: typeof(TphDerivedNavBaseGraphType),
             resolve: _ => _.DbContext.TphDerivedNavBaseEntities);
+
+        AddQueryField(
+            name: "tphDerivedNavOwners",
+            resolve: _ => _.DbContext.TphDerivedNavOwners);
     }
 }

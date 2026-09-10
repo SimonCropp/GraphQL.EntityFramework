@@ -25,6 +25,7 @@
     Text:
 select   t.Id,
          t.Discriminator,
+         t.OwnerId,
          t.Property,
          t.CategoryId,
          t.RegionId,
