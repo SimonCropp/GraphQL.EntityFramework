@@ -1,4 +1,4 @@
-# GraphQL.EntityFramework bug audit, second pass
+﻿# GraphQL.EntityFramework bug audit, second pass
 
 Audit of the working tree at d7e9ccaa (2026-09-10), after the first pass's findings were all fixed and merged. Items tagged **ran** were reproduced with a throwaway probe test against the integration schema and LocalDB; **read** items were confirmed by tracing the cited code paths but not executed. Items ticked off say which branch fixed them.
 
@@ -23,4 +23,19 @@ Audit of the working tree at d7e9ccaa (2026-09-10), after the first pass's findi
 
 ## Perf
 
-Nothing material. The one candidate measured, building and interpreting a `where` predicate once per parent row in `ArgumentProcessor_List`, costs about 4 µs per row, so caching it is not worth the complexity. The remaining per-row work is the argument conversion in `ArgumentReader.ReadList`, unmeasured but of the same order.
+Measured on `request-split-benchmarks` with `src/Benchmarks/RequestSplitBenchmark.cs` (EF InMemory, 100 parents with 5 children each, `{ parents { id property children { id property } } }`, in process, 10 iterations) and `RequestSplitSqlServerBenchmark.cs` (the same against LocalDB).
+
+| Stage | Mean | Allocated |
+|---|---:|---:|
+| GraphQL.NET alone, same result shape through plain object graph types | 384 us | 392 KB |
+| Full request through the library, InMemory | 2,969 us | 3,989 KB |
+| `ApplyGraphQlArguments` (where and orderBy trees) | 3.4 us | 2.2 KB |
+| `IncludeAppender.ApplyProjection` (AST walk and select tree) | 5.8 us | 5.3 KB |
+| Both, with a children `orderBy` pushed down | 11.1 us | 8.9 KB |
+| EF executing the projected query, InMemory | 2,201 us | 3,521 KB |
+| Full request through the library, LocalDB | 2,767 us | 1,004 KB |
+| EF executing the projected query, LocalDB | 1,755 us | 535 KB |
+
+The trees the library builds per request are 0.2% of the request in time and allocation, so a per shape cache of the projection info and select expression (the idea in `CachingOpportunityBenchmark`) has nothing to recover. The residual after GraphQL.NET, the trees and the EF execution is about 380 us and 75 KB on InMemory, the per row resolver work (`BuildContext`, the projection delegate, `PushDown.IsApplied`, skip and take on the children); with fragments the request costs the same as without. A source generator was assessed at the same time and rejected: it cannot reach the per request path, cannot unlock AOT while GraphQL.NET and EF's precompiled queries block it, and the startup compilation it could remove (an expression compile per AutoMap property, roughly 15-40 ms for the test schema) is recoverable with `Delegate.CreateDelegate` and no second code path.
+
+Earlier: the one candidate measured, building and interpreting a `where` predicate once per parent row in `ArgumentProcessor_List`, costs about 4 us per row, so caching it is not worth the complexity.
