@@ -15,6 +15,23 @@
         return false;
     }
 
+    /// <summary>
+    /// Whether the field was selected with any arguments. GraphQL.NET builds the argument
+    /// dictionary lazily, per field per row, so the ast is consulted instead: a field selected
+    /// without arguments has nothing to read, and that is the common case for a navigation.
+    /// A context built by hand, outside an execution, carries no ast, so its arguments are used.
+    /// </summary>
+    public static bool HasArguments(IResolveFieldContext context)
+    {
+        var field = context.FieldAst;
+        if (field is null)
+        {
+            return context.Arguments is { Count: > 0 };
+        }
+
+        return field.Arguments is { Count: > 0 };
+    }
+
     public static IReadOnlyCollection<OrderBy> ReadOrderBy(IResolveFieldContext context)
     {
         if (TryReadArgument(context, "orderBy", out var value) &&

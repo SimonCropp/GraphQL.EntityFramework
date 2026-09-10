@@ -10,7 +10,9 @@ public static partial class ArgumentProcessor
         bool omitQueryArguments)
         where TItem : class
     {
-        if (omitQueryArguments)
+        // A field selected without arguments has nothing to apply
+        if (omitQueryArguments ||
+            !ArgumentReader.HasArguments(context))
         {
             return queryable;
         }

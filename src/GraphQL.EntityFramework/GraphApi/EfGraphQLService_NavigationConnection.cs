@@ -26,15 +26,20 @@ partial class EfGraphQLService<TDbContext>
         var names = GetKeyNames<TReturn>();
         builder.ResolveAsync(async context =>
         {
-            var efFieldContext = BuildContext(context);
+            // Runs once per parent row. Building a ResolveEfFieldContext here copied every property
+            // of the GraphQL.NET context, which forced the lazily computed ones, SubFields, Path,
+            // ResponsePath, Parent and Arguments, to be computed and allocated per row, when all
+            // this needs is the DbContext and the filters.
+            var dbContext = ResolveDbContext(context);
+            var filters = ResolveFilters(context);
             var projected = compiledProjection(context.Source);
 
             var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
             {
                 Projection = projected,
-                DbContext = efFieldContext.DbContext,
+                DbContext = dbContext,
                 User = context.User,
-                Filters = efFieldContext.Filters,
+                Filters = filters,
                 FieldContext = context
             };
 
@@ -59,11 +64,17 @@ partial class EfGraphQLService<TDbContext>
                 throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryConnectionField.");
             }
 
-            var applied = ReferenceEquals(enumerable, projected) && PushDown.IsApplied(context);
-            enumerable = enumerable.ApplyGraphQlArguments(names, context, omitQueryArguments, applied);
-            if (efFieldContext.Filters != null)
+            // A field selected without arguments has nothing to apply, so the argument reads
+            // and the push down lookup are skipped
+            if (ArgumentReader.HasArguments(context))
             {
-                enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext, efFieldContext.DbContext, context.User);
+                var applied = ReferenceEquals(enumerable, projected) && PushDown.IsApplied(context);
+                enumerable = enumerable.ApplyGraphQlArguments(names, context, omitQueryArguments, applied);
+            }
+
+            if (filters != null)
+            {
+                enumerable = await filters.ApplyFilter(enumerable, context.UserContext, dbContext, context.User);
             }
 
             var page = enumerable.ToList();

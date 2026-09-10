@@ -28,15 +28,20 @@ partial class EfGraphQLService<TDbContext>
         field.Resolver = new FuncFieldResolver<TSource, TReturn?>(
             async context =>
             {
-                var fieldContext = BuildContext(context);
+                // Runs once per parent row. Building a ResolveEfFieldContext here copied every property
+                // of the GraphQL.NET context, which forced the lazily computed ones, SubFields, Path,
+                // ResponsePath, Parent and Arguments, to be computed and allocated per row, when all
+                // this needs is the DbContext and the filters.
+                var dbContext = ResolveDbContext(context);
+                var filters = ResolveFilters(context);
                 var projected = compiledProjection(context.Source);
 
                 var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
                 {
                     Projection = projected,
-                    DbContext = fieldContext.DbContext,
+                    DbContext = dbContext,
                     User = context.User,
-                    Filters = fieldContext.Filters,
+                    Filters = filters,
                     FieldContext = context
                 };
 
@@ -57,12 +62,12 @@ partial class EfGraphQLService<TDbContext>
                         exception);
                 }
 
-                if (fieldContext.Filters == null)
+                if (filters == null)
                 {
                     return result;
                 }
 
-                if (await fieldContext.Filters.ShouldInclude(context.UserContext, fieldContext.DbContext, context.User, result))
+                if (await filters.ShouldInclude(context.UserContext, dbContext, context.User, result))
                 {
                     return result;
                 }

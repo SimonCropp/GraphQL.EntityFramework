@@ -1,0 +1,26 @@
+﻿{
+  target: {
+    Data: {
+      parentEntitiesConnection: {
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          endCursor: null
+        },
+        items: []
+      }
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+order by p.Property
+offset @p rows fetch next @p1 rows only,
+    Parameters: {
+      @p: 21,
+      @p1: 3
+    }
+  }
+}

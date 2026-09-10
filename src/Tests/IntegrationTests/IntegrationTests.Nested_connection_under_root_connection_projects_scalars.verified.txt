@@ -17,14 +17,8 @@
       }
     }
   },
-  sql: [
-    {
-      Text:
-select COUNT(*)
-from   ParentEntities as p
-    },
-    {
-      Text:
+  sql: {
+    Text:
 select   p0.Id,
          c.Id,
          c.ParentId,
@@ -41,10 +35,9 @@ from     (select   p.Id,
 order by p0.Property,
          p0.Id,
          c.Id,
-      Parameters: {
-        @p: 0,
-        @p1: 10
-      }
+    Parameters: {
+      @p: 0,
+      @p1: 11
     }
-  ]
+  }
 }
