@@ -1,4 +1,4 @@
-# <img src="/src/icon.png" height="30px"> GraphQL.EntityFramework
+﻿# <img src="/src/icon.png" height="30px"> GraphQL.EntityFramework
 
 [![Build status](https://img.shields.io/appveyor/build/SimonCropp/graphql-entityframework)](https://ci.appveyor.com/project/SimonCropp/graphql-entityframework)
 [![NuGet Status](https://img.shields.io/nuget/v/GraphQL.EntityFramework.svg)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
@@ -26,6 +26,7 @@ https://nuget.org/packages/GraphQL.EntityFramework/
  * [Defining Graphs](/docs/defining-graphs.md)
  * [Query Usage](/docs/query-usage.md)
  * [Filters](/docs/filters.md)
+ * [Upgrading to the typed where and orderBy](/docs/upgrade-where.md)
 
 
 ## Icon

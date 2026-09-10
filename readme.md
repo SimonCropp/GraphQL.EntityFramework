@@ -51,6 +51,7 @@ https://nuget.org/packages/GraphQL.EntityFramework/
  * [Defining Graphs](/docs/defining-graphs.md)
  * [Query Usage](/docs/query-usage.md)
  * [Filters](/docs/filters.md)
+ * [Upgrading to the typed where and orderBy](/docs/upgrade-where.md)
 
 
 ## Icon
