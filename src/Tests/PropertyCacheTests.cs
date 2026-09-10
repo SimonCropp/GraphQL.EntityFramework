@@ -163,7 +163,7 @@
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
         string? SecretProperty { get; set; } = "top-secret";
 
-        public string? ReadNonPublic() => secretField + SecretProperty;
+        public string ReadNonPublic() => secretField + SecretProperty;
     }
 
     public interface IHasA

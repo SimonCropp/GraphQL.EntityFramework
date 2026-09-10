@@ -25,7 +25,10 @@ public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
     {
         public string? OperationName { get; set; }
         public string Query { get; set; } = null!;
-        public string? Variables { get; set; }
+
+        // An object, as GraphQL over HTTP defines it and as every client sends it. Binding this as
+        // a string rejects the whole body, so a parameterized query fails before it is parsed.
+        public JsonElement? Variables { get; set; }
     }
 
     [HttpPost]
@@ -33,7 +36,7 @@ public class GraphQlController(ISchema schema, IDocumentExecuter executer) :
         [FromBody]GraphQLQuery query,
         Cancel cancel)
     {
-        var inputs = query.Variables.ToInputs();
+        var inputs = query.Variables?.GetRawText().ToInputs();
         return Execute(query.Query, query.OperationName, inputs, cancel);
     }
 

@@ -1,0 +1,190 @@
+html, body {
+    margin: 0;
+    height: 100%;
+    font-family: system-ui, sans-serif;
+    color-scheme: light dark;
+}
+
+#app {
+    height: 100%;
+}
+
+.loading {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    color: color-mix(in srgb, currentColor 60%, transparent);
+}
+
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    inset: auto 0 0 0;
+    padding: 0.6rem 1rem;
+    background: #b32121;
+    color: white;
+}
+
+#blazor-error-ui a.reload {
+    color: white;
+}
+
+.route-missing {
+    padding: 2rem;
+}
+
+.home {
+    max-width: 62rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.home-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.home-header h1 {
+    margin: 0 0 0.4rem;
+    font-size: 1.5rem;
+}
+
+.home-header p {
+    margin: 0;
+    max-width: 44rem;
+    color: color-mix(in srgb, currentColor 70%, transparent);
+}
+
+.home-header kbd {
+    font-family: inherit;
+    font-size: 0.85em;
+    padding: 0.05rem 0.3rem;
+    border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+    border-radius: 0.25rem;
+}
+
+.home-explorer-link {
+    align-self: center;
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    border: 1px solid light-dark(#6c69ce, #908aff);
+    border-radius: 0.4rem;
+    color: light-dark(#6c69ce, #908aff);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.home-explorer-link:hover {
+    background: color-mix(in srgb, light-dark(#6c69ce, #908aff) 12%, transparent);
+}
+
+.home-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 1rem;
+}
+
+.home-card {
+    border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background: color-mix(in srgb, currentColor 4%, transparent);
+}
+
+.home-card h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.home-hint {
+    margin: 0.3rem 0 0.8rem;
+    font-size: 0.85rem;
+    color: color-mix(in srgb, currentColor 60%, transparent);
+}
+
+.home-hint code {
+    font-size: 0.95em;
+}
+
+.home-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.home-age {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: color-mix(in srgb, currentColor 60%, transparent);
+}
+
+.home-companies {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.home-employees {
+    list-style: none;
+    margin: 0.35rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.home-employees li {
+    padding: 0.15rem 0.6rem;
+    border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+    border-radius: 1rem;
+    font-size: 0.85rem;
+}
+
+.home-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.home-row label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+}
+
+.home-row input {
+    width: 5rem;
+    font: inherit;
+    padding: 0.15rem 0.4rem;
+}
+
+.home-error {
+    margin: 0;
+    color: light-dark(#b42318, #ff8a80);
+}
+
+/*
+    The IDE fills the page it is on. Without an explicit height the component collapses, because
+    its own layout is flex against whatever box it lands in.
+*/
+.explorer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.explorer > .blazorql {
+    flex: 1;
+    min-height: 0;
+}

@@ -35,8 +35,8 @@ public partial class EfGraphQLService<TDbContext> :
         var derivedTypes = model.GetEntityTypes()
             .Where(_ => _.GetDirectlyDerivedTypes().Any())
             .ToDictionary(
-                _ => _.ClrType,
-                _ => (IReadOnlyList<Type>)_.GetDerivedTypes()
+                _ => _.ClrType, IReadOnlyList<Type> (_) =>
+                    _.GetDerivedTypes()
                     .OrderBy(derived => Depth(derived.ClrType))
                     .Select(derived => derived.ClrType)
                     .ToList());

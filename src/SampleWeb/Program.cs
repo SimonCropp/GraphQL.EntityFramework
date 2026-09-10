@@ -1,4 +1,3 @@
-using GraphiQl;
 using GraphQL.Types;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,8 +29,13 @@ services.AddGraphQL(null);
 var app = builder.Build();
 
 app.UseWebSockets();
-app.UseGraphiQl("/graphiql", "/graphql");
+// Serves the Blazor client: its framework files and wwwroot, with every unmatched path falling
+// back to index.html so the router owns "/" and "/explorer". Mapped after the controller, so
+// /graphql stays the api rather than becoming another route into the client.
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 await app.RunAsync();
 

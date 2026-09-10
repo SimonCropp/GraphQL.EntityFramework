@@ -1,0 +1,9 @@
+@namespace SampleWeb.Client
+@using Microsoft.AspNetCore.Components.Routing
+
+<Router AppAssembly="typeof(App).Assembly"
+        NotFoundPage="typeof(NotFound)">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" />
+    </Found>
+</Router>

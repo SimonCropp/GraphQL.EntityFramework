@@ -4,15 +4,15 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\" />
     <PackageReference Include="EfLocalDb" />
-    <PackageReference Include="graphiql" />
     <PackageReference Include="GraphQL.MicrosoftDI" />
     <PackageReference Include="GraphQL.SystemTextJson" />
     <PackageReference Include="GraphQL" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
+    <ProjectReference Include="..\SampleWeb.Client\SampleWeb.Client.csproj" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
   </ItemGroup>
 </Project>

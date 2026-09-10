@@ -27,7 +27,7 @@ public class EfFieldBuilder<TDbContext, TSource, TReturn>(FieldType fieldType, I
         Expression<Func<TSource, TProjection>> projection,
         Func<ResolveProjectionContext<TDbContext, TProjection>, TReturn> resolve)
     {
-        FieldBuilderExtensions.Resolve(this, GraphQlService, projection, resolve);
+        this.Resolve(GraphQlService, projection, resolve);
         return this;
     }
 
@@ -41,7 +41,7 @@ public class EfFieldBuilder<TDbContext, TSource, TReturn>(FieldType fieldType, I
         Expression<Func<TSource, TProjection>> projection,
         Func<ResolveProjectionContext<TDbContext, TProjection>, Task<TReturn>> resolve)
     {
-        FieldBuilderExtensions.ResolveAsync(this, GraphQlService, projection, resolve);
+        this.ResolveAsync(GraphQlService, projection, resolve);
         return this;
     }
 

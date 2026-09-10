@@ -1,0 +1,125 @@
+@page "/"
+@namespace SampleWeb.Client
+@using BlazorQL
+@inject IGraphQLFetcher Fetcher
+
+<div class="home">
+    <header class="home-header">
+        <div>
+            <h1>GraphQL.EntityFramework sample</h1>
+            <p>
+                An ordinary Blazor page consuming a GraphQL API backed by EF Core. Every request
+                below goes through the same fetcher the query explorer uses, so the debug sidecar
+                (<kbd>Alt</kbd>+<kbd>G</kbd> or the corner button) shows each one as it happens:
+                the operation, variables, headers, and the response.
+            </p>
+        </div>
+        <a class="home-explorer-link" data-testid="open-explorer" href="explorer">Open the query explorer</a>
+    </header>
+
+    @if (error is not null)
+    {
+        <p class="home-error" data-testid="home-error">@error</p>
+    }
+
+    <div class="home-cards">
+        <section class="home-card" data-testid="home-companies">
+            <h2>Companies and their employees</h2>
+            <p class="home-hint">
+                One query. The nested <code>employees</code> selection is what pulls the navigation
+                property in — no include is written by hand.
+            </p>
+            @if (companies is null)
+            {
+                <p class="home-hint">Loading…</p>
+            }
+            else
+            {
+                <ul class="home-companies" data-testid="home-company-list">
+                    @foreach (var company in companies)
+                    {
+                        <li>
+                            <span class="home-name">@company.Content</span>
+                            <ul class="home-employees">
+                                @foreach (var employee in company.Employees)
+                                {
+                                    <li>@employee.Content <span class="home-age">age @employee.Age</span></li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <section class="home-card" data-testid="home-filter">
+            <h2>Filtering</h2>
+            <p class="home-hint">
+                The <code>where</code> argument becomes a LINQ predicate, so the rows under the
+                threshold are never read from the database.
+            </p>
+            <div class="home-row">
+                <label>
+                    Minimum age
+                    <input type="number" data-testid="home-filter-age" @bind="minimumAge" />
+                </label>
+                <button type="button" data-testid="home-filter-apply" disabled="@filtering" @onclick="LoadFilteredAsync">
+                    Apply
+                </button>
+            </div>
+            @if (filtered is null)
+            {
+                <p class="home-hint">Loading…</p>
+            }
+            else if (filtered.Count == 0)
+            {
+                <p class="home-hint" data-testid="home-filter-empty">Nobody is that old.</p>
+            }
+            else
+            {
+                <ul class="home-employees" data-testid="home-filter-list">
+                    @foreach (var employee in filtered)
+                    {
+                        <li>@employee.Content <span class="home-age">age @employee.Age</span></li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <section class="home-card" data-testid="home-paging">
+            <h2>Paging</h2>
+            <p class="home-hint">
+                A Relay connection. Each page is a skip and take against the database, resumed from
+                the previous page's cursor.
+            </p>
+            @if (companyPage is null)
+            {
+                <p class="home-hint">Loading…</p>
+            }
+            else
+            {
+                <ul class="home-companies" data-testid="home-page-list">
+                    @foreach (var company in companyPage.Companies)
+                    {
+                        <li><span class="home-name">@company.Content</span></li>
+                    }
+                </ul>
+                <div class="home-row">
+                    <button type="button" data-testid="home-page-previous" disabled="@(starts.Count == 1)" @onclick="PreviousPageAsync">
+                        Previous
+                    </button>
+                    <button type="button" data-testid="home-page-next" disabled="@(!companyPage.HasNext)" @onclick="NextPageAsync">
+                        Next
+                    </button>
+                    <span class="home-hint" data-testid="home-page-status">
+                        Page @starts.Count of @companyPage.Total total
+                    </span>
+                </div>
+            }
+        </section>
+    </div>
+</div>
+
+@* The debug panel belongs to this consuming app: the explorer page is the IDE itself, and
+   deliberately does not render it. *@
+<BlazorQLSidecar />

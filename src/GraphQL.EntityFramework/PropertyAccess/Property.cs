@@ -13,8 +13,6 @@ record Property<TInput>(
     MethodInfo? ListContains) :
     IProperty
 {
-    Func<TInput, object>? func;
-
     /// <summary>
     /// Compiled on first use rather than up front. Compiling emits IL, which costs orders of
     /// magnitude more than building the expression tree, and only the in memory paths (list
@@ -24,7 +22,7 @@ record Property<TInput>(
     public Func<TInput, object> Func =>
         // A race here just means two threads compile and one result is discarded, which is
         // harmless: the delegates are equivalent.
-        func ??= Lambda.Compile();
+        field ??= Lambda.Compile();
 
     public MethodInfo SafeListContains
     {

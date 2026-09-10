@@ -24,10 +24,12 @@
     public static bool HasArguments(IResolveFieldContext context)
     {
         var field = context.FieldAst;
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (field is null)
         {
             return context.Arguments is { Count: > 0 };
         }
+        // ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
         return field.Arguments is { Count: > 0 };
     }

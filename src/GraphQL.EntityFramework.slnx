@@ -16,6 +16,7 @@
     <BuildDependency Project="GraphQL.EntityFramework.Analyzers/GraphQL.EntityFramework.Analyzers.csproj" />
     <BuildDependency Project="GraphQL.EntityFramework.CodeFixes/GraphQL.EntityFramework.CodeFixes.csproj" />
   </Project>
+  <Project Path="SampleWeb.Client/SampleWeb.Client.csproj" />
   <Project Path="SampleWeb.Tests/SampleWeb.Tests.csproj" />
   <Project Path="SampleWeb/SampleWeb.csproj" />
   <Project Path="Snippets/Snippets.csproj" />

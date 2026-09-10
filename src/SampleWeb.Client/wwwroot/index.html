@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GraphQL.EntityFramework sample</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="_content/BlazorQL/blazorql.css" />
+    <link rel="stylesheet" href="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="loading">Loading…</div>
+    </div>
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+    </div>
+    <script src="_content/BlazorMonaco/jsInterop.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <!--
+        Starts Blazor once Monaco has published itself, which the tag above cannot do on its own.
+        A file rather than an inline block, so script-src 'self' covers it.
+    -->
+    <script src="_content/BlazorQL/blazorql-boot.js"></script>
+</body>
+
+</html>

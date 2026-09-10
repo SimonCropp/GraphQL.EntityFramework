@@ -1,0 +1,8 @@
+@page "/explorer"
+@namespace SampleWeb.Client
+@using BlazorQL
+@inject IGraphQLFetcher Fetcher
+
+<div class="explorer">
+    <BlazorQLIde Fetcher="Fetcher" DefaultQuery="@DefaultQuery" />
+</div>
