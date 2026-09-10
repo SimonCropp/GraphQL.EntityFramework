@@ -52,14 +52,12 @@ static class SelectExpressionBuilder
 
     record PropertyMetadata(Type EntityType, PropertyInfo Property, bool CanWrite, bool IsAutoProperty)
     {
-        MethodInfo? cachedOrderBy;
-
         /// <summary>
         /// Only the key property of a collection navigation ever needs this, but it was being
         /// constructed for every property of every entity type. MakeGenericMethod is not free.
         /// </summary>
         public MethodInfo OrderByMethod =>
-            cachedOrderBy ??= orderByMethod.MakeGenericMethod(EntityType, Property.PropertyType);
+            field ??= orderByMethod.MakeGenericMethod(EntityType, Property.PropertyType);
     }
 
     record EntityTypeMetadata(

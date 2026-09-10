@@ -10,7 +10,7 @@ static class PropertyCache
     {
         var method = methods.GetOrAdd(
             type,
-            _ => typeof(PropertyCache<>).MakeGenericType(_).GetMethod(nameof(PropertyCache<object>.GetProperty), [typeof(string)])!);
+            _ => typeof(PropertyCache<>).MakeGenericType(_).GetMethod(nameof(PropertyCache<>.GetProperty), [typeof(string)])!);
         try
         {
             return (IProperty) method.Invoke(null, [path])!;

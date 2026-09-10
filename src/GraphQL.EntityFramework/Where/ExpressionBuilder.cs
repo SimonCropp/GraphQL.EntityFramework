@@ -453,8 +453,8 @@ static class ExpressionBuilder
             {
                 var builder = typeof(ExpressionBuilder<>).MakeGenericType(_);
                 return (
-                    builder.GetMethod(nameof(ExpressionBuilder<object>.BuildPredicate), [typeof(IReadOnlyCollection<WhereExpression>)])!,
-                    builder.GetMethod(nameof(ExpressionBuilder<object>.BuildIdPredicate), [typeof(string), typeof(string[])])!);
+                    builder.GetMethod(nameof(ExpressionBuilder<>.BuildPredicate), [typeof(IReadOnlyCollection<WhereExpression>)])!,
+                    builder.GetMethod(nameof(ExpressionBuilder<>.BuildIdPredicate), [typeof(string), typeof(string[])])!);
             });
 
     public static LambdaExpression BuildPredicate(Type type, IReadOnlyCollection<WhereExpression> wheres) =>

@@ -87,7 +87,7 @@
         // a self referencing navigation can mint unlimited distinct valid paths
         for (var i = 1; i <= 3000; i++)
         {
-            var depth = (i % 9) + 1;
+            var depth = i % 9 + 1;
             var path = string.Join('.', Enumerable.Repeat("Self", depth)) + ".Public";
             PropertyCache<SelfReferencing>.GetProperty(path);
 

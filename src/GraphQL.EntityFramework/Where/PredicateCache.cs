@@ -19,11 +19,13 @@ static class PredicateCache
         var key = context.ExecutionContext;
         var field = context.FieldAst;
         // A context built by hand, outside an execution, has no request to cache against
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (key is null ||
             field is null)
         {
             return build(keyNames, context);
         }
+        // ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
         var forRequest = predicates.GetValue(key, _ => new());
         var cacheKey = (field, typeof(TItem));
