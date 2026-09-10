@@ -9,13 +9,13 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 Version 35 has two breaking changes.
 
- * The projection based `FieldBuilder` APIs infer their type arguments, and `Field(...)` on the EF graph types returns an `EfFieldBuilder`. Source breaking for callers of the old signatures.
- * The `where` and `orderBy` arguments are input types generated per entity. Breaking for every query that passes either argument, and for code that declares or reads them.
+ * The projection based `FieldBuilder` APIs infer their type arguments, and `Field(...)` on the EF graph types returns an `EfFieldBuilder`. Source breaking for callers of the old signatures. [#1377](https://github.com/SimonCropp/GraphQL.EntityFramework/pull/1377)
+ * The `where` and `orderBy` arguments are input types generated per entity. Breaking for every query that passes either argument, and for code that declares or reads them. [#1401](https://github.com/SimonCropp/GraphQL.EntityFramework/pull/1401)
 
 
 ## Projection based FieldBuilder APIs
 
-The explicit type arguments and casts are gone from the projection based `FieldBuilder` APIs, and the analyzer sees those calls.
+From [#1377](https://github.com/SimonCropp/GraphQL.EntityFramework/pull/1377). The explicit type arguments and casts are gone from the projection based `FieldBuilder` APIs, and the analyzer sees those calls.
 
  * `WithProjection` takes `Expression<Func<TSource, TProjection>>`, so the projection lambda no longer needs a cast.
  * `Field(...)` on `EfObjectGraphType` and `EfInterfaceGraphType` returns `EfFieldBuilder<TDbContext, TSource, TReturn>`, which carries the `IEfGraphQLService`. The projection based `Resolve` and `ResolveAsync` are instance methods on it, with only `TProjection` inferred.
@@ -99,7 +99,7 @@ The service no longer needs to be resolvable from `RequestServices` for these fi
 
 ## Typed where and orderBy
 
-The `where` and `orderBy` arguments changed from string based inputs to input types generated per entity. Every query that passes either argument needs to change, as does any code that declares or reads them. Each shape below shows the old query and the new one.
+From [#1401](https://github.com/SimonCropp/GraphQL.EntityFramework/pull/1401). The `where` and `orderBy` arguments changed from string based inputs to input types generated per entity. Every query that passes either argument needs to change, as does any code that declares or reads them. Each shape below shows the old query and the new one.
 
 
 ### Why
