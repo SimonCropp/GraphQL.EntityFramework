@@ -1,0 +1,672 @@
+# Upgrading to the typed where and orderBy
+
+The `where` and `orderBy` arguments changed from string based inputs to input types generated per entity. Every query that passes either argument needs to change, as does any code that declares or reads them. This guide walks through each shape, with the old query on the left and the new one on the right.
+
+
+## Why
+
+The old `where` took a `path` string, a `comparison` and a `value` list of strings. The library resolved the path and parsed the strings at execution time, so a typo in a property name or a value the property type could not parse failed only when the query ran, and parsing depended on the server culture. `orderBy` took a `path` string the same way.
+
+The new arguments are described by the schema. A mistyped property or a value of the wrong type is rejected at validation, tooling can complete them, and values arrive as GraphQL scalars so no string parsing happens in the library.
+
+
+## The generated types
+
+For an entity `Person` with a `Company` navigation and an `Addresses` collection, the schema gains:
+
+```graphql
+input PersonWhere {
+  and: [PersonWhere!]
+  or: [PersonWhere!]
+  not: PersonWhere
+  id: GuidComparison
+  name: StringComparison
+  age: Int32Comparison
+  company: CompanyWhere
+  addresses: AddressCollectionWhere
+}
+
+input AddressCollectionWhere {
+  any: AddressWhere
+  all: AddressWhere
+  none: AddressWhere
+}
+
+input StringComparison {
+  equal: String
+  notEqual: String
+  in: [String]
+  startsWith: String
+  endsWith: String
+  contains: String
+  like: String
+}
+
+input Int32Comparison {
+  equal: Int
+  notEqual: Int
+  in: [Int]
+  greaterThan: Int
+  greaterThanOrEqual: Int
+  lessThan: Int
+  lessThanOrEqual: Int
+}
+
+input PersonOrderBy {
+  id: SortDirection
+  name: SortDirection
+  age: SortDirection
+  company: CompanyOrderBy
+}
+
+enum SortDirection {
+  ascending
+  descending
+}
+```
+
+Names follow the CLR type: `{Type}Where`, `{Type}CollectionWhere`, `{Type}OrderBy`, and `{ValueType}Comparison`. The comparison names are the ones the old `comparison` enum used, so `equal`, `notEqual`, `in`, `greaterThan`, `greaterThanOrEqual`, `lessThan`, `lessThanOrEqual`, `contains`, `startsWith`, `endsWith` and `like` carry over unchanged. `notIn` is gone; use `not` around an `in`.
+
+Which comparisons a property offers depends on its type. `string` gets the text comparisons and no ordering ones, `bool` and enums get `equal`, `notEqual` and `in` only, and everything else gets equality and ordering.
+
+
+## Field arguments
+
+Before:
+
+```graphql
+entities(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int, ids: [ID!])
+```
+
+After:
+
+```graphql
+entities(where: EntityWhere, orderBy: [EntityOrderBy!], skip: Int, take: Int, ids: [ID!])
+```
+
+`where` is a single object rather than a list. `ids`, `skip` and `take` are unchanged.
+
+
+## Single comparison
+
+The `path` becomes a field, the `comparison` becomes a field inside it, and the `value` is its value.
+
+Before:
+
+```graphql
+{
+  entities (where: {path: "Property", comparison: equal, value: "the value"})
+  {
+    property
+  }
+}
+```
+
+After:
+
+```graphql
+{
+  entities (where: {property: {equal: "the value"}})
+  {
+    property
+  }
+}
+```
+
+The field name is the camel cased property name, as it is for output fields. A `where` that omitted `comparison` defaulted to `equal`; write `equal` explicitly.
+
+
+## Typed values
+
+Values were strings. They are now the scalar of the property type.
+
+Before:
+
+```graphql
+{
+  entities (where: {path: "Age", comparison: greaterThan, value: "30"})
+  {
+    name
+  }
+}
+```
+
+After:
+
+```graphql
+{
+  entities (where: {age: {greaterThan: 30}})
+  {
+    name
+  }
+}
+```
+
+The same applies to the other types:
+
+| Property type | Before | After |
+| --- | --- | --- |
+| `int`, `long`, `short`, `decimal`, `double` | `value: "30"` | `equal: 30` |
+| `bool` | `value: "true"` | `equal: true` |
+| enum | `value: "Thursday"` | `equal: THURSDAY` |
+| `Guid` | `value: "00000000-0000-0000-0000-000000000001"` | `equal: "00000000-0000-0000-0000-000000000001"` |
+| `DateTime` | `value: "2020-10-01T10:11:12Z"` | `equal: "2020-10-01T10:11:12Z"` |
+| `DateOnly` | `value: "2020-10-1"` | `equal: "2020-10-01"` |
+| `TimeOnly` | `value: "10:11 AM"` | `equal: "10:11:00"` |
+
+Enum values use the enum's GraphQL name, which is the constant case GraphQL.NET generates unless a custom enum graph type is registered. Dates and times follow the ISO 8601 forms their scalars accept.
+
+
+## Multiple comparisons on one property
+
+Before:
+
+```graphql
+{
+  entities
+  (where:
+    [
+      {path: "Property", comparison: startsWith, value: "Valu"}
+      {path: "Property", comparison: endsWith, value: "ue3"}
+    ]
+  )
+  {
+    property
+  }
+}
+```
+
+After, the comparisons sit on the same field and are and'ed:
+
+```graphql
+{
+  entities (where: {property: {startsWith: "Valu", endsWith: "ue3"}})
+  {
+    property
+  }
+}
+```
+
+
+## Multiple properties
+
+Before:
+
+```graphql
+{
+  entities
+  (where:
+    [
+      {path: "Name", comparison: startsWith, value: "A"}
+      {path: "Age", comparison: greaterThan, value: "30"}
+    ]
+  )
+  {
+    name
+  }
+}
+```
+
+After, fields on the same object are and'ed:
+
+```graphql
+{
+  entities (where: {name: {startsWith: "A"}, age: {greaterThan: 30}})
+  {
+    name
+  }
+}
+```
+
+
+## Where In
+
+Before:
+
+```graphql
+{
+  entities (where: {path: "Property", comparison: in, value: ["Value1", "Value2"]})
+  {
+    property
+  }
+}
+```
+
+After:
+
+```graphql
+{
+  entities (where: {property: {in: ["Value1", "Value2"]}})
+  {
+    property
+  }
+}
+```
+
+A null in the list still matches a null property: `in: [1, null]`.
+
+
+## Grouping with connectors
+
+Before, `connector` on an expression joined it to the next one, and `groupedExpressions` grouped a list:
+
+```graphql
+{
+  entities
+  (where:
+    [
+      {path: "Property", comparison: startsWith, value: "Valu"},
+      {
+        groupedExpressions: [
+          {path: "Property", comparison: endsWith, value: "ue", connector: "or"},
+          {path: "Property", comparison: endsWith, value: "id"}
+        ]
+      }
+    ]
+  )
+  {
+    property
+  }
+}
+```
+
+After, `and` and `or` take lists of where objects:
+
+```graphql
+{
+  entities
+  (where: {
+    property: {startsWith: "Valu"},
+    or: [
+      {property: {endsWith: "ue"}},
+      {property: {endsWith: "id"}}
+    ]
+  })
+  {
+    property
+  }
+}
+```
+
+Both read as `Property.StartsWith("Valu") && (Property.EndsWith("ue") || Property.EndsWith("id"))`.
+
+
+## Negation
+
+Before, `negate: true` on an expression or a group:
+
+```graphql
+{
+  entities
+  (where:
+    [
+      {path: "Property", comparison: startsWith, value: "Valu", negate: true},
+      {
+        negate: true,
+        groupedExpressions: [
+          {path: "Property", comparison: endsWith, value: "ue", connector: "or"},
+          {path: "Property", comparison: endsWith, value: "id"}
+        ]
+      }
+    ]
+  )
+  {
+    property
+  }
+}
+```
+
+After, wrap the expression in `not`:
+
+```graphql
+{
+  entities
+  (where: {
+    not: {property: {startsWith: "Valu"}},
+    and: [
+      {
+        not: {
+          or: [
+            {property: {endsWith: "ue"}},
+            {property: {endsWith: "id"}}
+          ]
+        }
+      }
+    ]
+  })
+  {
+    property
+  }
+}
+```
+
+A single `not` alongside other fields is enough for one negation. The `and` above is only needed because an object can carry one `not`.
+
+
+## notIn
+
+Before:
+
+```graphql
+{
+  entities (where: {path: "Property", comparison: notIn, value: ["Value1", "Value2"]})
+  {
+    property
+  }
+}
+```
+
+After:
+
+```graphql
+{
+  entities (where: {not: {property: {in: ["Value1", "Value2"]}}})
+  {
+    property
+  }
+}
+```
+
+
+## Nested properties
+
+Before, a dotted path:
+
+```graphql
+{
+  entities (where: {path: "Address.Street", comparison: startsWith, value: "Main"})
+  {
+    property
+  }
+}
+```
+
+After, a nested object. This covers reference navigations, owned types and complex properties:
+
+```graphql
+{
+  entities (where: {address: {street: {startsWith: "Main"}}})
+  {
+    property
+  }
+}
+```
+
+
+## List members
+
+Before, the member path in square brackets, which matched when any item did:
+
+```graphql
+{
+  entities (where: {path: "ListProperty[Property]", comparison: startsWith, value: "Valu"})
+  {
+    property
+  }
+}
+```
+
+After, a collection where with `any`:
+
+```graphql
+{
+  entities (where: {listProperty: {any: {property: {startsWith: "Valu"}}}})
+  {
+    property
+  }
+}
+```
+
+`all` and `none` are new. The item where can carry several conditions, and `any: {}` matches entities that have at least one item.
+
+
+## Null
+
+Before, null was expressed by omitting `value`:
+
+```graphql
+{
+  entities (where: {path: "Property", comparison: equal})
+  {
+    property
+  }
+}
+```
+
+After, pass null:
+
+```graphql
+{
+  entities (where: {property: {equal: null}})
+  {
+    property
+  }
+}
+```
+
+An empty where, `{}`, applies no filter. The old empty list, `[]`, matched nothing.
+
+
+## Variables
+
+Before, values were passed as strings, and a whole where as `[WhereExpression!]`:
+
+```graphql
+query ($value: String!)
+{
+  entities (where: {path: "Property", comparison: equal, value: [$value]})
+  {
+    property
+  }
+}
+```
+
+After, a value variable has the scalar type of the property, and a whole where has the entity's where type:
+
+```graphql
+query ($value: String!)
+{
+  entities (where: {property: {equal: $value}})
+  {
+    property
+  }
+}
+```
+
+```graphql
+query ($where: EntityWhere)
+{
+  entities (where: $where)
+  {
+    property
+  }
+}
+```
+
+The variable value follows the same shape:
+
+```json
+{
+  "where": {
+    "property": {"equal": "the value"}
+  }
+}
+```
+
+
+## OrderBy
+
+Before:
+
+```graphql
+{
+  entities (orderBy: {path: "Property"})
+  {
+    property
+  }
+}
+```
+
+```graphql
+{
+  entities (orderBy: {path: "Property", descending: true})
+  {
+    property
+  }
+}
+```
+
+After:
+
+```graphql
+{
+  entities (orderBy: {property: ascending})
+  {
+    property
+  }
+}
+```
+
+```graphql
+{
+  entities (orderBy: {property: descending})
+  {
+    property
+  }
+}
+```
+
+Several keys stay a list, one property per item. An item that sets no property, or more than one, is an error, since the order of fields inside an object is not something a client can rely on:
+
+```graphql
+{
+  entities (orderBy: [{property: descending}, {id: ascending}])
+  {
+    property
+  }
+}
+```
+
+A dotted path becomes a nested object:
+
+Before:
+
+```graphql
+{
+  entities (orderBy: {path: "Parent.Property"})
+  {
+    property
+  }
+}
+```
+
+After:
+
+```graphql
+{
+  entities (orderBy: {parent: {property: ascending}})
+  {
+    property
+  }
+}
+```
+
+Collection navigations cannot be ordered by and have no field.
+
+
+## Navigation fields
+
+Navigation list and connection fields take the same arguments, so their queries change the same way:
+
+Before:
+
+```graphql
+{
+  parentEntities
+  {
+    children(where: {path: "property", comparison: equal, value: "Value1"}, orderBy: {path: "property"})
+    {
+      property
+    }
+  }
+}
+```
+
+After:
+
+```graphql
+{
+  parentEntities
+  {
+    children(where: {property: {equal: "Value1"}}, orderBy: {property: ascending})
+    {
+      property
+    }
+  }
+}
+```
+
+
+## Code that declares or reads the arguments
+
+Fields added through `AddQueryField`, `AddSingleField`, `AddFirstField`, `AddNavigationListField`, `AddNavigationConnectionField` and `AutoMap` get the new arguments without any change.
+
+Code that added the argument to a plain `Field` and applied it by hand changes as follows.
+
+Before:
+
+```csharp
+Field<ListGraphType<EmployeeSummaryGraphType>>("employeeSummary")
+    .Argument<ListGraphType<WhereExpressionGraph>>("where")
+    .Resolve(context =>
+    {
+        var dbContext = ResolveDbContext(context);
+        IQueryable<Employee> query = dbContext.Employees;
+
+        if (context.HasArgument("where"))
+        {
+            var wheres = context.GetArgument<List<WhereExpression>>("where");
+
+            var predicate = ExpressionBuilder<Employee>.BuildPredicate(wheres);
+            query = query.Where(predicate);
+        }
+        ...
+    });
+```
+
+After:
+
+snippet: ManuallyApplyWhere
+
+`WhereGraph<T>` is the generated input type for `T`. It is registered by `EfGraphQLConventions.RegisterInContainer`, along with `OrderByGraph<T>`, `ComparisonGraph<T>`, `CollectionWhereGraph<T>` and `SortDirectionGraph`, so nothing extra needs registering. The argument parses to a single `WhereExpression`, and `ExpressionBuilder<T>.BuildPredicate` has an overload that takes one.
+
+
+### WhereExpression
+
+`WhereExpression` remains the model the predicate builder consumes, and code that built one by hand still works with two changes:
+
+ * `Value` is `object?[]` rather than `string[]`. Strings are still accepted and parsed, with the invariant culture, and a value of the property type is used as is.
+ * A new `Quantifier` property marks a collection node: `Path` is the collection and `GroupedExpressions` is the predicate on its items.
+
+`Comparison`, `Connector`, `Negate` and `GroupedExpressions` are unchanged. `Comparison.NotIn` remains only for this model; the schema does not expose it.
+
+
+### Removed types
+
+ * `WhereExpressionGraph`: replaced by `WhereGraph<T>`
+ * `ComparisonGraph` (the enum graph): replaced by `ComparisonGraph<TValue>`, an input type
+ * `ConnectorGraph`: connectors are `and` and `or` fields
+
+`IEfGraphQLService<TDbContext>` now extends a non generic `IEfGraphQLService` exposing the `IModel`, which the generated types read the entity members from.
+
+
+## Members that get a field
+
+From the EF model: every mapped, non shadow property with a public getter whose type is one of the supported scalar types or an enum, every reference and collection navigation including many to many, and every complex property. Properties of other types, such as byte arrays and primitive collections, get no field, as they had no usable comparison before either. A type the model does not know, such as a projection or dto, gets its public scalar properties.
+
+Properties declared only on a derived type are not on the base type's where, which matches the old path resolution.
+
+
+## Naming
+
+Two entity types with the same CLR type name in one schema would generate two input types with one name, which GraphQL.NET rejects. Rename one of the entity types, or map only one of them.
