@@ -39,6 +39,19 @@ public class RequestSplitBenchmark
         }
         """;
 
+    const string inMemoryArgumentsQuery = """
+        {
+          parents {
+            id
+            property
+            childrenReversed(where: {property: {startsWith: "Child"}}, orderBy: {property: descending}) {
+              id
+              property
+            }
+          }
+        }
+        """;
+
     const string fragmentsQuery = """
         {
           parents {
@@ -111,6 +124,7 @@ public class RequestSplitBenchmark
         await Execute(librarySchema, argumentsQuery);
         capturedArguments = CapturingQuery.Captured!;
         await Execute(librarySchema, fragmentsQuery);
+        await Execute(librarySchema, inMemoryArgumentsQuery);
         await Execute(plainSchema, simpleQuery);
 
         projected = includeAppender.ApplyProjection<BenchmarkDbContext, ParentEntity>(capturedSimple, null, Parents);
@@ -152,6 +166,14 @@ public class RequestSplitBenchmark
     [Benchmark]
     public Task<int> FullWithFragments() =>
         Execute(librarySchema, fragmentsQuery);
+
+    /// <summary>
+    /// The where and orderBy of a navigation whose resolver returns a collection other than the
+    /// projected one, so they are evaluated in memory in the resolver, once per parent row.
+    /// </summary>
+    [Benchmark]
+    public Task<int> FullWithInMemoryArguments() =>
+        Execute(librarySchema, inMemoryArgumentsQuery);
 
     [Benchmark]
     public System.Linq.Expressions.Expression ApplyArguments() =>

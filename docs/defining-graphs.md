@@ -351,6 +351,8 @@ Creating a page-able field is supported through [GraphQL Connections](https://gr
 
 Cursors are the zero based index of the edge in the ordered set. `after` and `before` are exclusive, and bound the window of items a page is taken from. `first` keeps that many from the start of the window, then `last` keeps that many from the end, in the order the [Relay specification](https://relay.dev/graphql/connections.htm#sec-Pagination-algorithm) applies them. Edges are always in the set's order, whichever end the page was taken from. `hasPreviousPage` is true when the page starts after the first item, `hasNextPage` when items exist after the page. An empty page has null `startCursor` and `endCursor`.
 
+A root connection reads its items with one query and the total with another. The count query only runs when the selection needs it: when `totalCount` or `pageInfo` is selected, or when paging with `last` or `before`, which place the window from the end. A selection of only `edges` or `items`, paged with `first` and `after`, is a single query.
+
 
 ### Root Query
 

@@ -650,6 +650,99 @@
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
+    /// <summary>
+    /// The page info compares against the count, so selecting it without totalCount still runs the count query.
+    /// </summary>
+    [Fact]
+    public async Task Connection_page_info_without_total_count_counts()
+    {
+        var query =
+            """
+            {
+              parentEntitiesConnection(first:2, after: "0") {
+                pageInfo {
+                  hasNextPage
+                  hasPreviousPage
+                  endCursor
+                }
+                items {
+                  property
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
+    /// <summary>
+    /// Nothing selected reads the count, and first and after place the window from the start, so the count query is skipped and the page is a single query.
+    /// </summary>
+    [Fact]
+    public async Task Connection_items_only_skips_count()
+    {
+        var query =
+            """
+            {
+              parentEntitiesConnection(first:2, after: "0") {
+                items {
+                  property
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
+    /// <summary>
+    /// Without the count the offset is not clamped to the end, so a page past it is read from the database as an empty page.
+    /// </summary>
+    [Fact]
+    public async Task Connection_items_only_past_the_end_is_empty()
+    {
+        var query =
+            """
+            {
+              parentEntitiesConnection(first:2, after: "20") {
+                items {
+                  property
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
+    /// <summary>
+    /// last places the window from the end, which needs the count even when nothing selected reads it.
+    /// </summary>
+    [Fact]
+    public async Task Connection_items_only_with_last_counts()
+    {
+        var query =
+            """
+            {
+              parentEntitiesConnection(last:2) {
+                items {
+                  property
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
     [Fact]
     public async Task Connection_page_back()
     {

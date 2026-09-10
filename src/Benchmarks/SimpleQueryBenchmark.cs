@@ -40,6 +40,12 @@ public class ParentGraphType :
             name: "children",
             projection: _ => _.Children,
             resolve: _ => _.Projection);
+        // Returns a collection other than the projected one, so its arguments are applied in
+        // memory, once per parent row
+        AddNavigationListField(
+            name: "childrenReversed",
+            projection: _ => _.Children,
+            resolve: _ => _.Projection.Reverse());
         AutoMap();
     }
 }

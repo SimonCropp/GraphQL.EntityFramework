@@ -32,7 +32,10 @@ public static partial class ArgumentProcessor
         bool omitQueryArguments,
         bool argumentsAppliedInQuery)
     {
-        if (omitQueryArguments)
+        // A field selected without arguments has nothing to apply. Reading them anyway made
+        // GraphQL.NET build the argument dictionary, which it does lazily, per field per row.
+        if (omitQueryArguments ||
+            !ArgumentReader.HasArguments(context))
         {
             return items;
         }
@@ -42,20 +45,10 @@ public static partial class ArgumentProcessor
 
         if (!argumentsAppliedInQuery)
         {
-            if (keyNames is not null)
+            var predicate = PredicateCache.GetOrAdd(context, keyNames, static (keyNames, context) => BuildPredicate<TItem>(keyNames, context));
+            if (predicate is not null)
             {
-                if (ArgumentReader.TryReadIds(context, out var idValues))
-                {
-                    var keyName = GetKeyName(keyNames);
-                    var predicate = ExpressionBuilder<TItem>.BuildIdPredicate(keyName, idValues);
-                    items = items.Where(Compile(predicate));
-                }
-            }
-
-            if (ArgumentReader.TryReadWhere(context, out var wheres))
-            {
-                var predicate = ExpressionBuilder<TItem>.BuildPredicate(wheres);
-                items = items.Where(Compile(predicate));
+                items = items.Where(predicate);
             }
 
             (items, order) = Order(items, context);
@@ -79,9 +72,42 @@ public static partial class ArgumentProcessor
     }
 
     /// <summary>
-    /// This path runs once per parent node, so a navigation list field is compiled as many times as there
-    /// are parents. Emitting IL costs ~700us a call and leaves behind a DynamicMethod that is never
-    /// collected, which dwarfs the cost of running the predicate over an in memory collection. Interpreting
+    /// The ids and where of the field as one in memory predicate, or null when it has neither.
+    /// Built once per request per field, through <see cref="PredicateCache"/>, since the
+    /// arguments are the same for every parent row.
+    /// </summary>
+    static Func<TItem, bool>? BuildPredicate<TItem>(List<string>? keyNames, IResolveFieldContext context)
+    {
+        Func<TItem, bool>? ids = null;
+        if (keyNames is not null &&
+            ArgumentReader.TryReadIds(context, out var idValues))
+        {
+            var keyName = GetKeyName(keyNames);
+            ids = Compile(ExpressionBuilder<TItem>.BuildIdPredicate(keyName, idValues));
+        }
+
+        Func<TItem, bool>? where = null;
+        if (ArgumentReader.TryReadWhere(context, out var wheres))
+        {
+            where = Compile(ExpressionBuilder<TItem>.BuildPredicate(wheres));
+        }
+
+        if (ids is null)
+        {
+            return where;
+        }
+
+        if (where is null)
+        {
+            return ids;
+        }
+
+        return _ => ids(_) && where(_);
+    }
+
+    /// <summary>
+    /// Emitting IL costs ~700us a call and leaves behind a DynamicMethod that is never collected,
+    /// which dwarfs the cost of running the predicate over an in memory collection. Interpreting
     /// is ~20x cheaper to construct and stays ahead until a collection reaches several thousand items.
     /// </summary>
     static Func<TItem, bool> Compile<TItem>(Expression<Func<TItem, bool>> predicate) =>

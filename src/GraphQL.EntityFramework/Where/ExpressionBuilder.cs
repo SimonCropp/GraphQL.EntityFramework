@@ -16,7 +16,8 @@ public static partial class ExpressionBuilder<T>
     static Expression MakePredicateBody(IReadOnlyCollection<WhereExpression> wheres)
     {
         Expression? mainExpression = null;
-        var previousWhere = new WhereExpression();
+        // The connector on an expression joins it to the next one
+        var previousConnector = Connector.And;
 
         // Iterate over wheres
         foreach (var where in wheres)
@@ -62,11 +63,10 @@ public static partial class ExpressionBuilder<T>
             else
             {
                 // Otherwise combine expression by specified connector or default (AND) if not provided
-                mainExpression = CombineExpressions(previousWhere.Connector, mainExpression, nextExpression);
+                mainExpression = CombineExpressions(previousConnector, mainExpression, nextExpression);
             }
 
-            // Save the previous where so the connector can be retrieved
-            previousWhere = where;
+            previousConnector = where.Connector;
         }
 
         return mainExpression ?? Expression.Constant(false);

@@ -329,7 +329,8 @@
     {
         IComplexGraphType? leafGraphType;
         (selectionSet, leafGraphType) = GetLeafSelection(selectionSet, graphType);
-        if (selectionSet?.Selections is null)
+        if (selectionSet?.Selections is null ||
+            !HasFragments(selectionSet))
         {
             return null;
         }
@@ -386,6 +387,24 @@
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Only a fragment can select from a type other than the parent's, so a selection set of plain
+    /// fields has no derived navigations to collect, and the walk over it is skipped. Most
+    /// selection sets are plain fields, and the walk ran for every one on every request.
+    /// </summary>
+    static bool HasFragments(GraphQLSelectionSet selectionSet)
+    {
+        foreach (var selection in selectionSet.Selections)
+        {
+            if (selection is not GraphQLField)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -552,44 +571,20 @@
         GraphQLField field,
         FieldType fieldType,
         IComplexGraphType? parentGraphType,
-        LambdaExpression projection,
+        ProjectionPaths projection,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
         HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
-        var accessedPaths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
-
-        // Group paths by their root navigation property
-        var pathsByNavigation = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-        string? primaryNavigation = null;
-
-        foreach (var path in accessedPaths)
-        {
-            var dotIndex = path.IndexOf('.');
-            var rootProperty = dotIndex >= 0 ? path[..dotIndex] : path;
-
-            if (!pathsByNavigation.TryGetValue(rootProperty, out var paths))
-            {
-                paths = [];
-                pathsByNavigation[rootProperty] = paths;
-            }
-
-            if (dotIndex >= 0)
-            {
-                paths.Add(path[(dotIndex + 1)..]);
-            }
-
-            primaryNavigation ??= rootProperty;
-        }
-
         // The field's selection set applies to the navigations of the type the field returns.
         // It used to go to whichever path the analyzer visited first, so with `new { _.Child2,
         // _.Child1 }` resolving Child1, Child2 got the selection and Child1 got nothing under it.
         var itemType = FieldItemType(fieldType);
 
-        foreach (var (navName, nestedPaths) in pathsByNavigation)
+        foreach (var group in projection.Groups)
         {
+            var navName = group.Root;
             if (!TryFindNavigation(navigationProperties, navName, out var navigation))
             {
                 // Scalar field path (no navigation) — add root property to scalarFields
@@ -598,7 +593,7 @@
             }
 
             var receivesSelection = itemType is null
-                ? navName == primaryNavigation
+                ? navName == projection.PrimaryRoot
                 : itemType.IsAssignableFrom(navigation.Type) || navigation.Type.IsAssignableFrom(itemType);
 
             var navType = navigation.Type;
@@ -612,27 +607,24 @@
             // A navigation accessed as a whole, with nothing read from it in the expression and no
             // selection set to say which fields are wanted, needs the whole entity. It was
             // projected with only its keys, so the resolver saw every other property as null.
-            var isWhole = nestedPaths.Count == 0;
+            var isWhole = group.Nested.Count == 0;
 
             if (receivesSelection && field.SelectionSet is not null)
             {
                 // A navigation list or connection field projecting the collection itself. Its ids,
                 // where and orderBy are applied inside the collection subquery.
                 if (navigation.IsCollection &&
-                    pathsByNavigation.Count == 1 &&
-                    nestedPaths.Count == 0)
+                    projection.Groups.Count == 1 &&
+                    group.Nested.Count == 0)
                 {
                     arguments = ReadArguments(field, fieldType, parentGraphType, context);
                 }
 
                 // Primary navigation: merge GraphQL fields with projection-required fields
                 nestedProjection = GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), navType, nestedNavProps, nestedKeys, nestedFks, context);
-                foreach (var nestedPath in nestedPaths)
+                foreach (var nestedPath in group.NestedScalars)
                 {
-                    if (!nestedPath.Contains('.'))
-                    {
-                        nestedProjection.ScalarFields.Add(nestedPath);
-                    }
+                    nestedProjection.ScalarFields.Add(nestedPath);
                 }
 
                 isWhole = false;
@@ -640,9 +632,7 @@
             else
             {
                 // Secondary navigation: include only projection-required fields
-                var nestedScalarFields = nestedPaths
-                    .Where(_ => !_.Contains('.'))
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                var nestedScalarFields = new HashSet<string>(group.NestedScalars, StringComparer.OrdinalIgnoreCase);
 
                 nestedProjection = new(nestedScalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
             }
@@ -869,14 +859,31 @@
             ? existing.Merge(navProjection)
             : navProjection;
 
-    public static void SetProjectionMetadata(FieldType fieldType, LambdaExpression projection) =>
-        fieldType.Metadata["_EF_Projection"] = projection;
+    const string projectionKey = "_EF_Projection";
+    const string projectionPathsKey = "_EF_ProjectionPaths";
 
-    static bool TryGetProjectionMetadata(FieldType fieldType, [NotNullWhen(true)] out LambdaExpression? projection)
+    public static void SetProjectionMetadata(FieldType fieldType, LambdaExpression projection)
     {
-        if (fieldType.Metadata.TryGetValue("_EF_Projection", out var projectionObj))
+        fieldType.Metadata[projectionKey] = projection;
+        // Analyzed here, once, rather than on every request that selects the field
+        fieldType.Metadata[projectionPathsKey] = ProjectionPaths.Analyze(projection);
+    }
+
+    static bool TryGetProjectionMetadata(FieldType fieldType, [NotNullWhen(true)] out ProjectionPaths? projection)
+    {
+        var metadata = fieldType.Metadata;
+        if (metadata.TryGetValue(projectionPathsKey, out var pathsObj) &&
+            pathsObj is ProjectionPaths paths)
         {
-            projection = (LambdaExpression)projectionObj!;
+            projection = paths;
+            return true;
+        }
+
+        // The expression placed in the metadata directly, without the analysis
+        if (metadata.TryGetValue(projectionKey, out var projectionObj) &&
+            projectionObj is LambdaExpression expression)
+        {
+            projection = ProjectionPaths.Analyze(expression);
             return true;
         }
 

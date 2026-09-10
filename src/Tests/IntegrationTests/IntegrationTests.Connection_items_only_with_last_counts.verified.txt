@@ -1,0 +1,35 @@
+﻿{
+  target: {
+    Data: {
+      parentEntitiesConnection: {
+        items: [
+          {
+            property: Value6
+          },
+          {
+            property: Value7
+          }
+        ]
+      }
+    }
+  },
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   ParentEntities as p
+    },
+    {
+      Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+order by p.Property
+offset @p rows fetch next @p1 rows only,
+      Parameters: {
+        @p: 6,
+        @p1: 2
+      }
+    }
+  ]
+}

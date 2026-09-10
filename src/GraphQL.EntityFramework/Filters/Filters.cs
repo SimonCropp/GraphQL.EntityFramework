@@ -93,6 +93,7 @@ public class Filters<TDbContext>
 
         forType.Add(entry);
         filtersByType.Clear();
+        filtersForHierarchy.Clear();
     }
 
     /// <summary>
@@ -116,10 +117,17 @@ public class Filters<TDbContext>
     /// load: those on the type and its base types, which apply to every item, and those on derived
     /// types, which apply to the derived items the query can return.
     /// </summary>
-    internal IEnumerable<IFilterEntry<TDbContext>> GetFiltersForHierarchy(Type entityType) =>
-        entries
-            .Where(_ => _.Key.IsAssignableFrom(entityType) || entityType.IsAssignableFrom(_.Key))
-            .SelectMany(_ => _.Value);
+    internal IReadOnlyList<IFilterEntry<TDbContext>> GetFiltersForHierarchy(Type entityType) =>
+        filtersForHierarchy.GetOrAdd(
+            entityType,
+            type => entries
+                .Where(_ => _.Key.IsAssignableFrom(type) || type.IsAssignableFrom(_.Key))
+                .SelectMany(_ => _.Value)
+                .ToList());
+
+    // Looked up for every entity type in a projection on every request, so cached per type the
+    // same way as GetFilters, and reset when a filter is added
+    ConcurrentDictionary<Type, List<IFilterEntry<TDbContext>>> filtersForHierarchy = new();
 
     /// <summary>
     /// Returns true if there are any filters registered.

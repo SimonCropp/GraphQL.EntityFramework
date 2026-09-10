@@ -112,10 +112,32 @@
         {
             throw new($"Connections require ordering. Either order the IQueryable being passed to AddQueryConnectionField, or use an orderBy in the query. Field: {context.FieldDefinition.Name}");
         }
-        var count = await queryable.CountAsync(cancel);
-        cancel.ThrowIfCancellationRequested();
-        var (skip, take) = Window(first, after, last, before, count);
-        var page = queryable.Skip(skip).Take(take);
+
+        int skip;
+        int take;
+        int? count = null;
+        IQueryable<TItem> page;
+        if (NeedsCount(context, last, before))
+        {
+            count = await queryable.CountAsync(cancel);
+            cancel.ThrowIfCancellationRequested();
+            (skip, take) = Window(first, after, last, before, count.Value);
+            page = queryable.Skip(skip).Take(take);
+        }
+        else
+        {
+            // The window is bounded from the start only, so it needs no count to place it. The
+            // count clamped the offset to the end; past it the page query reads an empty page.
+            skip = after + 1 ?? 0;
+            // Only compared against the count, which is unknown here
+            take = first ?? 0;
+            page = queryable.Skip(skip);
+            if (first is not null)
+            {
+                page = page.Take(first.Value);
+            }
+        }
+
         QueryLogger.Write(page);
         IEnumerable<TItem> result = await page.ToListAsync(cancel);
         if (filters != null)
@@ -127,7 +149,43 @@
         return Build(skip, take, count, result);
     }
 
-    static Connection<T> Build<T>(int skip, int take, int count, IEnumerable<T> result)
+    /// <summary>
+    /// Whether the count query has to run: when the selection reads it, through totalCount or
+    /// the page info, whose hasNextPage compares against it, or when the window is bounded from
+    /// the end, by last or before, so the count is needed to place it. A connection selecting
+    /// only edges or items otherwise paid a second round trip, a COUNT over the whole filtered
+    /// set, for a number nothing read. The selection is unknown for a context built outside an
+    /// execution, which counts.
+    /// </summary>
+    static bool NeedsCount(IResolveFieldContext context, int? last, int? before)
+    {
+        if (last is not null ||
+            before is not null)
+        {
+            return true;
+        }
+
+        var subFields = context.SubFields;
+        if (subFields is null)
+        {
+            return true;
+        }
+
+        foreach (var (field, _) in subFields.Values)
+        {
+            var name = field.Name.Value;
+            if (name.Equals("totalCount") ||
+                name.Equals("pageInfo"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <param name="count">Null when the count query was skipped, which only happens when neither the total count nor the page info was selected.</param>
+    static Connection<T> Build<T>(int skip, int take, int? count, IEnumerable<T> result)
     {
         var edges = result
             .Select((item, index) =>

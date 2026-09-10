@@ -29,15 +29,20 @@ partial class EfGraphQLService<TDbContext>
 
         field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(async context =>
         {
-            var fieldContext = BuildContext(context);
+            // Runs once per parent row. Building a ResolveEfFieldContext here copied every property
+            // of the GraphQL.NET context, which forced the lazily computed ones, SubFields, Path,
+            // ResponsePath, Parent and Arguments, to be computed and allocated per row, when all
+            // this needs is the DbContext and the filters.
+            var dbContext = ResolveDbContext(context);
+            var filters = ResolveFilters(context);
             var projected = compiledProjection(context.Source);
 
             var projectionContext = new ResolveProjectionContext<TDbContext, TProjection>
             {
                 Projection = projected,
-                DbContext = fieldContext.DbContext,
+                DbContext = dbContext,
                 User = context.User,
-                Filters = fieldContext.Filters,
+                Filters = filters,
                 FieldContext = context
             };
 
@@ -48,16 +53,22 @@ partial class EfGraphQLService<TDbContext>
                 throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryField.");
             }
 
-            // The collection arrives with ids, where and orderBy already applied when the parent
-            // was loaded through a projection and the resolver returned that collection as is
-            var applied = ReferenceEquals(result, projected) && PushDown.IsApplied(context);
-            result = result.ApplyGraphQlArguments(names, context, omitQueryArguments, applied);
-            if (fieldContext.Filters == null)
+            // A field selected without arguments has nothing to apply, and that is the common
+            // case for a navigation, so the argument reads and the push down lookup are skipped
+            if (ArgumentReader.HasArguments(context))
+            {
+                // The collection arrives with ids, where and orderBy already applied when the parent
+                // was loaded through a projection and the resolver returned that collection as is
+                var applied = ReferenceEquals(result, projected) && PushDown.IsApplied(context);
+                result = result.ApplyGraphQlArguments(names, context, omitQueryArguments, applied);
+            }
+
+            if (filters == null)
             {
                 return result;
             }
 
-            return await fieldContext.Filters.ApplyFilter(result, context.UserContext, fieldContext.DbContext, context.User);
+            return await filters.ApplyFilter(result, context.UserContext, dbContext, context.User);
         });
 
         graph.AddField(field);
