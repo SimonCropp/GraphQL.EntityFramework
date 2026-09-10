@@ -192,6 +192,7 @@
   concreteTphEntity(id: ID, ids: [ID!], where: ConcreteTphBaseEntityWhere): ConcreteTphBaseEntity
   tphDerivedNavEntities(id: ID, ids: [ID!], where: TphDerivedNavBaseEntityWhere, orderBy: [TphDerivedNavBaseEntityOrderBy!], skip: Int, take: Int): [TphDerivedNavBaseEntity]!
   tphDerivedNavEntity(id: ID, ids: [ID!], where: TphDerivedNavBaseEntityWhere): TphDerivedNavBaseEntity
+  tphDerivedNavOwners(id: ID, ids: [ID!], where: TphDerivedNavOwnerEntityWhere, orderBy: [TphDerivedNavOwnerEntityOrderBy!], skip: Int, take: Int): [TphDerivedNavOwner!]!
 }
 
 type CustomType {
@@ -1825,6 +1826,7 @@ input ConcreteTphBaseEntityOrderBy {
 interface TphDerivedNavBaseEntity {
   id: ID!
   property: String
+  ownerId: ID
 }
 
 input TphDerivedNavBaseEntityWhere {
@@ -1832,11 +1834,45 @@ input TphDerivedNavBaseEntityWhere {
   or: [TphDerivedNavBaseEntityWhere!]
   not: TphDerivedNavBaseEntityWhere
   id: GuidComparison
+  ownerId: GuidComparison
   property: StringComparison
 }
 
 input TphDerivedNavBaseEntityOrderBy {
   id: SortDirection
+  ownerId: SortDirection
+  property: SortDirection
+}
+
+type TphDerivedNavOwner {
+  item: TphDerivedNavBaseEntity
+  items(id: ID, ids: [ID!], where: TphDerivedNavBaseEntityWhere, orderBy: [TphDerivedNavBaseEntityOrderBy!], skip: Int, take: Int): [TphDerivedNavBaseEntity!]!
+  id: ID!
+  itemId: ID
+  property: String
+}
+
+input TphDerivedNavOwnerEntityWhere {
+  and: [TphDerivedNavOwnerEntityWhere!]
+  or: [TphDerivedNavOwnerEntityWhere!]
+  not: TphDerivedNavOwnerEntityWhere
+  id: GuidComparison
+  item: TphDerivedNavBaseEntityWhere
+  itemId: GuidComparison
+  items: TphDerivedNavBaseEntityCollectionWhere
+  property: StringComparison
+}
+
+input TphDerivedNavBaseEntityCollectionWhere {
+  any: TphDerivedNavBaseEntityWhere
+  all: TphDerivedNavBaseEntityWhere
+  none: TphDerivedNavBaseEntityWhere
+}
+
+input TphDerivedNavOwnerEntityOrderBy {
+  id: SortDirection
+  item: TphDerivedNavBaseEntityOrderBy
+  itemId: SortDirection
   property: SortDirection
 }
 
@@ -1904,6 +1940,7 @@ type TphDerivedNavCategory implements TphDerivedNavBaseEntity {
   category: Category
   categoryId: ID
   id: ID!
+  ownerId: ID
   property: String
 }
 
@@ -1915,6 +1952,7 @@ type Category {
 type TphDerivedNavRegion implements TphDerivedNavBaseEntity {
   region: Region
   id: ID!
+  ownerId: ID
   property: String
   regionId: ID
 }

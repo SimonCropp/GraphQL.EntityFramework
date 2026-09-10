@@ -1,13 +1,4 @@
 ﻿{
-  target: If `take` is used an `orderBy` must be specified. Field: parentEntities,
-  sql: {
-    Text:
-select   top (@p) p.Id,
-                  p.Property
-from     ParentEntities as p
-order by p.Property,
-    Parameters: {
-      @p: 1
-    }
-  }
+  Type: Exception,
+  Message: If `take` is used an `orderBy` must be specified. Field: parentEntities
 }

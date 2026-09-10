@@ -52,6 +52,7 @@
         RegisterTypeMapping(typeof(TphDerivedNavBaseEntity), typeof(TphDerivedNavBaseGraphType));
         RegisterTypeMapping(typeof(TphDerivedNavCategoryEntity), typeof(TphDerivedNavCategoryGraphType));
         RegisterTypeMapping(typeof(TphDerivedNavRegionEntity), typeof(TphDerivedNavRegionGraphType));
+        RegisterTypeMapping(typeof(TphDerivedNavOwnerEntity), typeof(TphDerivedNavOwnerGraphType));
         RegisterTypeMapping(typeof(CategoryEntity), typeof(CategoryGraphType));
         RegisterTypeMapping(typeof(RegionEntity), typeof(RegionGraphType));
         RegisterTypeMapping(typeof(ConcreteTphBaseEntity), typeof(ConcreteTphBaseGraphType));

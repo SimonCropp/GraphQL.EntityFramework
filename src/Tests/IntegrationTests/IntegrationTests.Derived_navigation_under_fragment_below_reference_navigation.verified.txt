@@ -1,0 +1,38 @@
+﻿{
+  target: {
+    Data: {
+      tphDerivedNavOwners: [
+        {
+          property: Owner,
+          item: {
+            property: CategoryItem,
+            category: {
+              name: Science
+            }
+          }
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select t.Id,
+       t0.Id,
+       t0.Discriminator,
+       t0.OwnerId,
+       t0.Property,
+       t0.CategoryId,
+       t0.RegionId,
+       c.Id,
+       c.Name,
+       t.ItemId,
+       t.Property
+from   TphDerivedNavOwners as t
+       left outer join
+       TphDerivedNavBaseEntities as t0
+       on t.ItemId = t0.Id
+       left outer join
+       CategoryEntities as c
+       on t0.CategoryId = c.Id
+  }
+}

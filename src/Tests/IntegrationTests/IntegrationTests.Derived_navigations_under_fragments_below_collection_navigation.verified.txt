@@ -1,0 +1,65 @@
+﻿{
+  target: {
+    Data: {
+      tphDerivedNavOwners: [
+        {
+          property: Owner,
+          items: [
+            {
+              property: CategoryItem,
+              category: {
+                name: Science
+              }
+            },
+            {
+              property: RegionItem,
+              region: {
+                name: North
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   t.Id,
+         t.ItemId,
+         s.Id,
+         s.Discriminator,
+         s.OwnerId,
+         s.Property,
+         s.CategoryId,
+         s.RegionId,
+         s.Id0,
+         s.Name,
+         s.Id1,
+         s.Name0,
+         t.Property
+from     TphDerivedNavOwners as t
+         left outer join
+         (select t0.Id,
+                 t0.Discriminator,
+                 t0.OwnerId,
+                 t0.Property,
+                 t0.CategoryId,
+                 t0.RegionId,
+                 c.Id as Id0,
+                 c.Name,
+                 r.Id as Id1,
+                 r.Name as Name0
+          from   TphDerivedNavBaseEntities as t0
+                 left outer join
+                 CategoryEntities as c
+                 on t0.CategoryId = c.Id
+                 left outer join
+                 RegionEntities as r
+                 on t0.RegionId = r.Id) as s
+         on t.Id = s.OwnerId
+order by t.Id,
+         s.Property,
+         s.Id,
+         s.Id0
+  }
+}

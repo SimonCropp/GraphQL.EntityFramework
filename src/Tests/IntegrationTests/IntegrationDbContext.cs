@@ -52,6 +52,7 @@
     public DbSet<TphLeafEntity> TphLeafEntities { get; set; } = null!;
     public DbSet<TphAttachmentEntity> TphAttachmentEntities { get; set; } = null!;
     public DbSet<TphDerivedNavBaseEntity> TphDerivedNavBaseEntities { get; set; } = null!;
+    public DbSet<TphDerivedNavOwnerEntity> TphDerivedNavOwners { get; set; } = null!;
     public DbSet<CategoryEntity> CategoryEntities { get; set; } = null!;
     public DbSet<RegionEntity> RegionEntities { get; set; } = null!;
     public DbSet<GuardedKeyEntity> GuardedKeyEntities { get; set; } = null!;
@@ -185,6 +186,15 @@
             .HasOne(_ => _.Region)
             .WithMany()
             .HasForeignKey(_ => _.RegionId);
+        modelBuilder.Entity<TphDerivedNavOwnerEntity>(entity =>
+        {
+            entity.HasOne(_ => _.Item)
+                .WithMany()
+                .HasForeignKey(_ => _.ItemId);
+            entity.HasMany(_ => _.Items)
+                .WithOne()
+                .HasForeignKey(_ => _.OwnerId);
+        });
         modelBuilder.Entity<GuardedKeyEntity>(entity =>
         {
             entity.Property(_ => _.Id).HasField("id");
