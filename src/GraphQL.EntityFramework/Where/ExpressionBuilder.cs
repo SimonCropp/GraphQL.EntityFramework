@@ -142,21 +142,12 @@ public static partial class ExpressionBuilder<T>
         // Get the list item type details
         var listItemType = property.PropertyType.GetGenericArguments().Single();
 
-        // Generate the predicate for the list item type
-        var genericType = typeof(ExpressionBuilder<>)
-            .MakeGenericType(listItemType);
-        var buildPredicate = genericType
-            .GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .SingleOrDefault(_ => _.Name == "BuildPredicate" &&
-                                  _.GetParameters().Length == 4);
-        if (buildPredicate == null)
-        {
-            throw new($"Could not find BuildPredicate method on {genericType.FullName}");
-        }
+        var (buildPredicate, anyMethod) = ListMethods(listItemType);
 
-        var subPredicate = (Expression)buildPredicate
+        // Generate the predicate for the list item type
+        var subPredicate = (LambdaExpression)buildPredicate
             .Invoke(
-                new(),
+                null,
                 [
                     listPath,
                     comparison,
@@ -164,15 +155,53 @@ public static partial class ExpressionBuilder<T>
                     false
                 ])!;
 
-        // Generate a method info for the Any Enumerable Static Method
-        var anyInfo = typeof(Enumerable)
-            .GetMethods(BindingFlags.Static | BindingFlags.Public)
-            .First(_ => _.Name == "Any" &&
-                        _.GetParameters().Length == 2)
-            .MakeGenericMethod(listItemType);
+        // The sub predicate is built on the parameter PropertyCache shares for the item type. When
+        // the list holds the enclosing type, that is the same instance as the outer parameter, and
+        // EF's parameter replacement then rewrites the inner lambda as well. Rebind the inner lambda
+        // to its own parameter.
+        var itemParameter = Expression.Parameter(listItemType, "item");
+        var body = new ParameterReplacer(subPredicate.Parameters[0], itemParameter).Visit(subPredicate.Body);
+        var itemPredicate = Expression.Lambda(body, itemParameter);
 
         // Create Any Expression Call
-        return Expression.Call(anyInfo, property.Left, subPredicate);
+        return Expression.Call(anyMethod, property.Left, itemPredicate);
+    }
+
+    static ConcurrentDictionary<Type, (MethodInfo BuildPredicate, MethodInfo Any)> listMethods = new();
+
+    /// <summary>
+    /// Both lookups were being repeated per where clause with a list path. The item types are
+    /// bounded by the model, so they are safe to hold on to.
+    /// </summary>
+    static (MethodInfo BuildPredicate, MethodInfo Any) ListMethods(Type listItemType) =>
+        listMethods.GetOrAdd(
+            listItemType,
+            type =>
+            {
+                var genericType = typeof(ExpressionBuilder<>).MakeGenericType(type);
+                var buildPredicate = genericType
+                    .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .SingleOrDefault(_ => _.Name == nameof(BuildPredicate) &&
+                                          _.GetParameters().Length == 4);
+                if (buildPredicate == null)
+                {
+                    throw new($"Could not find BuildPredicate method on {genericType.FullName}");
+                }
+
+                var any = typeof(Enumerable)
+                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                    .First(_ => _.Name == nameof(Enumerable.Any) &&
+                                _.GetParameters().Length == 2)
+                    .MakeGenericMethod(type);
+
+                return (buildPredicate, any);
+            });
+
+    class ParameterReplacer(ParameterExpression original, ParameterExpression replacement) :
+        ExpressionVisitor
+    {
+        protected override Expression VisitParameter(ParameterExpression node) =>
+            node == original ? replacement : node;
     }
 
     static Expression GetExpression(string path, Comparison comparison, string?[]? values)

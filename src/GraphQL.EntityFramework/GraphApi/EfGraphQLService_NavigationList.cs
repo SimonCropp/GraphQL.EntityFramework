@@ -15,6 +15,7 @@ partial class EfGraphQLService<TDbContext>
         Ensure.NotWhiteSpace(nameof(name), name);
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
+        var names = GetKeyNames<TReturn>();
         var field = new FieldType
         {
             Name = name,
@@ -47,7 +48,7 @@ partial class EfGraphQLService<TDbContext>
                 throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryField.");
             }
 
-            result = result.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
+            result = result.ApplyGraphQlArguments(names, context, omitQueryArguments);
             if (fieldContext.Filters == null)
             {
                 return result;

@@ -23,6 +23,7 @@ partial class EfGraphQLService<TDbContext>
         var compiledProjection = projection.Compile();
 
         var hasId = keyNames.ContainsKey(typeof(TReturn));
+        var names = GetKeyNames<TReturn>();
         builder.ResolveAsync(async context =>
         {
             var efFieldContext = BuildContext(context);
@@ -58,7 +59,7 @@ partial class EfGraphQLService<TDbContext>
                 throw new("This API expects the resolver to return a IEnumerable, not an IQueryable. Instead use AddQueryConnectionField.");
             }
 
-            enumerable = enumerable.ApplyGraphQlArguments(hasId, context, omitQueryArguments);
+            enumerable = enumerable.ApplyGraphQlArguments(names, context, omitQueryArguments);
             if (efFieldContext.Filters != null)
             {
                 enumerable = await efFieldContext.Filters.ApplyFilter(enumerable, context.UserContext, efFieldContext.DbContext, context.User);

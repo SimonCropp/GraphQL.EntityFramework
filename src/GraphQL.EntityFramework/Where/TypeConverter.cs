@@ -98,7 +98,15 @@
             return (IList)getList.Invoke(null, [values])!;
         }
 
-        throw new($"Could not convert strings to {type.FullName}.");
+        // Anything else the single value conversion handles, such as decimal or double, is
+        // converted item by item into a list of the property type
+        var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type))!;
+        foreach (var value in values)
+        {
+            list.Add(ConvertStringToType(value, type));
+        }
+
+        return list;
     }
 
     static MethodInfo enumListMethod = typeof(TypeConverter)

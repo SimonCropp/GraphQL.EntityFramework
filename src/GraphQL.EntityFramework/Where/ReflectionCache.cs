@@ -27,31 +27,12 @@
         typeof(string)
             .GetMethod("EndsWith", [typeof(string)])!;
 
-    static FrozenDictionary<Type, MethodInfo> listContainsCache;
+    static ConcurrentDictionary<Type, MethodInfo> listContainsCache = new();
 
-    static ReflectionCache() =>
-        listContainsCache = FrozenDictionary.Create(
-            new KeyValuePair<Type, MethodInfo>(typeof(Guid), GetContains<Guid>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(Guid?), GetContains<Guid?>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(bool), GetContains<bool>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(bool?), GetContains<bool?>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(int), GetContains<int>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(int?), GetContains<int?>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(short), GetContains<short>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(short?), GetContains<short?>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(long), GetContains<long>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(long?), GetContains<long?>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(uint), GetContains<uint>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(uint?), GetContains<uint?>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(ushort), GetContains<ushort>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(ushort?), GetContains<ushort?>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(ulong), GetContains<ulong>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(ulong?), GetContains<ulong?>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(DateTime), GetContains<DateTime>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(DateTime?), GetContains<DateTime?>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(DateTimeOffset), GetContains<DateTimeOffset>()),
-            new KeyValuePair<Type, MethodInfo>(typeof(DateTimeOffset?), GetContains<DateTimeOffset?>()));
-
+    /// <summary>
+    /// Contains on a list of the property type. Was a fixed set of types, which left `in` failing
+    /// for any other type the list conversion could handle. Strings take a different route.
+    /// </summary>
     public static MethodInfo? GetListContains(Type type)
     {
         if (type == typeof(string))
@@ -59,22 +40,10 @@
             return null;
         }
 
-        // Try FrozenDictionary lookup first - O(1) for common types
-        if (listContainsCache.TryGetValue(type, out var method))
-        {
-            return method;
-        }
-
-        if (type.IsEnumType())
-        {
-            return typeof(ICollection<>).MakeGenericType(type).GetMethod("Contains");
-        }
-
-        return null;
+        return listContainsCache.GetOrAdd(
+            type,
+            _ => typeof(ICollection<>).MakeGenericType(_).GetMethod("Contains")!);
     }
-
-    static MethodInfo GetContains<T>() =>
-        typeof(ICollection<T>).GetMethod("Contains")!;
 
     public static bool TryGetEnumType(this Type type, [NotNullWhen(true)] out Type? enumType)
     {
