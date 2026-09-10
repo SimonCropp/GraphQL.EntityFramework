@@ -19,7 +19,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.3" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />
@@ -31,12 +31,12 @@
     <PackageVersion Include="Verify.DiffPlex" Version="3.3.1" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
     <PackageVersion Include="Verify.SqlServer" Version="12.2.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="33.0.0-beta.8" />
+    <PackageVersion Include="Verify.XunitV3" Version="33.0.0-beta.9" />
     <PackageVersion Include="xunit.v3" Version="4.0.0" />
     <PackageVersion Include="Argon" Version="0.36.0" />
     <PackageVersion Include="DiffEngine" Version="20.3.0" />
     <PackageVersion Include="EmptyFiles" Version="8.18.2" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.0" />
-    <PackageVersion Include="Verify" Version="33.0.0-beta.8" />
+    <PackageVersion Include="Verify" Version="33.0.0-beta.9" />
   </ItemGroup>
 </Project>
