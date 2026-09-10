@@ -2,22 +2,22 @@
   TotalCount: 10,
   PageInfo: {
     HasNextPage: true,
-    HasPreviousPage: true,
-    StartCursor: 1,
-    EndCursor: 2
+    HasPreviousPage: false,
+    StartCursor: 0,
+    EndCursor: 1
   },
   Edges: [
     {
-      Cursor: 1,
-      Node: b
+      Cursor: 0,
+      Node: a
     },
     {
-      Cursor: 2,
-      Node: c
+      Cursor: 1,
+      Node: b
     }
   ],
   Items: [
-    b,
-    c
+    a,
+    b
   ]
 }

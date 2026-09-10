@@ -243,6 +243,11 @@ snippet: typedGraph
 Creating a page-able field is supported through [GraphQL Connections](https://graphql.org/learn/pagination/) by calling `IEfGraphQLService.AddNavigationConnectionField` (for an EF navigation property), or `IEfGraphQLService.AddQueryConnectionField` (for an IQueryable). Alternatively convenience methods are exposed on the types `EfObjectGraphType` or `EfObjectGraphType<TSource>` for root or nested graphs respectively.
 
 
+### Paging
+
+Cursors are the zero based index of the edge in the ordered set. `after` and `before` are exclusive, and bound the window of items a page is taken from. `first` keeps that many from the start of the window, then `last` keeps that many from the end, in the order the [Relay specification](https://relay.dev/graphql/connections.htm#sec-Pagination-algorithm) applies them. Edges are always in the set's order, whichever end the page was taken from. `hasPreviousPage` is true when the page starts after the first item, `hasNextPage` when items exist after the page. An empty page has null `startCursor` and `endCursor`.
+
+
 ### Root Query
 
 

@@ -3,21 +3,21 @@
   PageInfo: {
     HasNextPage: true,
     HasPreviousPage: true,
-    StartCursor: 6,
-    EndCursor: 7
+    StartCursor: 5,
+    EndCursor: 6
   },
   Edges: [
     {
-      Cursor: 6,
-      Node: g
+      Cursor: 5,
+      Node: f
     },
     {
-      Cursor: 7,
-      Node: h
+      Cursor: 6,
+      Node: g
     }
   ],
   Items: [
-    g,
-    h
+    f,
+    g
   ]
 }
