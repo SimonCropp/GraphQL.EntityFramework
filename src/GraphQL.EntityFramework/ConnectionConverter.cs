@@ -39,7 +39,8 @@
         var count = list.Count;
         var (skip, take) = Window(first, after, last, before, count);
         var page = list.Skip(skip).Take(take);
-        return Build(skip, take, count, page);
+        // long, since a large `first` makes take + skip overflow and wrap negative
+        return Build(skip, count, skip > 0, count > (long) take + skip, page);
     }
 
     /// <summary>
@@ -114,48 +115,70 @@
         }
 
         int skip;
-        int take;
         int? count = null;
-        IQueryable<TItem> page;
+        bool hasPreviousPage;
+        bool hasNextPage;
+        List<TItem> rows;
         if (NeedsCount(context, last, before))
         {
             count = await queryable.CountAsync(cancel);
             cancel.ThrowIfCancellationRequested();
+            int take;
             (skip, take) = Window(first, after, last, before, count.Value);
-            page = queryable.Skip(skip).Take(take);
+            var page = queryable.Skip(skip).Take(take);
+            QueryLogger.Write(page);
+            rows = await page.ToListAsync(cancel);
+            hasPreviousPage = skip > 0;
+            // long, since a large `first` makes take + skip overflow and wrap negative
+            hasNextPage = count > (long) take + skip;
         }
         else
         {
             // The window is bounded from the start only, so it needs no count to place it. The
             // count clamped the offset to the end; past it the page query reads an empty page.
             skip = after + 1 ?? 0;
-            // Only compared against the count, which is unknown here
-            take = first ?? 0;
-            page = queryable.Skip(skip);
+            var page = queryable.Skip(skip);
             if (first is not null)
             {
-                page = page.Take(first.Value);
+                // One row past the page says whether a next page exists
+                page = page.Take(Peek(first.Value));
+            }
+
+            QueryLogger.Write(page);
+            rows = await page.ToListAsync(cancel);
+            hasNextPage = first is not null && rows.Count > first.Value;
+            // Rows on the page prove rows before it. An empty page proves nothing, and paging
+            // forward the spec allows false when that is unknown.
+            hasPreviousPage = skip > 0 && rows.Count > 0;
+            if (hasNextPage)
+            {
+                rows.RemoveAt(rows.Count - 1);
             }
         }
 
-        QueryLogger.Write(page);
-        IEnumerable<TItem> result = await page.ToListAsync(cancel);
+        IEnumerable<TItem> result = rows;
         if (filters != null)
         {
             result = await filters.ApplyFilter(result, context.UserContext, data, context.User);
         }
 
         cancel.ThrowIfCancellationRequested();
-        return Build(skip, take, count, result);
+        return Build(skip, count, hasPreviousPage, hasNextPage, result);
     }
 
     /// <summary>
-    /// Whether the count query has to run: when the selection reads it, through totalCount or
-    /// the page info, whose hasNextPage compares against it, or when the window is bounded from
-    /// the end, by last or before, so the count is needed to place it. A connection selecting
-    /// only edges or items otherwise paid a second round trip, a COUNT over the whole filtered
-    /// set, for a number nothing read. The selection is unknown for a context built outside an
-    /// execution, which counts.
+    /// The page size plus the one row read past it, capped so the largest page size does not wrap.
+    /// </summary>
+    static int Peek(int first) =>
+        first == int.MaxValue ? first : first + 1;
+
+    /// <summary>
+    /// Whether the count query has to run: when totalCount is selected, or when the window is
+    /// bounded from the end, by last or before, so the count is needed to place it. The page
+    /// info alone does not need it, since hasNextPage is answered by the row read past the page.
+    /// A connection selecting edges, items and page info otherwise paid a second round trip, a
+    /// COUNT over the whole filtered set, for a number nothing read. The selection is unknown
+    /// for a context built outside an execution, which counts.
     /// </summary>
     static bool NeedsCount(IResolveFieldContext context, int? last, int? before)
     {
@@ -173,9 +196,7 @@
 
         foreach (var (field, _) in subFields.Values)
         {
-            var name = field.Name.Value;
-            if (name.Equals("totalCount") ||
-                name.Equals("pageInfo"))
+            if (field.Name.Value.Equals("totalCount"))
             {
                 return true;
             }
@@ -184,8 +205,8 @@
         return false;
     }
 
-    /// <param name="count">Null when the count query was skipped, which only happens when neither the total count nor the page info was selected.</param>
-    static Connection<T> Build<T>(int skip, int take, int? count, IEnumerable<T> result)
+    /// <param name="count">Null when the count query was skipped, which only happens when the total count was not selected.</param>
+    static Connection<T> Build<T>(int skip, int? count, bool hasPreviousPage, bool hasNextPage, IEnumerable<T> result)
     {
         var edges = result
             .Select((item, index) =>
@@ -202,9 +223,8 @@
             Edges = edges,
             PageInfo = new()
             {
-                // long, since a large `first` makes take + skip overflow and wrap negative
-                HasNextPage = count > (long) take + skip,
-                HasPreviousPage = skip > 0,
+                HasNextPage = hasNextPage,
+                HasPreviousPage = hasPreviousPage,
                 // Null when there are no edges, as the spec has it. The edges are used rather
                 // than the window since filters can remove items after the query.
                 StartCursor = edges.FirstOrDefault()?.Cursor,

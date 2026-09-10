@@ -18,23 +18,16 @@
       }
     }
   },
-  sql: [
-    {
-      Text:
-select COUNT(*)
-from   ParentEntities as p
-    },
-    {
-      Text:
+  sql: {
+    Text:
 select   p.Id,
          p.Property
 from     ParentEntities as p
 order by p.Property
 offset @p rows fetch next @p1 rows only,
-      Parameters: {
-        @p: 1,
-        @p1: 2
-      }
+    Parameters: {
+      @p: 1,
+      @p1: 3
     }
-  ]
+  }
 }

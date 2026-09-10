@@ -2,12 +2,17 @@
   target: {
     Data: {
       parentEntitiesConnection: {
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: true,
+          endCursor: 7
+        },
         items: [
           {
-            property: Value1
+            property: Value6
           },
           {
-            property: Value2
+            property: Value7
           }
         ]
       }
@@ -21,7 +26,7 @@ from     ParentEntities as p
 order by p.Property
 offset @p rows fetch next @p1 rows only,
     Parameters: {
-      @p: 1,
+      @p: 6,
       @p1: 3
     }
   }

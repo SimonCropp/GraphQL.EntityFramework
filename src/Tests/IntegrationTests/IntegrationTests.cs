@@ -651,15 +651,69 @@
     }
 
     /// <summary>
-    /// The page info compares against the count, so selecting it without totalCount still runs the count query.
+    /// The page info without totalCount needs no count: the page query reads one row past the page, and that row answers hasNextPage.
     /// </summary>
     [Fact]
-    public async Task Connection_page_info_without_total_count_counts()
+    public async Task Connection_page_info_without_total_count_peeks()
     {
         var query =
             """
             {
               parentEntitiesConnection(first:2, after: "0") {
+                pageInfo {
+                  hasNextPage
+                  hasPreviousPage
+                  endCursor
+                }
+                items {
+                  property
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
+    /// <summary>
+    /// The last page has no row past it to read, so hasNextPage is false without the count.
+    /// </summary>
+    [Fact]
+    public async Task Connection_page_info_without_total_count_last_page()
+    {
+        var query =
+            """
+            {
+              parentEntitiesConnection(first:2, after: "5") {
+                pageInfo {
+                  hasNextPage
+                  hasPreviousPage
+                  endCursor
+                }
+                items {
+                  property
+                }
+              }
+            }
+            """;
+        var entities = BuildEntities(8);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, entities.ToArray());
+    }
+
+    /// <summary>
+    /// A page past the end is empty, which proves nothing about rows before it, so hasPreviousPage is false, as the spec allows when paging forward.
+    /// </summary>
+    [Fact]
+    public async Task Connection_page_info_without_total_count_past_the_end()
+    {
+        var query =
+            """
+            {
+              parentEntitiesConnection(first:2, after: "20") {
                 pageInfo {
                   hasNextPage
                   hasPreviousPage
