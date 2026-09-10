@@ -1,7 +1,8 @@
 ﻿class IncludeAppender(
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames,
-    IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys)
+    IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys,
+    IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes)
 {
     public bool TryGetProjectionExpressionWithFilters<TDbContext, TItem>(
         IResolveFieldContext context,
@@ -29,7 +30,7 @@
             projection = MergeFilterFieldsIntoProjection(projection, filters, type);
         }
 
-        return SelectExpressionBuilder.TryBuild(projection, keyNames, out expression);
+        return SelectExpressionBuilder.TryBuild(projection, keyNames, derivedTypes, out expression);
     }
 
     public IQueryable<TItem> AddIncludes<TDbContext, TItem>(
@@ -241,7 +242,7 @@
         }
 
         // Scan for derived-type navigations from inline fragments (TPH support)
-        var derivedNavigations = GetDerivedNavigationsFromFragments(context, entityType);
+        var derivedNavigations = GetDerivedNavigationsFromFragments(context, entityType, scalarFields);
 
         return new(scalarFields, keys, foreignKeyNames, navProjections, derivedNavigations);
     }
@@ -318,7 +319,8 @@
     /// </summary>
     Dictionary<Type, Dictionary<string, NavigationProjectionInfo>>? GetDerivedNavigationsFromFragments(
         IResolveFieldContext context,
-        Type entityType)
+        Type entityType,
+        HashSet<string> scalarFields)
     {
         var (selectionSet, leafGraphType) = GetLeafSelection(context);
         if (selectionSet?.Selections is null)
@@ -339,9 +341,14 @@
                 continue;
             }
 
-            if (!navigations.TryGetValue(derivedType, out var derivedNavProps) ||
+            navigations.TryGetValue(derivedType, out var derivedNavProps);
+            if (derivedNavProps is null ||
                 !derivedNavProps.TryGetValue(field.Name.StringValue, out var navigation))
             {
+                // A scalar of the derived type. The root sub fields exclude fields conditional on
+                // another type, so it is recorded here; it resolves against the derived type's
+                // properties when that type's member init is built, and is skipped for the base.
+                scalarFields.Add(field.Name.StringValue);
                 continue;
             }
 

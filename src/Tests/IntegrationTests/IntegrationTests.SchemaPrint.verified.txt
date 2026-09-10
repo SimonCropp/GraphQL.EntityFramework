@@ -178,6 +178,8 @@
   tphMiddleEntity(id: ID, ids: [ID!], where: [WhereExpression!]): TphMiddleEntity
   guardedKeyEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [GuardedKeyEntity]!
   guardedKeyEntity(id: ID, ids: [ID!], where: [WhereExpression!]): GuardedKeyEntity
+  concreteTphEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ConcreteTphBaseEntity]!
+  concreteTphEntity(id: ID, ids: [ID!], where: [WhereExpression!]): ConcreteTphBaseEntity
   tphDerivedNavEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphDerivedNavBaseEntity]!
   tphDerivedNavEntity(id: ID, ids: [ID!], where: [WhereExpression!]): TphDerivedNavBaseEntity
 }
@@ -837,6 +839,11 @@ type GuardedKeyEntity {
   id: ID!
 }
 
+interface ConcreteTphBaseEntity {
+  id: ID!
+  property: String
+}
+
 interface TphDerivedNavBaseEntity {
   id: ID!
   property: String
@@ -924,4 +931,15 @@ type TphDerivedNavRegion implements TphDerivedNavBaseEntity {
 type Region {
   id: ID!
   name: String
+}
+
+type ConcreteTphBase implements ConcreteTphBaseEntity {
+  id: ID!
+  property: String
+}
+
+type ConcreteTphDerived implements ConcreteTphBaseEntity {
+  derivedProperty: String
+  id: ID!
+  property: String
 }

@@ -55,6 +55,7 @@ public class IntegrationDbContext(DbContextOptions options) :
     public DbSet<CategoryEntity> CategoryEntities { get; set; } = null!;
     public DbSet<RegionEntity> RegionEntities { get; set; } = null!;
     public DbSet<GuardedKeyEntity> GuardedKeyEntities { get; set; } = null!;
+    public DbSet<ConcreteTphBaseEntity> ConcreteTphEntities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -179,6 +180,10 @@ public class IntegrationDbContext(DbContextOptions options) :
             entity.Property(_ => _.Id).HasField("id");
             entity.OrderBy(_ => _.EmailAddress);
         });
+        modelBuilder.Entity<ConcreteTphBaseEntity>()
+            .OrderBy(_ => _.Property);
+        modelBuilder.Entity<ConcreteTphDerivedEntity>()
+            .HasBaseType<ConcreteTphBaseEntity>();
         modelBuilder.Entity<CategoryEntity>()
             .OrderBy(_ => _.Name);
         modelBuilder.Entity<RegionEntity>()

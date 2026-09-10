@@ -412,6 +412,16 @@
             resolve: _ => _.DbContext.GuardedKeyEntities);
 
         AddQueryField(
+            name: "concreteTphEntities",
+            graphType: typeof(ConcreteTphInterfaceGraphType),
+            resolve: _ => _.DbContext.ConcreteTphEntities);
+
+        AddSingleField(
+            name: "concreteTphEntity",
+            graphType: typeof(ConcreteTphInterfaceGraphType),
+            resolve: _ => _.DbContext.ConcreteTphEntities);
+
+        AddQueryField(
             name: "tphDerivedNavEntities",
             graphType: typeof(TphDerivedNavBaseGraphType),
             resolve: _ => _.DbContext.TphDerivedNavBaseEntities);

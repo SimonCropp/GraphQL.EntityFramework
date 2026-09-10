@@ -1,4 +1,4 @@
-﻿namespace GraphQL.EntityFramework;
+namespace GraphQL.EntityFramework;
 
 static class SelectExpressionBuilder
 {
@@ -19,7 +19,9 @@ static class SelectExpressionBuilder
 
     static ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
-    record PropertyMetadata(Type EntityType, PropertyInfo Property, bool CanWrite, bool IsAutoProperty, MemberExpression PropertyAccess, MemberBinding? Binding)
+    static IReadOnlyDictionary<Type, IReadOnlyList<Type>> noDerivedTypes = new Dictionary<Type, IReadOnlyList<Type>>();
+
+    record PropertyMetadata(Type EntityType, PropertyInfo Property, bool CanWrite, bool IsAutoProperty)
     {
         MethodInfo? cachedOrderBy;
 
@@ -43,236 +45,131 @@ static class SelectExpressionBuilder
         FieldProjectionInfo projection,
         IReadOnlyDictionary<Type, List<string>> keyNames,
         [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression)
-        where TEntity : class
-    {
-        expression = BuildExpression<TEntity>(projection, keyNames);
-        return expression != null;
-    }
+        where TEntity : class =>
+        TryBuild(projection, keyNames, noDerivedTypes, out expression);
 
-    static Expression<Func<TEntity, TEntity>>? BuildExpression<TEntity>(
+    /// <param name="derivedTypes">
+    /// For each entity type that has derived types in the model, those derived types, base most
+    /// first. A member init always creates the type it names, so projecting such a type as a plain
+    /// member init would materialize every row as the base type and lose the derived identity.
+    /// These are instead projected as a chain of type tests, each creating the matching type.
+    /// </param>
+    public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
-        IReadOnlyDictionary<Type, List<string>> keyNames)
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression)
         where TEntity : class
     {
+        expression = null;
         var entityType = typeof(TEntity);
 
         if (entityType.IsAbstract)
         {
-            return null;
+            return false;
         }
 
-        var entityMetadata = GetEntityMetadata(entityType);
-        var parameter = entityMetadata.Parameter;
-        var properties = entityMetadata.Properties;
-
-        // Pre-size collections to avoid reallocations
-        var capacity = (projection.KeyNames?.Count ?? 0) + (projection.ForeignKeyNames?.Count ?? 0) +
-                      projection.ScalarFields.Count + (projection.Navigations?.Count ?? 0);
-        var bindings = new List<MemberBinding>(capacity);
-        var addedProperties = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
-
-        // 1. Always include key properties
-        if (projection.KeyNames != null)
+        var parameter = GetEntityMetadata(entityType).Parameter;
+        if (!TryBuildEntityInit(parameter, entityType, projection, keyNames, derivedTypes, out var body))
         {
-            foreach (var keyName in projection.KeyNames)
-            {
-                if (properties.TryGetValue(keyName, out var metadata) &&
-                    addedProperties.Add(keyName))
-                {
-                    if (!metadata.CanWrite || !metadata.IsAutoProperty)
-                    {
-                        // Key property has a custom setter that may throw during materialization,
-                        // or is read-only. Fall back to full entity loading so EF can use backing fields.
-                        return null;
-                    }
-
-                    bindings.Add(metadata.Binding!);
-                }
-            }
+            return false;
         }
 
-        // 2. Always include foreign key properties
-        if (projection.ForeignKeyNames != null)
-        {
-            foreach (var fkName in projection.ForeignKeyNames)
-            {
-                if (properties.TryGetValue(fkName, out var metadata) &&
-                    metadata.CanWrite &&
-                    addedProperties.Add(fkName))
-                {
-                    bindings.Add(metadata.Binding!);
-                }
-            }
-        }
-
-        // 3. Add requested scalar properties
-        foreach (var fieldName in projection.ScalarFields)
-        {
-            if (properties.TryGetValue(fieldName, out var metadata) &&
-                addedProperties.Add(fieldName))
-            {
-                if (!metadata.CanWrite)
-                {
-                    // Read-only property (expression-bodied or database computed column)
-                    // Can't use projection - return null to load full entity
-                    return null;
-                }
-
-                bindings.Add(metadata.Binding!);
-            }
-        }
-
-        // 4. Add navigation properties with nested projections
-        if (projection.Navigations != null)
-        {
-            foreach (var (navFieldName, navProjection) in projection.Navigations)
-            {
-                if (!properties.TryGetValue(navFieldName, out var metadata) ||
-                    !addedProperties.Add(navFieldName))
-                {
-                    continue;
-                }
-
-                var binding = BuildNavigationBinding(metadata.PropertyAccess, navProjection, keyNames);
-                if (binding == null)
-                {
-                    if (!metadata.CanWrite)
-                    {
-                        continue;
-                    }
-
-                    // Can't project navigation (e.g. read-only properties on target entity)
-                    // Fall back to including the full navigation entity
-                    binding = BuildFullNavigationBinding(metadata, navProjection);
-                }
-
-                bindings.Add(binding);
-            }
-        }
-
-        Sort(bindings);
-
-        var memberInit = Expression.MemberInit(entityMetadata.NewInstance, bindings);
-        return Expression.Lambda<Func<TEntity, TEntity>>(memberInit, parameter);
+        expression = Expression.Lambda<Func<TEntity, TEntity>>(body, parameter);
+        return true;
     }
 
-    static MemberBinding? BuildNavigationBinding(
-        MemberExpression navAccess,
-        NavigationProjectionInfo navProjection,
-        IReadOnlyDictionary<Type, List<string>> keyNames)
-    {
-        if (navProjection.EntityType.IsAbstract)
-        {
-            return null;
-        }
-
-        return navProjection.IsCollection
-            ? BuildCollectionNavigationBinding(navAccess, navProjection, keyNames)
-            : BuildSingleNavigationBinding(navAccess, navProjection, keyNames);
-    }
-
-    static MemberAssignment? BuildCollectionNavigationBinding(
-        MemberExpression navAccess,
-        NavigationProjectionInfo navProjection,
-        IReadOnlyDictionary<Type, List<string>> keyNames)
-    {
-        var navType = navProjection.EntityType;
-        var navMetadata = GetEntityMetadata(navType);
-        var navParam = Expression.Parameter(navType, "n");
-
-        // Build the inner MemberInit for the navigation type
-        if (!TryBuildNavigationBindings(navParam, navType, navProjection.Projection, keyNames, out var innerBindings))
-        {
-            // Can't project navigation - return null to load full entity
-            return null;
-        }
-
-        var innerMemberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
-        var innerLambda = Expression.Lambda(innerMemberInit, navParam);
-
-        // Build: x.Children.OrderBy(_ => _.Key) to ensure deterministic ordering
-        Expression orderedCollection = navAccess;
-        if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
-        {
-            if (navMetadata.Properties.TryGetValue(keys[0], out var keyMetadata))
-            {
-                var keyAccess = Expression.Property(navParam, keyMetadata.Property);
-                var keyLambda = Expression.Lambda(keyAccess, navParam);
-
-                orderedCollection = Expression.Call(null, keyMetadata.OrderByMethod, navAccess, keyLambda);
-            }
-        }
-
-        // Build: x.Children.OrderBy(...).Select(n => new Child { ... })
-        var selectCall = Expression.Call(null, navMetadata.SelectMethod, orderedCollection, innerLambda);
-
-        // Build: .ToList()
-        var toListCall = Expression.Call(null, navMetadata.ToListMethod, selectCall);
-
-        return Expression.Bind(navAccess.Member, toListCall);
-    }
-
-    static MemberBinding? BuildSingleNavigationBinding(
-        MemberExpression navAccess,
-        NavigationProjectionInfo navProjection,
-        IReadOnlyDictionary<Type, List<string>> keyNames)
-    {
-        var navType = navProjection.EntityType;
-        var navMetadata = GetEntityMetadata(navType);
-
-        // x.Parent == null
-        var nullCheck = Expression.Equal(navAccess, navMetadata.NullConstant);
-
-        // Build the MemberInit for the navigation type using navAccess as source
-        if (!TryBuildNavigationBindings(navAccess, navType, navProjection.Projection, keyNames, out var innerBindings))
-        {
-            // Can't project navigation - return null to load full entity
-            return null;
-        }
-
-        var memberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
-
-        // x.Parent == null ? null : new Parent { ... }
-        var conditional = Expression.Condition(
-            nullCheck,
-            navMetadata.NullConstant,
-            memberInit);
-
-        return Expression.Bind(navAccess.Member, conditional);
-    }
-
-    static MemberBinding BuildFullNavigationBinding(
-        PropertyMetadata metadata,
-        NavigationProjectionInfo navProjection)
-    {
-        if (navProjection.IsCollection)
-        {
-            var navMetadata = GetEntityMetadata(navProjection.EntityType);
-            return Expression.Bind(metadata.Property, Expression.Call(null, navMetadata.ToListMethod, metadata.PropertyAccess));
-        }
-
-        return Expression.Bind(metadata.Property, metadata.PropertyAccess);
-    }
-
-    static MemberAssignment BuildFullNestedNavigationBinding(
-        PropertyInfo property,
-        MemberExpression navAccess,
-        NavigationProjectionInfo navProjection)
-    {
-        if (navProjection.IsCollection)
-        {
-            var navMetadata = GetEntityMetadata(navProjection.EntityType);
-            return Expression.Bind(property, Expression.Call(null, navMetadata.ToListMethod, navAccess));
-        }
-
-        return Expression.Bind(property, navAccess);
-    }
-
-    static bool TryBuildNavigationBindings(
-        Expression sourceExpression,
+    /// <summary>
+    /// The expression that creates <paramref name="entityType"/> from <paramref name="source"/>:
+    /// a member init, or for a type with derived types a chain of type tests each creating the
+    /// matching type, most derived first. False when the entity, or one of the navigations under
+    /// it that has no writable property to fall back to, cannot be projected.
+    /// </summary>
+    static bool TryBuildEntityInit(
+        Expression source,
         Type entityType,
         FieldProjectionInfo projection,
         IReadOnlyDictionary<Type, List<string>> keyNames,
+        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        [NotNullWhen(true)] out Expression? expression)
+    {
+        expression = null;
+
+        if (!TryBuildMemberInit(source, entityType, projection, keyNames, derivedTypes, out var memberInit))
+        {
+            return false;
+        }
+
+        expression = memberInit;
+        if (!derivedTypes.TryGetValue(entityType, out var derived))
+        {
+            return true;
+        }
+
+        // Wrapping base most first leaves the most derived test outermost, so it runs first
+        foreach (var derivedType in derived)
+        {
+            if (derivedType.IsAbstract)
+            {
+                continue;
+            }
+
+            var derivedProjection = ProjectionForDerivedType(projection, derivedType);
+            var derivedSource = Expression.Convert(source, derivedType);
+            if (!TryBuildMemberInit(derivedSource, derivedType, derivedProjection, keyNames, derivedTypes, out var derivedInit))
+            {
+                return false;
+            }
+
+            expression = Expression.Condition(
+                Expression.TypeIs(source, derivedType),
+                Expression.Convert(derivedInit, entityType),
+                expression);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// The fields selected through fragments on a derived type are recorded against the base
+    /// projection: scalars by name, which resolve against the derived type's properties, and
+    /// navigations under <see cref="FieldProjectionInfo.DerivedNavigations"/>.
+    /// </summary>
+    static FieldProjectionInfo ProjectionForDerivedType(FieldProjectionInfo projection, Type derivedType)
+    {
+        if (projection.DerivedNavigations is null ||
+            !projection.DerivedNavigations.TryGetValue(derivedType, out var derivedNavigations))
+        {
+            return projection;
+        }
+
+        return projection.Merge(new([], null, null, derivedNavigations));
+    }
+
+    static bool TryBuildMemberInit(
+        Expression source,
+        Type entityType,
+        FieldProjectionInfo projection,
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        [NotNullWhen(true)] out MemberInitExpression? memberInit)
+    {
+        memberInit = null;
+        if (!TryBuildBindings(source, entityType, projection, keyNames, derivedTypes, out var bindings))
+        {
+            return false;
+        }
+
+        memberInit = Expression.MemberInit(GetEntityMetadata(entityType).NewInstance, bindings);
+        return true;
+    }
+
+    static bool TryBuildBindings(
+        Expression source,
+        Type entityType,
+        FieldProjectionInfo projection,
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
         [NotNullWhen(true)] out List<MemberBinding>? bindings)
     {
         // Pre-size collections to avoid reallocations
@@ -297,7 +194,7 @@ static class SelectExpressionBuilder
                         return false;
                     }
 
-                    bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
+                    bindings.Add(Bind(source, metadata));
                 }
             }
         }
@@ -311,7 +208,7 @@ static class SelectExpressionBuilder
                     metadata.CanWrite &&
                     addedProperties.Add(fkName))
                 {
-                    bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
+                    bindings.Add(Bind(source, metadata));
                 }
             }
         }
@@ -330,14 +227,14 @@ static class SelectExpressionBuilder
                     return false;
                 }
 
-                bindings.Add(Expression.Bind(metadata.Property, Expression.Property(sourceExpression, metadata.Property)));
+                bindings.Add(Bind(source, metadata));
             }
         }
 
         // Add nested navigations recursively
         if (projection.Navigations != null)
         {
-            foreach (var (navFieldName, nestedNavProjection) in projection.Navigations)
+            foreach (var (navFieldName, navProjection) in projection.Navigations)
             {
                 if (!properties.TryGetValue(navFieldName, out var metadata) ||
                     !addedProperties.Add(navFieldName))
@@ -345,17 +242,17 @@ static class SelectExpressionBuilder
                     continue;
                 }
 
-                if (!TryBuildNestedNavigationBinding(sourceExpression, metadata.Property, nestedNavProjection, keyNames, out var binding))
+                var navAccess = Expression.Property(source, metadata.Property);
+                if (!TryBuildNavigationBinding(navAccess, navProjection, keyNames, derivedTypes, out var binding))
                 {
                     if (!metadata.CanWrite)
                     {
                         continue;
                     }
 
-                    // Can't project nested navigation (e.g. read-only properties on target entity)
+                    // Can't project navigation (e.g. read-only properties on target entity)
                     // Fall back to including the full navigation entity
-                    var navAccess = Expression.Property(sourceExpression, metadata.Property);
-                    binding = BuildFullNestedNavigationBinding(metadata.Property, navAccess, nestedNavProjection);
+                    binding = BuildFullNavigationBinding(navAccess, navProjection);
                 }
 
                 bindings.Add(binding);
@@ -367,6 +264,9 @@ static class SelectExpressionBuilder
         return true;
     }
 
+    static MemberAssignment Bind(Expression source, PropertyMetadata metadata) =>
+        Expression.Bind(metadata.Property, Expression.Property(source, metadata.Property));
+
     /// <summary>
     /// Bindings are collected in the order the fields were requested, so the same set of fields
     /// asked for in a different order produced a structurally different expression tree, and
@@ -376,11 +276,11 @@ static class SelectExpressionBuilder
     static void Sort(List<MemberBinding> bindings) =>
         bindings.Sort((x, y) => string.CompareOrdinal(x.Member.Name, y.Member.Name));
 
-    static bool TryBuildNestedNavigationBinding(
-        Expression sourceExpression,
-        PropertyInfo property,
+    static bool TryBuildNavigationBinding(
+        MemberExpression navAccess,
         NavigationProjectionInfo navProjection,
         IReadOnlyDictionary<Type, List<string>> keyNames,
+        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
         [NotNullWhen(true)] out MemberAssignment? binding)
     {
         binding = null;
@@ -391,23 +291,18 @@ static class SelectExpressionBuilder
             return false;
         }
 
+        var navMetadata = GetEntityMetadata(navType);
+
         if (navProjection.IsCollection)
         {
-            var navMetadata = GetEntityMetadata(navType);
             var navParam = Expression.Parameter(navType, "n");
 
-            // sourceExpression.Children
-            var navAccess = Expression.Property(sourceExpression, property);
-
-            // Build the inner MemberInit
-            if (!TryBuildNavigationBindings(navParam, navType, navProjection.Projection, keyNames, out var innerBindings))
+            if (!TryBuildEntityInit(navParam, navType, navProjection.Projection, keyNames, derivedTypes, out var itemInit))
             {
-                // Can't project navigation - return false to load full entity
                 return false;
             }
 
-            var innerMemberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
-            var innerLambda = Expression.Lambda(innerMemberInit, navParam);
+            var itemLambda = Expression.Lambda(itemInit, navParam);
 
             // .OrderBy(_ => _.Key) to ensure deterministic ordering
             Expression orderedCollection = navAccess;
@@ -422,43 +317,40 @@ static class SelectExpressionBuilder
                 }
             }
 
-            // .Select(_ => new Child { ... })
-            var selectCall = Expression.Call(null, navMetadata.SelectMethod, orderedCollection, innerLambda);
-
-            // .ToList()
+            // .Select(_ => new Child { ... }).ToList()
+            var selectCall = Expression.Call(null, navMetadata.SelectMethod, orderedCollection, itemLambda);
             var toListCall = Expression.Call(null, navMetadata.ToListMethod, selectCall);
 
-            binding = Expression.Bind(property, toListCall);
+            binding = Expression.Bind(navAccess.Member, toListCall);
             return true;
         }
-        else
+
+        if (!TryBuildEntityInit(navAccess, navType, navProjection.Projection, keyNames, derivedTypes, out var init))
         {
-            var navMetadata = GetEntityMetadata(navType);
-
-            // sourceExpression.Parent
-            var navAccess = Expression.Property(sourceExpression, property);
-
-            // sourceExpression.Parent == null
-            var nullCheck = Expression.Equal(navAccess, navMetadata.NullConstant);
-
-            // Build the MemberInit
-            if (!TryBuildNavigationBindings(navAccess, navType, navProjection.Projection, keyNames, out var innerBindings))
-            {
-                // Can't project navigation - return false to load full entity
-                return false;
-            }
-
-            var memberInit = Expression.MemberInit(navMetadata.NewInstance, innerBindings);
-
-            // sourceExpression.Parent == null ? null : new Parent { ... }
-            var conditional = Expression.Condition(
-                nullCheck,
-                navMetadata.NullConstant,
-                memberInit);
-
-            binding = Expression.Bind(property, conditional);
-            return true;
+            return false;
         }
+
+        // source.Parent == null ? null : new Parent { ... }
+        var conditional = Expression.Condition(
+            Expression.Equal(navAccess, navMetadata.NullConstant),
+            navMetadata.NullConstant,
+            init);
+
+        binding = Expression.Bind(navAccess.Member, conditional);
+        return true;
+    }
+
+    static MemberAssignment BuildFullNavigationBinding(
+        MemberExpression navAccess,
+        NavigationProjectionInfo navProjection)
+    {
+        if (navProjection.IsCollection)
+        {
+            var navMetadata = GetEntityMetadata(navProjection.EntityType);
+            return Expression.Bind(navAccess.Member, Expression.Call(null, navMetadata.ToListMethod, navAccess));
+        }
+
+        return Expression.Bind(navAccess.Member, navAccess);
     }
 
     static EntityTypeMetadata GetEntityMetadata(Type type) =>
@@ -470,12 +362,10 @@ static class SelectExpressionBuilder
 
             foreach (var property in properties)
             {
-                var propertyAccess = Expression.Property(parameter, property);
                 var canWrite = property.CanWrite;
                 var isAutoProperty = canWrite &&
                                      property.SetMethod!.IsDefined(typeof(CompilerGeneratedAttribute), false);
-                var binding = canWrite ? Expression.Bind(property, propertyAccess) : null;
-                dictionary[property.Name] = new(type, property, canWrite, isAutoProperty, propertyAccess, binding);
+                dictionary[property.Name] = new(type, property, canWrite, isAutoProperty);
             }
 
             var newInstance = Expression.New(type);
