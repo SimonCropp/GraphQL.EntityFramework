@@ -29,6 +29,10 @@
             resolve: _ => _.DbContext.WithManyChildrenEntities);
 
         AddQueryField(
+            name: "withItems",
+            resolve: _ => _.DbContext.WithItemsEntities);
+
+        AddQueryField(
             name: "level1Entities",
             resolve: _ => _.DbContext.Level1Entities);
 

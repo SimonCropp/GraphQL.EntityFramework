@@ -23,6 +23,10 @@
             name: "childrenReversed",
             projection: _ => _.Children,
             resolve: _ => _.Projection.Reverse());
+        Field<ListGraphType<ChildGraphType>, IEnumerable<ChildEntity>>("childrenViaResolveList")
+            .ResolveList(GraphQlService, projection: _ => _.Children, resolve: _ => _.Projection);
+        Field<ListGraphType<ChildGraphType>, IEnumerable<ChildEntity>>("childrenViaResolveListAsync")
+            .ResolveListAsync(GraphQlService, projection: _ => _.Children, resolve: _ => Task.FromResult<IEnumerable<ChildEntity>>(_.Projection));
         AutoMap();
     }
 }

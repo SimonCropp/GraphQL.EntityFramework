@@ -56,6 +56,8 @@
         RegisterTypeMapping(typeof(RegionEntity), typeof(RegionGraphType));
         RegisterTypeMapping(typeof(ConcreteTphBaseEntity), typeof(ConcreteTphBaseGraphType));
         RegisterTypeMapping(typeof(ConcreteTphDerivedEntity), typeof(ConcreteTphDerivedGraphType));
+        RegisterTypeMapping(typeof(WithItemsEntity), typeof(WithItemsGraphType));
+        RegisterTypeMapping(typeof(ItemEntity), typeof(ItemGraphType));
         Query = (Query)resolver.GetService(typeof(Query))!;
         Mutation = (Mutation)resolver.GetService(typeof(Mutation))!;
         RegisterType(typeof(DerivedGraphType));
