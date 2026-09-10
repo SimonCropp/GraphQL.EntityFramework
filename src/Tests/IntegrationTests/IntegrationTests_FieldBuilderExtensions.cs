@@ -1,4 +1,4 @@
-public partial class IntegrationTests
+﻿public partial class IntegrationTests
 {
     [Fact]
     public async Task FieldBuilder_int_value_type_projection()
@@ -384,12 +384,14 @@ public partial class IntegrationTests
         };
         var child1 = new FieldBuilderProjectionEntity
         {
+            Id = new("00000000-0000-0000-0000-000000000001"),
             Name = "ActiveChild",
             Status = EntityStatus.Active,
             Parent = parent
         };
         var child2 = new FieldBuilderProjectionEntity
         {
+            Id = new("00000000-0000-0000-0000-000000000002"),
             Name = "PendingChild",
             Status = EntityStatus.Pending,
             Parent = parent
