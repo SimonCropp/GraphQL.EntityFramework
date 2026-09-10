@@ -16,8 +16,8 @@ static class PredicateCache
         List<string>? keyNames,
         Func<List<string>?, IResolveFieldContext, Func<TItem, bool>?> build)
     {
-        var key = context.ExecutionContextOrNull();
-        var field = context.FieldAstOrNull();
+        var key = context.ExecutionContext;
+        var field = context.FieldAst;
         // A context built by hand, outside an execution, has no request to cache against
         if (key is null ||
             field is null)
