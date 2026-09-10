@@ -5,7 +5,22 @@
         {
           name: Parent,
           children: {
-            edges: []
+            edges: [
+              {
+                node: {
+                  name: ActiveChild,
+                  status: ACTIVE,
+                  statusDisplay: Currently Active
+                }
+              },
+              {
+                node: {
+                  name: PendingChild,
+                  status: PENDING,
+                  statusDisplay: Pending Activation
+                }
+              }
+            ]
           }
         }
       ]

@@ -1,0 +1,57 @@
+﻿{
+  target: {
+    Data: {
+      derivedChildEntities: [
+        {
+          property: Child1,
+          parent: {
+            property: Parent,
+            childrenFromInterface: {
+              items: [
+                {
+                  property: Child1
+                },
+                {
+                  property: Child2
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   d.Id,
+         b.Id,
+         b.Discriminator,
+         b.Property,
+         b.Status,
+         d0.Id,
+         d0.ParentId,
+         d0.Property,
+         d0.TypedParentId,
+         d.ParentId,
+         d.Property,
+         d.TypedParentId
+from     DerivedChildEntities as d
+         left outer join
+         BaseEntities as b
+         on d.ParentId = b.Id
+         left outer join
+         DerivedChildEntities as d0
+         on b.Id = d0.ParentId
+where    d.Property = @p
+order by d.Property,
+         d.Id,
+         b.Id,
+    Parameters: {
+      @p: {
+        Value: Child1,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
+  }
+}

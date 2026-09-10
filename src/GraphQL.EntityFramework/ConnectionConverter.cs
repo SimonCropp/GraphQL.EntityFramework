@@ -29,12 +29,16 @@
         return ApplyConnectionContext(list, first, after, last, before);
     }
 
+    /// <summary>
+    /// With neither `first` nor `last`, and no page size on the field, `first` defaulted to zero and
+    /// the connection came back with a total count but no edges. It now returns everything.
+    /// </summary>
     public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, int? after, int? last, int? before)
         where T : class
     {
         if (last is null)
         {
-            return First(list, first.GetValueOrDefault(0), after, before, list.Count);
+            return First(list, first ?? list.Count, after, before, list.Count);
         }
 
         return Last(list, last.Value, after, before, list.Count);
@@ -144,7 +148,7 @@
         cancel.ThrowIfCancellationRequested();
         if (last is null)
         {
-            return await First(queryable, first.GetValueOrDefault(0), after, before, count, context, filters, cancel, data);
+            return await First(queryable, first ?? count, after, before, count, context, filters, cancel, data);
         }
 
         return await Last(queryable, last.Value, after, before, count, context, filters, cancel, data);

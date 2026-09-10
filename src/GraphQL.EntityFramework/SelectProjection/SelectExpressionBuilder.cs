@@ -1,4 +1,4 @@
-namespace GraphQL.EntityFramework;
+﻿namespace GraphQL.EntityFramework;
 
 static class SelectExpressionBuilder
 {
@@ -59,9 +59,25 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<Type, List<string>> keyNames,
         IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
         [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression)
+        where TEntity : class =>
+        TryBuild(projection, keyNames, derivedTypes, out expression, out _);
+
+    /// <param name="includePaths">
+    /// The navigations under a navigation that was bound whole, because its type could not be
+    /// projected. EF applies includes to entities in a projection, so these are added as includes
+    /// alongside the select. Otherwise those deeper navigations were never loaded.
+    /// </param>
+    public static bool TryBuild<TEntity>(
+        FieldProjectionInfo projection,
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression,
+        out IReadOnlyList<string> includePaths)
         where TEntity : class
     {
         expression = null;
+        var state = new BuildState(keyNames, derivedTypes);
+        includePaths = state.IncludePaths;
         var entityType = typeof(TEntity);
 
         if (entityType.IsAbstract)
@@ -70,7 +86,7 @@ static class SelectExpressionBuilder
         }
 
         var parameter = GetEntityMetadata(entityType).Parameter;
-        if (!TryBuildEntityInit(parameter, entityType, projection, keyNames, derivedTypes, out var body))
+        if (!TryBuildEntityInit(parameter, entityType, projection, state, null, out var body))
         {
             return false;
         }
@@ -89,19 +105,19 @@ static class SelectExpressionBuilder
         Expression source,
         Type entityType,
         FieldProjectionInfo projection,
-        IReadOnlyDictionary<Type, List<string>> keyNames,
-        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        BuildState state,
+        string? path,
         [NotNullWhen(true)] out Expression? expression)
     {
         expression = null;
 
-        if (!TryBuildMemberInit(source, entityType, projection, keyNames, derivedTypes, out var memberInit))
+        if (!TryBuildMemberInit(source, entityType, projection, state, path, out var memberInit))
         {
             return false;
         }
 
         expression = memberInit;
-        if (!derivedTypes.TryGetValue(entityType, out var derived))
+        if (!state.DerivedTypes.TryGetValue(entityType, out var derived))
         {
             return true;
         }
@@ -116,7 +132,7 @@ static class SelectExpressionBuilder
 
             var derivedProjection = ProjectionForDerivedType(projection, derivedType);
             var derivedSource = Expression.Convert(source, derivedType);
-            if (!TryBuildMemberInit(derivedSource, derivedType, derivedProjection, keyNames, derivedTypes, out var derivedInit))
+            if (!TryBuildMemberInit(derivedSource, derivedType, derivedProjection, state, path, out var derivedInit))
             {
                 return false;
             }
@@ -150,12 +166,12 @@ static class SelectExpressionBuilder
         Expression source,
         Type entityType,
         FieldProjectionInfo projection,
-        IReadOnlyDictionary<Type, List<string>> keyNames,
-        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        BuildState state,
+        string? path,
         [NotNullWhen(true)] out MemberInitExpression? memberInit)
     {
         memberInit = null;
-        if (!TryBuildBindings(source, entityType, projection, keyNames, derivedTypes, out var bindings))
+        if (!TryBuildBindings(source, entityType, projection, state, path, out var bindings))
         {
             return false;
         }
@@ -168,8 +184,8 @@ static class SelectExpressionBuilder
         Expression source,
         Type entityType,
         FieldProjectionInfo projection,
-        IReadOnlyDictionary<Type, List<string>> keyNames,
-        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        BuildState state,
+        string? path,
         [NotNullWhen(true)] out List<MemberBinding>? bindings)
     {
         // Pre-size collections to avoid reallocations
@@ -243,7 +259,8 @@ static class SelectExpressionBuilder
                 }
 
                 var navAccess = Expression.Property(source, metadata.Property);
-                if (!TryBuildNavigationBinding(navAccess, navProjection, keyNames, derivedTypes, out var binding))
+                var navPath = path is null ? metadata.Property.Name : $"{path}.{metadata.Property.Name}";
+                if (!TryBuildNavigationBinding(navAccess, navProjection, state, navPath, out var binding))
                 {
                     if (!metadata.CanWrite)
                     {
@@ -253,6 +270,7 @@ static class SelectExpressionBuilder
                     // Can't project navigation (e.g. read-only properties on target entity)
                     // Fall back to including the full navigation entity
                     binding = BuildFullNavigationBinding(navAccess, navProjection);
+                    state.AddIncludePaths(navPath, navProjection.Projection);
                 }
 
                 bindings.Add(binding);
@@ -279,8 +297,8 @@ static class SelectExpressionBuilder
     static bool TryBuildNavigationBinding(
         MemberExpression navAccess,
         NavigationProjectionInfo navProjection,
-        IReadOnlyDictionary<Type, List<string>> keyNames,
-        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        BuildState state,
+        string path,
         [NotNullWhen(true)] out MemberAssignment? binding)
     {
         binding = null;
@@ -297,7 +315,7 @@ static class SelectExpressionBuilder
         {
             var navParam = Expression.Parameter(navType, "n");
 
-            if (!TryBuildEntityInit(navParam, navType, navProjection.Projection, keyNames, derivedTypes, out var itemInit))
+            if (!TryBuildEntityInit(navParam, navType, navProjection.Projection, state, path, out var itemInit))
             {
                 return false;
             }
@@ -306,7 +324,7 @@ static class SelectExpressionBuilder
 
             // .OrderBy(_ => _.Key) to ensure deterministic ordering
             Expression orderedCollection = navAccess;
-            if (keyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
+            if (state.KeyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
             {
                 if (navMetadata.Properties.TryGetValue(keys[0], out var keyMetadata))
                 {
@@ -325,7 +343,7 @@ static class SelectExpressionBuilder
             return true;
         }
 
-        if (!TryBuildEntityInit(navAccess, navType, navProjection.Projection, keyNames, derivedTypes, out var init))
+        if (!TryBuildEntityInit(navAccess, navType, navProjection.Projection, state, path, out var init))
         {
             return false;
         }
@@ -351,6 +369,53 @@ static class SelectExpressionBuilder
         }
 
         return Expression.Bind(navAccess.Member, navAccess);
+    }
+
+    /// <summary>
+    /// What one build shares across its recursion: the model lookups, and the include paths
+    /// collected for navigations that were bound whole.
+    /// </summary>
+    sealed class BuildState(
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes)
+    {
+        public IReadOnlyDictionary<Type, List<string>> KeyNames { get; } = keyNames;
+        public IReadOnlyDictionary<Type, IReadOnlyList<Type>> DerivedTypes { get; } = derivedTypes;
+        public List<string> IncludePaths { get; } = [];
+
+        /// <summary>
+        /// A navigation bound whole is materialized as a full entity, so everything requested
+        /// under it has to arrive through includes. String include paths resolve navigations
+        /// declared on derived types too, so the derived navigations need no cast.
+        /// </summary>
+        public void AddIncludePaths(string path, FieldProjectionInfo projection)
+        {
+            if (projection.Navigations is not null)
+            {
+                foreach (var (name, nested) in projection.Navigations)
+                {
+                    AddIncludePath(path, name, nested.Projection);
+                }
+            }
+
+            if (projection.DerivedNavigations is not null)
+            {
+                foreach (var navigations in projection.DerivedNavigations.Values)
+                {
+                    foreach (var (name, nested) in navigations)
+                    {
+                        AddIncludePath(path, name, nested.Projection);
+                    }
+                }
+            }
+        }
+
+        void AddIncludePath(string path, string name, FieldProjectionInfo projection)
+        {
+            var nestedPath = $"{path}.{name}";
+            IncludePaths.Add(nestedPath);
+            AddIncludePaths(nestedPath, projection);
+        }
     }
 
     static EntityTypeMetadata GetEntityMetadata(Type type) =>

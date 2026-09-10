@@ -114,14 +114,7 @@ partial class EfGraphQLService<TDbContext>
                         query = query.ApplyGraphQlArguments(context, names, true, omitQueryArguments);
                     }
 
-                    if (includeAppender.TryGetProjectionExpressionWithFilters<TDbContext, TReturn>(context, fieldContext.Filters, out var selectExpr))
-                    {
-                        query = query.Select(selectExpr);
-                    }
-                    else
-                    {
-                        query = includeAppender.AddIncludes(context, fieldContext.Filters, query);
-                    }
+                    query = includeAppender.ApplyProjection(context, fieldContext.Filters, query);
 
                     QueryLogger.Write(query);
 

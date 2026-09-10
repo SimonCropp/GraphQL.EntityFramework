@@ -15,6 +15,9 @@
     static SqlInstance<MyContext> sqlInstance;
 
     [Theory]
+    //no page size, the whole set
+    [InlineData(null, null, null, null)]
+
     //first after
     [InlineData(1, 0, null, null)]
     [InlineData(2, null, null, null)]
@@ -52,6 +55,9 @@
     }
 
     [Theory]
+    //no page size, the whole set
+    [InlineData(null, null, null, null)]
+
     //first after
     [InlineData(1, 0, null, null)]
     [InlineData(2, null, null, null)]

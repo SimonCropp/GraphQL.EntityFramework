@@ -1,0 +1,61 @@
+﻿{
+  target: {
+    Data: {
+      childEntitiesConnection: {
+        totalCount: 3,
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: 0,
+          endCursor: 2
+        },
+        edges: [
+          {
+            cursor: 0,
+            node: {
+              property: Value1
+            }
+          },
+          {
+            cursor: 1,
+            node: {
+              property: Value2
+            }
+          },
+          {
+            cursor: 2,
+            node: {
+              property: Value3
+            }
+          }
+        ]
+      }
+    }
+  },
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   ChildEntities as c
+       left outer join
+       ParentEntities as p
+       on c.ParentId = p.Id
+    },
+    {
+      Text:
+select   c.Id,
+         c.ParentId,
+         c.Property
+from     ChildEntities as c
+         left outer join
+         ParentEntities as p
+         on c.ParentId = p.Id
+order by c.Property
+offset @p rows fetch next @p1 rows only,
+      Parameters: {
+        @p: 0,
+        @p1: 3
+      }
+    }
+  ]
+}

@@ -4,36 +4,13 @@
     IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys,
     IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes)
 {
-    public bool TryGetProjectionExpressionWithFilters<TDbContext, TItem>(
-        IResolveFieldContext context,
-        Filters<TDbContext>? filters,
-        [NotNullWhen(true)] out Expression<Func<TItem, TItem>>? expression)
-        where TDbContext : DbContext
-        where TItem : class
-    {
-        expression = null;
-
-        if (context.SubFields is null)
-        {
-            return false;
-        }
-
-        var type = typeof(TItem);
-        navigations.TryGetValue(type, out var navigationProperties);
-        keyNames.TryGetValue(type, out var keys);
-        foreignKeys.TryGetValue(type, out var fks);
-
-        var projection = GetProjectionInfo(context, type, navigationProperties, keys, fks);
-
-        if (filters is { HasFilters: true })
-        {
-            projection = MergeFilterFieldsIntoProjection(projection, filters, type);
-        }
-
-        return SelectExpressionBuilder.TryBuild(projection, keyNames, derivedTypes, out expression);
-    }
-
-    public IQueryable<TItem> AddIncludes<TDbContext, TItem>(
+    /// <summary>
+    /// Narrow <paramref name="query"/> to the fields the request asked for: a select projection
+    /// where the entity can be projected, otherwise includes. A projected navigation whose type
+    /// cannot be projected is bound whole, and the navigations under it are then loaded through
+    /// includes alongside the select, since EF applies includes to the entities in a projection.
+    /// </summary>
+    public IQueryable<TItem> ApplyProjection<TDbContext, TItem>(
         IResolveFieldContext context,
         Filters<TDbContext>? filters,
         IQueryable<TItem> query)
@@ -57,7 +34,17 @@
             projection = MergeFilterFieldsIntoProjection(projection, filters, type);
         }
 
-        return AddIncludesFromProjection(query, projection);
+        if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths))
+        {
+            return AddIncludesFromProjection(query, projection);
+        }
+
+        foreach (var includePath in includePaths)
+        {
+            query = query.Include(includePath);
+        }
+
+        return query.Select(expression);
     }
 
     static IQueryable<TItem> AddIncludesFromProjection<TItem>(
