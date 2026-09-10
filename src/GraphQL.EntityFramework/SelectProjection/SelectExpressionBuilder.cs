@@ -304,7 +304,9 @@ static class SelectExpressionBuilder
         binding = null;
         var navType = navProjection.EntityType;
 
-        if (navType.IsAbstract)
+        // An abstract type cannot be created by a member init, and a navigation wanted whole has
+        // no field list to build one from. Both fall back to binding the navigation itself.
+        if (navType.IsAbstract || navProjection.IsWhole)
         {
             return false;
         }

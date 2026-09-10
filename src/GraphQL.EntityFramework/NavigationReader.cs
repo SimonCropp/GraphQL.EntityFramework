@@ -20,7 +20,7 @@
                 _ =>
                 {
                     var (itemType, isCollection) = GetNavigationType(_);
-                    return new Navigation(_.Name, itemType, _.PropertyInfo!.IsNullable(), isCollection);
+                    return new Navigation(_.Name, itemType, _.PropertyInfo!.IsNullable(), isCollection, _.Inverse?.Name);
                 })
             .ToDictionary(_ => _.Name.ToLowerInvariant(), StringComparer.OrdinalIgnoreCase);
     }

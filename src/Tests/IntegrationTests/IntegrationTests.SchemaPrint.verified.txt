@@ -838,7 +838,9 @@ interface TphMiddleEntity {
 type TphAttachment {
   id: ID!
   property: String
+  relatedRequestId: ID
   requestId: ID!
+  relatedRequest: TphMiddleEntity
 }
 
 type GuardedKeyEntity {

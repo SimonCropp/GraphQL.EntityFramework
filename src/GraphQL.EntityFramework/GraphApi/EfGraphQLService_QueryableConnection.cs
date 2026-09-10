@@ -64,16 +64,18 @@ partial class EfGraphQLService<TDbContext>
             {
                 var fieldContext = BuildContext(context);
 
+                // A null query is an empty connection: total count zero, no edges, page info
+                // present. This returned a Connection of the wrong type with every member null.
                 var task = resolve(fieldContext);
                 if (task == null)
                 {
-                    return new Connection<TSource>();
+                    return Empty(context);
                 }
 
                 IQueryable<TReturn>? query = await task;
                 if (query == null)
                 {
-                    return new Connection<TSource>();
+                    return Empty(context);
                 }
 
                 if (disableTracking)
@@ -116,6 +118,14 @@ partial class EfGraphQLService<TDbContext>
         //TODO: works around https://github.com/graphql-dotnet/graphql-dotnet/pull/2581/
         builder.FieldType.Type = ConnectionBuilderEx<TSource>.NonNullConnectionType(itemGraphType);
         var field = graph.AddField(builder.FieldType);
+
+        static Connection<TReturn> Empty(IResolveConnectionContext<TSource> context) =>
+            ConnectionConverter.ApplyConnectionContext(
+                new List<TReturn>(),
+                context.First,
+                context.After,
+                context.Last,
+                context.Before);
 
         if (!omitQueryArguments)
         {

@@ -19,6 +19,7 @@ select   t1.Id,
          t1.LeafProperty,
          t0.Id,
          t0.Property,
+         t0.RelatedRequestId,
          t0.RequestId
 from     (select top (2) t.Id,
                          t.Discriminator,
