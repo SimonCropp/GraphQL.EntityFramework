@@ -654,14 +654,13 @@ public class GraphQlControllerTests
             """
             query {
               employees (
-                where: [
-                  {groupedExpressions: [
-                    {path: "content", comparison: contains, value: "4", connector: or},
-
-                      { path: "content", comparison: contains, value: "2"}
-                  ], connector: and},
-                  {path: "age", comparison: greaterThanOrEqual, value: "31"}
-                ]
+                where: {
+                  or: [
+                    {content: {contains: "4"}},
+                    {content: {contains: "2"}}
+                  ],
+                  age: {greaterThanOrEqual: 31}
+                }
               ) {
                 id
               }
@@ -674,7 +673,7 @@ public class GraphQlControllerTests
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L6-L274' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L6-L273' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

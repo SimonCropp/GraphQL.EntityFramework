@@ -1,0 +1,21 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          property: WithChildren
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+where    exists (select 1
+                 from   ChildEntities as c
+                 where  p.Id = c.ParentId)
+order by p.Property
+  }
+}

@@ -11,7 +11,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                children(where: {path: "property", comparison: equal, value: "VALUE1"})
+                children(where: {property: {equal: "VALUE1"}})
                 {
                   property
                 }
@@ -48,7 +48,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                children(where: {path: "property", comparison: equal, value: "Value1"})
+                children(where: {property: {equal: "Value1"}})
                 {
                   id
                 }
@@ -85,7 +85,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                children(orderBy: {path: "property", descending: true})
+                children(orderBy: {property: descending})
                 {
                   nullable
                 }
@@ -162,7 +162,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                children(where: {path: "property", comparison: equal, value: [$value]})
+                children(where: {property: {equal: $value}})
                 {
                   id
                 }
@@ -205,7 +205,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                children(where: {path: "property", comparison: startsWith, value: "Value"}, orderBy: {path: "property"}, skip: 1, take: 1)
+                children(where: {property: {startsWith: "Value"}}, orderBy: {property: ascending}, skip: 1, take: 1)
                 {
                   property
                 }
@@ -250,11 +250,11 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                first: children(where: {path: "property", comparison: equal, value: "Value1"})
+                first: children(where: {property: {equal: "Value1"}})
                 {
                   property
                 }
-                second: children(where: {path: "property", comparison: equal, value: "VALUE2"})
+                second: children(where: {property: {equal: "VALUE2"}})
                 {
                   property
                 }
@@ -291,7 +291,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                childrenConnection(where: {path: "property", comparison: equal, value: "VALUE1"}, first: 5)
+                childrenConnection(where: {property: {equal: "VALUE1"}}, first: 5)
                 {
                   totalCount
                   items
@@ -334,7 +334,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                childrenReversed(where: {path: "property", comparison: equal, value: "VALUE1"})
+                childrenReversed(where: {property: {equal: "VALUE1"}})
                 {
                   property
                 }

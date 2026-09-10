@@ -8,12 +8,12 @@ public partial class IntegrationTests
         var query =
             """
             {
-              departments (orderBy: {path: "name"})
+              departments (orderBy: {name: ascending})
               {
                 id
                 name
                 isActive
-                employees (orderBy: {path: "name"})
+                employees (orderBy: {name: ascending})
                 {
                   id
                   name
@@ -70,10 +70,10 @@ public partial class IntegrationTests
         var query =
             """
             {
-              departments (where: [{path: "name", comparison: equal, value: "Engineering"}])
+              departments (where: {name: {equal: "Engineering"}})
               {
                 name
-                employees (orderBy: {path: "name"})
+                employees (orderBy: {name: ascending})
                 {
                   name
                   departmentId

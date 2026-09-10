@@ -27,22 +27,25 @@
             new(typeof(DateTimeOffset), _ => ValueConverter.ConvertTo<DateTimeOffset>(_)),
         ]);
 
-    public static IList ConvertStringsToList(string?[] values, MemberInfo property)
+    public static IList ConvertToList(object?[] values, MemberInfo property)
     {
-        var hash = new HashSet<string?>();
-        var duplicates = values.Where(_ => !hash.Add(_)).ToArray();
+        var type = property.GetNullabilityInfo().Type;
+        var converted = values
+            .Select(_ => ConvertValue(_, type))
+            .ToList();
+
+        var hash = new HashSet<object?>();
+        var duplicates = converted.Where(_ => !hash.Add(_)).ToArray();
         if (duplicates.Length != 0)
         {
             throw new(
                 $"""
                  Duplicates detected for In expression. Duplicates:
-                 {string.Join(" * ", duplicates)}
+                 {string.Join(" * ", duplicates.Select(_ => Convert.ToString(_, invariant)))}
                  """);
         }
 
-        var hasNull = values.Contains(null);
-
-        var type = property.GetNullabilityInfo().Type;
+        var hasNull = converted.Contains(null);
         if (!property.IsNullable() && hasNull)
         {
             throw new($"Null passed to In expression for non nullable type '{type.FullName}'.");
@@ -51,11 +54,11 @@
         // The list is of the member type, nullable included, since the Contains resolved for the
         // comparison is ICollection<MemberType>.Contains
         var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type))!;
-        foreach (var value in values)
+        foreach (var value in converted)
         {
             if (value is not null)
             {
-                list.Add(ConvertStringToType(value, type));
+                list.Add(value);
             }
         }
 
@@ -65,6 +68,36 @@
         }
 
         return list;
+    }
+
+    /// <summary>
+    /// A value from the where argument is already of the property type, since the comparison
+    /// input type is typed. A string is parsed, for the string based predicate builder and ids.
+    /// </summary>
+    public static object? ConvertValue(object? value, Type type)
+    {
+        if (value is string text)
+        {
+            return ConvertStringToType(text, type);
+        }
+
+        if (value is null)
+        {
+            return ConvertStringToType(null, type);
+        }
+
+        var underlying = Nullable.GetUnderlyingType(type) ?? type;
+        if (underlying.IsInstanceOfType(value))
+        {
+            return value;
+        }
+
+        if (underlying.IsEnum)
+        {
+            return Enum.ToObject(underlying, value);
+        }
+
+        return Convert.ChangeType(value, underlying, invariant);
     }
 
     static bool ParseBoolean(string value) =>
@@ -88,14 +121,19 @@
             type = underlyingType;
         }
 
+        if (value is null)
+        {
+            throw new($"Null passed for non nullable type '{type.FullName}'.");
+        }
+
         if (converters.TryGetValue(type, out var converter))
         {
-            return converter(value!);
+            return converter(value);
         }
 
         if (type.IsEnum)
         {
-            return Enum.Parse(type, value!, true);
+            return Enum.Parse(type, value, true);
         }
 
         return Convert.ChangeType(value, type, invariant);

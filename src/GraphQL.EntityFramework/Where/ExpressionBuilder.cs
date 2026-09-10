@@ -23,8 +23,18 @@ public static partial class ExpressionBuilder<T>
         {
             Expression nextExpression;
 
+            // A collection node: any, all or none of the items match the grouped expressions.
+            // Checked first since it carries grouped expressions of its own.
+            if (where.Quantifier is { } quantifier)
+            {
+                nextExpression = ProcessCollection(where.Path, quantifier, where.GroupedExpressions ?? []);
+                if (where.Negate)
+                {
+                    nextExpression = NegateExpression(nextExpression);
+                }
+            }
             // If there are grouped expressions
-            if (where.GroupedExpressions?.Length > 0)
+            else if (where.GroupedExpressions?.Length > 0)
             {
                 // Recurse with new set of expression
                 nextExpression = MakePredicateBody(where.GroupedExpressions);
@@ -73,7 +83,13 @@ public static partial class ExpressionBuilder<T>
         return Expression.Lambda<Func<T, bool>>(expressionBody, param);
     }
 
-    static Expression MakePredicateBody(string path, Comparison comparison, string?[]? values, bool negate)
+    /// <summary>
+    /// A predicate for a single expression, or a tree of them.
+    /// </summary>
+    public static Expression<Func<T, bool>> BuildPredicate(WhereExpression where) =>
+        BuildPredicate([where]);
+
+    static Expression MakePredicateBody(string path, Comparison comparison, object?[]? values, bool negate)
     {
         try
         {
@@ -129,7 +145,7 @@ public static partial class ExpressionBuilder<T>
         }
     }
 
-    static Expression ProcessList(string path, Comparison comparison, string?[]? values)
+    static Expression ProcessList(string path, Comparison comparison, object?[]? values)
     {
         // Get the path pertaining to individual list items
         var listPath = ListPropertyRegex().Match(path).Groups[1].Value;
@@ -144,14 +160,15 @@ public static partial class ExpressionBuilder<T>
 
         var (buildPredicate, anyMethod) = ListMethods(listItemType);
 
-        // Generate the predicate for the list item type
+        // Generate the predicate for the list item type. The string overload is the one reflected,
+        // since a list path only comes from it.
         var subPredicate = (LambdaExpression)buildPredicate
             .Invoke(
                 null,
                 [
                     listPath,
                     comparison,
-                    values!,
+                    ToStrings(values),
                     false
                 ])!;
 
@@ -166,6 +183,81 @@ public static partial class ExpressionBuilder<T>
         // Create Any Expression Call
         return Expression.Call(anyMethod, property.Left, itemPredicate);
     }
+
+    static string?[]? ToStrings(object?[]? values)
+    {
+        if (values is null)
+        {
+            return null;
+        }
+
+        if (values is string?[] strings)
+        {
+            return strings;
+        }
+
+        return values
+            .Select(_ => _ is null ? null : Convert.ToString(_, CultureInfo.InvariantCulture))
+            .ToArray();
+    }
+
+    /// <summary>
+    /// The predicate on a collection navigation: Any, All or not Any of the items match.
+    /// </summary>
+    static Expression ProcessCollection(string path, Quantifier quantifier, IReadOnlyCollection<WhereExpression> wheres)
+    {
+        var property = PropertyCache<T>.GetProperty(path);
+        if (!property.PropertyType.TryGetCollectionType(out var itemType))
+        {
+            throw new($"{path} is not a collection.");
+        }
+
+        var (any, all) = QuantifierMethods(itemType);
+
+        LambdaExpression itemPredicate;
+        var itemParameter = Expression.Parameter(itemType, "item");
+        if (wheres.Count == 0)
+        {
+            // any: {} is has any items
+            itemPredicate = Expression.Lambda(Expression.Constant(true), itemParameter);
+        }
+        else
+        {
+            // The sub predicate is built on the parameter PropertyCache shares for the item type,
+            // so it is rebound to its own parameter, as ProcessList does
+            var subPredicate = ExpressionBuilder.BuildPredicate(itemType, wheres);
+            var body = new ParameterReplacer(subPredicate.Parameters[0], itemParameter).Visit(subPredicate.Body);
+            itemPredicate = Expression.Lambda(body, itemParameter);
+        }
+
+        return quantifier switch
+        {
+            Quantifier.Any => Expression.Call(any, property.Left, itemPredicate),
+            Quantifier.All => Expression.Call(all, property.Left, itemPredicate),
+            Quantifier.None => Expression.Not(Expression.Call(any, property.Left, itemPredicate)),
+            _ => throw new($"Unknown quantifier {quantifier}")
+        };
+    }
+
+    static ConcurrentDictionary<Type, (MethodInfo Any, MethodInfo All)> quantifierMethods = new();
+
+    static (MethodInfo Any, MethodInfo All) QuantifierMethods(Type itemType) =>
+        quantifierMethods.GetOrAdd(
+            itemType,
+            type =>
+            {
+                var methods = typeof(Enumerable)
+                    .GetMethods(BindingFlags.Static | BindingFlags.Public);
+                var any = methods
+                    .First(_ => _.Name == nameof(Enumerable.Any) &&
+                                _.GetParameters().Length == 2)
+                    .MakeGenericMethod(type);
+                var all = methods
+                    .First(_ => _.Name == nameof(Enumerable.All) &&
+                                _.GetParameters().Length == 2)
+                    .MakeGenericMethod(type);
+                return (any, all);
+            });
 
     static ConcurrentDictionary<Type, (MethodInfo BuildPredicate, MethodInfo Any)> listMethods = new();
 
@@ -197,7 +289,7 @@ public static partial class ExpressionBuilder<T>
                 return (buildPredicate, any);
             });
 
-    static Expression GetExpression(string path, Comparison comparison, string?[]? values)
+    static Expression GetExpression(string path, Comparison comparison, object?[]? values)
     {
         var property = PropertyCache<T>.GetProperty(path);
         Expression expression;
@@ -218,7 +310,7 @@ public static partial class ExpressionBuilder<T>
 
                 default:
                     WhereValidator.ValidateSingleString(comparison);
-                    var value = values?.Single();
+                    var value = (string?) values?.Single();
                     expression = MakeSingleStringComparison(comparison, value, property);
                     break;
             }
@@ -239,7 +331,7 @@ public static partial class ExpressionBuilder<T>
                 default:
                     WhereValidator.ValidateSingleObject(property.PropertyType, comparison);
                     var value = values?.Single();
-                    var valueObject = TypeConverter.ConvertStringToType(value, property.PropertyType);
+                    var valueObject = TypeConverter.ConvertValue(value, property.PropertyType);
                     expression = MakeSingleObjectComparison(comparison, valueObject, property);
                     break;
             }
@@ -248,22 +340,23 @@ public static partial class ExpressionBuilder<T>
         return expression;
     }
 
-    static MethodCallExpression MakeObjectListInComparision(string[] values, Property<T> property)
+    static MethodCallExpression MakeObjectListInComparision(object?[] values, Property<T> property)
     {
-        var objects = TypeConverter.ConvertStringsToList(values, property.Info);
+        var objects = TypeConverter.ConvertToList(values, property.Info);
         var constant = MakeParameterizedConstant(objects, objects.GetType());
         return Expression.Call(constant, property.SafeListContains, property.Left);
     }
 
-    static MethodCallExpression MakeStringListInComparison(string[] values, Property<T> property)
+    static MethodCallExpression MakeStringListInComparison(object?[] values, Property<T> property)
     {
+        var strings = ToStrings(values)!;
         var equalsBody = Expression.Call(null, ReflectionCache.StringEqual, ExpressionCache.StringParam, property.Left);
 
         // Make lambda for comparing each string value against property value
         var itemEvaluate = Expression.Lambda<Func<string, bool>>(equalsBody, ExpressionCache.StringParam);
 
         // Build Expression body to check if any string values match the property value
-        return Expression.Call(null, ReflectionCache.StringAny, MakeParameterizedConstant(values, typeof(string[])), itemEvaluate);
+        return Expression.Call(null, ReflectionCache.StringAny, MakeParameterizedConstant(strings, typeof(string[])), itemEvaluate);
     }
 
     static Expression MakeSingleStringComparison(Comparison comparison, string? value, Property<T> property)

@@ -1,0 +1,26 @@
+﻿{
+  target: {
+    Data: {
+      withNullableEntities: [
+        {
+          nullable: null
+        },
+        {
+          nullable: 1
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   w.Id,
+         w.Nullable
+from     WithNullableEntities as w
+where    w.Nullable is null
+         or w.Nullable = @p1
+order by w.Nullable,
+    Parameters: {
+      @p1: 1
+    }
+  }
+}

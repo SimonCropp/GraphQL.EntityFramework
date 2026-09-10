@@ -81,7 +81,7 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = MakeListGraphType<TReturn>(itemGraphType),
-            Arguments = ArgumentAppender.GetQueryArguments(hasId, true, false, omitQueryArguments),
+            Arguments = ArgumentAppender.GetQueryArguments(typeof(TReturn), hasId, true, false, omitQueryArguments),
         };
 
         var names = GetKeyNames<TReturn>();

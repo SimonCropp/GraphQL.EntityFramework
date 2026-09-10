@@ -104,7 +104,7 @@ public class TypeConverterTests
             Assert.Equal(expected, single);
 
             var member = typeof(NullableHolder).GetProperty(type.Name)!;
-            var list = TypeConverter.ConvertStringsToList([value, null], member);
+            var list = TypeConverter.ConvertToList([value, null], member);
             Assert.Equal(2, list.Count);
             Assert.Equal(expected, list[0]);
             Assert.Null(list[1]);
@@ -118,7 +118,7 @@ public class TypeConverterTests
     [Fact]
     public void List_of_non_nullable_member_type()
     {
-        var list = TypeConverter.ConvertStringsToList(["1", "2"], typeof(Holder).GetProperty(nameof(Holder.Value))!);
+        var list = TypeConverter.ConvertToList(["1", "2"], typeof(Holder).GetProperty(nameof(Holder.Value))!);
         Assert.IsType<List<int>>(list);
         Assert.Equal([1, 2], list.Cast<int>());
     }
@@ -126,7 +126,7 @@ public class TypeConverterTests
     [Fact]
     public void List_of_nullable_member_type()
     {
-        var list = TypeConverter.ConvertStringsToList(["1", null], typeof(Holder).GetProperty(nameof(Holder.Nullable))!);
+        var list = TypeConverter.ConvertToList(["1", null], typeof(Holder).GetProperty(nameof(Holder.Nullable))!);
         Assert.IsType<List<int?>>(list);
         Assert.Equal([1, null], list.Cast<int?>());
     }

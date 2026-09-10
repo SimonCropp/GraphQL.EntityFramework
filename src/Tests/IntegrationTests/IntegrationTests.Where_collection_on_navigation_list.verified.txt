@@ -1,0 +1,62 @@
+﻿{
+  target: {
+    Data: {
+      manyToManyLeftEntities: [
+        {
+          leftName: Left1,
+          rights: [
+            {
+              rightName: Right1
+            }
+          ]
+        },
+        {
+          leftName: Left2,
+          rights: [
+            {
+              rightName: Right1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   m.Id,
+         m.LeftName,
+         s.Id,
+         s.RightName,
+         s.ManyToManyLeftEntityId,
+         s.ManyToManyRightEntityId
+from     ManyToManyLeftEntities as m
+         left outer join
+         (select m1.Id,
+                 m1.RightName,
+                 m0.ManyToManyLeftEntityId,
+                 m0.ManyToManyRightEntityId
+          from   ManyToManyMiddleEntities as m0
+                 inner join
+                 ManyToManyRightEntities as m1
+                 on m0.ManyToManyRightEntityId = m1.Id
+          where  exists (select 1
+                         from   ManyToManyMiddleEntities as m2
+                                inner join
+                                ManyToManyLeftEntities as m3
+                                on m2.ManyToManyLeftEntityId = m3.Id
+                         where  m1.Id = m2.ManyToManyRightEntityId
+                                and m3.LeftName = @p)) as s
+         on m.Id = s.ManyToManyLeftEntityId
+order by m.LeftName,
+         m.Id,
+         s.Id,
+         s.ManyToManyLeftEntityId,
+    Parameters: {
+      @p: {
+        Value: Left1,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
+  }
+}

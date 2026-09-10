@@ -31,6 +31,9 @@ public static class EfGraphQLConventions
         services.AddTransient<HttpContextCapture>();
         services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, includeSqlInExceptions));
         services.AddSingleton<IEfGraphQLService<TDbContext>>(provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
+        // The generated where and orderBy input types resolve every registered service, so a
+        // type mapped in any of the contexts is found
+        services.AddSingleton<IEfGraphQLService>(provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
     }
 
     static EfGraphQLService<TDbContext> Build<TDbContext>(
@@ -86,10 +89,15 @@ public static class EfGraphQLConventions
     static void RegisterScalarsAndArgs(IServiceCollection services)
     {
         services.AddSingleton<EnumerationGraphType<DayOfWeek>>();
-        services.AddSingleton<WhereExpressionGraph>();
-        services.AddSingleton<OrderByGraph>();
-        services.AddSingleton<ComparisonGraph>();
-        services.AddSingleton<ConnectorGraph>();
+        // The where and orderBy input types are generated per entity type, so they are
+        // registered as open generics. An enum comparison takes its values through
+        // EnumerationGraphType, which GraphQL.NET registers only through AddGraphQL.
+        services.TryAddSingleton(typeof(EnumerationGraphType<>));
+        services.TryAddSingleton(typeof(WhereGraph<>));
+        services.TryAddSingleton(typeof(CollectionWhereGraph<>));
+        services.TryAddSingleton(typeof(ComparisonGraph<>));
+        services.TryAddSingleton(typeof(OrderByGraph<>));
+        services.TryAddSingleton<SortDirectionGraph>();
     }
 
     static IModel ResolveModel<TDbContext>(IServiceProvider provider)

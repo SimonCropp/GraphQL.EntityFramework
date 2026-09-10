@@ -74,7 +74,7 @@ public class InMemoryStringComparisonTests
         {
             Arguments = new Dictionary<string, ArgumentValue>
             {
-                ["where"] = new(new[] { where }, ArgumentSource.Literal)
+                ["where"] = new(where, ArgumentSource.Literal)
             },
             FieldDefinition = new()
             {

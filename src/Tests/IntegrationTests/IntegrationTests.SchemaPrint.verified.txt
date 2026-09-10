@@ -1,19 +1,19 @@
 ﻿type Query {
-  customType(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [CustomType!]!
-  skipLevel(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SkipLevelGraph]!
-  queryFieldWithInclude(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [IncludeNonQueryableA!]!
-  manyChildren(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithManyChildren!]!
-  withItems(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithItems!]!
-  level1Entities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Level1!]!
-  withNullableEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithNullable!]!
-  namedEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [NamedId!]!
-  misNamed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryParent!]!
-  parentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
-  childEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
-  dateEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DateEntity!]!
-  enumEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [EnumEntity!]!
-  stringEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [StringEntity!]!
-  timeEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TimeEntity!]!
+  customType(id: ID, ids: [ID!], where: CustomTypeEntityWhere, orderBy: [CustomTypeEntityOrderBy!], skip: Int, take: Int): [CustomType!]!
+  skipLevel(id: ID, ids: [ID!], where: Level1EntityWhere, orderBy: [Level1EntityOrderBy!], skip: Int, take: Int): [SkipLevelGraph]!
+  queryFieldWithInclude(id: ID, ids: [ID!], where: IncludeNonQueryableAWhere, orderBy: [IncludeNonQueryableAOrderBy!], skip: Int, take: Int): [IncludeNonQueryableA!]!
+  manyChildren(id: ID, ids: [ID!], where: WithManyChildrenEntityWhere, orderBy: [WithManyChildrenEntityOrderBy!], skip: Int, take: Int): [WithManyChildren!]!
+  withItems(id: ID, ids: [ID!], where: WithItemsEntityWhere, orderBy: [WithItemsEntityOrderBy!], skip: Int, take: Int): [WithItems!]!
+  level1Entities(id: ID, ids: [ID!], where: Level1EntityWhere, orderBy: [Level1EntityOrderBy!], skip: Int, take: Int): [Level1!]!
+  withNullableEntities(id: ID, ids: [ID!], where: WithNullableEntityWhere, orderBy: [WithNullableEntityOrderBy!], skip: Int, take: Int): [WithNullable!]!
+  namedEntities(id: ID, ids: [ID!], where: NamedIdEntityWhere, orderBy: [NamedIdEntityOrderBy!], skip: Int, take: Int): [NamedId!]!
+  misNamed(id: ID, ids: [ID!], where: WithMisNamedQueryParentEntityWhere, orderBy: [WithMisNamedQueryParentEntityOrderBy!], skip: Int, take: Int): [WithMisNamedQueryParent!]!
+  parentEntities(id: ID, ids: [ID!], where: ParentEntityWhere, orderBy: [ParentEntityOrderBy!], skip: Int, take: Int): [Parent!]!
+  childEntities(id: ID, ids: [ID!], where: ChildEntityWhere, orderBy: [ChildEntityOrderBy!], skip: Int, take: Int): [Child!]!
+  dateEntities(id: ID, ids: [ID!], where: DateEntityWhere, orderBy: [DateEntityOrderBy!], skip: Int, take: Int): [DateEntity!]!
+  enumEntities(id: ID, ids: [ID!], where: EnumEntityWhere, orderBy: [EnumEntityOrderBy!], skip: Int, take: Int): [EnumEntity!]!
+  stringEntities(id: ID, ids: [ID!], where: StringEntityWhere, orderBy: [StringEntityOrderBy!], skip: Int, take: Int): [StringEntity!]!
+  timeEntities(id: ID, ids: [ID!], where: TimeEntityWhere, orderBy: [TimeEntityOrderBy!], skip: Int, take: Int): [TimeEntity!]!
   parentEntitiesConnection(
     "Only return edges after the specified cursor."
     after: String,
@@ -23,8 +23,8 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: ParentEntityWhere,
+    orderBy: [ParentEntityOrderBy!],
     ids: [ID!]): ParentConnection!
   childEntitiesConnection(
     "Only return edges after the specified cursor."
@@ -35,8 +35,8 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: ChildEntityWhere,
+    orderBy: [ChildEntityOrderBy!],
     ids: [ID!]): ChildConnection!
   childEntitiesConnectionOmitQueryArguments(
     "Only return edges after the specified cursor."
@@ -56,10 +56,10 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: ReadOnlyEntityWhere,
+    orderBy: [ReadOnlyEntityOrderBy!],
     ids: [ID!]): ReadOnlyEntityConnection!
-  parentEntitiesFiltered(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterParent!]!
+  parentEntitiesFiltered(id: ID, ids: [ID!], where: FilterParentEntityWhere, orderBy: [FilterParentEntityOrderBy!], skip: Int, take: Int): [FilterParent!]!
   parentEntitiesConnectionFiltered(
     "Only return edges after the specified cursor."
     after: String,
@@ -69,18 +69,18 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: FilterParentEntityWhere,
+    orderBy: [FilterParentEntityOrderBy!],
     ids: [ID!]): FilterParentConnection!
-  simpleTypeFilterEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [SimpleTypeFilter!]!
-  parentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
-  parentEntityFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  simpleTypeFilterEntities(id: ID, ids: [ID!], where: SimpleTypeFilterEntityWhere, orderBy: [SimpleTypeFilterEntityOrderBy!], skip: Int, take: Int): [SimpleTypeFilter!]!
+  parentEntity(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
+  parentEntityFirst(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
   parentEntityWithNoArgs: Parent!
   parentEntityWithNoArgsFirst: Parent!
   parentEntityIdOnly(id: ID!): Parent!
   parentEntityIdOnlyFirst(id: ID!): Parent!
-  parentEntityNullable(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  parentEntityNullableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
+  parentEntityNullable(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
+  parentEntityNullableFirst(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
   interfaceGraphConnection(
     "Only return edges after the specified cursor."
     after: String,
@@ -90,19 +90,19 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: BaseEntityWhere,
+    orderBy: [BaseEntityOrderBy!],
     ids: [ID!]): BaseConnection!
-  baseEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [BaseEntity]!
-  derivedEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Derived!]!
-  derivedEntity(id: ID, ids: [ID!], where: [WhereExpression!]): Derived!
-  derivedChildEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
-  readOnlyEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyEntity]!
-  readOnlyParentEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyParent!]!
-  readOnlyParentEntity(id: ID, ids: [ID!], where: [WhereExpression!]): ReadOnlyParent!
-  manyToManyLeftEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
-  manyToManyRightEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
-  parentEntityViews(where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ParentEntityView!]!
+  baseEntities(id: ID, ids: [ID!], where: BaseEntityWhere, orderBy: [BaseEntityOrderBy!], skip: Int, take: Int): [BaseEntity]!
+  derivedEntities(id: ID, ids: [ID!], where: DerivedEntityWhere, orderBy: [DerivedEntityOrderBy!], skip: Int, take: Int): [Derived!]!
+  derivedEntity(id: ID, ids: [ID!], where: DerivedEntityWhere): Derived!
+  derivedChildEntities(id: ID, ids: [ID!], where: DerivedChildEntityWhere, orderBy: [DerivedChildEntityOrderBy!], skip: Int, take: Int): [DerivedChild!]!
+  readOnlyEntities(id: ID, ids: [ID!], where: ReadOnlyEntityWhere, orderBy: [ReadOnlyEntityOrderBy!], skip: Int, take: Int): [ReadOnlyEntity]!
+  readOnlyParentEntities(id: ID, ids: [ID!], where: ReadOnlyParentEntityWhere, orderBy: [ReadOnlyParentEntityOrderBy!], skip: Int, take: Int): [ReadOnlyParent!]!
+  readOnlyParentEntity(id: ID, ids: [ID!], where: ReadOnlyParentEntityWhere): ReadOnlyParent!
+  manyToManyLeftEntities(id: ID, ids: [ID!], where: ManyToManyLeftEntityWhere, orderBy: [ManyToManyLeftEntityOrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
+  manyToManyRightEntities(id: ID, ids: [ID!], where: ManyToManyRightEntityWhere, orderBy: [ManyToManyRightEntityOrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
+  parentEntityViews(where: ParentEntityViewWhere, orderBy: [ParentEntityViewOrderBy!], skip: Int, take: Int): [ParentEntityView!]!
   parentEntitiesViewConnection(
     "Only return edges after the specified cursor."
     after: String,
@@ -112,29 +112,29 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!]): ParentEntityViewConnection!
-  parentEntityView(where: [WhereExpression!]): ParentEntityView!
-  parentEntityViewFirst(where: [WhereExpression!]): ParentEntityView!
-  parentEntityViewNullable(where: [WhereExpression!]): ParentEntityView
-  parentEntityViewNullableFirst(where: [WhereExpression!]): ParentEntityView
-  ownedParent(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
-  ownedParentFirst(id: ID, ids: [ID!], where: [WhereExpression!]): OwnedParent
-  iQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  iQueryableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  iQueryable(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Parent!]!
-  nullQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  nullQueryableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  nullTaskQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  nullTaskInnerQueryableSingle(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  nullTaskQueryableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  nullTaskInnerQueryableFirst(id: ID, ids: [ID!], where: [WhereExpression!]): Parent
-  nullQueryableSingleDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
-  nullQueryableFirstDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
-  nullTaskQueryableSingleDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
-  nullTaskInnerQueryableSingleDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
-  nullTaskQueryableFirstDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
-  nullTaskInnerQueryableFirstDisallowNull(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+    where: ParentEntityViewWhere,
+    orderBy: [ParentEntityViewOrderBy!]): ParentEntityViewConnection!
+  parentEntityView(where: ParentEntityViewWhere): ParentEntityView!
+  parentEntityViewFirst(where: ParentEntityViewWhere): ParentEntityView!
+  parentEntityViewNullable(where: ParentEntityViewWhere): ParentEntityView
+  parentEntityViewNullableFirst(where: ParentEntityViewWhere): ParentEntityView
+  ownedParent(id: ID, ids: [ID!], where: OwnedParentWhere): OwnedParent
+  ownedParentFirst(id: ID, ids: [ID!], where: OwnedParentWhere): OwnedParent
+  iQueryableSingle(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
+  iQueryableFirst(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
+  iQueryable(id: ID, ids: [ID!], where: ParentEntityWhere, orderBy: [ParentEntityOrderBy!], skip: Int, take: Int): [Parent!]!
+  nullQueryableSingle(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
+  nullQueryableFirst(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
+  nullTaskQueryableSingle(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
+  nullTaskInnerQueryableSingle(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
+  nullTaskQueryableFirst(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
+  nullTaskInnerQueryableFirst(id: ID, ids: [ID!], where: ParentEntityWhere): Parent
+  nullQueryableSingleDisallowNull(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
+  nullQueryableFirstDisallowNull(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
+  nullTaskQueryableSingleDisallowNull(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
+  nullTaskInnerQueryableSingleDisallowNull(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
+  nullTaskQueryableFirstDisallowNull(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
+  nullTaskInnerQueryableFirstDisallowNull(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
   nullQueryConnection(
     "Only return edges after the specified cursor."
     after: String,
@@ -144,8 +144,8 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: ParentEntityWhere,
+    orderBy: [ParentEntityOrderBy!],
     ids: [ID!]): ParentConnection!
   nullTaskQueryConnection(
     "Only return edges after the specified cursor."
@@ -156,8 +156,8 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: ParentEntityWhere,
+    orderBy: [ParentEntityOrderBy!],
     ids: [ID!]): ParentConnection!
   nullTaskInnerQueryConnection(
     "Only return edges after the specified cursor."
@@ -168,30 +168,30 @@
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: ParentEntityWhere,
+    orderBy: [ParentEntityOrderBy!],
     ids: [ID!]): ParentConnection!
-  fieldBuilderProjectionEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FieldBuilderProjection!]!
-  fieldBuilderProjectionParents(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FieldBuilderProjectionParent!]!
-  departments(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Department!]!
-  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
-  filterChildEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterChild!]!
-  filterChildEntity(id: ID, ids: [ID!], where: [WhereExpression!]): FilterChild!
-  filterReferenceEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterReference!]!
-  filterReferenceEntity(id: ID, ids: [ID!], where: [WhereExpression!]): FilterReference!
-  filterReferenceEntityNullable(id: ID, ids: [ID!], where: [WhereExpression!]): FilterReference
-  discriminatorDerivedAEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DiscriminatorDerivedA!]!
-  discriminatorDerivedAEntity(id: ID, ids: [ID!], where: [WhereExpression!]): DiscriminatorDerivedA!
-  discriminatorDerivedBEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DiscriminatorDerivedB!]!
-  discriminatorDerivedBEntity(id: ID, ids: [ID!], where: [WhereExpression!]): DiscriminatorDerivedB!
-  tphMiddleEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphMiddleEntity]!
-  tphMiddleEntity(id: ID, ids: [ID!], where: [WhereExpression!]): TphMiddleEntity
-  guardedKeyEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [GuardedKeyEntity]!
-  guardedKeyEntity(id: ID, ids: [ID!], where: [WhereExpression!]): GuardedKeyEntity
-  concreteTphEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ConcreteTphBaseEntity]!
-  concreteTphEntity(id: ID, ids: [ID!], where: [WhereExpression!]): ConcreteTphBaseEntity
-  tphDerivedNavEntities(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphDerivedNavBaseEntity]!
-  tphDerivedNavEntity(id: ID, ids: [ID!], where: [WhereExpression!]): TphDerivedNavBaseEntity
+  fieldBuilderProjectionEntities(id: ID, ids: [ID!], where: FieldBuilderProjectionEntityWhere, orderBy: [FieldBuilderProjectionEntityOrderBy!], skip: Int, take: Int): [FieldBuilderProjection!]!
+  fieldBuilderProjectionParents(id: ID, ids: [ID!], where: FieldBuilderProjectionParentEntityWhere, orderBy: [FieldBuilderProjectionParentEntityOrderBy!], skip: Int, take: Int): [FieldBuilderProjectionParent!]!
+  departments(id: ID, ids: [ID!], where: DepartmentEntityWhere, orderBy: [DepartmentEntityOrderBy!], skip: Int, take: Int): [Department!]!
+  employees(id: ID, ids: [ID!], where: EmployeeEntityWhere, orderBy: [EmployeeEntityOrderBy!], skip: Int, take: Int): [Employee!]!
+  filterChildEntities(id: ID, ids: [ID!], where: FilterChildEntityWhere, orderBy: [FilterChildEntityOrderBy!], skip: Int, take: Int): [FilterChild!]!
+  filterChildEntity(id: ID, ids: [ID!], where: FilterChildEntityWhere): FilterChild!
+  filterReferenceEntities(id: ID, ids: [ID!], where: FilterReferenceEntityWhere, orderBy: [FilterReferenceEntityOrderBy!], skip: Int, take: Int): [FilterReference!]!
+  filterReferenceEntity(id: ID, ids: [ID!], where: FilterReferenceEntityWhere): FilterReference!
+  filterReferenceEntityNullable(id: ID, ids: [ID!], where: FilterReferenceEntityWhere): FilterReference
+  discriminatorDerivedAEntities(id: ID, ids: [ID!], where: DiscriminatorDerivedAEntityWhere, orderBy: [DiscriminatorDerivedAEntityOrderBy!], skip: Int, take: Int): [DiscriminatorDerivedA!]!
+  discriminatorDerivedAEntity(id: ID, ids: [ID!], where: DiscriminatorDerivedAEntityWhere): DiscriminatorDerivedA!
+  discriminatorDerivedBEntities(id: ID, ids: [ID!], where: DiscriminatorDerivedBEntityWhere, orderBy: [DiscriminatorDerivedBEntityOrderBy!], skip: Int, take: Int): [DiscriminatorDerivedB!]!
+  discriminatorDerivedBEntity(id: ID, ids: [ID!], where: DiscriminatorDerivedBEntityWhere): DiscriminatorDerivedB!
+  tphMiddleEntities(id: ID, ids: [ID!], where: TphMiddleEntityWhere, orderBy: [TphMiddleEntityOrderBy!], skip: Int, take: Int): [TphMiddleEntity]!
+  tphMiddleEntity(id: ID, ids: [ID!], where: TphMiddleEntityWhere): TphMiddleEntity
+  guardedKeyEntities(id: ID, ids: [ID!], where: GuardedKeyEntityWhere, orderBy: [GuardedKeyEntityOrderBy!], skip: Int, take: Int): [GuardedKeyEntity]!
+  guardedKeyEntity(id: ID, ids: [ID!], where: GuardedKeyEntityWhere): GuardedKeyEntity
+  concreteTphEntities(id: ID, ids: [ID!], where: ConcreteTphBaseEntityWhere, orderBy: [ConcreteTphBaseEntityOrderBy!], skip: Int, take: Int): [ConcreteTphBaseEntity]!
+  concreteTphEntity(id: ID, ids: [ID!], where: ConcreteTphBaseEntityWhere): ConcreteTphBaseEntity
+  tphDerivedNavEntities(id: ID, ids: [ID!], where: TphDerivedNavBaseEntityWhere, orderBy: [TphDerivedNavBaseEntityOrderBy!], skip: Int, take: Int): [TphDerivedNavBaseEntity]!
+  tphDerivedNavEntity(id: ID, ids: [ID!], where: TphDerivedNavBaseEntityWhere): TphDerivedNavBaseEntity
 }
 
 type CustomType {
@@ -201,39 +201,42 @@ type CustomType {
 
 scalar Long
 
-input WhereExpression {
-  path: String
-  comparison: Comparison
-  negate: Boolean
-  value: [String]
-  connector: Connector
-  groupedExpressions: [WhereExpression]
+input CustomTypeEntityWhere {
+  and: [CustomTypeEntityWhere!]
+  or: [CustomTypeEntityWhere!]
+  not: CustomTypeEntityWhere
+  id: GuidComparison
+  property: Int64Comparison
 }
 
-enum Comparison {
-  contains
-  endsWith
-  equal
-  notEqual
-  greaterThan
-  greaterThanOrEqual
-  "Negation Property used with the 'in' comparison should be used in place of this"
-  notIn
-  in
-  lessThan
-  lessThanOrEqual
-  like
-  startsWith
+input GuidComparison {
+  equal: ID
+  notEqual: ID
+  in: [ID]
+  greaterThan: ID
+  greaterThanOrEqual: ID
+  lessThan: ID
+  lessThanOrEqual: ID
 }
 
-enum Connector {
-  and
-  or
+input Int64Comparison {
+  equal: Long
+  notEqual: Long
+  in: [Long]
+  greaterThan: Long
+  greaterThanOrEqual: Long
+  lessThan: Long
+  lessThanOrEqual: Long
 }
 
-input OrderBy {
-  path: String!
-  descending: Boolean
+input CustomTypeEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
+
+enum SortDirection {
+  ascending
+  descending
 }
 
 type SkipLevelGraph {
@@ -254,6 +257,69 @@ type Level2 {
   level3EntityId: ID
 }
 
+input Level1EntityWhere {
+  and: [Level1EntityWhere!]
+  or: [Level1EntityWhere!]
+  not: Level1EntityWhere
+  id: GuidComparison
+  level2Entity: Level2EntityWhere
+  level2EntityId: Int32Comparison
+}
+
+input Level2EntityWhere {
+  and: [Level2EntityWhere!]
+  or: [Level2EntityWhere!]
+  not: Level2EntityWhere
+  id: GuidComparison
+  level3Entity: Level3EntityWhere
+  level3EntityId: GuidComparison
+}
+
+input Level3EntityWhere {
+  and: [Level3EntityWhere!]
+  or: [Level3EntityWhere!]
+  not: Level3EntityWhere
+  id: GuidComparison
+  property: StringComparison
+}
+
+input StringComparison {
+  equal: String
+  notEqual: String
+  in: [String]
+  startsWith: String
+  endsWith: String
+  contains: String
+  like: String
+}
+
+input Int32Comparison {
+  equal: Int
+  notEqual: Int
+  in: [Int]
+  greaterThan: Int
+  greaterThanOrEqual: Int
+  lessThan: Int
+  lessThanOrEqual: Int
+}
+
+input Level1EntityOrderBy {
+  id: SortDirection
+  level2Entity: Level2EntityOrderBy
+  level2EntityId: SortDirection
+}
+
+input Level2EntityOrderBy {
+  id: SortDirection
+  level3Entity: Level3EntityOrderBy
+  level3EntityId: SortDirection
+}
+
+input Level3EntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
+
 type IncludeNonQueryableA {
   includeNonQueryableB: IncludeNonQueryableB!
   id: ID!
@@ -264,6 +330,36 @@ type IncludeNonQueryableB {
   includeNonQueryableA: IncludeNonQueryableA!
   id: ID!
   includeNonQueryableAId: ID!
+}
+
+input IncludeNonQueryableAWhere {
+  and: [IncludeNonQueryableAWhere!]
+  or: [IncludeNonQueryableAWhere!]
+  not: IncludeNonQueryableAWhere
+  id: GuidComparison
+  includeNonQueryableB: IncludeNonQueryableBWhere
+  includeNonQueryableBId: GuidComparison
+}
+
+input IncludeNonQueryableBWhere {
+  and: [IncludeNonQueryableBWhere!]
+  or: [IncludeNonQueryableBWhere!]
+  not: IncludeNonQueryableBWhere
+  id: GuidComparison
+  includeNonQueryableA: IncludeNonQueryableAWhere
+  includeNonQueryableAId: GuidComparison
+}
+
+input IncludeNonQueryableAOrderBy {
+  id: SortDirection
+  includeNonQueryableB: IncludeNonQueryableBOrderBy
+  includeNonQueryableBId: SortDirection
+}
+
+input IncludeNonQueryableBOrderBy {
+  id: SortDirection
+  includeNonQueryableA: IncludeNonQueryableAOrderBy
+  includeNonQueryableAId: SortDirection
 }
 
 type WithManyChildren {
@@ -285,8 +381,53 @@ type Child2 {
   parentId: ID
 }
 
+input WithManyChildrenEntityWhere {
+  and: [WithManyChildrenEntityWhere!]
+  or: [WithManyChildrenEntityWhere!]
+  not: WithManyChildrenEntityWhere
+  child1: Child1EntityWhere
+  child2: Child2EntityWhere
+  id: GuidComparison
+}
+
+input Child1EntityWhere {
+  and: [Child1EntityWhere!]
+  or: [Child1EntityWhere!]
+  not: Child1EntityWhere
+  id: GuidComparison
+  parent: WithManyChildrenEntityWhere
+  parentId: GuidComparison
+}
+
+input Child2EntityWhere {
+  and: [Child2EntityWhere!]
+  or: [Child2EntityWhere!]
+  not: Child2EntityWhere
+  id: GuidComparison
+  parent: WithManyChildrenEntityWhere
+  parentId: GuidComparison
+}
+
+input WithManyChildrenEntityOrderBy {
+  child1: Child1EntityOrderBy
+  child2: Child2EntityOrderBy
+  id: SortDirection
+}
+
+input Child1EntityOrderBy {
+  id: SortDirection
+  parent: WithManyChildrenEntityOrderBy
+  parentId: SortDirection
+}
+
+input Child2EntityOrderBy {
+  id: SortDirection
+  parent: WithManyChildrenEntityOrderBy
+  parentId: SortDirection
+}
+
 type WithItems {
-  items(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Item!]!
+  items(id: ID, ids: [ID!], where: ItemEntityWhere, orderBy: [ItemEntityOrderBy!], skip: Int, take: Int): [Item!]!
   id: ID!
   property: String
 }
@@ -295,6 +436,43 @@ type Item {
   id: ID!
   parentId: ID
   property: String
+}
+
+input ItemEntityWhere {
+  and: [ItemEntityWhere!]
+  or: [ItemEntityWhere!]
+  not: ItemEntityWhere
+  id: GuidComparison
+  parent: WithItemsEntityWhere
+  parentId: GuidComparison
+  property: StringComparison
+}
+
+input WithItemsEntityWhere {
+  and: [WithItemsEntityWhere!]
+  or: [WithItemsEntityWhere!]
+  not: WithItemsEntityWhere
+  id: GuidComparison
+  items: ItemEntityCollectionWhere
+  property: StringComparison
+}
+
+input ItemEntityCollectionWhere {
+  any: ItemEntityWhere
+  all: ItemEntityWhere
+  none: ItemEntityWhere
+}
+
+input ItemEntityOrderBy {
+  id: SortDirection
+  parent: WithItemsEntityOrderBy
+  parentId: SortDirection
+  property: SortDirection
+}
+
+input WithItemsEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
 }
 
 type Level1 {
@@ -308,14 +486,40 @@ type WithNullable {
   nullable: Int
 }
 
+input WithNullableEntityWhere {
+  and: [WithNullableEntityWhere!]
+  or: [WithNullableEntityWhere!]
+  not: WithNullableEntityWhere
+  id: GuidComparison
+  nullable: Int32Comparison
+}
+
+input WithNullableEntityOrderBy {
+  id: SortDirection
+  nullable: SortDirection
+}
+
 type NamedId {
   namedId: ID!
   property: String
 }
 
+input NamedIdEntityWhere {
+  and: [NamedIdEntityWhere!]
+  or: [NamedIdEntityWhere!]
+  not: NamedIdEntityWhere
+  namedId: GuidComparison
+  property: StringComparison
+}
+
+input NamedIdEntityOrderBy {
+  namedId: SortDirection
+  property: SortDirection
+}
+
 type WithMisNamedQueryParent {
-  misNamedChildren(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
+  misNamedChildren(id: ID, ids: [ID!], where: WithMisNamedQueryChildEntityWhere, orderBy: [WithMisNamedQueryChildEntityOrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
+  children(id: ID, ids: [ID!], where: WithMisNamedQueryChildEntityWhere, orderBy: [WithMisNamedQueryChildEntityOrderBy!], skip: Int, take: Int): [WithMisNamedQueryChild!]!
   id: ID!
 }
 
@@ -323,6 +527,39 @@ type WithMisNamedQueryChild {
   parent: WithMisNamedQueryParent
   id: ID!
   parentId: ID
+}
+
+input WithMisNamedQueryChildEntityWhere {
+  and: [WithMisNamedQueryChildEntityWhere!]
+  or: [WithMisNamedQueryChildEntityWhere!]
+  not: WithMisNamedQueryChildEntityWhere
+  id: GuidComparison
+  parent: WithMisNamedQueryParentEntityWhere
+  parentId: GuidComparison
+}
+
+input WithMisNamedQueryParentEntityWhere {
+  and: [WithMisNamedQueryParentEntityWhere!]
+  or: [WithMisNamedQueryParentEntityWhere!]
+  not: WithMisNamedQueryParentEntityWhere
+  children: WithMisNamedQueryChildEntityCollectionWhere
+  id: GuidComparison
+}
+
+input WithMisNamedQueryChildEntityCollectionWhere {
+  any: WithMisNamedQueryChildEntityWhere
+  all: WithMisNamedQueryChildEntityWhere
+  none: WithMisNamedQueryChildEntityWhere
+}
+
+input WithMisNamedQueryChildEntityOrderBy {
+  id: SortDirection
+  parent: WithMisNamedQueryParentEntityOrderBy
+  parentId: SortDirection
+}
+
+input WithMisNamedQueryParentEntityOrderBy {
+  id: SortDirection
 }
 
 type Parent {
@@ -335,8 +572,8 @@ type Parent {
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: ChildEntityWhere,
+    orderBy: [ChildEntityOrderBy!],
     ids: [ID!]): ChildConnection!
   childrenConnectionOmitQueryArguments(
     "Only return edges after the specified cursor."
@@ -348,10 +585,10 @@ type Parent {
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int): ChildConnection!
   childrenOmitQueryArguments: [Child!]!
-  childrenReversed(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
+  childrenReversed(id: ID, ids: [ID!], where: ChildEntityWhere, orderBy: [ChildEntityOrderBy!], skip: Int, take: Int): [Child!]!
   childrenViaResolveList: [Child]
   childrenViaResolveListAsync: [Child]
-  childrenNoResolve(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
+  childrenNoResolve(id: ID, ids: [ID!], where: ChildEntityWhere, orderBy: [ChildEntityOrderBy!], skip: Int, take: Int): [Child!]!
   childrenConnectionNoResolve(
     "Only return edges after the specified cursor."
     after: String,
@@ -361,10 +598,10 @@ type Parent {
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: ChildEntityWhere,
+    orderBy: [ChildEntityOrderBy!],
     ids: [ID!]): ChildConnection!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Child!]!
+  children(id: ID, ids: [ID!], where: ChildEntityWhere, orderBy: [ChildEntityOrderBy!], skip: Int, take: Int): [Child!]!
   id: ID!
   property: String
 }
@@ -412,6 +649,45 @@ type Child {
   property: String
 }
 
+input ChildEntityWhere {
+  and: [ChildEntityWhere!]
+  or: [ChildEntityWhere!]
+  not: ChildEntityWhere
+  id: GuidComparison
+  nullable: Int32Comparison
+  parent: ParentEntityWhere
+  parentId: GuidComparison
+  property: StringComparison
+}
+
+input ParentEntityWhere {
+  and: [ParentEntityWhere!]
+  or: [ParentEntityWhere!]
+  not: ParentEntityWhere
+  children: ChildEntityCollectionWhere
+  id: GuidComparison
+  property: StringComparison
+}
+
+input ChildEntityCollectionWhere {
+  any: ChildEntityWhere
+  all: ChildEntityWhere
+  none: ChildEntityWhere
+}
+
+input ChildEntityOrderBy {
+  id: SortDirection
+  nullable: SortDirection
+  parent: ParentEntityOrderBy
+  parentId: SortDirection
+  property: SortDirection
+}
+
+input ParentEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
+
 type DateEntity {
   id: ID!
   property: DateOnly
@@ -419,6 +695,29 @@ type DateEntity {
 
 "The `Date` scalar type represents a year, month and day in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard. Format is `yyyy-MM-dd`"
 scalar DateOnly
+
+input DateEntityWhere {
+  and: [DateEntityWhere!]
+  or: [DateEntityWhere!]
+  not: DateEntityWhere
+  id: GuidComparison
+  property: DateOnlyComparison
+}
+
+input DateOnlyComparison {
+  equal: DateOnly
+  notEqual: DateOnly
+  in: [DateOnly]
+  greaterThan: DateOnly
+  greaterThanOrEqual: DateOnly
+  lessThan: DateOnly
+  lessThanOrEqual: DateOnly
+}
+
+input DateEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
 
 type EnumEntity {
   id: ID!
@@ -435,9 +734,41 @@ enum DayOfWeek {
   SATURDAY
 }
 
+input EnumEntityWhere {
+  and: [EnumEntityWhere!]
+  or: [EnumEntityWhere!]
+  not: EnumEntityWhere
+  id: GuidComparison
+  property: DayOfWeekComparison
+}
+
+input DayOfWeekComparison {
+  equal: DayOfWeek
+  notEqual: DayOfWeek
+  in: [DayOfWeek]
+}
+
+input EnumEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
+
 type StringEntity {
   id: ID!
   property: String
+}
+
+input StringEntityWhere {
+  and: [StringEntityWhere!]
+  or: [StringEntityWhere!]
+  not: StringEntityWhere
+  id: GuidComparison
+  property: StringComparison
+}
+
+input StringEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
 }
 
 type TimeEntity {
@@ -447,6 +778,29 @@ type TimeEntity {
 
 "The `Time` scalar type represents a time in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard. Format is `HH:mm:ss.FFFFFFF`."
 scalar TimeOnly
+
+input TimeEntityWhere {
+  and: [TimeEntityWhere!]
+  or: [TimeEntityWhere!]
+  not: TimeEntityWhere
+  id: GuidComparison
+  property: TimeOnlyComparison
+}
+
+input TimeOnlyComparison {
+  equal: TimeOnly
+  notEqual: TimeOnly
+  in: [TimeOnly]
+  greaterThan: TimeOnly
+  greaterThanOrEqual: TimeOnly
+  lessThan: TimeOnly
+  lessThanOrEqual: TimeOnly
+}
+
+input TimeEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
 
 "A connection from an object to a list of objects of type `Parent`."
 type ParentConnection {
@@ -501,9 +855,52 @@ type ReadOnlyEntity {
 }
 
 type ReadOnlyParent {
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ReadOnlyEntity!]!
+  children(id: ID, ids: [ID!], where: ReadOnlyEntityWhere, orderBy: [ReadOnlyEntityOrderBy!], skip: Int, take: Int): [ReadOnlyEntity!]!
   id: ID!
   property: String
+}
+
+input ReadOnlyEntityWhere {
+  and: [ReadOnlyEntityWhere!]
+  or: [ReadOnlyEntityWhere!]
+  not: ReadOnlyEntityWhere
+  age: Int32Comparison
+  computedInDb: StringComparison
+  firstName: StringComparison
+  id: GuidComparison
+  lastName: StringComparison
+  readOnlyParent: ReadOnlyParentEntityWhere
+  readOnlyParentId: GuidComparison
+}
+
+input ReadOnlyParentEntityWhere {
+  and: [ReadOnlyParentEntityWhere!]
+  or: [ReadOnlyParentEntityWhere!]
+  not: ReadOnlyParentEntityWhere
+  children: ReadOnlyEntityCollectionWhere
+  id: GuidComparison
+  property: StringComparison
+}
+
+input ReadOnlyEntityCollectionWhere {
+  any: ReadOnlyEntityWhere
+  all: ReadOnlyEntityWhere
+  none: ReadOnlyEntityWhere
+}
+
+input ReadOnlyEntityOrderBy {
+  age: SortDirection
+  computedInDb: SortDirection
+  firstName: SortDirection
+  id: SortDirection
+  lastName: SortDirection
+  readOnlyParent: ReadOnlyParentEntityOrderBy
+  readOnlyParentId: SortDirection
+}
+
+input ReadOnlyParentEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
 }
 
 type FilterParent {
@@ -516,10 +913,10 @@ type FilterParent {
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: FilterChildEntityWhere,
+    orderBy: [FilterChildEntityOrderBy!],
     ids: [ID!]): FilterChildConnection!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterChild!]!
+  children(id: ID, ids: [ID!], where: FilterChildEntityWhere, orderBy: [FilterChildEntityOrderBy!], skip: Int, take: Int): [FilterChild!]!
   field1: String
   field10: ID
   field2: String
@@ -569,6 +966,89 @@ type FilterChild {
 "The `DateTime` scalar type represents a date and time. `DateTime` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard."
 scalar DateTime
 
+input FilterChildEntityWhere {
+  and: [FilterChildEntityWhere!]
+  or: [FilterChildEntityWhere!]
+  not: FilterChildEntityWhere
+  age: Int32Comparison
+  createdAt: DateTimeComparison
+  id: GuidComparison
+  isActive: BooleanComparison
+  nullableAge: Int32Comparison
+  nullableCreatedAt: DateTimeComparison
+  nullableIsActive: BooleanComparison
+  parent: FilterParentEntityWhere
+  property: StringComparison
+}
+
+input DateTimeComparison {
+  equal: DateTime
+  notEqual: DateTime
+  in: [DateTime]
+  greaterThan: DateTime
+  greaterThanOrEqual: DateTime
+  lessThan: DateTime
+  lessThanOrEqual: DateTime
+}
+
+input BooleanComparison {
+  equal: Boolean
+  notEqual: Boolean
+  in: [Boolean]
+}
+
+input FilterParentEntityWhere {
+  and: [FilterParentEntityWhere!]
+  or: [FilterParentEntityWhere!]
+  not: FilterParentEntityWhere
+  children: FilterChildEntityCollectionWhere
+  field1: StringComparison
+  field10: GuidComparison
+  field2: StringComparison
+  field3: StringComparison
+  field4: Int32Comparison
+  field5: Int32Comparison
+  field6: DateTimeComparison
+  field7: DateTimeComparison
+  field8: BooleanComparison
+  field9: BooleanComparison
+  id: GuidComparison
+  property: StringComparison
+}
+
+input FilterChildEntityCollectionWhere {
+  any: FilterChildEntityWhere
+  all: FilterChildEntityWhere
+  none: FilterChildEntityWhere
+}
+
+input FilterChildEntityOrderBy {
+  age: SortDirection
+  createdAt: SortDirection
+  id: SortDirection
+  isActive: SortDirection
+  nullableAge: SortDirection
+  nullableCreatedAt: SortDirection
+  nullableIsActive: SortDirection
+  parent: FilterParentEntityOrderBy
+  property: SortDirection
+}
+
+input FilterParentEntityOrderBy {
+  field1: SortDirection
+  field10: SortDirection
+  field2: SortDirection
+  field3: SortDirection
+  field4: SortDirection
+  field5: SortDirection
+  field6: SortDirection
+  field7: SortDirection
+  field8: SortDirection
+  field9: SortDirection
+  id: SortDirection
+  property: SortDirection
+}
+
 "A connection from an object to a list of objects of type `FilterParent`."
 type FilterParentConnection {
   "A count of the total number of objects in this connection, ignoring pagination. This allows a client to fetch the first five objects by passing \"5\" as the argument to `first`, then fetch the total count so it could display \"5 of 83\", for example. In cases where we employ infinite scrolling or don't have an exact count of entries, this field will return `null`."
@@ -600,6 +1080,35 @@ type SimpleTypeFilter {
   nullableDateTimeValue: DateTime
   nullableGuidValue: ID
   nullableIntValue: Int
+}
+
+input SimpleTypeFilterEntityWhere {
+  and: [SimpleTypeFilterEntityWhere!]
+  or: [SimpleTypeFilterEntityWhere!]
+  not: SimpleTypeFilterEntityWhere
+  boolValue: BooleanComparison
+  dateTimeValue: DateTimeComparison
+  guidValue: GuidComparison
+  id: GuidComparison
+  intValue: Int32Comparison
+  name: StringComparison
+  nullableBoolValue: BooleanComparison
+  nullableDateTimeValue: DateTimeComparison
+  nullableGuidValue: GuidComparison
+  nullableIntValue: Int32Comparison
+}
+
+input SimpleTypeFilterEntityOrderBy {
+  boolValue: SortDirection
+  dateTimeValue: SortDirection
+  guidValue: SortDirection
+  id: SortDirection
+  intValue: SortDirection
+  name: SortDirection
+  nullableBoolValue: SortDirection
+  nullableDateTimeValue: SortDirection
+  nullableGuidValue: SortDirection
+  nullableIntValue: SortDirection
 }
 
 "A connection from an object to a list of objects of type `Base`."
@@ -636,8 +1145,8 @@ interface BaseEntity {
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: DerivedChildEntityWhere,
+    orderBy: [DerivedChildEntityOrderBy!],
     ids: [ID!]): DerivedChildConnection!
 }
 
@@ -669,6 +1178,66 @@ type DerivedChildEdge {
   node: DerivedChild!
 }
 
+input DerivedChildEntityWhere {
+  and: [DerivedChildEntityWhere!]
+  or: [DerivedChildEntityWhere!]
+  not: DerivedChildEntityWhere
+  id: GuidComparison
+  parent: BaseEntityWhere
+  parentId: GuidComparison
+  property: StringComparison
+  typedParent: DerivedWithNavigationEntityWhere
+  typedParentId: GuidComparison
+}
+
+input BaseEntityWhere {
+  and: [BaseEntityWhere!]
+  or: [BaseEntityWhere!]
+  not: BaseEntityWhere
+  childrenFromBase: DerivedChildEntityCollectionWhere
+  id: GuidComparison
+  property: StringComparison
+  status: StringComparison
+}
+
+input DerivedChildEntityCollectionWhere {
+  any: DerivedChildEntityWhere
+  all: DerivedChildEntityWhere
+  none: DerivedChildEntityWhere
+}
+
+input DerivedWithNavigationEntityWhere {
+  and: [DerivedWithNavigationEntityWhere!]
+  or: [DerivedWithNavigationEntityWhere!]
+  not: DerivedWithNavigationEntityWhere
+  children: DerivedChildEntityCollectionWhere
+  childrenFromBase: DerivedChildEntityCollectionWhere
+  id: GuidComparison
+  property: StringComparison
+  status: StringComparison
+}
+
+input DerivedChildEntityOrderBy {
+  id: SortDirection
+  parent: BaseEntityOrderBy
+  parentId: SortDirection
+  property: SortDirection
+  typedParent: DerivedWithNavigationEntityOrderBy
+  typedParentId: SortDirection
+}
+
+input BaseEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+  status: SortDirection
+}
+
+input DerivedWithNavigationEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+  status: SortDirection
+}
+
 type Derived implements BaseEntity {
   childrenFromInterface(
     "Only return edges after the specified cursor."
@@ -679,29 +1248,96 @@ type Derived implements BaseEntity {
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: DerivedChildEntityWhere,
+    orderBy: [DerivedChildEntityOrderBy!],
     ids: [ID!]): DerivedChildConnection!
-  childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
+  childrenFromBase(id: ID, ids: [ID!], where: DerivedChildEntityWhere, orderBy: [DerivedChildEntityOrderBy!], skip: Int, take: Int): [DerivedChild!]!
   id: ID!
   property: String
   status: String
 }
 
+input DerivedEntityWhere {
+  and: [DerivedEntityWhere!]
+  or: [DerivedEntityWhere!]
+  not: DerivedEntityWhere
+  childrenFromBase: DerivedChildEntityCollectionWhere
+  id: GuidComparison
+  property: StringComparison
+  status: StringComparison
+}
+
+input DerivedEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+  status: SortDirection
+}
+
 type ManyToManyLeft {
-  rights(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
+  rights(id: ID, ids: [ID!], where: ManyToManyRightEntityWhere, orderBy: [ManyToManyRightEntityOrderBy!], skip: Int, take: Int): [ManyToManyRight!]!
   id: String!
   leftName: String
 }
 
 type ManyToManyRight {
-  lefts(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
+  lefts(id: ID, ids: [ID!], where: ManyToManyLeftEntityWhere, orderBy: [ManyToManyLeftEntityOrderBy!], skip: Int, take: Int): [ManyToManyLeft!]!
   id: String!
   rightName: String
 }
 
+input ManyToManyLeftEntityWhere {
+  and: [ManyToManyLeftEntityWhere!]
+  or: [ManyToManyLeftEntityWhere!]
+  not: ManyToManyLeftEntityWhere
+  id: StringComparison
+  leftName: StringComparison
+  rights: ManyToManyRightEntityCollectionWhere
+}
+
+input ManyToManyRightEntityCollectionWhere {
+  any: ManyToManyRightEntityWhere
+  all: ManyToManyRightEntityWhere
+  none: ManyToManyRightEntityWhere
+}
+
+input ManyToManyRightEntityWhere {
+  and: [ManyToManyRightEntityWhere!]
+  or: [ManyToManyRightEntityWhere!]
+  not: ManyToManyRightEntityWhere
+  id: StringComparison
+  lefts: ManyToManyLeftEntityCollectionWhere
+  rightName: StringComparison
+}
+
+input ManyToManyLeftEntityCollectionWhere {
+  any: ManyToManyLeftEntityWhere
+  all: ManyToManyLeftEntityWhere
+  none: ManyToManyLeftEntityWhere
+}
+
+input ManyToManyLeftEntityOrderBy {
+  id: SortDirection
+  leftName: SortDirection
+}
+
+input ManyToManyRightEntityOrderBy {
+  id: SortDirection
+  rightName: SortDirection
+}
+
 type ParentEntityView {
   property: String
+}
+
+input ParentEntityViewWhere {
+  and: [ParentEntityViewWhere!]
+  or: [ParentEntityViewWhere!]
+  not: ParentEntityViewWhere
+  property: StringComparison
+}
+
+input ParentEntityViewOrderBy {
+  property: SortDirection
 }
 
 "A connection from an object to a list of objects of type `ParentEntityView`."
@@ -733,6 +1369,23 @@ type OwnedParent {
 
 type OwnedChild {
   property: String!
+}
+
+input OwnedParentWhere {
+  and: [OwnedParentWhere!]
+  or: [OwnedParentWhere!]
+  not: OwnedParentWhere
+  child1: OwnedChildWhere
+  child2: OwnedChildWhere
+  id: GuidComparison
+  property: StringComparison
+}
+
+input OwnedChildWhere {
+  and: [OwnedChildWhere!]
+  or: [OwnedChildWhere!]
+  not: OwnedChildWhere
+  property: StringComparison
 }
 
 type FieldBuilderProjection {
@@ -767,6 +1420,81 @@ enum EntityStatus {
   PENDING
 }
 
+input FieldBuilderProjectionEntityWhere {
+  and: [FieldBuilderProjectionEntityWhere!]
+  or: [FieldBuilderProjectionEntityWhere!]
+  not: FieldBuilderProjectionEntityWhere
+  age: Int32Comparison
+  createdAt: DateTimeComparison
+  id: GuidComparison
+  isActive: BooleanComparison
+  name: StringComparison
+  parent: FieldBuilderProjectionParentEntityWhere
+  salary: DecimalComparison
+  score: DoubleComparison
+  status: EntityStatusComparison
+  viewCount: Int64Comparison
+}
+
+input FieldBuilderProjectionParentEntityWhere {
+  and: [FieldBuilderProjectionParentEntityWhere!]
+  or: [FieldBuilderProjectionParentEntityWhere!]
+  not: FieldBuilderProjectionParentEntityWhere
+  children: FieldBuilderProjectionEntityCollectionWhere
+  id: GuidComparison
+  name: StringComparison
+}
+
+input FieldBuilderProjectionEntityCollectionWhere {
+  any: FieldBuilderProjectionEntityWhere
+  all: FieldBuilderProjectionEntityWhere
+  none: FieldBuilderProjectionEntityWhere
+}
+
+input DecimalComparison {
+  equal: Decimal
+  notEqual: Decimal
+  in: [Decimal]
+  greaterThan: Decimal
+  greaterThanOrEqual: Decimal
+  lessThan: Decimal
+  lessThanOrEqual: Decimal
+}
+
+input DoubleComparison {
+  equal: Float
+  notEqual: Float
+  in: [Float]
+  greaterThan: Float
+  greaterThanOrEqual: Float
+  lessThan: Float
+  lessThanOrEqual: Float
+}
+
+input EntityStatusComparison {
+  equal: EntityStatus
+  notEqual: EntityStatus
+  in: [EntityStatus]
+}
+
+input FieldBuilderProjectionEntityOrderBy {
+  age: SortDirection
+  createdAt: SortDirection
+  id: SortDirection
+  isActive: SortDirection
+  name: SortDirection
+  parent: FieldBuilderProjectionParentEntityOrderBy
+  salary: SortDirection
+  score: SortDirection
+  status: SortDirection
+  viewCount: SortDirection
+}
+
+input FieldBuilderProjectionParentEntityOrderBy {
+  id: SortDirection
+  name: SortDirection
+}
+
 type FieldBuilderProjectionParent {
   children(
     "Only return edges after the specified cursor."
@@ -777,8 +1505,8 @@ type FieldBuilderProjectionParent {
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: FieldBuilderProjectionEntityWhere,
+    orderBy: [FieldBuilderProjectionEntityOrderBy!],
     ids: [ID!]): FieldBuilderProjectionConnection!
   id: ID!
   name: String!
@@ -805,7 +1533,7 @@ type FieldBuilderProjectionEdge {
 }
 
 type Department {
-  employees(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [Employee!]!
+  employees(id: ID, ids: [ID!], where: EmployeeEntityWhere, orderBy: [EmployeeEntityOrderBy!], skip: Int, take: Int): [Employee!]!
   id: ID!
   isActive: Boolean!
   name: String
@@ -817,6 +1545,45 @@ type Employee {
   departmentId: ID!
   id: ID!
   name: String
+}
+
+input EmployeeEntityWhere {
+  and: [EmployeeEntityWhere!]
+  or: [EmployeeEntityWhere!]
+  not: EmployeeEntityWhere
+  department: DepartmentEntityWhere
+  departmentId: GuidComparison
+  id: GuidComparison
+  name: StringComparison
+}
+
+input DepartmentEntityWhere {
+  and: [DepartmentEntityWhere!]
+  or: [DepartmentEntityWhere!]
+  not: DepartmentEntityWhere
+  employees: EmployeeEntityCollectionWhere
+  id: GuidComparison
+  isActive: BooleanComparison
+  name: StringComparison
+}
+
+input EmployeeEntityCollectionWhere {
+  any: EmployeeEntityWhere
+  all: EmployeeEntityWhere
+  none: EmployeeEntityWhere
+}
+
+input EmployeeEntityOrderBy {
+  department: DepartmentEntityOrderBy
+  departmentId: SortDirection
+  id: SortDirection
+  name: SortDirection
+}
+
+input DepartmentEntityOrderBy {
+  id: SortDirection
+  isActive: SortDirection
+  name: SortDirection
 }
 
 type FilterReference {
@@ -841,6 +1608,56 @@ type FilterBase {
   id: ID!
 }
 
+input FilterReferenceEntityWhere {
+  and: [FilterReferenceEntityWhere!]
+  or: [FilterReferenceEntityWhere!]
+  not: FilterReferenceEntityWhere
+  baseEntity: FilterBaseEntityWhere
+  baseEntityId: GuidComparison
+  id: GuidComparison
+  property: StringComparison
+}
+
+input FilterBaseEntityWhere {
+  and: [FilterBaseEntityWhere!]
+  or: [FilterBaseEntityWhere!]
+  not: FilterBaseEntityWhere
+  commonProperty: StringComparison
+  field1: StringComparison
+  field10: GuidComparison
+  field2: StringComparison
+  field3: StringComparison
+  field4: Int32Comparison
+  field5: Int32Comparison
+  field6: DateTimeComparison
+  field7: DateTimeComparison
+  field8: BooleanComparison
+  field9: BooleanComparison
+  id: GuidComparison
+}
+
+input FilterReferenceEntityOrderBy {
+  baseEntity: FilterBaseEntityOrderBy
+  baseEntityId: SortDirection
+  id: SortDirection
+  property: SortDirection
+}
+
+input FilterBaseEntityOrderBy {
+  commonProperty: SortDirection
+  field1: SortDirection
+  field10: SortDirection
+  field2: SortDirection
+  field3: SortDirection
+  field4: SortDirection
+  field5: SortDirection
+  field6: SortDirection
+  field7: SortDirection
+  field8: SortDirection
+  field9: SortDirection
+  id: SortDirection
+}
+
 type DiscriminatorDerivedA {
   derivedAProperty: String
   entityType: DiscriminatorType!
@@ -853,6 +1670,29 @@ enum DiscriminatorType {
   TYPE_B
 }
 
+input DiscriminatorDerivedAEntityWhere {
+  and: [DiscriminatorDerivedAEntityWhere!]
+  or: [DiscriminatorDerivedAEntityWhere!]
+  not: DiscriminatorDerivedAEntityWhere
+  derivedAProperty: StringComparison
+  entityType: DiscriminatorTypeComparison
+  id: GuidComparison
+  property: StringComparison
+}
+
+input DiscriminatorTypeComparison {
+  equal: DiscriminatorType
+  notEqual: DiscriminatorType
+  in: [DiscriminatorType]
+}
+
+input DiscriminatorDerivedAEntityOrderBy {
+  derivedAProperty: SortDirection
+  entityType: SortDirection
+  id: SortDirection
+  property: SortDirection
+}
+
 type DiscriminatorDerivedB {
   derivedBProperty: String
   entityType: DiscriminatorType!
@@ -860,10 +1700,27 @@ type DiscriminatorDerivedB {
   property: String
 }
 
+input DiscriminatorDerivedBEntityWhere {
+  and: [DiscriminatorDerivedBEntityWhere!]
+  or: [DiscriminatorDerivedBEntityWhere!]
+  not: DiscriminatorDerivedBEntityWhere
+  derivedBProperty: StringComparison
+  entityType: DiscriminatorTypeComparison
+  id: GuidComparison
+  property: StringComparison
+}
+
+input DiscriminatorDerivedBEntityOrderBy {
+  derivedBProperty: SortDirection
+  entityType: SortDirection
+  id: SortDirection
+  property: SortDirection
+}
+
 interface TphMiddleEntity {
   id: ID!
   property: String
-  attachments(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphAttachment!]!
+  attachments(id: ID, ids: [ID!], where: TphAttachmentEntityWhere, orderBy: [TphAttachmentEntityOrderBy!], skip: Int, take: Int): [TphAttachment!]!
 }
 
 type TphAttachment {
@@ -874,9 +1731,77 @@ type TphAttachment {
   relatedRequest: TphMiddleEntity
 }
 
+input TphAttachmentEntityWhere {
+  and: [TphAttachmentEntityWhere!]
+  or: [TphAttachmentEntityWhere!]
+  not: TphAttachmentEntityWhere
+  id: GuidComparison
+  property: StringComparison
+  relatedRequest: TphRootEntityWhere
+  relatedRequestId: GuidComparison
+  request: TphRootEntityWhere
+  requestId: GuidComparison
+}
+
+input TphRootEntityWhere {
+  and: [TphRootEntityWhere!]
+  or: [TphRootEntityWhere!]
+  not: TphRootEntityWhere
+  attachments: TphAttachmentEntityCollectionWhere
+  id: GuidComparison
+  property: StringComparison
+}
+
+input TphAttachmentEntityCollectionWhere {
+  any: TphAttachmentEntityWhere
+  all: TphAttachmentEntityWhere
+  none: TphAttachmentEntityWhere
+}
+
+input TphAttachmentEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+  relatedRequest: TphRootEntityOrderBy
+  relatedRequestId: SortDirection
+  request: TphRootEntityOrderBy
+  requestId: SortDirection
+}
+
+input TphRootEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
+
+input TphMiddleEntityWhere {
+  and: [TphMiddleEntityWhere!]
+  or: [TphMiddleEntityWhere!]
+  not: TphMiddleEntityWhere
+  attachments: TphAttachmentEntityCollectionWhere
+  id: GuidComparison
+  property: StringComparison
+}
+
+input TphMiddleEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
+
 type GuardedKeyEntity {
   emailAddress: String
   id: ID!
+}
+
+input GuardedKeyEntityWhere {
+  and: [GuardedKeyEntityWhere!]
+  or: [GuardedKeyEntityWhere!]
+  not: GuardedKeyEntityWhere
+  emailAddress: StringComparison
+  id: GuidComparison
+}
+
+input GuardedKeyEntityOrderBy {
+  emailAddress: SortDirection
+  id: SortDirection
 }
 
 interface ConcreteTphBaseEntity {
@@ -884,13 +1809,39 @@ interface ConcreteTphBaseEntity {
   property: String
 }
 
+input ConcreteTphBaseEntityWhere {
+  and: [ConcreteTphBaseEntityWhere!]
+  or: [ConcreteTphBaseEntityWhere!]
+  not: ConcreteTphBaseEntityWhere
+  id: GuidComparison
+  property: StringComparison
+}
+
+input ConcreteTphBaseEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
+
 interface TphDerivedNavBaseEntity {
   id: ID!
   property: String
 }
 
+input TphDerivedNavBaseEntityWhere {
+  and: [TphDerivedNavBaseEntityWhere!]
+  or: [TphDerivedNavBaseEntityWhere!]
+  not: TphDerivedNavBaseEntityWhere
+  id: GuidComparison
+  property: StringComparison
+}
+
+input TphDerivedNavBaseEntityOrderBy {
+  id: SortDirection
+  property: SortDirection
+}
+
 type Mutation {
-  parentEntityMutation(id: ID, ids: [ID!], where: [WhereExpression!]): Parent!
+  parentEntityMutation(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
 }
 
 type DerivedWithNavigation implements BaseEntity {
@@ -903,8 +1854,8 @@ type DerivedWithNavigation implements BaseEntity {
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: DerivedChildEntityWhere,
+    orderBy: [DerivedChildEntityOrderBy!],
     ids: [ID!]): DerivedChildConnection!
   childrenFromDerived(
     "Only return edges after the specified cursor."
@@ -915,18 +1866,18 @@ type DerivedWithNavigation implements BaseEntity {
     before: String,
     "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
     last: Int,
-    where: [WhereExpression!],
-    orderBy: [OrderBy!],
+    where: DerivedChildEntityWhere,
+    orderBy: [DerivedChildEntityOrderBy!],
     ids: [ID!]): DerivedChildConnection!
-  childrenFromBase(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
-  children(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [DerivedChild!]!
+  childrenFromBase(id: ID, ids: [ID!], where: DerivedChildEntityWhere, orderBy: [DerivedChildEntityOrderBy!], skip: Int, take: Int): [DerivedChild!]!
+  children(id: ID, ids: [ID!], where: DerivedChildEntityWhere, orderBy: [DerivedChildEntityOrderBy!], skip: Int, take: Int): [DerivedChild!]!
   id: ID!
   property: String
   status: String
 }
 
 type FilterDerived {
-  references(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [FilterReference!]!
+  references(id: ID, ids: [ID!], where: FilterReferenceEntityWhere, orderBy: [FilterReferenceEntityOrderBy!], skip: Int, take: Int): [FilterReference!]!
   commonProperty: String
   derivedProperty: String
   field1: String
@@ -943,7 +1894,7 @@ type FilterDerived {
 }
 
 type TphLeaf implements TphMiddleEntity {
-  attachments(id: ID, ids: [ID!], where: [WhereExpression!], orderBy: [OrderBy!], skip: Int, take: Int): [TphAttachment!]!
+  attachments(id: ID, ids: [ID!], where: TphAttachmentEntityWhere, orderBy: [TphAttachmentEntityOrderBy!], skip: Int, take: Int): [TphAttachment!]!
   id: ID!
   leafProperty: String
   property: String

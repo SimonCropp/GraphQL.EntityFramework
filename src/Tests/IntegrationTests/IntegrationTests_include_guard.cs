@@ -28,7 +28,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              tphMiddleEntities(where: {path: "property", comparison: equal, value: "TheRequest"})
+              tphMiddleEntities(where: {property: {equal: "TheRequest"}})
               {
                 property
                 attachments

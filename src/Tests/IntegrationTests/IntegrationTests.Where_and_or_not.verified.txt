@@ -1,0 +1,46 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          property: Value1
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+where    ((p.Property is not null
+           and p.Property like @p_endswith escape N'\')
+          or (p.Property is not null
+              and p.Property like @p1_endswith escape N'\'))
+         and p.Property <> @p2
+         and p.Property like @p3_startswith escape N'\'
+order by p.Property,
+    Parameters: {
+      @p_endswith: {
+        Value: %1,
+        Size: 4000,
+        IsNullable: true
+      },
+      @p1_endswith: {
+        Value: %3,
+        Size: 4000,
+        IsNullable: true
+      },
+      @p2: {
+        Value: Value3,
+        Size: 4000,
+        IsNullable: true
+      },
+      @p3_startswith: {
+        Value: Valu%,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
+  }
+}

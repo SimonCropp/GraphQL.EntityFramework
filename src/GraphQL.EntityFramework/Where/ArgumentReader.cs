@@ -2,12 +2,43 @@
 {
     public static bool TryReadWhere(IResolveFieldContext context, out IReadOnlyCollection<WhereExpression> expression)
     {
-        expression = ReadList<WhereExpression>(context, "where");
-        return expression.Count != 0;
+        // The where graph parses the argument into a WhereExpression tree. An empty where, {},
+        // is no filter.
+        if (TryReadArgument(context, "where", out var value) &&
+            value is WhereExpression { IsEmpty: false } where)
+        {
+            expression = [where];
+            return true;
+        }
+
+        expression = [];
+        return false;
     }
 
-    public static IReadOnlyCollection<OrderBy> ReadOrderBy(IResolveFieldContext context) =>
-        ReadList<OrderBy>(context, "orderBy");
+    public static IReadOnlyCollection<OrderBy> ReadOrderBy(IResolveFieldContext context)
+    {
+        if (TryReadArgument(context, "orderBy", out var value) &&
+            value is IEnumerable items)
+        {
+            return items.Cast<OrderBy>().ToList();
+        }
+
+        return [];
+    }
+
+    static bool TryReadArgument(IResolveFieldContext context, string name, out object? value)
+    {
+        if (context.Arguments is not null &&
+            context.Arguments.TryGetValue(name, out var argument) &&
+            argument.Source != ArgumentSource.FieldDefault)
+        {
+            value = argument.Value;
+            return value is not null;
+        }
+
+        value = null;
+        return false;
+    }
 
     public static bool TryReadIds(IResolveFieldContext context, [NotNullWhen(true)] out string[]? idValues)
     {
@@ -99,17 +130,6 @@
         }
 
         return result;
-    }
-
-    static IReadOnlyCollection<T> ReadList<T>(IResolveFieldContext context, string name)
-    {
-        var argument = context.GetArgument(typeof(T[]), name);
-        if (argument is null)
-        {
-            return [];
-        }
-
-        return (T[]) argument;
     }
 
     static bool TryReadInt(string name, IResolveFieldContext context, out int value)

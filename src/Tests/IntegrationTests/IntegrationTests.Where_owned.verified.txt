@@ -1,0 +1,28 @@
+﻿{
+  target: {
+    Data: {
+      ownedParent: {
+        property: Match,
+        child1: {
+          property: Child1Match
+        }
+      }
+    }
+  },
+  sql: {
+    Text:
+select top (2) cast (0 as bit),
+               o.Child1_Property,
+               o.Id,
+               o.Property
+from   OwnedParents as o
+where  o.Child1_Property = @p,
+    Parameters: {
+      @p: {
+        Value: Child1Match,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
+  }
+}

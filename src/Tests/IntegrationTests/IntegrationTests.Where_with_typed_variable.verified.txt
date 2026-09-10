@@ -1,0 +1,26 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          property: Value2
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+where    p.Property = @p
+order by p.Property,
+    Parameters: {
+      @p: {
+        Value: Value2,
+        Size: 4000,
+        IsNullable: true
+      }
+    }
+  }
+}

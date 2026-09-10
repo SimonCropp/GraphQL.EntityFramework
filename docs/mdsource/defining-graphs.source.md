@@ -1,4 +1,4 @@
-# Defining Graphs
+﻿# Defining Graphs
 
 
 ## Includes and Navigation properties.
@@ -404,8 +404,8 @@ An optional list of `exclusions` can be passed to exclude a subset of properties
 
 In some cases, it may be necessary to use `Field` instead of `AddQueryField`/`AddSingleField`/etc but still would like to use apply the `where` argument. This can be useful when the returned `Graph` type is not for an entity (for example, aggregate results). To support this:
 
- * Add the `WhereExpressionGraph` argument
- * Apply the `where` argument expression using `ExpressionBuilder<T>.BuildPredicate(whereExpression)`
+ * Add a `WhereGraph<T>` argument, where `T` is the type being filtered. The generated input type is named after `T`, so `WhereGraph<Employee>` is `EmployeeWhere` in the schema.
+ * Read the argument as a `WhereExpression` and apply it using `ExpressionBuilder<T>.BuildPredicate(whereExpression)`
 
 snippet: ManuallyApplyWhere
 

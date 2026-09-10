@@ -56,12 +56,7 @@
             """
             {
               parentEntities
-              (where:
-                [
-                  {path: "Property", comparison: startsWith, value: "Valu"}
-                  {path: "Property", comparison: endsWith, value: "ue3"}
-                ]
-              )
+              (where: {and: [{property: {startsWith: "Valu"}}, {property: {endsWith: "ue3"}}]})
               {
                 property
               }
@@ -93,12 +88,7 @@
             """
             {
               parentEntities
-              (where:
-                [
-                  {path: "Property", comparison: startsWith, value: "Valu"}
-                  {path: "Property", comparison: endsWith, value: "ue3"}
-                ]
-              )
+              (where: {property: {startsWith: "Valu", endsWith: "ue3"}})
               {
                 property
               }
@@ -128,7 +118,7 @@
         var query =
             """
             {
-              dateEntities (where: {path: "Property", comparison: equal, value: "2020-10-1"})
+              dateEntities (where: {property: {equal: "2020-10-01"}})
               {
                 id
               }
@@ -151,7 +141,7 @@
         var query =
             """
             {
-              dateEntities (where: {path: "Property", comparison: notEqual, value: "2020-10-1"})
+              dateEntities (where: {property: {notEqual: "2020-10-01"}})
               {
                 id
               }
@@ -174,7 +164,7 @@
         var query =
             """
             {
-              enumEntities (where: {path: "Property", comparison: equal, value: "Thursday"})
+              enumEntities (where: {property: {equal: THURSDAY}})
               {
                 id
               }
@@ -197,7 +187,7 @@
         var query =
             """
             {
-              enumEntities (where: {path: "Property", comparison: notEqual, value: "Thursday"})
+              enumEntities (where: {property: {notEqual: THURSDAY}})
               {
                 id
               }
@@ -220,7 +210,7 @@
         var query =
             """
             {
-              stringEntities (orderBy: {path: "property"}, where: {path: "Property", comparison: notEqual, value: "notValue"})
+              stringEntities (orderBy: {property: ascending}, where: {property: {notEqual: "notValue"}})
               {
                 id, property
               }
@@ -247,7 +237,7 @@
         var query =
             """
             {
-              stringEntities (orderBy: {path: "property"}, where: {path: "Property", comparison: notEqual, value: "NotValue"})
+              stringEntities (orderBy: {property: ascending}, where: {property: {notEqual: "NotValue"}})
               {
                 id, property
               }
@@ -274,7 +264,7 @@
         var query =
             """
             {
-              stringEntities (orderBy: {path: "property"}, where: {path: "Property", comparison: contains, value: "b" })
+              stringEntities (orderBy: {property: ascending}, where: {property: {contains: "b"}})
               {
                 id, property
               }
@@ -321,7 +311,7 @@
         var query =
             """
             {
-              stringEntities (orderBy: {path: "property"}, where: {path: "Property", comparison: contains, value: "B" })
+              stringEntities (orderBy: {property: ascending}, where: {property: {contains: "B"}})
               {
                 id, property
               }
@@ -369,7 +359,7 @@
         var query =
             """
             {
-              enumEntities (where: {path: "Property", comparison: in, value: ["Thursday"]})
+              enumEntities (where: {property: {in: [THURSDAY]}})
               {
                 id
               }
@@ -392,7 +382,7 @@
         var query =
             """
             {
-              timeEntities (where: {path: "Property", comparison: equal, value: "10:11 AM"})
+              timeEntities (where: {property: {equal: "10:11:00"}})
               {
                 id
               }
@@ -415,7 +405,7 @@
         var query =
             """
             {
-              timeEntities (where: {path: "Property", comparison: notEqual, value: "10:11 AM"})
+              timeEntities (where: {property: {notEqual: "10:11:00"}})
               {
                 id
               }
@@ -436,7 +426,7 @@
     public async Task Where_with_nullable_properties1()
     {
         var query =
-            """{ withNullableEntities (where: {path: "Nullable", comparison: equal}){ id } }""";
+            """{ withNullableEntities (where: {nullable: {equal: null}}){ id } }""";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -453,7 +443,7 @@
     public async Task Where_with_nullable_properties1_NotEqual()
     {
         var query =
-            """{ withNullableEntities (where: {path: "Nullable", comparison: notEqual}){ id } }""";
+            """{ withNullableEntities (where: {nullable: {notEqual: null}}){ id } }""";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -470,7 +460,7 @@
     public async Task Where_with_nullable_properties2()
     {
         var query =
-            """{ withNullableEntities (where: {path: "Nullable", comparison: equal, value: "10"}){ id } }""";
+            """{ withNullableEntities (where: {nullable: {equal: 10}}){ id } }""";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -486,7 +476,7 @@
     public async Task Where_with_nullable_properties2_notEqual()
     {
         var query =
-            """{ withNullableEntities (where: {path: "Nullable", comparison: notEqual, value: "10"}){ id } }""";
+            """{ withNullableEntities (where: {nullable: {notEqual: 10}}){ id } }""";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -502,7 +492,7 @@
     public async Task Where_null_comparison_value()
     {
         var query =
-            """{ parentEntities (where: {path: "Property", comparison: equal}){ id } }""";
+            """{ parentEntities (where: {property: {equal: null}}){ id } }""";
 
         var entity1 = new ParentEntity
         {
@@ -521,7 +511,7 @@
     public async Task Where_null_comparison_value_notEqual()
     {
         var query =
-            """{ parentEntities (where: {path: "Property", comparison: notEqual}){ id } }""";
+            """{ parentEntities (where: {property: {notEqual: null}}){ id } }""";
 
         var entity1 = new ParentEntity
         {
@@ -542,7 +532,7 @@
         var query =
             """
             {
-              parentEntities (take: 1, orderBy: {path: "property"})
+              parentEntities (take: 1, orderBy: {property: ascending})
               {
                 property
               }
@@ -594,7 +584,7 @@
         var query =
             """
             {
-              parentEntities (skip: 1, orderBy: {path: "property"})
+              parentEntities (skip: 1, orderBy: {property: ascending})
               {
                 property
               }
@@ -770,7 +760,7 @@
         var query =
             """
             {
-              parentEntities (orderBy: {path: "Property"})
+              parentEntities (orderBy: {property: ascending})
               {
                 property
               }
@@ -796,7 +786,7 @@
         var query =
             """
             {
-              parentEntities (orderBy: {path: "Property", descending: true})
+              parentEntities (orderBy: {property: descending})
               {
                 property
               }
@@ -822,7 +812,7 @@
         var query =
             """
             {
-              parentEntities (orderBy: {path: "Property"})
+              parentEntities (orderBy: {property: ascending})
               {
                 property
               }
@@ -845,7 +835,7 @@
         var query =
             """
             {
-              childEntities (orderBy: {path: "Parent.Property"})
+              childEntities (orderBy: {parent: {property: ascending}})
               {
                 property
               }
@@ -881,7 +871,7 @@
         var query =
             """
             {
-              childEntities (orderBy: {path: "Parent.Property"})
+              childEntities (orderBy: {parent: {property: ascending}})
               {
                 property
               }
@@ -912,7 +902,7 @@
         var query =
             """
             {
-              parentEntities (where: {path: "Property", comparison: like, value: "value2"})
+              parentEntities (where: {property: {like: "value2"}})
               {
                 property
               }
@@ -939,7 +929,7 @@
             """
             query ($value: String!)
             {
-              parentEntities (where: {path: "Property", comparison: equal, value: [$value]})
+              parentEntities (where: {property: {equal: $value}})
               {
                 property
               }
@@ -972,7 +962,7 @@
             """
             query ($value: String!)
             {
-              parentEntities (where: {path: "Property", comparison: notEqual, value: [$value]})
+              parentEntities (where: {property: {notEqual: $value}})
               {
                 property
               }
@@ -1004,7 +994,7 @@
         var query =
             """
             {
-              customType (orderBy: {path: "property"})
+              customType (orderBy: {property: ascending})
               {
                 property
               }
@@ -1423,7 +1413,7 @@
             mutation {
               parentEntityMutation(id: "00000000-0000-0000-0000-000000000001") {
                 property
-                children(orderBy: {path: "property"})
+                children(orderBy: {property: ascending})
                 {
                   property
                 }
@@ -1471,7 +1461,7 @@
             mutation {
               parentEntityMutationFirst(id: "00000000-0000-0000-0000-000000000001") {
                 property
-                children(orderBy: {path: "property"})
+                children(orderBy: {property: ascending})
                 {
                   property
                 }
@@ -1519,7 +1509,7 @@
             {
               parentEntity(id: "00000000-0000-0000-0000-000000000001") {
                 property
-                children(orderBy: {path: "property"})
+                children(orderBy: {property: ascending})
                 {
                   property
                 }
@@ -1567,7 +1557,7 @@
             {
               parentEntityFirst(id: "00000000-0000-0000-0000-000000000001") {
                 property
-                children(orderBy: {path: "property"})
+                children(orderBy: {property: ascending})
                 {
                   property
                 }
@@ -1619,7 +1609,7 @@
             }
             fragment parentEntityFields on Parent {
               property
-              children(orderBy: {path: "property"})
+              children(orderBy: {property: ascending})
               {
                 ...childEntityFields
               }
@@ -1673,7 +1663,7 @@
             }
             fragment parentEntityFields on Parent {
               property
-              children(orderBy: {path: "property"})
+              children(orderBy: {property: ascending})
               {
                 ...childEntityFields
               }
@@ -1721,7 +1711,7 @@
         var query =
             """
             {
-              parentEntities (where: {path: "Property", comparison: equal, value: "value2"})
+              parentEntities (where: {property: {equal: "value2"}})
               {
                 property
               }
@@ -1747,7 +1737,7 @@
         var query =
             """
             {
-              parentEntities (where: {path: "Property", comparison: equal, value: "'; DROP TABLE ParentEntities; --"})
+              parentEntities (where: {property: {equal: "'; DROP TABLE ParentEntities; --"}})
               {
                 property
               }
@@ -1765,7 +1755,7 @@
         var query =
             """
             {
-              parentEntities (where: {path: "Property", comparison: notEqual, value: "value2"})
+              parentEntities (where: {property: {notEqual: "value2"}})
               {
                 property
               }
@@ -1791,7 +1781,7 @@
         var query =
             """
             {
-              parentEntities (where: {path: "Property", value: "value2"})
+              parentEntities (where: {property: {equal: "value2"}})
               {
                 property
               }
@@ -1905,7 +1895,7 @@
         var query =
             """
             {
-              parentEntities (where: {path: "Property", comparison: in, value: "value2"})
+              parentEntities (where: {property: {in: ["value2"]}})
               {
                 property
               }
@@ -1932,7 +1922,7 @@
             """
             {
               parentEntities
-              (where: {path: "Property", comparison: in, value: ["Value1", "Value2"]}, orderBy: {path: "property"})
+              (where: {property: {in: ["Value1", "Value2"]}}, orderBy: {property: ascending})
               {
                 property
               }
@@ -2014,7 +2004,7 @@
         var query =
             """
             {
-              parentEntities (orderBy: {path: "property"})
+              parentEntities (orderBy: {property: ascending})
               {
                 renamed: property
               }
@@ -2036,7 +2026,7 @@
         var query =
             """
             {
-              childEntities (orderBy: {path: "property"})
+              childEntities (orderBy: {property: ascending})
               {
                 renamedChild: property
                 parentAlias
@@ -2067,9 +2057,9 @@
         var query =
             """
             {
-              parentEntities (orderBy: {path: "property"})
+              parentEntities (orderBy: {property: ascending})
               {
-                children (where: {path: "property", comparison: equal, value: "Match"})
+                children (where: {property: {equal: "Match"}})
                 {
                   property
                 }
@@ -2106,7 +2096,7 @@
         var query =
             """
             {
-              parentEntities (orderBy: {path: "property"})
+              parentEntities (orderBy: {property: ascending})
               {
                 property
               }
@@ -2133,7 +2123,7 @@
         var query =
             """
             {
-              childEntities (orderBy: {path: "property"})
+              childEntities (orderBy: {property: ascending})
               {
                 parentAlias
                 {
@@ -2275,7 +2265,7 @@
         var query =
             """
             {
-              level1Entities(where: {path: "Level2Entity.Level3EntityId", comparison: equal, value: "00000000-0000-0000-0000-000000000003"})
+              level1Entities(where: {level2Entity: {level3EntityId: {equal: "00000000-0000-0000-0000-000000000003"}}})
               {
                 level2Entity
                 {
@@ -2318,7 +2308,7 @@
         var query =
             """
             {
-              level1Entities(where: {path: "Level2Entity.Level3EntityId", comparison: notEqual, value: "00000000-0000-0000-0000-000000000003"})
+              level1Entities(where: {level2Entity: {level3EntityId: {notEqual: "00000000-0000-0000-0000-000000000003"}}})
               {
                 level2Entity
                 {
@@ -2361,13 +2351,13 @@
         var query =
             """
             {
-              childEntities (orderBy: {path: "property"})
+              childEntities (orderBy: {property: ascending})
               {
                 property
                 parent
                 {
                   property
-                  children (orderBy: {path: "property"})
+                  children (orderBy: {property: ascending})
                   {
                     property
                     parent
@@ -2417,7 +2407,7 @@
         var query =
             """
             {
-              childEntities (orderBy: {path: "property"})
+              childEntities (orderBy: {property: ascending})
               {
                 property
                 parent
@@ -2465,7 +2455,7 @@
         var query =
             """
             {
-              childEntities (orderBy: {path: "property"})
+              childEntities (orderBy: {property: ascending})
               {
                 property
                 parent
@@ -2513,7 +2503,7 @@
         var query =
             """
             {
-              childEntities(where: {path: "ParentId", comparison: equal, value: "00000000-0000-0000-0000-000000000001"}, orderBy: {path: "property"})
+              childEntities(where: {parentId: {equal: "00000000-0000-0000-0000-000000000001"}}, orderBy: {property: ascending})
               {
                 property
                 parent
@@ -2556,7 +2546,7 @@
         var query =
             """
             {
-              childEntities(where: {path: "ParentId", comparison: notEqual, value: "00000000-0000-0000-0000-000000000001"}, orderBy: {path: "property"})
+              childEntities(where: {parentId: {notEqual: "00000000-0000-0000-0000-000000000001"}}, orderBy: {property: ascending})
               {
                 property
                 parent
@@ -2841,14 +2831,14 @@
             }
             fragment inheritedEntityFields on Interface {
               property
-              childrenFromInterface(orderBy: {path: "property"})
+              childrenFromInterface(orderBy: {property: ascending})
               {
                 items {
                   ...childEntityFields
                 }
               }
               ... on DerivedWithNavigation {
-                childrenFromDerived(orderBy: {path: "property"})
+                childrenFromDerived(orderBy: {property: ascending})
                 {
                   items {
                     ...childEntityFields
@@ -2907,7 +2897,7 @@
         var query =
             """
             {
-              readOnlyEntities(orderBy: {path: "id"}) {
+              readOnlyEntities(orderBy: {id: ascending}) {
                 firstName
                 lastName
                 age
@@ -2940,7 +2930,7 @@
         var query =
             """
             {
-              readOnlyEntities(orderBy: {path: "id"}) {
+              readOnlyEntities(orderBy: {id: ascending}) {
                 firstName
                 lastName
                 displayName
@@ -2973,7 +2963,7 @@
         var query =
             """
             {
-              readOnlyEntities(orderBy: {path: "id"}) {
+              readOnlyEntities(orderBy: {id: ascending}) {
                 firstName
                 lastName
                 computedInDb
@@ -3006,7 +2996,7 @@
         var query =
             """
             {
-              manyToManyLeftEntities (where: {path: "rights[rightName]", comparison: equal, value: "Right2"})
+              manyToManyLeftEntities (where: {rights: {any: {rightName: {equal: "Right2"}}}})
               {
                 leftName
                 rights
@@ -3061,7 +3051,7 @@
         var query =
             """
             {
-              manyToManyLeftEntities (where: {path: "rights[rightName]", comparison: notEqual, value: "Right2"})
+              manyToManyLeftEntities (where: {rights: {any: {rightName: {notEqual: "Right2"}}}})
               {
                 leftName
                 rights
@@ -3116,7 +3106,7 @@
         var query =
             """
             {
-              manyToManyRightEntities (where: {path: "lefts[leftName]", comparison: equal, value: "Left2"})
+              manyToManyRightEntities (where: {lefts: {any: {leftName: {equal: "Left2"}}}})
               {
                 rightName
                 lefts
@@ -3171,7 +3161,7 @@
         var query =
             """
             {
-              manyToManyRightEntities (where: {path: "lefts[leftName]", comparison: notEqual, value: "Left2"})
+              manyToManyRightEntities (where: {lefts: {any: {leftName: {notEqual: "Left2"}}}})
               {
                 rightName
                 lefts
