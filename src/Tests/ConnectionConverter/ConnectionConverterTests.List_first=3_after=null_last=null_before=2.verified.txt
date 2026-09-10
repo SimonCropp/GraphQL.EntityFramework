@@ -4,7 +4,7 @@
     HasNextPage: true,
     HasPreviousPage: false,
     StartCursor: 0,
-    EndCursor: 2
+    EndCursor: 1
   },
   Edges: [
     {
@@ -14,15 +14,10 @@
     {
       Cursor: 1,
       Node: b
-    },
-    {
-      Cursor: 2,
-      Node: c
     }
   ],
   Items: [
     a,
-    b,
-    c
+    b
   ]
 }

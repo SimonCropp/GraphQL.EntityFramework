@@ -7,7 +7,7 @@
           childrenConnectionOmitQueryArguments: {
             edges: [],
             pageInfo: {
-              endCursor: -1,
+              endCursor: null,
               hasNextPage: false
             }
           }
@@ -17,7 +17,7 @@
           childrenConnectionOmitQueryArguments: {
             edges: [],
             pageInfo: {
-              endCursor: -1,
+              endCursor: null,
               hasNextPage: false
             }
           }
@@ -27,7 +27,7 @@
           childrenConnectionOmitQueryArguments: {
             edges: [],
             pageInfo: {
-              endCursor: -1,
+              endCursor: null,
               hasNextPage: false
             }
           }
@@ -37,7 +37,7 @@
           childrenConnectionOmitQueryArguments: {
             edges: [],
             pageInfo: {
-              endCursor: -1,
+              endCursor: null,
               hasNextPage: false
             }
           }
@@ -47,7 +47,7 @@
           childrenConnectionOmitQueryArguments: {
             edges: [],
             pageInfo: {
-              endCursor: -1,
+              endCursor: null,
               hasNextPage: false
             }
           }
@@ -57,7 +57,7 @@
           childrenConnectionOmitQueryArguments: {
             edges: [],
             pageInfo: {
-              endCursor: -1,
+              endCursor: null,
               hasNextPage: false
             }
           }
@@ -67,7 +67,7 @@
           childrenConnectionOmitQueryArguments: {
             edges: [],
             pageInfo: {
-              endCursor: -1,
+              endCursor: null,
               hasNextPage: false
             }
           }
@@ -77,7 +77,7 @@
           childrenConnectionOmitQueryArguments: {
             edges: [],
             pageInfo: {
-              endCursor: -1,
+              endCursor: null,
               hasNextPage: false
             }
           }

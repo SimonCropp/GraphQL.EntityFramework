@@ -9,15 +9,15 @@
   Edges: [
     {
       Cursor: 0,
-      Node: b
+      Node: a
     },
     {
       Cursor: 1,
-      Node: a
+      Node: b
     }
   ],
   Items: [
-    b,
-    a
+    a,
+    b
   ]
 }

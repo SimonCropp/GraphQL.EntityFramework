@@ -36,78 +36,46 @@
     public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, int? after, int? last, int? before)
         where T : class
     {
-        if (last is null)
-        {
-            return First(list, first ?? list.Count, after, before, list.Count);
-        }
-
-        return Last(list, last.Value, after, before, list.Count);
-    }
-
-    static Connection<T> First<T>(List<T> list, int first, int? after, int? before, int count)
-        where T : class
-    {
-        int skip;
-        if (before is null)
-        {
-            // 'after' is an exclusive cursor, so start strictly after it.
-            // Matches the IQueryable overload below.
-            skip = after + 1 ?? 0;
-        }
-        else
-        {
-            skip = Math.Max(before.Value - first, 0);
-        }
-
-        return Range(list, skip, first, count);
-    }
-
-    static Connection<T> Last<T>(List<T> list, int last, int? after, int? before, int count)
-        where T : class
-    {
-        var (skip, take) = LastRange(last, after, before, count);
-
-        return Range(list, skip, take, count, true);
+        var count = list.Count;
+        var (skip, take) = Window(first, after, last, before, count);
+        var page = list.Skip(skip).Take(take);
+        return Build(skip, take, count, page);
     }
 
     /// <summary>
-    /// Resolve the skip/take for a `last` page. When `last` exceeds the number of items available before
-    /// the cursor, the start of the range clamps to zero and the page shrinks to what is available.
-    /// Without the clamp a negative skip reaches the database as a negative SQL OFFSET.
+    /// The skip and take for a page, in the order the Relay spec applies the arguments: `after`
+    /// and `before` bound the window, `first` keeps the start of it, then `last` keeps the end.
+    /// Cursors are indexes, `after` and `before` exclusive. A page never starts before the
+    /// window, so `last` past the start clamps rather than reaching the database as a negative
+    /// offset, and the edges keep their order whichever end the page was taken from.
     /// </summary>
-    static (int skip, int take) LastRange(int last, int? after, int? before, int count)
+    static (int skip, int take) Window(int? first, int? after, int? last, int? before, int count)
     {
-        if (after is not null)
+        var start = after + 1 ?? 0;
+
+        // The common page, first after, takes the page size as is, so the query does not
+        // change with the count
+        if (before is null &&
+            last is null &&
+            first is not null)
         {
-            // last after
-            return (after.Value + 1, last);
+            return (Math.Min(start, count), first.Value);
         }
 
-        // last before
-        var start = before.GetValueOrDefault(count);
-        var skip = start - last;
-        if (skip < 0)
+        var end = Math.Min(before ?? count, count);
+        start = Math.Min(start, end);
+
+        if (first is not null)
         {
-            return (0, Math.Max(start, 0));
+            end = Math.Min(end, start + first.Value);
         }
 
-        return (skip, last);
-    }
-
-    static Connection<T> Range<T>(
-        List<T> list,
-        int skip,
-        int take,
-        int count,
-        bool reverse = false)
-        where T : class
-    {
-        var page = list.Skip(skip).Take(take).ToList();
-        if (reverse)
+        if (last is not null)
         {
-           page.Reverse();
+            start = Math.Max(start, end - last.Value);
         }
-        return Build(skip, take, count, page);
+
+        return (start, end - start);
     }
 
     public static Task<Connection<TItem>> ApplyConnectionContext<TDbContext, TSource, TItem>(
@@ -146,70 +114,7 @@
         }
         var count = await queryable.CountAsync(cancel);
         cancel.ThrowIfCancellationRequested();
-        if (last is null)
-        {
-            return await First(queryable, first ?? count, after, before, count, context, filters, cancel, data);
-        }
-
-        return await Last(queryable, last.Value, after, before, count, context, filters, cancel, data);
-    }
-
-    static Task<Connection<TItem>> First<TDbContext, TSource, TItem>(
-        IQueryable<TItem> queryable,
-        int first,
-        int? after,
-        int? before,
-        int count,
-        IResolveFieldContext<TSource> context,
-        Filters<TDbContext>? filters,
-        Cancel cancel,
-        TDbContext data)
-        where TItem : class
-        where TDbContext : DbContext
-    {
-        int skip;
-        if (before is null)
-        {
-            skip = after + 1 ?? 0;
-        }
-        else
-        {
-            skip = Math.Max(before.Value - first, 0);
-        }
-
-        return Range(queryable, skip, first, count, context, filters, cancel, data);
-    }
-
-    static Task<Connection<TItem>> Last<TDbContext, TSource, TItem>(
-        IQueryable<TItem> queryable,
-        int last,
-        int? after,
-        int? before,
-        int count,
-        IResolveFieldContext<TSource> context,
-        Filters<TDbContext>? filters,
-        Cancel cancel,
-        TDbContext data)
-        where TItem : class
-        where TDbContext : DbContext
-    {
-        var (skip, take) = LastRange(last, after, before, count);
-
-        return Range(queryable, skip, take, count, context, filters, cancel, data);
-    }
-
-    static async Task<Connection<TItem>> Range<TDbContext, TSource, TItem>(
-        IQueryable<TItem> queryable,
-        int skip,
-        int take,
-        int count,
-        IResolveFieldContext<TSource> context,
-        Filters<TDbContext>? filters,
-        Cancel cancel,
-        TDbContext data)
-        where TItem : class
-        where TDbContext : DbContext
-    {
+        var (skip, take) = Window(first, after, last, before, count);
         var page = queryable.Skip(skip).Take(take);
         QueryLogger.Write(page);
         IEnumerable<TItem> result = await page.ToListAsync(cancel);
@@ -242,8 +147,10 @@
                 // long, since a large `first` makes take + skip overflow and wrap negative
                 HasNextPage = count > (long) take + skip,
                 HasPreviousPage = skip > 0,
-                StartCursor = skip.ToString(),
-                EndCursor = Math.Min(count - 1, (long) take - 1 + skip).ToString()
+                // Null when there are no edges, as the spec has it. The edges are used rather
+                // than the window since filters can remove items after the query.
+                StartCursor = edges.FirstOrDefault()?.Cursor,
+                EndCursor = edges.LastOrDefault()?.Cursor
             }
         };
     }

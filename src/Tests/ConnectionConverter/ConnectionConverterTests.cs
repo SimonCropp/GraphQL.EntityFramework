@@ -29,10 +29,14 @@
     [InlineData(11, null, null, null)]
     [InlineData(11, 1, null, null)]
 
-    //first after
+    //first before
     [InlineData(2, null, null, 2)]
     [InlineData(3, null, null, 2)]
     [InlineData(2, null, null, 3)]
+
+    //first after before
+    [InlineData(2, 2, null, 8)]
+    [InlineData(20, 2, null, 5)]
 
     //last before
     [InlineData(null, null, 2, null)]
@@ -40,10 +44,23 @@
 
     //last after
     [InlineData(null, 7, 2, null)]
+    [InlineData(null, 3, 2, null)]
+
+    //last after before
+    [InlineData(null, 2, 2, 8)]
+    [InlineData(null, 2, 20, 5)]
+
+    //first and last
+    [InlineData(5, 1, 2, null)]
 
     //last larger than the available range
     [InlineData(null, null, 20, null)]
     [InlineData(null, null, 5, 2)]
+
+    //empty window
+    [InlineData(2, null, null, 0)]
+    [InlineData(2, 9, null, null)]
+    [InlineData(2, 5, null, 3)]
     public async Task Queryable(int? first, int? after, int? last, int? before)
     {
         var fieldContext = new ResolveFieldContext<string>();
@@ -69,10 +86,14 @@
     [InlineData(11, null, null, null)]
     [InlineData(11, 1, null, null)]
 
-    //first after
+    //first before
     [InlineData(2, null, null, 2)]
     [InlineData(3, null, null, 2)]
     [InlineData(2, null, null, 3)]
+
+    //first after before
+    [InlineData(2, 2, null, 8)]
+    [InlineData(20, 2, null, 5)]
 
     //last before
     [InlineData(null, null, 2, null)]
@@ -80,10 +101,23 @@
 
     //last after
     [InlineData(null, 7, 2, null)]
+    [InlineData(null, 3, 2, null)]
+
+    //last after before
+    [InlineData(null, 2, 2, 8)]
+    [InlineData(null, 2, 20, 5)]
+
+    //first and last
+    [InlineData(5, 1, 2, null)]
 
     //last larger than the available range
     [InlineData(null, null, 20, null)]
     [InlineData(null, null, 5, 2)]
+
+    //empty window
+    [InlineData(2, null, null, 0)]
+    [InlineData(2, 9, null, null)]
+    [InlineData(2, 5, null, 3)]
     public Task List(int? first, int? after, int? last, int? before)
     {
         var connection = ConnectionConverter.ApplyConnectionContext(list, first, after, last, before);
@@ -129,6 +163,50 @@
 
         Assert.False(connection.PageInfo!.HasNextPage);
         Assert.Equal("9", connection.PageInfo.EndCursor);
+    }
+
+    // The in memory path reversed the page for `last` while numbering the cursors ascending, so
+    // cursor 8 sat on item j. Edges keep their order whichever end the page was taken from.
+    [Fact]
+    public void Last_keeps_edge_order_and_cursors()
+    {
+        var connection = ConnectionConverter.ApplyConnectionContext(list, first: null, after: null, last: 2, before: null);
+        Assert.Equal(["i", "j"], connection.Edges!.Select(_ => _.Node));
+        Assert.Equal(["8", "9"], connection.Edges!.Select(_ => _.Cursor));
+        Assert.Equal("8", connection.PageInfo!.StartCursor);
+        Assert.Equal("9", connection.PageInfo.EndCursor);
+    }
+
+    [Fact]
+    public void First_before_takes_from_the_start_of_the_window()
+    {
+        // first: 2 before: 5 is a, b, not the two items before the cursor
+        var connection = ConnectionConverter.ApplyConnectionContext(list, first: 2, after: null, last: null, before: 5);
+        Assert.Equal(["a", "b"], connection.Edges!.Select(_ => _.Node));
+        Assert.True(connection.PageInfo!.HasNextPage);
+        Assert.False(connection.PageInfo.HasPreviousPage);
+    }
+
+    [Fact]
+    public void Last_after_takes_from_the_end_of_the_window()
+    {
+        // last: 2 after: 3 is i, j, not the two items after the cursor
+        var connection = ConnectionConverter.ApplyConnectionContext(list, first: null, after: 3, last: 2, before: null);
+        Assert.Equal(["i", "j"], connection.Edges!.Select(_ => _.Node));
+        Assert.False(connection.PageInfo!.HasNextPage);
+        Assert.True(connection.PageInfo.HasPreviousPage);
+    }
+
+    [Fact]
+    public void Empty_page_has_null_cursors()
+    {
+        // an empty connection reported startCursor 0 and endCursor -1
+        var connection = ConnectionConverter.ApplyConnectionContext(new List<string>(), first: 2, after: null, last: null, before: null);
+        Assert.Empty(connection.Edges!);
+        Assert.Null(connection.PageInfo!.StartCursor);
+        Assert.Null(connection.PageInfo.EndCursor);
+        Assert.False(connection.PageInfo.HasNextPage);
+        Assert.False(connection.PageInfo.HasPreviousPage);
     }
 
     [Fact]

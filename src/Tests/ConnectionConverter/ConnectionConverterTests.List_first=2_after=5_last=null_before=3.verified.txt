@@ -1,0 +1,7 @@
+﻿{
+  TotalCount: 10,
+  PageInfo: {
+    HasNextPage: true,
+    HasPreviousPage: true
+  }
+}
