@@ -1,0 +1,51 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          property: Value1,
+          childrenConnection: {
+            totalCount: 2,
+            items: [
+              {
+                property: Value2
+              },
+              {
+                property: Value3
+              }
+            ],
+            edges: [
+              {
+                cursor: 0,
+                node: {
+                  property: Value2
+                }
+              },
+              {
+                cursor: 1,
+                node: {
+                  property: Value3
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         c.Id,
+         c.ParentId,
+         c.Property,
+         p.Property
+from     ParentEntities as p
+         left outer join
+         ChildEntities as c
+         on p.Id = c.ParentId
+order by p.Property,
+         p.Id,
+         c.Id
+  }
+}

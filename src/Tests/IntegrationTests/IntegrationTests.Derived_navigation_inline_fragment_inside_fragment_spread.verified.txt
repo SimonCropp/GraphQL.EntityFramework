@@ -1,0 +1,32 @@
+﻿{
+  target: {
+    Data: {
+      tphDerivedNavEntities: [
+        {
+          property: CategoryItem1,
+          category: {
+            name: Science
+          }
+        },
+        {
+          property: RegionItem1
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   t.Id,
+         t.Discriminator,
+         t.Property,
+         t.CategoryId,
+         t.RegionId,
+         c.Id,
+         c.Name
+from     TphDerivedNavBaseEntities as t
+         left outer join
+         CategoryEntities as c
+         on t.CategoryId = c.Id
+order by t.Property
+  }
+}

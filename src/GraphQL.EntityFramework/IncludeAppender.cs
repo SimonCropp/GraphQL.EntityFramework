@@ -22,7 +22,7 @@
         keyNames.TryGetValue(type, out var keys);
         foreignKeys.TryGetValue(type, out var fks);
 
-        var projection = GetProjectionInfo(context, navigationProperties, keys, fks);
+        var projection = GetProjectionInfo(context, type, navigationProperties, keys, fks);
 
         if (filters is { HasFilters: true })
         {
@@ -49,7 +49,7 @@
         keyNames.TryGetValue(type, out var keys);
         foreignKeys.TryGetValue(type, out var fks);
 
-        var projection = GetProjectionInfo(context, navigationProperties, keys, fks);
+        var projection = GetProjectionInfo(context, type, navigationProperties, keys, fks);
 
         if (filters is { HasFilters: true })
         {
@@ -224,6 +224,7 @@
 
     FieldProjectionInfo GetProjectionInfo(
         IResolveFieldContext context,
+        Type entityType,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
         List<string>? keys,
         IReadOnlySet<string>? foreignKeyNames)
@@ -233,32 +234,93 @@
 
         if (context.SubFields is not null)
         {
-            foreach (var fieldInfo in context.SubFields.Values)
+            foreach (var (field, fieldType) in context.SubFields.Values)
             {
-                // SubFields is keyed by response key, which is the alias when one is used.
-                // The name of the property to project has to come from the ast node.
-                var fieldName = fieldInfo.Field.Name.StringValue;
-                if (IsConnectionNodeName(fieldName))
-                {
-                    ProcessConnectionNodeFields(fieldInfo.Field.SelectionSet, navigationProperties, scalarFields, navProjections, context);
-                }
-                else
-                {
-                    ProcessProjectionField(fieldName, fieldInfo, navigationProperties, scalarFields, navProjections, context);
-                }
+                ProcessField(field, fieldType, navigationProperties, scalarFields, navProjections, context);
             }
         }
 
         // Scan for derived-type navigations from inline fragments (TPH support)
-        var derivedNavigations = GetDerivedNavigationsFromFragments(context);
+        var derivedNavigations = GetDerivedNavigationsFromFragments(context, entityType);
 
         return new(scalarFields, keys, foreignKeyNames, navProjections, derivedNavigations);
     }
 
-    Dictionary<Type, Dictionary<string, NavigationProjectionInfo>>? GetDerivedNavigationsFromFragments(
+    /// <summary>
+    /// The field type carries the projection metadata, and its resolved graph type is what the
+    /// selection set below it selects from. GraphQL.NET supplies both for the root sub fields
+    /// only, so for nested selection sets they are recovered by walking the schema alongside
+    /// the ast. Without that, a projection based field or a connection below the root was
+    /// treated as a scalar named after the field, and nothing under it was projected.
+    /// </summary>
+    void ProcessField(
+        GraphQLField field,
+        FieldType? fieldType,
+        IReadOnlyDictionary<string, Navigation>? navigationProperties,
+        HashSet<string> scalarFields,
+        Dictionary<string, NavigationProjectionInfo> navProjections,
         IResolveFieldContext context)
     {
-        var selectionSet = GetLeafSelectionSet(context);
+        // SubFields is keyed by response key, which is the alias when one is used.
+        // The name of the property to project has to come from the ast node.
+        var fieldName = field.Name.StringValue;
+
+        if (IsConnectionNodeName(fieldName))
+        {
+            // edges, items and node are wrappers with no property of their own.
+            // The entity fields are in the selection set below them.
+            ProcessSelectionSet(field.SelectionSet, GetComplexGraphType(fieldType), navigationProperties, scalarFields, navProjections, context);
+            return;
+        }
+
+        if (fieldType is not null &&
+            TryGetProjectionMetadata(fieldType, out var projection))
+        {
+            ProcessProjectionExpression(field, fieldType, projection, navigationProperties, scalarFields, navProjections, context);
+            return;
+        }
+
+        ProcessNavigationOrScalar(fieldName, field, fieldType, navigationProperties, scalarFields, navProjections, context);
+    }
+
+    void ProcessSelectionSet(
+        GraphQLSelectionSet? selectionSet,
+        IComplexGraphType? graphType,
+        IReadOnlyDictionary<string, Navigation>? navigationProperties,
+        HashSet<string> scalarFields,
+        Dictionary<string, NavigationProjectionInfo> navProjections,
+        IResolveFieldContext context)
+    {
+        if (selectionSet?.Selections is null)
+        {
+            return;
+        }
+
+        foreach (var (field, fieldGraphType) in EnumerateFields(selectionSet, graphType, context))
+        {
+            var fieldType = fieldGraphType?.GetField(field.Name.Value);
+            ProcessField(field, fieldType, navigationProperties, scalarFields, navProjections, context);
+        }
+    }
+
+    /// <summary>
+    /// The graph type a field's selection set selects from. Null for a scalar or a field that could
+    /// not be resolved, in which case the selection set is matched against the entity by name alone.
+    /// </summary>
+    static IComplexGraphType? GetComplexGraphType(FieldType? fieldType) =>
+        fieldType?.ResolvedType?.GetNamedType() as IComplexGraphType;
+
+    /// <summary>
+    /// Navigations selected through a fragment on a type derived from the entity type. They do
+    /// not exist on the entity type itself, so they are collected per derived type and included
+    /// with a cast. Fragments on the entity type itself, or on one of its base types, select
+    /// navigations the main projection already covers, so they are skipped.
+    /// </summary>
+    Dictionary<Type, Dictionary<string, NavigationProjectionInfo>>? GetDerivedNavigationsFromFragments(
+        IResolveFieldContext context,
+        Type entityType)
+    {
+        var (selectionSet, leafGraphType) = GetLeafSelection(context);
         if (selectionSet?.Selections is null)
         {
             return null;
@@ -266,86 +328,43 @@
 
         Dictionary<Type, Dictionary<string, NavigationProjectionInfo>>? result = null;
 
-        foreach (var selection in selectionSet.Selections)
+        foreach (var (field, fieldGraphType) in EnumerateFields(selectionSet, leafGraphType, context))
         {
-            GraphQLTypeCondition? typeCondition;
-            GraphQLSelectionSet? fragmentSelectionSet;
-
-            switch (selection)
-            {
-                case GraphQLInlineFragment inlineFragment:
-                    typeCondition = inlineFragment.TypeCondition;
-                    fragmentSelectionSet = inlineFragment.SelectionSet;
-                    break;
-                case GraphQLFragmentSpread fragmentSpread:
-                {
-                    var name = fragmentSpread.FragmentName.Name;
-                    var fragmentDefinition = context.Document.Definitions
-                        .OfType<GraphQLFragmentDefinition>()
-                        .SingleOrDefault(_ => _.FragmentName.Name == name);
-                    if (fragmentDefinition is null)
-                    {
-                        continue;
-                    }
-
-                    typeCondition = fragmentDefinition.TypeCondition;
-                    fragmentSelectionSet = fragmentDefinition.SelectionSet;
-                    break;
-                }
-                default:
-                    continue;
-            }
-
-            if (typeCondition is null)
+            if (fieldGraphType is null ||
+                ReferenceEquals(fieldGraphType, leafGraphType) ||
+                !TryFindDerivedClrType(fieldGraphType, out var derivedType) ||
+                derivedType == entityType ||
+                !entityType.IsAssignableFrom(derivedType))
             {
                 continue;
             }
 
-            var typeName = typeCondition.Type.Name.StringValue;
-
-            // Find the CLR type for this GraphQL type name using the schema
-            if (!TryFindDerivedClrType(typeName, context.Schema, out var derivedType))
+            if (!navigations.TryGetValue(derivedType, out var derivedNavProps) ||
+                !derivedNavProps.TryGetValue(field.Name.StringValue, out var navigation))
             {
                 continue;
             }
 
-            // Get navigation properties for this derived type
-            if (!navigations.TryGetValue(derivedType, out var derivedNavProps))
+            result ??= [];
+            if (!result.TryGetValue(derivedType, out var derivedNavs))
             {
-                continue;
+                derivedNavs = [];
+                result[derivedType] = derivedNavs;
             }
 
-            // Process fields in this fragment against the derived type's navigation properties
-            foreach (var field in fragmentSelectionSet.Selections.OfType<GraphQLField>())
-            {
-                var fieldName = field.Name.StringValue;
-                if (!derivedNavProps.TryGetValue(fieldName, out var navigation))
-                {
-                    continue;
-                }
+            var navType = navigation.Type;
+            navigations.TryGetValue(navType, out var nestedNavProps);
+            keyNames.TryGetValue(navType, out var nestedKeys);
+            foreignKeys.TryGetValue(navType, out var nestedFks);
 
-                result ??= [];
-                if (!result.TryGetValue(derivedType, out var derivedNavs))
-                {
-                    derivedNavs = [];
-                    result[derivedType] = derivedNavs;
-                }
-
-                if (derivedNavs.ContainsKey(navigation.Name))
-                {
-                    continue;
-                }
-
-                var navType = navigation.Type;
-                navigations.TryGetValue(navType, out var nestedNavProps);
-                keyNames.TryGetValue(navType, out var nestedKeys);
-                foreignKeys.TryGetValue(navType, out var nestedFks);
-
-                derivedNavs[navigation.Name] = new(
+            var navGraphType = GetComplexGraphType(fieldGraphType.GetField(field.Name.Value));
+            AddNavigation(
+                derivedNavs,
+                navigation.Name,
+                new(
                     navType,
                     navigation.IsCollection,
-                    GetNestedProjection(field.SelectionSet, nestedNavProps, nestedKeys, nestedFks, context));
-            }
+                    GetNestedProjection(field.SelectionSet, navGraphType, nestedNavProps, nestedKeys, nestedFks, context)));
         }
 
         return result;
@@ -353,15 +372,17 @@
 
     /// <summary>
     /// Navigate through connection wrapper fields (edges/items/node) to find the leaf selection set
-    /// that contains the actual entity fields and inline fragments.
+    /// that contains the actual entity fields and inline fragments, and the graph type it selects from.
     /// </summary>
-    static GraphQLSelectionSet? GetLeafSelectionSet(IResolveFieldContext context)
+    static (GraphQLSelectionSet? SelectionSet, IComplexGraphType? GraphType) GetLeafSelection(IResolveFieldContext context)
     {
         var selectionSet = context.FieldAst.SelectionSet;
         if (selectionSet?.Selections is null)
         {
-            return null;
+            return (null, null);
         }
+
+        var graphType = GetComplexGraphType(context.FieldDefinition);
 
         // Drill through connection wrapper fields
         while (true)
@@ -369,14 +390,13 @@
             var found = false;
             foreach (var selection in selectionSet.Selections)
             {
-                if (selection is GraphQLField field && IsConnectionNodeName(field.Name.StringValue))
+                if (selection is GraphQLField { SelectionSet: not null } field &&
+                    IsConnectionNodeName(field.Name.StringValue))
                 {
-                    if (field.SelectionSet is not null)
-                    {
-                        selectionSet = field.SelectionSet;
-                        found = true;
-                        break;
-                    }
+                    graphType = GetComplexGraphType(graphType?.GetField(field.Name.Value));
+                    selectionSet = field.SelectionSet;
+                    found = true;
+                    break;
                 }
             }
 
@@ -386,31 +406,25 @@
             }
         }
 
-        return selectionSet;
+        return (selectionSet, graphType);
     }
 
-    bool TryFindDerivedClrType(string graphQlTypeName, ISchema schema, [NotNullWhen(true)] out Type? clrType)
+    bool TryFindDerivedClrType(IGraphType graphType, [NotNullWhen(true)] out Type? clrType)
     {
         clrType = null;
 
-        // Use the schema's type lookup to resolve GraphQL type name → CLR type
-        // Indexed by name, rather than a linear scan of every type in the schema per request
-        var graphType = schema.AllTypes[graphQlTypeName];
-        if (graphType is not null)
+        // Walk the type hierarchy to find the CLR type from the generic arguments
+        var graphClrType = GetSourceType(graphType.GetType());
+        if (graphClrType is not null && navigations.ContainsKey(graphClrType))
         {
-            // Walk the type hierarchy to find the CLR type from the generic arguments
-            var graphClrType = GetSourceType(graphType.GetType());
-            if (graphClrType is not null && navigations.ContainsKey(graphClrType))
-            {
-                clrType = graphClrType;
-                return true;
-            }
+            clrType = graphClrType;
+            return true;
         }
 
         // Fallback: match CLR type name directly
         foreach (var type in navigations.Keys)
         {
-            if (string.Equals(type.Name, graphQlTypeName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(type.Name, graphType.Name, StringComparison.OrdinalIgnoreCase))
             {
                 clrType = type;
                 return true;
@@ -441,56 +455,14 @@
         return null;
     }
 
-    void ProcessConnectionNodeFields(
-        GraphQLSelectionSet? selectionSet,
-        IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        HashSet<string> scalarFields,
-        Dictionary<string, NavigationProjectionInfo> navProjections,
-        IResolveFieldContext context)
-    {
-        if (selectionSet?.Selections is null)
-        {
-            return;
-        }
-
-        foreach (var selection in EnumerateFields(selectionSet, context))
-        {
-            var fieldName = selection.Name.StringValue;
-            if (IsConnectionNodeName(fieldName))
-            {
-                ProcessConnectionNodeFields(selection.SelectionSet, navigationProperties, scalarFields, navProjections, context);
-            }
-            else
-            {
-                ProcessNestedProjectionField(fieldName, selection, navigationProperties, scalarFields, navProjections, context);
-            }
-        }
-    }
-
     static bool IsConnectionNodeName(string fieldName) =>
         fieldName.Equals("edges", StringComparison.OrdinalIgnoreCase) ||
         fieldName.Equals("items", StringComparison.OrdinalIgnoreCase) ||
         fieldName.Equals("node", StringComparison.OrdinalIgnoreCase);
 
-    void ProcessProjectionField(
-        string fieldName,
-        (GraphQLField Field, FieldType FieldType) fieldInfo,
-        IReadOnlyDictionary<string, Navigation>? navigationProperties,
-        HashSet<string> scalarFields,
-        Dictionary<string, NavigationProjectionInfo> navProjections,
-        IResolveFieldContext context)
-    {
-        if (TryGetProjectionMetadata(fieldInfo.FieldType, out var projection))
-        {
-            ProcessProjectionExpression(fieldInfo, projection, navigationProperties, scalarFields, navProjections, context);
-            return;
-        }
-
-        ProcessNestedProjectionField(fieldName, fieldInfo.Field, navigationProperties, scalarFields, navProjections, context);
-    }
-
     void ProcessProjectionExpression(
-        (GraphQLField Field, FieldType FieldType) fieldInfo,
+        GraphQLField field,
+        FieldType fieldType,
         LambdaExpression projection,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
         HashSet<string> scalarFields,
@@ -524,15 +496,10 @@
 
         foreach (var (navName, nestedPaths) in pathsByNavigation)
         {
-            if (!TryFindNavigation(navigationProperties, navName, out var navigation, out var actualNavName))
+            if (!TryFindNavigation(navigationProperties, navName, out var navigation))
             {
                 // Scalar field path (no navigation) — add root property to scalarFields
                 scalarFields.Add(navName);
-                continue;
-            }
-
-            if (navProjections.ContainsKey(actualNavName))
-            {
                 continue;
             }
 
@@ -546,7 +513,7 @@
             if (navName == primaryNavigation)
             {
                 // Primary navigation: merge GraphQL fields with projection-required fields
-                nestedProjection = GetNestedProjection(fieldInfo.Field.SelectionSet, nestedNavProps, nestedKeys, nestedFks, context);
+                nestedProjection = GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), nestedNavProps, nestedKeys, nestedFks, context);
                 foreach (var nestedPath in nestedPaths)
                 {
                     if (!nestedPath.Contains('.'))
@@ -565,45 +532,23 @@
                 nestedProjection = new(nestedScalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
             }
 
-            navProjections[actualNavName] = new(navType, navigation.IsCollection, nestedProjection);
+            AddNavigation(navProjections, navigation.Name, new(navType, navigation.IsCollection, nestedProjection));
         }
     }
 
     static bool TryFindNavigation(
         IReadOnlyDictionary<string, Navigation>? properties,
         string name,
-        [NotNullWhen(true)] out Navigation? navigation,
-        [NotNullWhen(true)] out string? actualName)
+        [NotNullWhen(true)] out Navigation? navigation)
     {
         navigation = null;
-        actualName = null;
-
-        if (properties == null)
-        {
-            return false;
-        }
-
-        if (properties.TryGetValue(name, out navigation))
-        {
-            actualName = name;
-            return true;
-        }
-
-        foreach (var (key, value) in properties)
-        {
-            if (string.Equals(key, name, StringComparison.OrdinalIgnoreCase))
-            {
-                navigation = value;
-                actualName = key;
-                return true;
-            }
-        }
-
-        return false;
+        return properties is not null &&
+               properties.TryGetValue(name, out navigation);
     }
 
     FieldProjectionInfo GetNestedProjection(
         GraphQLSelectionSet? selectionSet,
+        IComplexGraphType? graphType,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
         List<string>? keys,
         IReadOnlySet<string>? foreignKeyNames,
@@ -612,35 +557,40 @@
         var scalarFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var navProjections = new Dictionary<string, NavigationProjectionInfo>();
 
-        if (selectionSet?.Selections is null)
-        {
-            return new(scalarFields, keys, foreignKeyNames, navProjections);
-        }
-
-        foreach (var field in EnumerateFields(selectionSet, context))
-        {
-            ProcessNestedProjectionField(field.Name.StringValue, field, navigationProperties, scalarFields, navProjections, context);
-        }
+        ProcessSelectionSet(selectionSet, graphType, navigationProperties, scalarFields, navProjections, context);
 
         return new(scalarFields, keys, foreignKeyNames, navProjections);
     }
 
-    static IEnumerable<GraphQLField> EnumerateFields(GraphQLSelectionSet selectionSet, IResolveFieldContext context)
+    /// <summary>
+    /// The fields in a selection set, including those inside fragments at any depth. A fragment
+    /// can name a type other than the parent's, so each field is paired with the graph type it
+    /// selects from. Validation rejects fragment cycles, but they are guarded against anyway,
+    /// since the recursion would otherwise never end.
+    /// </summary>
+    static IEnumerable<(GraphQLField Field, IComplexGraphType? GraphType)> EnumerateFields(
+        GraphQLSelectionSet selectionSet,
+        IComplexGraphType? graphType,
+        IResolveFieldContext context,
+        HashSet<string>? spreadsInProgress = null)
     {
         foreach (var selection in selectionSet.Selections)
         {
             switch (selection)
             {
                 case GraphQLField field:
-                    yield return field;
+                    yield return (field, graphType);
                     break;
                 case GraphQLInlineFragment inlineFragment:
-                    foreach (var field in inlineFragment.SelectionSet.Selections.OfType<GraphQLField>())
+                {
+                    var fragmentGraphType = ResolveTypeCondition(inlineFragment.TypeCondition, graphType, context);
+                    foreach (var item in EnumerateFields(inlineFragment.SelectionSet, fragmentGraphType, context, spreadsInProgress))
                     {
-                        yield return field;
+                        yield return item;
                     }
 
                     break;
+                }
                 case GraphQLFragmentSpread fragmentSpread:
                 {
                     var name = fragmentSpread.FragmentName.Name;
@@ -653,20 +603,42 @@
                         break;
                     }
 
-                    foreach (var field in fragmentDefinition.SelectionSet.Selections.OfType<GraphQLField>())
+                    spreadsInProgress ??= [];
+                    if (!spreadsInProgress.Add(name.StringValue))
                     {
-                        yield return field;
+                        break;
                     }
 
+                    var fragmentGraphType = ResolveTypeCondition(fragmentDefinition.TypeCondition, graphType, context);
+                    foreach (var item in EnumerateFields(fragmentDefinition.SelectionSet, fragmentGraphType, context, spreadsInProgress))
+                    {
+                        yield return item;
+                    }
+
+                    spreadsInProgress.Remove(name.StringValue);
                     break;
                 }
             }
         }
     }
 
-    void ProcessNestedProjectionField(
+    static IComplexGraphType? ResolveTypeCondition(
+        GraphQLTypeCondition? typeCondition,
+        IComplexGraphType? parentGraphType,
+        IResolveFieldContext context)
+    {
+        if (typeCondition is null)
+        {
+            return parentGraphType;
+        }
+
+        return context.Schema.AllTypes[typeCondition.Type.Name.StringValue] as IComplexGraphType ?? parentGraphType;
+    }
+
+    void ProcessNavigationOrScalar(
         string fieldName,
         GraphQLField field,
+        FieldType? fieldType,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
         HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
@@ -686,11 +658,28 @@
         keyNames.TryGetValue(navType, out var nestedKeys);
         foreignKeys.TryGetValue(navType, out var nestedFks);
 
-        navProjections[navigation.Name] = new(
-            navType,
-            navigation.IsCollection,
-            GetNestedProjection(field.SelectionSet, nestedNavProps, nestedKeys, nestedFks, context));
+        AddNavigation(
+            navProjections,
+            navigation.Name,
+            new(
+                navType,
+                navigation.IsCollection,
+                GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), nestedNavProps, nestedKeys, nestedFks, context)));
     }
+
+    /// <summary>
+    /// The same navigation can be selected more than once: under two aliases, through a fragment
+    /// as well as directly, or by a projection based field alongside the navigation field itself.
+    /// Each selection can ask for different fields, so they are merged rather than the first or
+    /// the last one winning.
+    /// </summary>
+    static void AddNavigation(
+        Dictionary<string, NavigationProjectionInfo> navProjections,
+        string name,
+        NavigationProjectionInfo navProjection) =>
+        navProjections[name] = navProjections.TryGetValue(name, out var existing)
+            ? existing.Merge(navProjection)
+            : navProjection;
 
     public static void SetProjectionMetadata(FieldType fieldType, LambdaExpression projection) =>
         fieldType.Metadata["_EF_Projection"] = projection;
