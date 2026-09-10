@@ -17,6 +17,35 @@ static class SelectExpressionBuilder
     static MethodInfo toListMethod = enumerableType
         .GetMethod("ToList", BindingFlags.Static | BindingFlags.Public)!;
 
+    static MethodInfo whereMethod = enumerableType
+        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+        .First(_ => _.Name == "Where" &&
+                    _.GetParameters().Length == 2 &&
+                    _.GetParameters()[1].ParameterType.GetGenericArguments().Length == 2);
+
+    static FrozenDictionary<(string Name, bool Descending), MethodInfo> orderMethods = new Dictionary<(string, bool), MethodInfo>
+    {
+        [("OrderBy", false)] = orderByMethod,
+        [("OrderBy", true)] = OrderMethod("OrderByDescending"),
+        [("ThenBy", false)] = OrderMethod("ThenBy"),
+        [("ThenBy", true)] = OrderMethod("ThenByDescending")
+    }.ToFrozenDictionary();
+
+    static MethodInfo OrderMethod(string name) =>
+        enumerableType
+            .GetMethods(BindingFlags.Static | BindingFlags.Public)
+            .First(_ => _.Name == name &&
+                        _.GetParameters().Length == 2);
+
+    static ConcurrentDictionary<Type, MethodInfo> whereMethods = new();
+
+    static ConcurrentDictionary<(MethodInfo Method, Type Item, Type Key), MethodInfo> genericMethods = new();
+
+    static MethodInfo MakeGeneric(MethodInfo definition, Type itemType, Type keyType) =>
+        genericMethods.GetOrAdd(
+            (definition, itemType, keyType),
+            _ => _.Method.MakeGenericMethod(_.Item, _.Key));
+
     static ConcurrentDictionary<Type, EntityTypeMetadata> entityMetadataCache = new();
 
     static IReadOnlyDictionary<Type, IReadOnlyList<Type>> noDerivedTypes = new Dictionary<Type, IReadOnlyList<Type>>();
@@ -73,11 +102,26 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
         [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression,
         out IReadOnlyList<string> includePaths)
+        where TEntity : class =>
+        TryBuild(projection, keyNames, derivedTypes, out expression, out includePaths, out _);
+
+    /// <param name="argumentFields">
+    /// The navigation fields whose ids, where and orderBy were applied inside their collection
+    /// subquery, so their resolvers know not to apply them again.
+    /// </param>
+    public static bool TryBuild<TEntity>(
+        FieldProjectionInfo projection,
+        IReadOnlyDictionary<Type, List<string>> keyNames,
+        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression,
+        out IReadOnlyList<string> includePaths,
+        out IReadOnlyList<GraphQLField> argumentFields)
         where TEntity : class
     {
         expression = null;
         var state = new BuildState(keyNames, derivedTypes);
         includePaths = state.IncludePaths;
+        argumentFields = state.ArgumentFields;
         var entityType = typeof(TEntity);
 
         if (entityType.IsAbstract)
@@ -269,7 +313,7 @@ static class SelectExpressionBuilder
 
                     // Can't project navigation (e.g. read-only properties on target entity)
                     // Fall back to including the full navigation entity
-                    binding = BuildFullNavigationBinding(navAccess, navProjection);
+                    binding = BuildFullNavigationBinding(navAccess, navProjection, state);
                     state.AddIncludePaths(navPath, navProjection.Projection);
                 }
 
@@ -324,21 +368,10 @@ static class SelectExpressionBuilder
 
             var itemLambda = Expression.Lambda(itemInit, navParam);
 
-            // .OrderBy(_ => _.Key) to ensure deterministic ordering
-            Expression orderedCollection = navAccess;
-            if (state.KeyNames.TryGetValue(navType, out var keys) && keys.Count > 0)
-            {
-                if (navMetadata.Properties.TryGetValue(keys[0], out var keyMetadata))
-                {
-                    var keyAccess = Expression.Property(navParam, keyMetadata.Property);
-                    var keyLambda = Expression.Lambda(keyAccess, navParam);
-
-                    orderedCollection = Expression.Call(null, keyMetadata.OrderByMethod, navAccess, keyLambda);
-                }
-            }
+            var source = ApplyArguments(navAccess, navParam, navType, navProjection, state, true);
 
             // .Select(_ => new Child { ... }).ToList()
-            var selectCall = Expression.Call(null, navMetadata.SelectMethod, orderedCollection, itemLambda);
+            var selectCall = Expression.Call(null, navMetadata.SelectMethod, source, itemLambda);
             var toListCall = Expression.Call(null, navMetadata.ToListMethod, selectCall);
 
             binding = Expression.Bind(navAccess.Member, toListCall);
@@ -362,15 +395,88 @@ static class SelectExpressionBuilder
 
     static MemberAssignment BuildFullNavigationBinding(
         MemberExpression navAccess,
-        NavigationProjectionInfo navProjection)
+        NavigationProjectionInfo navProjection,
+        BuildState state)
     {
         if (navProjection.IsCollection)
         {
-            var navMetadata = GetEntityMetadata(navProjection.EntityType);
-            return Expression.Bind(navAccess.Member, Expression.Call(null, navMetadata.ToListMethod, navAccess));
+            var navType = navProjection.EntityType;
+            var navMetadata = GetEntityMetadata(navType);
+            var navParam = Expression.Parameter(navType, "n");
+            var source = ApplyArguments(navAccess, navParam, navType, navProjection, state, false);
+            return Expression.Bind(navAccess.Member, Expression.Call(null, navMetadata.ToListMethod, source));
         }
 
         return Expression.Bind(navAccess.Member, navAccess);
+    }
+
+    /// <summary>
+    /// The navigation field's ids, where and orderBy, applied to the collection inside the
+    /// subquery so the database evaluates them against the table rather than the resolver
+    /// evaluating them in memory against the projected columns. Without an orderBy the
+    /// collection is ordered by key, where <paramref name="orderByKey"/>, for a deterministic result.
+    /// </summary>
+    static Expression ApplyArguments(
+        Expression source,
+        ParameterExpression navParam,
+        Type navType,
+        NavigationProjectionInfo navProjection,
+        BuildState state,
+        bool orderByKey)
+    {
+        var arguments = navProjection.Arguments;
+        if (arguments is not null)
+        {
+            if (arguments.Ids is not null &&
+                state.KeyNames.TryGetValue(navType, out var keyNames))
+            {
+                var keyName = ArgumentProcessor.GetKeyName(keyNames);
+                source = Where(source, navParam, navType, ExpressionBuilder.BuildIdPredicate(navType, keyName, arguments.Ids));
+            }
+
+            if (arguments.Wheres.Count > 0)
+            {
+                source = Where(source, navParam, navType, ExpressionBuilder.BuildPredicate(navType, arguments.Wheres));
+            }
+
+            state.ArgumentFields.Add(arguments.Field);
+        }
+
+        if (arguments is { OrderBys.Count: > 0 })
+        {
+            var first = true;
+            foreach (var orderBy in arguments.OrderBys)
+            {
+                var property = PropertyCache.GetProperty(navType, orderBy.Path);
+                var key = new ParameterReplacer(property.SourceParameter, navParam).Visit(property.Left);
+                var method = MakeGeneric(orderMethods[(first ? "OrderBy" : "ThenBy", orderBy.Descending)], navType, key.Type);
+                source = Expression.Call(null, method, source, Expression.Lambda(key, navParam));
+                first = false;
+            }
+
+            return source;
+        }
+
+        if (orderByKey &&
+            state.KeyNames.TryGetValue(navType, out var keys) &&
+            keys.Count > 0 &&
+            GetEntityMetadata(navType).Properties.TryGetValue(keys[0], out var keyMetadata))
+        {
+            var keyAccess = Expression.Property(navParam, keyMetadata.Property);
+            var keyLambda = Expression.Lambda(keyAccess, navParam);
+            source = Expression.Call(null, keyMetadata.OrderByMethod, source, keyLambda);
+        }
+
+        return source;
+    }
+
+    static Expression Where(Expression source, ParameterExpression navParam, Type navType, LambdaExpression predicate)
+    {
+        // The predicate is built on the parameter the property cache shares for the type.
+        // Rebind it to this subquery's own parameter.
+        var body = new ParameterReplacer(predicate.Parameters[0], navParam).Visit(predicate.Body);
+        var method = whereMethods.GetOrAdd(navType, _ => whereMethod.MakeGenericMethod(_));
+        return Expression.Call(null, method, source, Expression.Lambda(body, navParam));
     }
 
     /// <summary>
@@ -384,6 +490,7 @@ static class SelectExpressionBuilder
         public IReadOnlyDictionary<Type, List<string>> KeyNames { get; } = keyNames;
         public IReadOnlyDictionary<Type, IReadOnlyList<Type>> DerivedTypes { get; } = derivedTypes;
         public List<string> IncludePaths { get; } = [];
+        public List<GraphQLField> ArgumentFields { get; } = [];
 
         /// <summary>
         /// A navigation bound whole is materialized as a full entity, so everything requested

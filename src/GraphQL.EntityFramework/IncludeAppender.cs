@@ -1,4 +1,6 @@
-﻿class IncludeAppender(
+﻿using GraphQL.Execution;
+
+class IncludeAppender(
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames,
     IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys,
@@ -34,7 +36,7 @@
             projection = MergeFilterFieldsIntoProjection(projection, filters, type);
         }
 
-        if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths))
+        if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths, out var argumentFields))
         {
             return AddIncludesFromProjection(query, projection);
         }
@@ -43,6 +45,8 @@
         {
             query = query.Include(includePath);
         }
+
+        PushDown.Mark(context, argumentFields);
 
         return query.Select(expression);
     }
@@ -226,9 +230,10 @@
 
         if (context.SubFields is not null)
         {
+            var parentGraphType = GetComplexGraphType(context.FieldDefinition);
             foreach (var (field, fieldType) in context.SubFields.Values)
             {
-                ProcessField(field, fieldType, navigationProperties, scalarFields, navProjections, context);
+                ProcessField(field, fieldType, parentGraphType, navigationProperties, scalarFields, navProjections, context);
             }
         }
 
@@ -248,6 +253,7 @@
     void ProcessField(
         GraphQLField field,
         FieldType? fieldType,
+        IComplexGraphType? parentGraphType,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
         HashSet<string> scalarFields,
         Dictionary<string, NavigationProjectionInfo> navProjections,
@@ -268,7 +274,7 @@
         if (fieldType is not null &&
             TryGetProjectionMetadata(fieldType, out var projection))
         {
-            ProcessProjectionExpression(field, fieldType, projection, navigationProperties, scalarFields, navProjections, context);
+            ProcessProjectionExpression(field, fieldType, parentGraphType, projection, navigationProperties, scalarFields, navProjections, context);
             return;
         }
 
@@ -291,7 +297,7 @@
         foreach (var (field, fieldGraphType) in EnumerateFields(selectionSet, graphType, context))
         {
             var fieldType = fieldGraphType?.GetField(field.Name.Value);
-            ProcessField(field, fieldType, navigationProperties, scalarFields, navProjections, context);
+            ProcessField(field, fieldType, fieldGraphType, navigationProperties, scalarFields, navProjections, context);
         }
     }
 
@@ -461,6 +467,7 @@
     void ProcessProjectionExpression(
         GraphQLField field,
         FieldType fieldType,
+        IComplexGraphType? parentGraphType,
         LambdaExpression projection,
         IReadOnlyDictionary<string, Navigation>? navigationProperties,
         HashSet<string> scalarFields,
@@ -507,6 +514,7 @@
             foreignKeys.TryGetValue(navType, out var nestedFks);
 
             FieldProjectionInfo nestedProjection;
+            NavigationArguments? arguments = null;
 
             // A navigation accessed as a whole, with nothing read from it in the expression and no
             // selection set to say which fields are wanted, needs the whole entity. It was
@@ -515,6 +523,15 @@
 
             if (navName == primaryNavigation && field.SelectionSet is not null)
             {
+                // A navigation list or connection field projecting the collection itself. Its ids,
+                // where and orderBy are applied inside the collection subquery.
+                if (navigation.IsCollection &&
+                    pathsByNavigation.Count == 1 &&
+                    nestedPaths.Count == 0)
+                {
+                    arguments = ReadArguments(field, fieldType, parentGraphType, context);
+                }
+
                 // Primary navigation: merge GraphQL fields with projection-required fields
                 nestedProjection = GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), nestedNavProps, nestedKeys, nestedFks, context);
                 foreach (var nestedPath in nestedPaths)
@@ -537,8 +554,62 @@
                 nestedProjection = new(nestedScalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
             }
 
-            AddNavigation(navProjections, navigation.Name, new(navType, navigation.IsCollection, nestedProjection, isWhole));
+            AddNavigation(navProjections, navigation.Name, new(navType, navigation.IsCollection, nestedProjection, isWhole, arguments));
         }
+    }
+
+    /// <summary>
+    /// The ids, where and orderBy of a navigation list or connection field, read through a field
+    /// context of the field's own, since the values can come from variables and the readers
+    /// convert them the same way the resolver would. Only fields carrying the library's where
+    /// argument qualify, so a user defined argument of the same name is left alone.
+    /// </summary>
+    static NavigationArguments? ReadArguments(
+        GraphQLField field,
+        FieldType fieldType,
+        IComplexGraphType? parentGraphType,
+        IResolveFieldContext context)
+    {
+        if (field.Arguments is not { Count: > 0 } ||
+            fieldType.Arguments?.Find("where")?.ResolvedType?.GetNamedType() is not WhereExpressionGraph)
+        {
+            return null;
+        }
+
+        var values = ExecutionHelper.GetArguments(fieldType.Arguments, field.Arguments, context.Variables, context.Document, field, null);
+        if (values is null)
+        {
+            return null;
+        }
+
+        var fieldContext = new ResolveFieldContext
+        {
+            Arguments = values,
+            FieldAst = field,
+            FieldDefinition = fieldType,
+            ParentType = (parentGraphType as IObjectGraphType)!,
+            Schema = context.Schema,
+            Document = context.Document,
+            Operation = context.Operation,
+            Variables = context.Variables,
+            Errors = context.Errors,
+            UserContext = context.UserContext,
+            RequestServices = context.RequestServices,
+            CancellationToken = context.CancellationToken
+        };
+
+        ArgumentReader.TryReadWhere(fieldContext, out var wheres);
+        var orderBys = ArgumentReader.ReadOrderBy(fieldContext);
+        ArgumentReader.TryReadIds(fieldContext, out var ids);
+
+        if (wheres.Count == 0 &&
+            orderBys.Count == 0 &&
+            ids is null)
+        {
+            return null;
+        }
+
+        return new(field, wheres, orderBys, ids);
     }
 
     static bool TryFindNavigation(

@@ -1,4 +1,29 @@
-﻿static class PropertyCache<TInput>
+﻿/// <summary>
+/// The property cache for a type known only at runtime, for the orderBy of a navigation applied
+/// inside its collection subquery.
+/// </summary>
+static class PropertyCache
+{
+    static ConcurrentDictionary<Type, MethodInfo> methods = new();
+
+    public static IProperty GetProperty(Type type, string path)
+    {
+        var method = methods.GetOrAdd(
+            type,
+            _ => typeof(PropertyCache<>).MakeGenericType(_).GetMethod(nameof(PropertyCache<object>.GetProperty), [typeof(string)])!);
+        try
+        {
+            return (IProperty) method.Invoke(null, [path])!;
+        }
+        catch (TargetInvocationException exception) when (exception.InnerException is not null)
+        {
+            ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
+            throw;
+        }
+    }
+}
+
+static class PropertyCache<TInput>
 {
     public static ParameterExpression SourceParameter = Expression.Parameter(typeof(TInput));
     static ConcurrentDictionary<string, Property<TInput>> properties = [];

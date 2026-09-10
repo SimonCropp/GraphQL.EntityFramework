@@ -22,7 +22,7 @@ public static partial class ArgumentProcessor
         context.Errors.Add(new($"If `skip` is used an `orderBy` must be specified. Field: {context.FieldDefinition.Name}"));
     }
 
-    static string GetKeyName(IReadOnlyList<string> keyNames)
+    internal static string GetKeyName(IReadOnlyList<string> keyNames)
     {
         if (keyNames.Count > 1)
         {

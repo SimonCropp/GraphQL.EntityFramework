@@ -1,0 +1,32 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          children: [
+            {
+              nullable: 2
+            },
+            {
+              nullable: 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         c.Id,
+         c.Nullable,
+         c.ParentId
+from     ParentEntities as p
+         left outer join
+         ChildEntities as c
+         on p.Id = c.ParentId
+order by p.Property,
+         p.Id,
+         c.Property desc
+  }
+}

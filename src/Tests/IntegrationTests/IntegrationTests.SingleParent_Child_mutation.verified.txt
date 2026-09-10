@@ -29,7 +29,7 @@ from     (select top (2) p.Id,
          ChildEntities as c
          on p0.Id = c.ParentId
 order by p0.Id,
-         c.Id,
+         c.Property,
     Parameters: {
       @p1: Guid_1
     }

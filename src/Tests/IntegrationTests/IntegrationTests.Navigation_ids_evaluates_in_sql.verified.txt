@@ -3,10 +3,9 @@
     Data: {
       parentEntities: [
         {
-          property: Value1,
           children: [
             {
-              property: Child1
+              property: Value2
             }
           ]
         }
@@ -18,8 +17,7 @@
 select   p.Id,
          c0.Id,
          c0.ParentId,
-         c0.Property,
-         p.Property
+         c0.Property
 from     ParentEntities as p
          left outer join
          (select c.Id,

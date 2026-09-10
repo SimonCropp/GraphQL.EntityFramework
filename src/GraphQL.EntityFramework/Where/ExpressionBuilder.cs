@@ -197,13 +197,6 @@ public static partial class ExpressionBuilder<T>
                 return (buildPredicate, any);
             });
 
-    class ParameterReplacer(ParameterExpression original, ParameterExpression replacement) :
-        ExpressionVisitor
-    {
-        protected override Expression VisitParameter(ParameterExpression node) =>
-            node == original ? replacement : node;
-    }
-
     static Expression GetExpression(string path, Comparison comparison, string?[]? values)
     {
         var property = PropertyCache<T>.GetProperty(path);
@@ -350,4 +343,43 @@ public static partial class ExpressionBuilder<T>
 class ValueHolder(object? value)
 {
     public object? Value = value;
+}
+
+/// <summary>
+/// The predicate builders for an item type known only at runtime, for the collection subquery of
+/// a navigation. The generic methods are looked up once per type.
+/// </summary>
+static class ExpressionBuilder
+{
+    static ConcurrentDictionary<Type, (MethodInfo Predicate, MethodInfo IdPredicate)> methods = new();
+
+    static (MethodInfo Predicate, MethodInfo IdPredicate) Methods(Type type) =>
+        methods.GetOrAdd(
+            type,
+            _ =>
+            {
+                var builder = typeof(ExpressionBuilder<>).MakeGenericType(_);
+                return (
+                    builder.GetMethod(nameof(ExpressionBuilder<object>.BuildPredicate), [typeof(IReadOnlyCollection<WhereExpression>)])!,
+                    builder.GetMethod(nameof(ExpressionBuilder<object>.BuildIdPredicate), [typeof(string), typeof(string[])])!);
+            });
+
+    public static LambdaExpression BuildPredicate(Type type, IReadOnlyCollection<WhereExpression> wheres) =>
+        Invoke(Methods(type).Predicate, [wheres]);
+
+    public static LambdaExpression BuildIdPredicate(Type type, string keyName, string[] ids) =>
+        Invoke(Methods(type).IdPredicate, [keyName, ids]);
+
+    static LambdaExpression Invoke(MethodInfo method, object[] arguments)
+    {
+        try
+        {
+            return (LambdaExpression) method.Invoke(null, arguments)!;
+        }
+        catch (TargetInvocationException exception) when (exception.InnerException is not null)
+        {
+            ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
+            throw;
+        }
+    }
 }
