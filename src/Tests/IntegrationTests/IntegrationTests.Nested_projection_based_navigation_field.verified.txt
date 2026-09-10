@@ -1,0 +1,46 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          property: Value1,
+          children: [
+            {
+              property: Value2,
+              parentAlias: {
+                property: Value1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         s.Id,
+         s.c,
+         s.Id0,
+         s.Property,
+         s.ParentId,
+         s.Property0,
+         p.Property
+from     ParentEntities as p
+         left outer join
+         (select c.Id,
+                 case when p0.Id is null then cast (1 as bit) else cast (0 as bit) end as c,
+                 p0.Id as Id0,
+                 p0.Property,
+                 c.ParentId,
+                 c.Property as Property0
+          from   ChildEntities as c
+                 left outer join
+                 ParentEntities as p0
+                 on c.ParentId = p0.Id) as s
+         on p.Id = s.ParentId
+order by p.Property,
+         p.Id,
+         s.Id
+  }
+}

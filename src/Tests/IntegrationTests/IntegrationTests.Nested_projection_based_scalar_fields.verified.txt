@@ -3,9 +3,15 @@
     Data: {
       fieldBuilderProjectionParents: [
         {
-          name: Parent,
+          name: TheParent,
           children: {
-            edges: []
+            items: [
+              {
+                name: TheChild,
+                statusDisplay: Pending Activation,
+                statusViaWithProjection: Pending via WithProjection
+              }
+            ]
           }
         }
       ]

@@ -1,0 +1,32 @@
+﻿{
+  target: {
+    Data: {
+      employees: [
+        {
+          name: Alice,
+          a: {
+            name: Engineering
+          },
+          b: {
+            isActive: true
+          }
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   cast (0 as bit),
+         d.Id,
+         d.IsActive,
+         d.Name,
+         e.DepartmentId,
+         e.Id,
+         e.Name
+from     Employees as e
+         inner join
+         Departments as d
+         on e.DepartmentId = d.Id
+order by e.Name
+  }
+}
