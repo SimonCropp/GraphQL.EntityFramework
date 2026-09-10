@@ -68,9 +68,12 @@ public class WhereGraph<TEntity> :
             var field = new FieldType
             {
                 Name = member.Name,
-                Type = fieldType
+                Type = fieldType,
+                Metadata =
+                {
+                    [memberKey] = member
+                }
             };
-            field.Metadata[memberKey] = member;
             AddField(field);
         }
     }

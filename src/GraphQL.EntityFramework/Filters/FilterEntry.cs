@@ -52,7 +52,7 @@
                     if (!IsWhole(projection, field) &&
                         !requiredPropertyNames.Any(_ => _.Length > field.Length && _[field.Length] == '.' && _.StartsWith(field, StringComparison.OrdinalIgnoreCase)))
                     {
-                        wholeNavigations ??= new(StringComparer.OrdinalIgnoreCase);
+                        wholeNavigations ??= [with(StringComparer.OrdinalIgnoreCase)];
                         wholeNavigations.Add(field);
                     }
 
@@ -61,7 +61,7 @@
 
                 if (!projection.ScalarFields.Contains(field))
                 {
-                    mergedScalars ??= new(projection.ScalarFields, StringComparer.OrdinalIgnoreCase);
+                    mergedScalars ??= [with(projection.ScalarFields, StringComparer.OrdinalIgnoreCase)];
                     mergedScalars.Add(field);
                 }
 

@@ -1,6 +1,4 @@
-﻿using GraphQL.Execution;
-
-public class ArgumentProcessorTests
+﻿public class ArgumentProcessorTests
 {
     // The in memory path assumed the key is named Id, so an entity keyed by anything else failed
     // on the ids argument, while the queryable path resolved the key from the model.

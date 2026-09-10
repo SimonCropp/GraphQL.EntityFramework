@@ -1,6 +1,4 @@
-﻿using GraphQL.Execution;
-
-class IncludeAppender(
+﻿class IncludeAppender(
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames,
     IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys,

@@ -1,5 +1,3 @@
-using GraphQL.Execution;
-
 // The in memory path, used for navigation collections whose arguments could not be applied in
 // the query, evaluated string comparisons ordinally, so the same where matched different rows
 // than it did on a root field, where the database collation applies. It now ignores case, and
@@ -17,7 +15,7 @@ public class InMemoryStringComparisonTests
     [InlineData(Comparison.Like, "[A-Z]alue", "Value")]
     public void Matches_ignoring_case(Comparison comparison, string value, string property)
     {
-        var result = Apply(comparison, value, new ParentEntity { Property = property }, new ParentEntity { Property = "Other" });
+        var result = Apply(comparison, value, new ParentEntity {Property = property}, new ParentEntity {Property = "Other"});
 
         Assert.Equal([property], result.Select(_ => _.Property));
     }
@@ -28,7 +26,7 @@ public class InMemoryStringComparisonTests
     [InlineData(Comparison.Like, "%.%", "Value")]
     public void Like_does_not_match(Comparison comparison, string value, string property)
     {
-        var result = Apply(comparison, value, new ParentEntity { Property = property });
+        var result = Apply(comparison, value, new ParentEntity {Property = property});
 
         Assert.Empty(result);
     }
@@ -36,18 +34,19 @@ public class InMemoryStringComparisonTests
     [Fact]
     public void Negated_equal_ignores_case()
     {
-        var context = BuildContext(new WhereExpression
-        {
-            Path = "Property",
-            Comparison = Comparison.Equal,
-            Value = ["VALUE"],
-            Negate = true
-        });
+        var context = BuildContext(
+            new()
+            {
+                Path = "Property",
+                Comparison = Comparison.Equal,
+                Value = ["VALUE"],
+                Negate = true
+            });
 
         var result = new List<ParentEntity>
             {
-                new() { Property = "Value" },
-                new() { Property = "Other" }
+                new() {Property = "Value"},
+                new() {Property = "Other"}
             }
             .ApplyGraphQlArguments(true, context, false)
             .ToList();
@@ -57,12 +56,13 @@ public class InMemoryStringComparisonTests
 
     static List<ParentEntity> Apply(Comparison comparison, string value, params ParentEntity[] entities)
     {
-        var context = BuildContext(new WhereExpression
-        {
-            Path = "Property",
-            Comparison = comparison,
-            Value = [value]
-        });
+        var context = BuildContext(
+            new()
+            {
+                Path = "Property",
+                Comparison = comparison,
+                Value = [value]
+            });
 
         return entities
             .ApplyGraphQlArguments(true, context, false)

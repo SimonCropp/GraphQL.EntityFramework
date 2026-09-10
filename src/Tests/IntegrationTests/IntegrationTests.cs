@@ -425,8 +425,7 @@
     [Fact]
     public async Task Where_with_nullable_properties1()
     {
-        var query =
-            """{ withNullableEntities (where: {nullable: {equal: null}}){ id } }""";
+        var query = "{ withNullableEntities (where: {nullable: {equal: null}}){ id } }";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -442,8 +441,7 @@
     [Fact]
     public async Task Where_with_nullable_properties1_NotEqual()
     {
-        var query =
-            """{ withNullableEntities (where: {nullable: {notEqual: null}}){ id } }""";
+        var query = "{ withNullableEntities (where: {nullable: {notEqual: null}}){ id } }";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -459,8 +457,7 @@
     [Fact]
     public async Task Where_with_nullable_properties2()
     {
-        var query =
-            """{ withNullableEntities (where: {nullable: {equal: 10}}){ id } }""";
+        var query = "{ withNullableEntities (where: {nullable: {equal: 10}}){ id } }";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -475,8 +472,7 @@
     [Fact]
     public async Task Where_with_nullable_properties2_notEqual()
     {
-        var query =
-            """{ withNullableEntities (where: {nullable: {notEqual: 10}}){ id } }""";
+        var query = "{ withNullableEntities (where: {nullable: {notEqual: 10}}){ id } }";
 
         var entity1 = new WithNullableEntity();
         var entity2 = new WithNullableEntity
@@ -491,8 +487,7 @@
     [Fact]
     public async Task Where_null_comparison_value()
     {
-        var query =
-            """{ parentEntities (where: {property: {equal: null}}){ id } }""";
+        var query = "{ parentEntities (where: {property: {equal: null}}){ id } }";
 
         var entity1 = new ParentEntity
         {
@@ -510,8 +505,7 @@
     [Fact]
     public async Task Where_null_comparison_value_notEqual()
     {
-        var query =
-            """{ parentEntities (where: {property: {notEqual: null}}){ id } }""";
+        var query = "{ parentEntities (where: {property: {notEqual: null}}){ id } }";
 
         var entity1 = new ParentEntity
         {

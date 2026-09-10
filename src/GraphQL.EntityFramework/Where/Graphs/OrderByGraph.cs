@@ -27,9 +27,12 @@ public class OrderByGraph<TEntity> :
                 Name = member.Name,
                 Type = member.Kind == MemberKind.Scalar
                     ? typeof(SortDirectionGraph)
-                    : typeof(OrderByGraph<>).MakeGenericType(member.Type)
+                    : typeof(OrderByGraph<>).MakeGenericType(member.Type),
+                Metadata =
+                {
+                    [memberKey] = member
+                }
             };
-            field.Metadata[memberKey] = member;
             AddField(field);
         }
     }

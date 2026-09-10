@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 /// <summary>
 /// The where expressions are built for sql, where a string comparison follows the database
 /// collation, which is case insensitive by default on sql server. Evaluated in memory the same

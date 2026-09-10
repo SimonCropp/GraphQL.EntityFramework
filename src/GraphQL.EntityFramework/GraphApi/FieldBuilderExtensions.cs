@@ -314,7 +314,7 @@ public static class FieldBuilderExtensions
         foreach (var item in result)
         {
             if (item is null ||
-                await filters.ShouldInclude(context.UserContext, dbContext, context.User, (object) item))
+                await filters.ShouldInclude(context.UserContext, dbContext, context.User, item))
             {
                 list.Add(item);
             }
@@ -332,7 +332,7 @@ public static class FieldBuilderExtensions
     {
         // For reference types, apply filters if available. Matched on the runtime type of the
         // result, so a field typed as object is filtered the same as a typed one.
-        if (!await filters.ShouldInclude(context.UserContext, dbContext, context.User, (object)result!))
+        if (!await filters.ShouldInclude(context.UserContext, dbContext, context.User, result!))
         {
             return default;
         }

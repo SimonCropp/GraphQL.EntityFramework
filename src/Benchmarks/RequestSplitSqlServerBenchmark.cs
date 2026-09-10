@@ -1,5 +1,3 @@
-using EfLocalDb;
-
 namespace Benchmarks;
 
 /// <summary>
