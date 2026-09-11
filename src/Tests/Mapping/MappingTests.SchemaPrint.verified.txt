@@ -30,6 +30,7 @@ input MappingChildWhere {
   and: [MappingChildWhere!]
   or: [MappingChildWhere!]
   not: MappingChildWhere
+  isNull: Boolean
   id: GuidComparison
   parent: MappingParentWhere
   parentId: GuidComparison
@@ -50,6 +51,7 @@ input MappingParentWhere {
   and: [MappingParentWhere!]
   or: [MappingParentWhere!]
   not: MappingParentWhere
+  isNull: Boolean
   children: MappingChildCollectionWhere
   id: GuidComparison
   ignoreByName: StringComparison

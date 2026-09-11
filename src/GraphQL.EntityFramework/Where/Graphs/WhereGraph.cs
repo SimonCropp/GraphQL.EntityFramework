@@ -3,8 +3,10 @@ namespace GraphQL.EntityFramework;
 /// <summary>
 /// The where input type for <typeparamref name="TEntity"/>. One field per mapped property,
 /// typed by its comparisons, one per navigation, and <c>and</c>, <c>or</c> and <c>not</c> to
-/// compose them. Sibling fields are and'ed. The parsed value is a <see cref="WhereExpression"/>
-/// tree, so the predicate builder is unchanged.
+/// compose them. Sibling fields are and'ed. <c>isNull</c> tests the navigation this where was
+/// reached through, which is the one thing a nested where cannot say with its own fields; it has
+/// no meaning at the root. The parsed value is a <see cref="WhereExpression"/> tree, so the
+/// predicate builder is unchanged.
 /// </summary>
 public class WhereGraph<TEntity> :
     InputObjectGraphType,
@@ -55,6 +57,11 @@ public class WhereGraph<TEntity> :
             Name = "not",
             Type = self
         });
+        AddField(new()
+        {
+            Name = "isNull",
+            Type = typeof(BooleanGraphType)
+        });
 
         foreach (var member in EntityShape.Members(type, services))
         {
@@ -104,6 +111,14 @@ public class WhereGraph<TEntity> :
                         expressions.Add(negated);
                     }
 
+                    continue;
+                case "isNull":
+                    // The navigation itself, rather than a member of it. Prefix turns the empty
+                    // path into the navigation's name.
+                    expressions.Add(new()
+                    {
+                        Comparison = (bool) raw ? Comparison.Equal : Comparison.NotEqual
+                    });
                     continue;
             }
 
@@ -219,6 +234,6 @@ public class WhereGraph<TEntity> :
             return;
         }
 
-        expression.Path = $"{name}.{expression.Path}";
+        expression.Path = expression.Path.Length == 0 ? name : $"{name}.{expression.Path}";
     }
 }

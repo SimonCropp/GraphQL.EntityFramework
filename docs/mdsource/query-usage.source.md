@@ -211,7 +211,7 @@ To negate an expression, including a group, wrap it in `not`:
 
 #### Nested Properties
 
-A reference navigation, owned type or complex property is a nested where object. No null checking of nested values is done.
+A reference navigation, owned type or complex property is a nested where object. No null checking of nested values is done; to test the navigation itself see [Null](#null).
 
 ```graphql
 {
@@ -262,6 +262,23 @@ Null is compared with a null value:
 ```
 
 An empty where, `{}`, applies no filter.
+
+A reference navigation is tested with `isNull`, since a nested where can only constrain the members
+of the navigation, not the navigation itself:
+
+```graphql
+{
+  entities
+  (where: {address: {isNull: true}})
+  {
+    property
+  }
+}
+```
+
+`isNull: false` requires the navigation to be present. A collection navigation uses `none: {}` and
+`any: {}` instead. `isNull` has no meaning at the root of a where, since there is no navigation it
+was reached through.
 
 
 #### Variables
