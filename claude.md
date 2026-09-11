@@ -4,11 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Workflow Guidelines
 
-**IMPORTANT - Git Commits:**
-- NEVER automatically commit changes
-- NEVER prompt or ask to commit changes
-- NEVER suggest creating commits
-- The user will handle all git commits manually
+**Git Commits:**
+- Do not commit on your own initiative. Finishing a piece of work is not a reason to commit it
+- Do not prompt for, ask about, or suggest committing
+- When the user asks for a commit, make it without further confirmation
 
 ## Project Overview
 
