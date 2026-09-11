@@ -91,6 +91,13 @@ public static partial class ExpressionBuilder<T>
 
     static Expression MakePredicateBody(string path, Comparison comparison, object?[]? values, bool negate)
     {
+        if (path.Length == 0)
+        {
+            // isNull tests the navigation a nested where was reached through, so there is nothing
+            // to test at the root of a where.
+            throw new($"isNull is only valid on a navigation. It was used at the root of the where for {typeof(T).Name}.");
+        }
+
         try
         {
             Expression expressionBody;

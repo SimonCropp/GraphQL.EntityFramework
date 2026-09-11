@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 
 public partial class IntegrationTests
 {
@@ -89,6 +89,60 @@ public partial class IntegrationTests
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [parent1, parent2, child1, child2]);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Where_navigation_is_null(bool isNull)
+    {
+        var query =
+            $$"""
+              {
+                childEntities
+                (
+                  where: {parent: {isNull: {{(isNull ? "true" : "false")}} } },
+                  orderBy: {property: ascending}
+                )
+                {
+                  property
+                }
+              }
+              """;
+
+        var parent = new ParentEntity
+        {
+            Property = "Parent1"
+        };
+        var withParent = new ChildEntity
+        {
+            Property = "Child1",
+            Parent = parent
+        };
+        var orphan = new ChildEntity
+        {
+            Property = "Child2"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [parent, withParent, orphan]);
+    }
+
+    [Fact]
+    public async Task Where_is_null_at_root()
+    {
+        var query =
+            """
+            {
+              childEntities (where: {isNull: true})
+              {
+                property
+              }
+            }
+            """;
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, []);
     }
 
     [Theory]

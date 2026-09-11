@@ -69,6 +69,7 @@ input EmployeeWhere {
   and: [EmployeeWhere!]
   or: [EmployeeWhere!]
   not: EmployeeWhere
+  isNull: Boolean
   age: Int32Comparison
   company: CompanyWhere
   companyId: Int32Comparison
@@ -91,6 +92,7 @@ input CompanyWhere {
   and: [CompanyWhere!]
   or: [CompanyWhere!]
   not: CompanyWhere
+  isNull: Boolean
   content: StringComparison
   employees: EmployeeCollectionWhere
   id: Int32Comparison
@@ -122,6 +124,7 @@ input DeviceWhere {
   and: [DeviceWhere!]
   or: [DeviceWhere!]
   not: DeviceWhere
+  isNull: Boolean
   employees: EmployeeCollectionWhere
   id: Int32Comparison
   name: StringComparison

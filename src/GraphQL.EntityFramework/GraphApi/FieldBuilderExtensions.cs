@@ -360,7 +360,26 @@ public static class FieldBuilderExtensions
         return builder;
     }
 
-    static void ValidateProjection<TSource, TProjection>(Expression<Func<TSource, TProjection>> projection)
+    /// <summary>
+    /// Sets projection metadata on a field from a projection whose type is only known at runtime.
+    /// Prefer the <see cref="Expression{TDelegate}"/> overload, which infers its type arguments and
+    /// is checked at compile time. This one is for a projection built by reflection or by
+    /// <see cref="Expression.Lambda(Expression,ParameterExpression[])"/>, where the source and
+    /// projection types are not available to the caller.
+    /// </summary>
+    /// <param name="builder">The field builder</param>
+    /// <param name="projection">Expression describing the required entity data. Its parameter must be <typeparamref name="TSource"/> or a type it derives from.</param>
+    /// <returns>The field builder for chaining</returns>
+    public static FieldBuilder<TSource, TReturn> WithProjection<TSource, TReturn>(
+        this FieldBuilder<TSource, TReturn> builder,
+        LambdaExpression projection)
+    {
+        ValidateProjection(projection);
+        IncludeAppender.SetProjectionMetadata(builder.FieldType, projection);
+        return builder;
+    }
+
+    static void ValidateProjection(LambdaExpression projection)
     {
         // Detect identity projection: _ => _
         if (projection.Body is ParameterExpression parameter &&

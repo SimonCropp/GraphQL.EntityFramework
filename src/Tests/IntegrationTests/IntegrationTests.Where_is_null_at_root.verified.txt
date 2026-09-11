@@ -1,0 +1,4 @@
+﻿{
+  Type: Exception,
+  Message: isNull is only valid on a navigation. It was used at the root of the where for ChildEntity.
+}

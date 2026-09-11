@@ -23,7 +23,9 @@ From [#1377](https://github.com/SimonCropp/GraphQL.EntityFramework/pull/1377). T
  * The extension methods `Resolve`, `ResolveAsync`, `ResolveList` and `ResolveListAsync` take the `IEfGraphQLService<TDbContext>` as their first argument. All type arguments are inferred, and the service is used directly at execution time instead of being located through `RequestServices`.
  * `FieldBuilderResolveAnalyzer` previously never matched the extension methods, so GQLEF003 could not fire. It now resolves the receiver type for extension methods and identifies projection based calls by their `projection` parameter.
 
-The old extension methods and the `LambdaExpression` overload of `WithProjection` are removed rather than kept as overloads.
+The old extension methods are removed rather than kept as overloads. The `LambdaExpression` overload
+of `WithProjection` was removed in 35.0.0 and restored in 35.1.0, for a projection built by
+reflection or by `Expression.Lambda`, where the caller does not have the source and projection types.
 
 
 ### WithProjection
@@ -118,6 +120,7 @@ input PersonWhere {
   and: [PersonWhere!]
   or: [PersonWhere!]
   not: PersonWhere
+  isNull: Boolean
   id: GuidComparison
   name: StringComparison
   age: Int32Comparison
@@ -544,6 +547,35 @@ After, pass null:
 ```
 
 An empty where, `{}`, applies no filter. The old empty list, `[]`, matched nothing.
+
+A path that named a reference navigation rather than one of its properties tested the navigation
+itself. The nested where has no comparison of its own, so use `isNull` (added in 35.1.0).
+
+Before:
+
+```graphql
+{
+  entities (where: {path: "Address", comparison: equal})
+  {
+    property
+  }
+}
+```
+
+After:
+
+```graphql
+{
+  entities (where: {address: {isNull: true}})
+  {
+    property
+  }
+}
+```
+
+`isNull: false` requires the navigation to be present, as `comparison: notEqual` did. A collection
+navigation uses `none: {}` and `any: {}` instead, and `isNull` is rejected at the root of a where,
+where there is no navigation it was reached through.
 
 
 ### Variables

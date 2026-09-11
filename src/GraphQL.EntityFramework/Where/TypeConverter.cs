@@ -123,6 +123,13 @@
 
         if (value is null)
         {
+            // Null is a meaningful comparison for a reference typed member: a navigation with no
+            // related row. Only a non nullable value type has nothing to compare against.
+            if (!type.IsValueType)
+            {
+                return null;
+            }
+
             throw new($"Null passed for non nullable type '{type.FullName}'.");
         }
 
