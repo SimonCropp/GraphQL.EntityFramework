@@ -23,10 +23,6 @@ dotnet build src --configuration Release
 
 ### Running Tests
 ```bash
-# Run all tests except integration tests
-dotnet test src --configuration Release --no-build --no-restore --filter Category!=Integration
-
-# Run all tests including integration tests
 dotnet test src --configuration Release --no-build --no-restore
 ```
 
