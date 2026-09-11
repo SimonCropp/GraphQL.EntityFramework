@@ -61,10 +61,10 @@ public partial class Home
         var document = await QueryAsync(
             """
             query Companies {
-              companies(orderBy: {id: ascending}) {
+              companies(orderBy: id) {
                 id
                 content
-                employees(orderBy: {age: descending}) {
+                employees(orderBy: age_desc) {
                   id
                   content
                   age
@@ -99,7 +99,7 @@ public partial class Home
                 query OlderThan($age: Int) {
                   employees(
                     where: {age: {greaterThanOrEqual: $age}}
-                    orderBy: {age: descending}) {
+                    orderBy: age_desc) {
                     id
                     content
                     age

@@ -23,9 +23,11 @@ public static void RegisterInContainer<TDbContext>(
         IModel? model = null,
         ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
-        bool includeSqlInExceptions = false)
+        bool includeSqlInExceptions = false,
+        OrderByStyle orderByStyle = OrderByStyle.Enum,
+        OrderByEnumOptions? orderByEnumOptions = null)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L15-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L17-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
@@ -134,9 +136,11 @@ public static void RegisterInContainer<TDbContext>(
         IModel? model = null,
         ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
-        bool includeSqlInExceptions = false)
+        bool includeSqlInExceptions = false,
+        OrderByStyle orderByStyle = OrderByStyle.Enum,
+        OrderByEnumOptions? orderByEnumOptions = null)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L15-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L17-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(

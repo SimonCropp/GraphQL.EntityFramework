@@ -18,7 +18,7 @@ public partial class IntegrationTests
                   ],
                   not: {property: {equal: "Value3"}}
                 },
-                orderBy: {property: ascending}
+                orderBy: property
               )
               {
                 property
@@ -56,7 +56,7 @@ public partial class IntegrationTests
               childEntities
               (
                 where: {parent: {property: {equal: "Parent1"}}},
-                orderBy: {property: ascending}
+                orderBy: property
               )
               {
                 property
@@ -102,7 +102,7 @@ public partial class IntegrationTests
                 childEntities
                 (
                   where: {parent: {isNull: {{(isNull ? "true" : "false")}} } },
-                  orderBy: {property: ascending}
+                  orderBy: property
                 )
                 {
                   property
@@ -157,7 +157,7 @@ public partial class IntegrationTests
               parentEntities
               (
                 where: {children: {{{{{{quantifier}}}}}: {property: {startsWith: "Match"}}}},
-                orderBy: {property: ascending}
+                orderBy: property
               )
               {
                 property
@@ -224,7 +224,7 @@ public partial class IntegrationTests
               parentEntities
               (
                 where: {children: {any: {}}},
-                orderBy: {property: ascending}
+                orderBy: property
               )
               {
                 property
@@ -305,7 +305,7 @@ public partial class IntegrationTests
                   status: {in: [ACTIVE, PENDING]},
                   viewCount: {notEqual: 0}
                 },
-                orderBy: {name: ascending}
+                orderBy: name
               )
               {
                 name
@@ -360,7 +360,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              withNullableEntities (where: {nullable: {in: [1, null]}}, orderBy: {nullable: ascending})
+              withNullableEntities (where: {nullable: {in: [1, null]}}, orderBy: nullable)
               {
                 nullable
               }
@@ -430,7 +430,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              parentEntities (where: {}, orderBy: {property: ascending})
+              parentEntities (where: {}, orderBy: property)
               {
                 property
               }
@@ -553,7 +553,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              manyToManyLeftEntities (orderBy: {leftName: ascending})
+              manyToManyLeftEntities (orderBy: leftName)
               {
                 leftName
                 rights (where: {lefts: {any: {leftName: {equal: "Left1"}}}})

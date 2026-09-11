@@ -28,10 +28,10 @@ public class RequestSplitBenchmark
 
     const string argumentsQuery = """
         {
-          parents(where: {property: {startsWith: "Parent 1"}}, orderBy: {property: ascending}) {
+          parents(where: {property: {startsWith: "Parent 1"}}, orderBy: property) {
             id
             property
-            children(orderBy: {property: descending}) {
+            children(orderBy: property_desc) {
               id
               property
             }
@@ -44,7 +44,7 @@ public class RequestSplitBenchmark
           parents {
             id
             property
-            childrenReversed(where: {property: {startsWith: "Child"}}, orderBy: {property: descending}) {
+            childrenReversed(where: {property: {startsWith: "Child"}}, orderBy: property_desc) {
               id
               property
             }

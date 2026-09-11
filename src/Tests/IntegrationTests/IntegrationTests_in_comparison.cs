@@ -8,7 +8,7 @@ public partial class IntegrationTests
         var query =
             """
             {
-              dateEntities (where: {property: {in: ["2020-01-01", "2020-01-03"]}}, orderBy: {property: ascending})
+              dateEntities (where: {property: {in: ["2020-01-01", "2020-01-03"]}}, orderBy: property)
               {
                 property
               }

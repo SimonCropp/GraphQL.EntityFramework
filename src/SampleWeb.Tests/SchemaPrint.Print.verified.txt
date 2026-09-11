@@ -130,27 +130,26 @@ input DeviceWhere {
   name: StringComparison
 }
 
-input EmployeeOrderBy {
-  age: SortDirection
-  company: CompanyOrderBy
-  companyId: SortDirection
-  content: SortDirection
-  id: SortDirection
+enum EmployeeOrderBy {
+  age
+  age_desc
+  company_content
+  company_content_desc
+  company_id
+  company_id_desc
+  companyId
+  companyId_desc
+  content
+  content_desc
+  id
+  id_desc
 }
 
-enum SortDirection {
-  ascending
-  descending
-}
-
-input CompanyOrderBy {
-  content: SortDirection
-  id: SortDirection
-}
-
-input DeviceOrderBy {
-  id: SortDirection
-  name: SortDirection
+enum DeviceOrderBy {
+  id
+  id_desc
+  name
+  name_desc
 }
 
 "A connection from an object to a list of objects of type `Employee`."
@@ -183,6 +182,13 @@ type EmployeeEdge {
   cursor: String!
   "The item at the end of the edge"
   node: Employee!
+}
+
+enum CompanyOrderBy {
+  content
+  content_desc
+  id
+  id_desc
 }
 
 "A connection from an object to a list of objects of type `Company`."

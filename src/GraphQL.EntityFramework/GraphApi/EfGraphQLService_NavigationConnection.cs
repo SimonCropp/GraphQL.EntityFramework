@@ -95,7 +95,7 @@ partial class EfGraphQLService<TDbContext>
         // applied while the schema still advertised them
         if (!omitQueryArguments)
         {
-            field.AddWhereArgument(typeof(TReturn), hasId);
+            field.AddWhereArgument(typeof(TReturn), hasId, orderByStyle);
         }
 
         return builder;
@@ -130,7 +130,7 @@ partial class EfGraphQLService<TDbContext>
         builder.FieldType.Type = ConnectionBuilderEx<TSource>.NonNullConnectionType(itemGraphType);
         var field = graph.AddField(builder.FieldType);
 
-        field.AddWhereArgument(typeof(TReturn), hasId);
+        field.AddWhereArgument(typeof(TReturn), hasId, orderByStyle);
         return builder;
     }
 }

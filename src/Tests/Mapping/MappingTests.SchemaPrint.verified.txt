@@ -74,20 +74,26 @@ input StringComparison {
   like: String
 }
 
-input MappingChildOrderBy {
-  id: SortDirection
-  parent: MappingParentOrderBy
-  parentId: SortDirection
-  property: SortDirection
+enum MappingChildOrderBy {
+  id
+  id_desc
+  parent_id
+  parent_id_desc
+  parent_ignoreByName
+  parent_ignoreByName_desc
+  parent_property
+  parent_property_desc
+  parentId
+  parentId_desc
+  property
+  property_desc
 }
 
-enum SortDirection {
-  ascending
-  descending
-}
-
-input MappingParentOrderBy {
-  id: SortDirection
-  ignoreByName: SortDirection
-  property: SortDirection
+enum MappingParentOrderBy {
+  id
+  id_desc
+  ignoreByName
+  ignoreByName_desc
+  property
+  property_desc
 }

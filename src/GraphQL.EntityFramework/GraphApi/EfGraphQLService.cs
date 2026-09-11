@@ -7,21 +7,25 @@ public partial class EfGraphQLService<TDbContext> :
     ResolveFilters<TDbContext>? resolveFilters;
     bool disableTracking;
     bool includeSqlInExceptions;
+    OrderByStyle orderByStyle;
     ResolveDbContext<TDbContext> resolveDbContext;
     IReadOnlyDictionary<Type, List<string>> keyNames;
 
     /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
     /// <param name="includeSqlInExceptions">Include the generated sql in exception messages. Off by default, since those messages can reach clients and the sql carries table and column names and, depending on the provider, parameter values.</param>
+    /// <param name="orderByStyle">The shape of the generated orderBy argument.</param>
     public EfGraphQLService(
         IModel model,
         ResolveDbContext<TDbContext> resolveDbContext,
         ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
-        bool includeSqlInExceptions = false)
+        bool includeSqlInExceptions = false,
+        OrderByStyle orderByStyle = OrderByStyle.Enum)
     {
         this.resolveFilters = resolveFilters;
         this.disableTracking = disableTracking;
         this.includeSqlInExceptions = includeSqlInExceptions;
+        this.orderByStyle = orderByStyle;
         this.resolveDbContext = resolveDbContext;
         Model = model;
 

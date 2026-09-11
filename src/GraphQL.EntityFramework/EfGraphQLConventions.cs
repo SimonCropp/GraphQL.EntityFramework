@@ -11,6 +11,8 @@ public static class EfGraphQLConventions
     /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
     /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
     /// <param name="includeSqlInExceptions">Include the generated sql in exception messages. Off by default, since those messages can reach clients and the sql carries table and column names and, depending on the provider, parameter values.</param>
+    /// <param name="orderByStyle">The shape of the generated orderBy argument. <see cref="OrderByStyle.Enum"/>, the default, takes an enum of flattened paths, as in <c>orderBy: property</c> or <c>orderBy: [property, parent_property_desc]</c>. <see cref="OrderByStyle.Object"/> takes an input object per item, as in <c>orderBy: {property: ascending}</c>.</param>
+    /// <param name="orderByEnumOptions">Options for <see cref="OrderByStyle.Enum"/>. Registered for the whole container, so the first registration wins when several contexts are registered.</param>
 
     #region RegisterInContainer
 
@@ -20,16 +22,18 @@ public static class EfGraphQLConventions
             IModel? model = null,
             ResolveFilters<TDbContext>? resolveFilters = null,
             bool disableTracking = false,
-            bool includeSqlInExceptions = false)
+            bool includeSqlInExceptions = false,
+            OrderByStyle orderByStyle = OrderByStyle.Enum,
+            OrderByEnumOptions? orderByEnumOptions = null)
 
         #endregion
 
         where TDbContext : DbContext
     {
-        RegisterScalarsAndArgs(services);
+        RegisterScalarsAndArgs(services, orderByEnumOptions);
         services.AddHttpContextAccessor();
         services.AddTransient<HttpContextCapture>();
-        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, includeSqlInExceptions));
+        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, includeSqlInExceptions, orderByStyle));
         services.AddSingleton<IEfGraphQLService<TDbContext>>(provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
         // The generated where and orderBy input types resolve every registered service, so a
         // type mapped in any of the contexts is found
@@ -42,7 +46,8 @@ public static class EfGraphQLConventions
         ResolveFilters<TDbContext>? filters,
         IServiceProvider provider,
         bool disableTracking,
-        bool includeSqlInExceptions)
+        bool includeSqlInExceptions,
+        OrderByStyle orderByStyle)
         where TDbContext : DbContext
     {
         model ??= ResolveModel<TDbContext>(provider);
@@ -54,7 +59,8 @@ public static class EfGraphQLConventions
             dbContextResolver,
             filters,
             disableTracking,
-            includeSqlInExceptions);
+            includeSqlInExceptions,
+            orderByStyle);
     }
 
     static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider, IServiceProvider? requestServices)
@@ -86,8 +92,9 @@ public static class EfGraphQLConventions
         throw new($"Could not extract {typeof(TDbContext).Name} from the provider. Tried the HttpContext provider and the root provider.");
     }
 
-    static void RegisterScalarsAndArgs(IServiceCollection services)
+    static void RegisterScalarsAndArgs(IServiceCollection services, OrderByEnumOptions? orderByEnumOptions)
     {
+        services.TryAddSingleton(orderByEnumOptions ?? new OrderByEnumOptions());
         services.AddSingleton<EnumerationGraphType<DayOfWeek>>();
         // The where and orderBy input types are generated per entity type, so they are
         // registered as open generics. An enum comparison takes its values through
@@ -97,6 +104,7 @@ public static class EfGraphQLConventions
         services.TryAddSingleton(typeof(CollectionWhereGraph<>));
         services.TryAddSingleton(typeof(ComparisonGraph<>));
         services.TryAddSingleton(typeof(OrderByGraph<>));
+        services.TryAddSingleton(typeof(OrderByEnumGraph<>));
         services.TryAddSingleton<SortDirectionGraph>();
     }
 

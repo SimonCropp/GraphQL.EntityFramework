@@ -298,14 +298,14 @@ query ($where: PersonWhere)
 
 ### OrderBy
 
-The `orderBy` argument is a list of input objects generated for the entity, named after the CLR type: `PersonOrderBy` for `Person`. Each has one field per mapped property, taking `ascending` or `descending`, and one per reference navigation to order by a nested property. Each item in the list sets exactly one property; the list gives the order of the keys.
+The `orderBy` argument is a list of an enum generated for the entity, named after the CLR type: `PersonOrderBy` for `Person`. It has one value per mapped property, and a `_desc` variant of each for descending. A reference navigation is flattened into the path it leads to, so `Parent.Property` is `parent_property`. Since a single value coerces to a one item list, a single key needs no brackets; several keys are a list, and the list gives the order of the keys.
 
 
 #### Ascending
 
 ```graphql
 {
-  entities (orderBy: {property: ascending})
+  entities (orderBy: property)
   {
     property
   }
@@ -317,7 +317,7 @@ The `orderBy` argument is a list of input objects generated for the entity, name
 
 ```graphql
 {
-  entities (orderBy: {property: descending})
+  entities (orderBy: property_desc)
   {
     property
   }
@@ -329,7 +329,7 @@ The `orderBy` argument is a list of input objects generated for the entity, name
 
 ```graphql
 {
-  entities (orderBy: [{property: descending}, {id: ascending}])
+  entities (orderBy: [property_desc, id])
   {
     property
   }
@@ -341,7 +341,31 @@ The `orderBy` argument is a list of input objects generated for the entity, name
 
 ```graphql
 {
-  entities (orderBy: {parent: {property: ascending}})
+  entities (orderBy: parent_property)
+  {
+    property
+  }
+}
+```
+
+How deep the navigations are flattened is controlled by `OrderByEnumOptions.NestingDepth`, which defaults to 2: the entity's own properties, plus one reference navigation. Each extra level multiplies the number of enum values.
+
+
+#### The input object style
+
+The previous shape, an input object per item, remains available:
+
+```cs
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    orderByStyle: OrderByStyle.Object);
+```
+
+`PersonOrderBy` is then an input type with one field per mapped property taking `ascending` or `descending`, and one per reference navigation to order by a nested property. Each item in the list sets exactly one property, and navigations nest to any depth:
+
+```graphql
+{
+  entities (orderBy: [{parent: {property: descending}}, {property: ascending}])
   {
     property
   }

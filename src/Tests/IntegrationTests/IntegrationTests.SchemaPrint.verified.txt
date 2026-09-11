@@ -231,14 +231,11 @@ input Int64Comparison {
   lessThanOrEqual: Long
 }
 
-input CustomTypeEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
-}
-
-enum SortDirection {
-  ascending
-  descending
+enum CustomTypeEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type SkipLevelGraph {
@@ -308,21 +305,15 @@ input Int32Comparison {
   lessThanOrEqual: Int
 }
 
-input Level1EntityOrderBy {
-  id: SortDirection
-  level2Entity: Level2EntityOrderBy
-  level2EntityId: SortDirection
-}
-
-input Level2EntityOrderBy {
-  id: SortDirection
-  level3Entity: Level3EntityOrderBy
-  level3EntityId: SortDirection
-}
-
-input Level3EntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum Level1EntityOrderBy {
+  id
+  id_desc
+  level2Entity_id
+  level2Entity_id_desc
+  level2Entity_level3EntityId
+  level2Entity_level3EntityId_desc
+  level2EntityId
+  level2EntityId_desc
 }
 
 type IncludeNonQueryableA {
@@ -357,16 +348,15 @@ input IncludeNonQueryableBWhere {
   includeNonQueryableAId: GuidComparison
 }
 
-input IncludeNonQueryableAOrderBy {
-  id: SortDirection
-  includeNonQueryableB: IncludeNonQueryableBOrderBy
-  includeNonQueryableBId: SortDirection
-}
-
-input IncludeNonQueryableBOrderBy {
-  id: SortDirection
-  includeNonQueryableA: IncludeNonQueryableAOrderBy
-  includeNonQueryableAId: SortDirection
+enum IncludeNonQueryableAOrderBy {
+  id
+  id_desc
+  includeNonQueryableB_id
+  includeNonQueryableB_id_desc
+  includeNonQueryableB_includeNonQueryableAId
+  includeNonQueryableB_includeNonQueryableAId_desc
+  includeNonQueryableBId
+  includeNonQueryableBId_desc
 }
 
 type WithManyChildren {
@@ -418,22 +408,17 @@ input Child2EntityWhere {
   parentId: GuidComparison
 }
 
-input WithManyChildrenEntityOrderBy {
-  child1: Child1EntityOrderBy
-  child2: Child2EntityOrderBy
-  id: SortDirection
-}
-
-input Child1EntityOrderBy {
-  id: SortDirection
-  parent: WithManyChildrenEntityOrderBy
-  parentId: SortDirection
-}
-
-input Child2EntityOrderBy {
-  id: SortDirection
-  parent: WithManyChildrenEntityOrderBy
-  parentId: SortDirection
+enum WithManyChildrenEntityOrderBy {
+  child1_id
+  child1_id_desc
+  child1_parentId
+  child1_parentId_desc
+  child2_id
+  child2_id_desc
+  child2_parentId
+  child2_parentId_desc
+  id
+  id_desc
 }
 
 type WithItems {
@@ -475,16 +460,24 @@ input ItemEntityCollectionWhere {
   none: ItemEntityWhere
 }
 
-input ItemEntityOrderBy {
-  id: SortDirection
-  parent: WithItemsEntityOrderBy
-  parentId: SortDirection
-  property: SortDirection
+enum ItemEntityOrderBy {
+  id
+  id_desc
+  parent_id
+  parent_id_desc
+  parent_property
+  parent_property_desc
+  parentId
+  parentId_desc
+  property
+  property_desc
 }
 
-input WithItemsEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum WithItemsEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type Level1 {
@@ -507,9 +500,11 @@ input WithNullableEntityWhere {
   nullable: Int32Comparison
 }
 
-input WithNullableEntityOrderBy {
-  id: SortDirection
-  nullable: SortDirection
+enum WithNullableEntityOrderBy {
+  id
+  id_desc
+  nullable
+  nullable_desc
 }
 
 type NamedId {
@@ -526,9 +521,11 @@ input NamedIdEntityWhere {
   property: StringComparison
 }
 
-input NamedIdEntityOrderBy {
-  namedId: SortDirection
-  property: SortDirection
+enum NamedIdEntityOrderBy {
+  namedId
+  namedId_desc
+  property
+  property_desc
 }
 
 type WithMisNamedQueryParent {
@@ -568,14 +565,18 @@ input WithMisNamedQueryChildEntityCollectionWhere {
   none: WithMisNamedQueryChildEntityWhere
 }
 
-input WithMisNamedQueryChildEntityOrderBy {
-  id: SortDirection
-  parent: WithMisNamedQueryParentEntityOrderBy
-  parentId: SortDirection
+enum WithMisNamedQueryChildEntityOrderBy {
+  id
+  id_desc
+  parent_id
+  parent_id_desc
+  parentId
+  parentId_desc
 }
 
-input WithMisNamedQueryParentEntityOrderBy {
-  id: SortDirection
+enum WithMisNamedQueryParentEntityOrderBy {
+  id
+  id_desc
 }
 
 type Parent {
@@ -693,17 +694,26 @@ input ChildEntityCollectionWhere {
   none: ChildEntityWhere
 }
 
-input ChildEntityOrderBy {
-  id: SortDirection
-  nullable: SortDirection
-  parent: ParentEntityOrderBy
-  parentId: SortDirection
-  property: SortDirection
+enum ChildEntityOrderBy {
+  id
+  id_desc
+  nullable
+  nullable_desc
+  parent_id
+  parent_id_desc
+  parent_property
+  parent_property_desc
+  parentId
+  parentId_desc
+  property
+  property_desc
 }
 
-input ParentEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum ParentEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type DateEntity {
@@ -733,9 +743,11 @@ input DateOnlyComparison {
   lessThanOrEqual: DateOnly
 }
 
-input DateEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum DateEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type EnumEntity {
@@ -768,9 +780,11 @@ input DayOfWeekComparison {
   in: [DayOfWeek]
 }
 
-input EnumEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum EnumEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type StringEntity {
@@ -787,9 +801,11 @@ input StringEntityWhere {
   property: StringComparison
 }
 
-input StringEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum StringEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type TimeEntity {
@@ -819,9 +835,11 @@ input TimeOnlyComparison {
   lessThanOrEqual: TimeOnly
 }
 
-input TimeEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum TimeEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 "A connection from an object to a list of objects of type `Parent`."
@@ -912,19 +930,23 @@ input ReadOnlyEntityCollectionWhere {
   none: ReadOnlyEntityWhere
 }
 
-input ReadOnlyEntityOrderBy {
-  age: SortDirection
-  computedInDb: SortDirection
-  firstName: SortDirection
-  id: SortDirection
-  lastName: SortDirection
-  readOnlyParent: ReadOnlyParentEntityOrderBy
-  readOnlyParentId: SortDirection
-}
-
-input ReadOnlyParentEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum ReadOnlyEntityOrderBy {
+  age
+  age_desc
+  computedInDb
+  computedInDb_desc
+  firstName
+  firstName_desc
+  id
+  id_desc
+  lastName
+  lastName_desc
+  readOnlyParent_id
+  readOnlyParent_id_desc
+  readOnlyParent_property
+  readOnlyParent_property_desc
+  readOnlyParentId
+  readOnlyParentId_desc
 }
 
 type FilterParent {
@@ -1048,31 +1070,74 @@ input FilterChildEntityCollectionWhere {
   none: FilterChildEntityWhere
 }
 
-input FilterChildEntityOrderBy {
-  age: SortDirection
-  createdAt: SortDirection
-  id: SortDirection
-  isActive: SortDirection
-  nullableAge: SortDirection
-  nullableCreatedAt: SortDirection
-  nullableIsActive: SortDirection
-  parent: FilterParentEntityOrderBy
-  property: SortDirection
+enum FilterChildEntityOrderBy {
+  age
+  age_desc
+  createdAt
+  createdAt_desc
+  id
+  id_desc
+  isActive
+  isActive_desc
+  nullableAge
+  nullableAge_desc
+  nullableCreatedAt
+  nullableCreatedAt_desc
+  nullableIsActive
+  nullableIsActive_desc
+  parent_field1
+  parent_field1_desc
+  parent_field10
+  parent_field10_desc
+  parent_field2
+  parent_field2_desc
+  parent_field3
+  parent_field3_desc
+  parent_field4
+  parent_field4_desc
+  parent_field5
+  parent_field5_desc
+  parent_field6
+  parent_field6_desc
+  parent_field7
+  parent_field7_desc
+  parent_field8
+  parent_field8_desc
+  parent_field9
+  parent_field9_desc
+  parent_id
+  parent_id_desc
+  parent_property
+  parent_property_desc
+  property
+  property_desc
 }
 
-input FilterParentEntityOrderBy {
-  field1: SortDirection
-  field10: SortDirection
-  field2: SortDirection
-  field3: SortDirection
-  field4: SortDirection
-  field5: SortDirection
-  field6: SortDirection
-  field7: SortDirection
-  field8: SortDirection
-  field9: SortDirection
-  id: SortDirection
-  property: SortDirection
+enum FilterParentEntityOrderBy {
+  field1
+  field1_desc
+  field10
+  field10_desc
+  field2
+  field2_desc
+  field3
+  field3_desc
+  field4
+  field4_desc
+  field5
+  field5_desc
+  field6
+  field6_desc
+  field7
+  field7_desc
+  field8
+  field8_desc
+  field9
+  field9_desc
+  id
+  id_desc
+  property
+  property_desc
 }
 
 "A connection from an object to a list of objects of type `FilterParent`."
@@ -1125,17 +1190,27 @@ input SimpleTypeFilterEntityWhere {
   nullableIntValue: Int32Comparison
 }
 
-input SimpleTypeFilterEntityOrderBy {
-  boolValue: SortDirection
-  dateTimeValue: SortDirection
-  guidValue: SortDirection
-  id: SortDirection
-  intValue: SortDirection
-  name: SortDirection
-  nullableBoolValue: SortDirection
-  nullableDateTimeValue: SortDirection
-  nullableGuidValue: SortDirection
-  nullableIntValue: SortDirection
+enum SimpleTypeFilterEntityOrderBy {
+  boolValue
+  boolValue_desc
+  dateTimeValue
+  dateTimeValue_desc
+  guidValue
+  guidValue_desc
+  id
+  id_desc
+  intValue
+  intValue_desc
+  name
+  name_desc
+  nullableBoolValue
+  nullableBoolValue_desc
+  nullableDateTimeValue
+  nullableDateTimeValue_desc
+  nullableGuidValue
+  nullableGuidValue_desc
+  nullableIntValue
+  nullableIntValue_desc
 }
 
 "A connection from an object to a list of objects of type `Base`."
@@ -1247,25 +1322,36 @@ input DerivedWithNavigationEntityWhere {
   status: StringComparison
 }
 
-input DerivedChildEntityOrderBy {
-  id: SortDirection
-  parent: BaseEntityOrderBy
-  parentId: SortDirection
-  property: SortDirection
-  typedParent: DerivedWithNavigationEntityOrderBy
-  typedParentId: SortDirection
+enum DerivedChildEntityOrderBy {
+  id
+  id_desc
+  parent_id
+  parent_id_desc
+  parent_property
+  parent_property_desc
+  parent_status
+  parent_status_desc
+  parentId
+  parentId_desc
+  property
+  property_desc
+  typedParent_id
+  typedParent_id_desc
+  typedParent_property
+  typedParent_property_desc
+  typedParent_status
+  typedParent_status_desc
+  typedParentId
+  typedParentId_desc
 }
 
-input BaseEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
-  status: SortDirection
-}
-
-input DerivedWithNavigationEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
-  status: SortDirection
+enum BaseEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
+  status
+  status_desc
 }
 
 type Derived implements BaseEntity {
@@ -1298,10 +1384,20 @@ input DerivedEntityWhere {
   status: StringComparison
 }
 
-input DerivedEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
-  status: SortDirection
+enum DerivedEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
+  status
+  status_desc
+}
+
+enum ReadOnlyParentEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type ManyToManyLeft {
@@ -1348,14 +1444,18 @@ input ManyToManyLeftEntityCollectionWhere {
   none: ManyToManyLeftEntityWhere
 }
 
-input ManyToManyLeftEntityOrderBy {
-  id: SortDirection
-  leftName: SortDirection
+enum ManyToManyLeftEntityOrderBy {
+  id
+  id_desc
+  leftName
+  leftName_desc
 }
 
-input ManyToManyRightEntityOrderBy {
-  id: SortDirection
-  rightName: SortDirection
+enum ManyToManyRightEntityOrderBy {
+  id
+  id_desc
+  rightName
+  rightName_desc
 }
 
 type ParentEntityView {
@@ -1370,8 +1470,9 @@ input ParentEntityViewWhere {
   property: StringComparison
 }
 
-input ParentEntityViewOrderBy {
-  property: SortDirection
+enum ParentEntityViewOrderBy {
+  property
+  property_desc
 }
 
 "A connection from an object to a list of objects of type `ParentEntityView`."
@@ -1515,22 +1616,29 @@ input EntityStatusComparison {
   in: [EntityStatus]
 }
 
-input FieldBuilderProjectionEntityOrderBy {
-  age: SortDirection
-  createdAt: SortDirection
-  id: SortDirection
-  isActive: SortDirection
-  name: SortDirection
-  parent: FieldBuilderProjectionParentEntityOrderBy
-  salary: SortDirection
-  score: SortDirection
-  status: SortDirection
-  viewCount: SortDirection
-}
-
-input FieldBuilderProjectionParentEntityOrderBy {
-  id: SortDirection
-  name: SortDirection
+enum FieldBuilderProjectionEntityOrderBy {
+  age
+  age_desc
+  createdAt
+  createdAt_desc
+  id
+  id_desc
+  isActive
+  isActive_desc
+  name
+  name_desc
+  parent_id
+  parent_id_desc
+  parent_name
+  parent_name_desc
+  salary
+  salary_desc
+  score
+  score_desc
+  status
+  status_desc
+  viewCount
+  viewCount_desc
 }
 
 type FieldBuilderProjectionParent {
@@ -1568,6 +1676,13 @@ type FieldBuilderProjectionEdge {
   cursor: String!
   "The item at the end of the edge"
   node: FieldBuilderProjection!
+}
+
+enum FieldBuilderProjectionParentEntityOrderBy {
+  id
+  id_desc
+  name
+  name_desc
 }
 
 type Department {
@@ -1613,17 +1728,28 @@ input EmployeeEntityCollectionWhere {
   none: EmployeeEntityWhere
 }
 
-input EmployeeEntityOrderBy {
-  department: DepartmentEntityOrderBy
-  departmentId: SortDirection
-  id: SortDirection
-  name: SortDirection
+enum EmployeeEntityOrderBy {
+  department_id
+  department_id_desc
+  department_isActive
+  department_isActive_desc
+  department_name
+  department_name_desc
+  departmentId
+  departmentId_desc
+  id
+  id_desc
+  name
+  name_desc
 }
 
-input DepartmentEntityOrderBy {
-  id: SortDirection
-  isActive: SortDirection
-  name: SortDirection
+enum DepartmentEntityOrderBy {
+  id
+  id_desc
+  isActive
+  isActive_desc
+  name
+  name_desc
 }
 
 type FilterReference {
@@ -1678,26 +1804,37 @@ input FilterBaseEntityWhere {
   id: GuidComparison
 }
 
-input FilterReferenceEntityOrderBy {
-  baseEntity: FilterBaseEntityOrderBy
-  baseEntityId: SortDirection
-  id: SortDirection
-  property: SortDirection
-}
-
-input FilterBaseEntityOrderBy {
-  commonProperty: SortDirection
-  field1: SortDirection
-  field10: SortDirection
-  field2: SortDirection
-  field3: SortDirection
-  field4: SortDirection
-  field5: SortDirection
-  field6: SortDirection
-  field7: SortDirection
-  field8: SortDirection
-  field9: SortDirection
-  id: SortDirection
+enum FilterReferenceEntityOrderBy {
+  baseEntity_commonProperty
+  baseEntity_commonProperty_desc
+  baseEntity_field1
+  baseEntity_field1_desc
+  baseEntity_field10
+  baseEntity_field10_desc
+  baseEntity_field2
+  baseEntity_field2_desc
+  baseEntity_field3
+  baseEntity_field3_desc
+  baseEntity_field4
+  baseEntity_field4_desc
+  baseEntity_field5
+  baseEntity_field5_desc
+  baseEntity_field6
+  baseEntity_field6_desc
+  baseEntity_field7
+  baseEntity_field7_desc
+  baseEntity_field8
+  baseEntity_field8_desc
+  baseEntity_field9
+  baseEntity_field9_desc
+  baseEntity_id
+  baseEntity_id_desc
+  baseEntityId
+  baseEntityId_desc
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type DiscriminatorDerivedA {
@@ -1729,11 +1866,15 @@ input DiscriminatorTypeComparison {
   in: [DiscriminatorType]
 }
 
-input DiscriminatorDerivedAEntityOrderBy {
-  derivedAProperty: SortDirection
-  entityType: SortDirection
-  id: SortDirection
-  property: SortDirection
+enum DiscriminatorDerivedAEntityOrderBy {
+  derivedAProperty
+  derivedAProperty_desc
+  entityType
+  entityType_desc
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type DiscriminatorDerivedB {
@@ -1754,11 +1895,15 @@ input DiscriminatorDerivedBEntityWhere {
   property: StringComparison
 }
 
-input DiscriminatorDerivedBEntityOrderBy {
-  derivedBProperty: SortDirection
-  entityType: SortDirection
-  id: SortDirection
-  property: SortDirection
+enum DiscriminatorDerivedBEntityOrderBy {
+  derivedBProperty
+  derivedBProperty_desc
+  entityType
+  entityType_desc
+  id
+  id_desc
+  property
+  property_desc
 }
 
 interface TphMiddleEntity {
@@ -1804,18 +1949,23 @@ input TphAttachmentEntityCollectionWhere {
   none: TphAttachmentEntityWhere
 }
 
-input TphAttachmentEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
-  relatedRequest: TphRootEntityOrderBy
-  relatedRequestId: SortDirection
-  request: TphRootEntityOrderBy
-  requestId: SortDirection
-}
-
-input TphRootEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum TphAttachmentEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
+  relatedRequest_id
+  relatedRequest_id_desc
+  relatedRequest_property
+  relatedRequest_property_desc
+  relatedRequestId
+  relatedRequestId_desc
+  request_id
+  request_id_desc
+  request_property
+  request_property_desc
+  requestId
+  requestId_desc
 }
 
 input TphMiddleEntityWhere {
@@ -1828,9 +1978,11 @@ input TphMiddleEntityWhere {
   property: StringComparison
 }
 
-input TphMiddleEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum TphMiddleEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 type GuardedKeyEntity {
@@ -1847,9 +1999,11 @@ input GuardedKeyEntityWhere {
   id: GuidComparison
 }
 
-input GuardedKeyEntityOrderBy {
-  emailAddress: SortDirection
-  id: SortDirection
+enum GuardedKeyEntityOrderBy {
+  emailAddress
+  emailAddress_desc
+  id
+  id_desc
 }
 
 interface ConcreteTphBaseEntity {
@@ -1866,9 +2020,11 @@ input ConcreteTphBaseEntityWhere {
   property: StringComparison
 }
 
-input ConcreteTphBaseEntityOrderBy {
-  id: SortDirection
-  property: SortDirection
+enum ConcreteTphBaseEntityOrderBy {
+  id
+  id_desc
+  property
+  property_desc
 }
 
 interface TphDerivedNavBaseEntity {
@@ -1887,10 +2043,13 @@ input TphDerivedNavBaseEntityWhere {
   property: StringComparison
 }
 
-input TphDerivedNavBaseEntityOrderBy {
-  id: SortDirection
-  ownerId: SortDirection
-  property: SortDirection
+enum TphDerivedNavBaseEntityOrderBy {
+  id
+  id_desc
+  ownerId
+  ownerId_desc
+  property
+  property_desc
 }
 
 type TphDerivedNavOwner {
@@ -1919,11 +2078,19 @@ input TphDerivedNavBaseEntityCollectionWhere {
   none: TphDerivedNavBaseEntityWhere
 }
 
-input TphDerivedNavOwnerEntityOrderBy {
-  id: SortDirection
-  item: TphDerivedNavBaseEntityOrderBy
-  itemId: SortDirection
-  property: SortDirection
+enum TphDerivedNavOwnerEntityOrderBy {
+  id
+  id_desc
+  item_id
+  item_id_desc
+  item_ownerId
+  item_ownerId_desc
+  item_property
+  item_property_desc
+  itemId
+  itemId_desc
+  property
+  property_desc
 }
 
 type Mutation {

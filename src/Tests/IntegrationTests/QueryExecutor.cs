@@ -7,7 +7,8 @@
         Inputs? inputs,
         Filters<TDbContext>? filters,
         bool disableTracking,
-        bool includeSqlInExceptions = false)
+        bool includeSqlInExceptions = false,
+        OrderByStyle orderByStyle = OrderByStyle.Enum)
         where TDbContext : DbContext
     {
         EfGraphQLConventions.RegisterInContainer(
@@ -16,7 +17,8 @@
             data.Model,
             _ => filters,
             disableTracking,
-            includeSqlInExceptions);
+            includeSqlInExceptions,
+            orderByStyle);
         await using var provider = services.BuildServiceProvider();
         using var schema = new Schema(provider);
         var executer = new EfDocumentExecuter();

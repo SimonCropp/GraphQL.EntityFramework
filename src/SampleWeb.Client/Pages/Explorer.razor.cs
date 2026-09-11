@@ -24,11 +24,11 @@ public partial class Explorer
         query Companies {
           companies(
             where: {employees: {any: {age: {greaterThan: 20}}}}
-            orderBy: {content: ascending}
+            orderBy: content
             take: 3) {
             id
             content
-            employees(orderBy: {age: descending}) {
+            employees(orderBy: age_desc) {
               content
               age
             }

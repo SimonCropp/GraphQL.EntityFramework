@@ -76,7 +76,7 @@ public partial class IntegrationTests
               tphDerivedNavOwners
               {
                 property
-                items (orderBy: {property: ascending})
+                items (orderBy: property)
                 {
                   property
                   ... on TphDerivedNavCategory {

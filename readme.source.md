@@ -26,6 +26,7 @@ https://nuget.org/packages/GraphQL.EntityFramework/
  * [Defining Graphs](/docs/defining-graphs.md)
  * [Query Usage](/docs/query-usage.md)
  * [Filters](/docs/filters.md)
+ * [Upgrading to 36.0.0](/docs/upgradeGuide36.md)
  * [Upgrading to 35.0.0](/docs/upgradeGuide35.md)
 
 

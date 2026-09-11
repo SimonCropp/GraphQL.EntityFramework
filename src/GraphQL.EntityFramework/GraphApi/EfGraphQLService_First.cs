@@ -225,7 +225,7 @@ partial class EfGraphQLService<TDbContext>
 
         if (!omitQueryArguments)
         {
-            type.Arguments = ArgumentAppender.GetQueryArguments(typeof(TReturn), hasId, false, idOnly, omitQueryArguments);
+            type.Arguments = ArgumentAppender.GetQueryArguments(typeof(TReturn), hasId, false, idOnly, orderByStyle, omitQueryArguments);
         }
 
         return type;

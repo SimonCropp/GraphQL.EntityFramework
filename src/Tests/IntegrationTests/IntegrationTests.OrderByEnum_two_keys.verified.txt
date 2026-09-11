@@ -1,0 +1,30 @@
+﻿{
+  target: {
+    Data: {
+      childEntities: [
+        {
+          property: B,
+          nullable: 2
+        },
+        {
+          property: A,
+          nullable: 1
+        },
+        {
+          property: C,
+          nullable: 1
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   c.Id,
+         c.Nullable,
+         c.ParentId,
+         c.Property
+from     ChildEntities as c
+order by c.Nullable desc,
+         c.Property
+  }
+}

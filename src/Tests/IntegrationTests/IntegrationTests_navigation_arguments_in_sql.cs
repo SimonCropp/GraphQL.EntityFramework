@@ -85,7 +85,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                children(orderBy: {property: descending})
+                children(orderBy: property_desc)
                 {
                   nullable
                 }
@@ -205,7 +205,7 @@ public partial class IntegrationTests
             {
               parentEntities
               {
-                children(where: {property: {startsWith: "Value"}}, orderBy: {property: ascending}, skip: 1, take: 1)
+                children(where: {property: {startsWith: "Value"}}, orderBy: property, skip: 1, take: 1)
                 {
                   property
                 }

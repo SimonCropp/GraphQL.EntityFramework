@@ -15,7 +15,7 @@ public partial class IntegrationTests
                 parent
                 {
                   property
-                  childrenFromInterface(orderBy: {property: ascending})
+                  childrenFromInterface(orderBy: property)
                   {
                     items
                     {

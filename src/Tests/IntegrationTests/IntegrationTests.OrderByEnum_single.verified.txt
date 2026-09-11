@@ -1,0 +1,25 @@
+﻿{
+  target: {
+    Data: {
+      childEntities: [
+        {
+          property: A
+        },
+        {
+          property: B
+        },
+        {
+          property: C
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   c.Id,
+         c.ParentId,
+         c.Property
+from     ChildEntities as c
+order by c.Property
+  }
+}
