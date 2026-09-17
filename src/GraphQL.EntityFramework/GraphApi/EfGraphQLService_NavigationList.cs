@@ -27,7 +27,8 @@ partial class EfGraphQLService<TDbContext>
 
         var compiledProjection = projection.Compile();
 
-        field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(async context =>
+        // object rather than the list, since a batch filter makes the value a deferred result
+        field.Resolver = new FuncFieldResolver<TSource, object>(async context =>
         {
             // Runs once per parent row. Building a ResolveEfFieldContext here copied every property
             // of the GraphQL.NET context, which forced the lazily computed ones, SubFields, Path,
@@ -68,7 +69,7 @@ partial class EfGraphQLService<TDbContext>
                 return result;
             }
 
-            return await filters.ApplyFilter(result, context.UserContext, dbContext, context.User);
+            return await filters.Apply(context, dbContext, result, _ => new(_));
         });
 
         graph.AddField(field);

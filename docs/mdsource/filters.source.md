@@ -97,6 +97,22 @@ Filters can be asynchronous when they need to perform database lookups or other 
 snippet: async-filter
 
 
+## Batch Filters
+
+An async filter runs once per item, so a filter that queries the database makes one query for every item a response returns. A batch filter decides for many items in one call:
+
+snippet: batch-filter
+
+The filter is passed the distinct projections of the items, and returns the projections to include. An item whose projection is not returned is excluded.
+
+Items are batched across the response, not only within one list. A field whose items have a batch filter resolves to a deferred result, and GraphQL.NET completes deferred results after the other fields at the same depth. So the items at one depth of the query share one call per batch filter, whichever row or field returned them. For example, the children of every parent in a list are filtered in one call, rather than one call per parent.
+
+Notes:
+
+ * Per item filters on the same type run first, and only the items they include are passed to the batch filter.
+ * Batching across rows needs an execution to share, which every query run through `EfDocumentExecuter` has. A resolve context built outside an execution filters the items of each field in a separate call.
+
+
 ## Navigation Properties
 
 Filters can project through navigation properties to access related entity data:

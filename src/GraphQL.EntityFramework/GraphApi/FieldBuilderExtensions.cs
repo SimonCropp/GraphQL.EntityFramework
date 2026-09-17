@@ -40,7 +40,7 @@ public static class FieldBuilderExtensions
 
         // A sync resolve completes synchronously unless a filter has to run, so the resolver
         // returns a ValueTask rather than allocating an async state machine per field per row
-        field.Resolver = new FuncFieldResolver<TSource, TReturn>(
+        field.Resolver = new FuncFieldResolver<TSource, object>(
             context =>
             {
                 var projectionContext = BuildProjectionContext(graphQlService, compiledProjection, context);
@@ -101,7 +101,7 @@ public static class FieldBuilderExtensions
 
         var compiledProjection = projection.Compile();
 
-        field.Resolver = new FuncFieldResolver<TSource, TReturn>(
+        field.Resolver = new FuncFieldResolver<TSource, object>(
             async context =>
             {
                 var projectionContext = BuildProjectionContext(graphQlService, compiledProjection, context);
@@ -162,7 +162,7 @@ public static class FieldBuilderExtensions
 
         var compiledProjection = projection.Compile();
 
-        field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
+        field.Resolver = new FuncFieldResolver<TSource, object>(
             context =>
             {
                 var projectionContext = BuildProjectionContext(graphQlService, compiledProjection, context);
@@ -223,7 +223,7 @@ public static class FieldBuilderExtensions
 
         var compiledProjection = projection.Compile();
 
-        field.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
+        field.Resolver = new FuncFieldResolver<TSource, object>(
             async context =>
             {
                 var projectionContext = BuildProjectionContext(graphQlService, compiledProjection, context);
@@ -265,7 +265,9 @@ public static class FieldBuilderExtensions
             FieldContext = context
         };
 
-    static ValueTask<TReturn?> ApplyFilters<TDbContext, TReturn>(
+    // The resolvers return object rather than TReturn, since a batch filter makes the value a
+    // deferred result
+    static ValueTask<object?> ApplyFilters<TDbContext, TReturn>(
         Filters<TDbContext>? filters,
         IResolveFieldContext context,
         TDbContext dbContext,
@@ -280,14 +282,17 @@ public static class FieldBuilderExtensions
             return new(result);
         }
 
-        return ApplyFiltersAsync(filters, context, dbContext, result);
+        // Matched on the runtime type of the result, so a field typed as object is filtered the
+        // same as a typed one
+        return filters.Apply(context, dbContext, [result], _ => new(_.FirstOrDefault()));
     }
 
     /// <summary>
     /// The items of a list resolve are filtered the same way every other list path filters them.
     /// They were returned as is, so a filter that excluded an item elsewhere let it through here.
+    /// Null items are kept.
     /// </summary>
-    static ValueTask<IEnumerable<TReturn>?> ApplyListFilters<TDbContext, TReturn>(
+    static ValueTask<object?> ApplyListFilters<TDbContext, TReturn>(
         Filters<TDbContext>? filters,
         IResolveFieldContext context,
         TDbContext dbContext,
@@ -300,44 +305,7 @@ public static class FieldBuilderExtensions
             return new(result);
         }
 
-        return ApplyListFiltersAsync(filters, context, dbContext, result);
-    }
-
-    static async ValueTask<IEnumerable<TReturn>?> ApplyListFiltersAsync<TDbContext, TReturn>(
-        Filters<TDbContext> filters,
-        IResolveFieldContext context,
-        TDbContext dbContext,
-        IEnumerable<TReturn> result)
-        where TDbContext : DbContext
-    {
-        var list = new List<TReturn>();
-        foreach (var item in result)
-        {
-            if (item is null ||
-                await filters.ShouldInclude(context.UserContext, dbContext, context.User, item))
-            {
-                list.Add(item);
-            }
-        }
-
-        return list;
-    }
-
-    static async ValueTask<TReturn?> ApplyFiltersAsync<TDbContext, TReturn>(
-        Filters<TDbContext> filters,
-        IResolveFieldContext context,
-        TDbContext dbContext,
-        TReturn result)
-        where TDbContext : DbContext
-    {
-        // For reference types, apply filters if available. Matched on the runtime type of the
-        // result, so a field typed as object is filtered the same as a typed one.
-        if (!await filters.ShouldInclude(context.UserContext, dbContext, context.User, result!))
-        {
-            return default;
-        }
-
-        return result;
+        return filters.Apply(context, dbContext, result, _ => new(_));
     }
 
     /// <summary>

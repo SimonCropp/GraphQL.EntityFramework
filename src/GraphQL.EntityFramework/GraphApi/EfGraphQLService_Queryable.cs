@@ -87,7 +87,8 @@ partial class EfGraphQLService<TDbContext>
         var names = GetKeyNames<TReturn>();
         if (resolve is not null)
         {
-            fieldType.Resolver = new FuncFieldResolver<TSource, IEnumerable<TReturn>>(
+            // object rather than the list, since a batch filter makes the value a deferred result
+            fieldType.Resolver = new FuncFieldResolver<TSource, object>(
                 async context =>
                 {
                     var fieldContext = BuildContext(context);
@@ -95,13 +96,13 @@ partial class EfGraphQLService<TDbContext>
                     var task = resolve(fieldContext);
                     if (task == null)
                     {
-                        return [];
+                        return Array.Empty<TReturn>();
                     }
 
                     var query = await task;
                     if (query == null)
                     {
-                        return [];
+                        return Array.Empty<TReturn>();
                     }
 
                     if (disableTracking)
@@ -160,7 +161,7 @@ partial class EfGraphQLService<TDbContext>
                         return list;
                     }
 
-                    return await fieldContext.Filters.ApplyFilter(list, context.UserContext, fieldContext.DbContext, context.User);
+                    return await fieldContext.Filters.Apply(context, fieldContext.DbContext, list, _ => new(_));
                 });
         }
 

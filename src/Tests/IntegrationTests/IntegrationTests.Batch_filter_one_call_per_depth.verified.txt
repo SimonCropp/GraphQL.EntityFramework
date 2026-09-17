@@ -1,0 +1,99 @@
+﻿{
+  target: {
+    Data: {
+      childEntities: [
+        {
+          property: Child1,
+          parent: {
+            property: Parent1,
+            children: [
+              {
+                property: Child1,
+                parent: {
+                  property: Parent1
+                }
+              }
+            ]
+          }
+        },
+        {
+          property: Child2,
+          parent: {
+            property: Parent2,
+            children: [
+              {
+                property: Child2,
+                parent: {
+                  property: Parent2
+                }
+              }
+            ]
+          }
+        },
+        {
+          property: Child3,
+          parent: null
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   c.Id,
+         case when p.Id is null then cast (1 as bit) else cast (0 as bit) end,
+         p.Id,
+         s.Id,
+         s.c,
+         s.Id0,
+         s.Property,
+         s.ParentId,
+         s.Property0,
+         p.Property,
+         c.ParentId,
+         c.Property
+from     ChildEntities as c
+         left outer join
+         ParentEntities as p
+         on c.ParentId = p.Id
+         left outer join
+         (select c0.Id,
+                 case when p0.Id is null then cast (1 as bit) else cast (0 as bit) end as c,
+                 p0.Id as Id0,
+                 p0.Property,
+                 c0.ParentId,
+                 c0.Property as Property0
+          from   ChildEntities as c0
+                 left outer join
+                 ParentEntities as p0
+                 on c0.ParentId = p0.Id) as s
+         on p.Id = s.ParentId
+order by c.Property,
+         c.Id,
+         p.Id,
+         s.Id
+  },
+  childBatch: [
+    [
+      Child1,
+      Child2,
+      Child3,
+      Ignore
+    ],
+    [
+      Child1,
+      Child2,
+      Ignore
+    ]
+  ],
+  parentBatch: [
+    [
+      Ignore,
+      Parent1,
+      Parent2
+    ],
+    [
+      Parent1,
+      Parent2
+    ]
+  ]
+}

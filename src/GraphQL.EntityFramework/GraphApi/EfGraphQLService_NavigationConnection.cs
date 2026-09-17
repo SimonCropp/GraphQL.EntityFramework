@@ -72,19 +72,20 @@ partial class EfGraphQLService<TDbContext>
                 enumerable = enumerable.ApplyGraphQlArguments(names, context, omitQueryArguments, applied);
             }
 
-            if (filters != null)
+            if (filters == null)
             {
-                enumerable = await filters.ApplyFilter(enumerable, context.UserContext, dbContext, context.User);
+                return Connection(enumerable.ToList());
             }
 
-            var page = enumerable.ToList();
+            return await filters.Apply(context, dbContext, enumerable, _ => new(Connection(_)));
 
-            return ConnectionConverter.ApplyConnectionContext(
-                page,
-                context.First,
-                context.After,
-                context.Last,
-                context.Before);
+            Connection<TReturn> Connection(List<TReturn> page) =>
+                ConnectionConverter.ApplyConnectionContext(
+                    page,
+                    context.First,
+                    context.After,
+                    context.Last,
+                    context.Before);
         });
 
         //TODO: works around https://github.com/graphql-dotnet/graphql-dotnet/pull/2581/

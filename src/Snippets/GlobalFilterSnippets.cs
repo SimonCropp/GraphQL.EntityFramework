@@ -219,6 +219,25 @@ public class GlobalFilterSnippets
         #endregion
     }
 
+    public static void AddBatchFilter(ServiceCollection services)
+    {
+        #region batch-filter
+
+        var filters = new Filters<MyDbContext>();
+        filters.For<Product>().AddBatch(
+            projection: _ => _.CategoryId,
+            filter: async (_, dbContext, _, categoryIds) =>
+                await dbContext.Categories
+                    .Where(_ => categoryIds.Contains(_.Id) && _.IsVisible)
+                    .Select(_ => _.Id)
+                    .ToHashSetAsync());
+        EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+            services,
+            resolveFilters: _ => filters);
+
+        #endregion
+    }
+
     public static void AddNavigationPropertyFilter(ServiceCollection services)
     {
         #region navigation-property-filter

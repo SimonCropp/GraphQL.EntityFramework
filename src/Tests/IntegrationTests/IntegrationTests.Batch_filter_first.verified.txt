@@ -1,0 +1,23 @@
+﻿{
+  target: {
+    Data: {
+      parentEntityFirst: {
+        property: Parent1
+      }
+    }
+  },
+  sql: {
+    Text:
+select   top (1) p.Id,
+                 p.Property
+from     ParentEntities as p
+where    p.Id = @p1
+order by p.Property,
+    Parameters: {
+      @p1: Guid_1
+    }
+  },
+  parentBatch: [
+    Parent1
+  ]
+}
