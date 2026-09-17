@@ -1,0 +1,41 @@
+﻿{
+  target: {
+    Data: {
+      parentEntity: {
+        property: Parent1,
+        children: [
+          {
+            property: Child1
+          }
+        ]
+      }
+    }
+  },
+  sql: {
+    Text:
+select   p0.Id,
+         c.Id,
+         c.ParentId,
+         c.Property,
+         p0.Property
+from     (select top (2) p.Id,
+                         p.Property
+          from   ParentEntities as p
+          where  p.Id = @p1) as p0
+         left outer join
+         ChildEntities as c
+         on p0.Id = c.ParentId
+order by p0.Id,
+         c.Id,
+    Parameters: {
+      @p1: Guid_1
+    }
+  },
+  parentBatch: [
+    Parent1
+  ],
+  childBatch: [
+    Child1,
+    Ignore
+  ]
+}

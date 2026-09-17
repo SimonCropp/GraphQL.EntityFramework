@@ -79,7 +79,11 @@
         return (start, end - start);
     }
 
-    public static Task<Connection<TItem>> ApplyConnectionContext<TDbContext, TSource, TItem>(
+    /// <summary>
+    /// The connection field's value: the <see cref="Connection{TItem}"/>, or a deferred result for it
+    /// when a batch filter applies to the page.
+    /// </summary>
+    public static async Task<object?> ApplyConnectionContext<TDbContext, TSource, TItem>(
         this IQueryable<TItem> queryable,
         int? first,
         string afterString,
@@ -93,7 +97,22 @@
         where TDbContext : DbContext
     {
         Parse(afterString, beforeString, out var after, out var before);
-        return ApplyConnectionContext(queryable, first, after, last, before, context, filters, cancel, data);
+        var page = await LoadPage(queryable, first, after, last, before, context, cancel);
+        if (filters == null)
+        {
+            cancel.ThrowIfCancellationRequested();
+            return page.Build(page.Rows);
+        }
+
+        return await filters.Apply(
+            context,
+            data,
+            page.Rows,
+            _ =>
+            {
+                cancel.ThrowIfCancellationRequested();
+                return new(page.Build(_));
+            });
     }
 
     public static async Task<Connection<TItem>> ApplyConnectionContext<TDbContext, TSource, TItem>(
@@ -108,6 +127,36 @@
         TDbContext data)
         where TItem : class
         where TDbContext : DbContext
+    {
+        var page = await LoadPage(queryable, first, after, last, before, context, cancel);
+        IEnumerable<TItem> result = page.Rows;
+        if (filters != null)
+        {
+            result = await filters.ApplyFilter(result, context.UserContext, data, context.User);
+        }
+
+        cancel.ThrowIfCancellationRequested();
+        return page.Build(result);
+    }
+
+    /// <summary>
+    /// One page of rows and where it sits, before any filter has run.
+    /// </summary>
+    record Page<TItem>(int Skip, int? Count, bool HasPreviousPage, bool HasNextPage, List<TItem> Rows)
+    {
+        public Connection<TItem> Build(IEnumerable<TItem> result) =>
+            ConnectionConverter.Build(Skip, Count, HasPreviousPage, HasNextPage, result);
+    }
+
+    static async Task<Page<TItem>> LoadPage<TSource, TItem>(
+        IQueryable<TItem> queryable,
+        int? first,
+        int? after,
+        int? last,
+        int? before,
+        IResolveFieldContext<TSource> context,
+        Cancel cancel)
+        where TItem : class
     {
         if (queryable is not IOrderedQueryable<TItem> && !HasOrderingInExpressionTree(queryable.Expression))
         {
@@ -156,14 +205,7 @@
             }
         }
 
-        IEnumerable<TItem> result = rows;
-        if (filters != null)
-        {
-            result = await filters.ApplyFilter(result, context.UserContext, data, context.User);
-        }
-
-        cancel.ThrowIfCancellationRequested();
-        return Build(skip, count, hasPreviousPage, hasNextPage, result);
+        return new(skip, count, hasPreviousPage, hasNextPage, rows);
     }
 
     /// <summary>

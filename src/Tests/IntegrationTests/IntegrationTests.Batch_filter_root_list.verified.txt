@@ -1,0 +1,26 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          property: Value1
+        },
+        {
+          property: Value3
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+order by p.Property
+  },
+  parentBatch: [
+    Ignore,
+    Value1,
+    Value3
+  ]
+}

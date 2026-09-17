@@ -1,0 +1,54 @@
+﻿{
+  target: {
+    Data: {
+      first: [
+        {
+          property: Value1
+        }
+      ],
+      second: [
+        {
+          property: Value3
+        }
+      ]
+    }
+  },
+  sql: [
+    {
+      Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+where    p.Property = @p
+order by p.Property,
+      Parameters: {
+        @p: {
+          Value: Value1,
+          Size: 4000,
+          IsNullable: true
+        }
+      }
+    },
+    {
+      Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+where    p.Property <> @p
+         or p.Property is null
+order by p.Property,
+      Parameters: {
+        @p: {
+          Value: Value1,
+          Size: 4000,
+          IsNullable: true
+        }
+      }
+    }
+  ],
+  parentBatch: [
+    Ignore,
+    Value1,
+    Value3
+  ]
+}

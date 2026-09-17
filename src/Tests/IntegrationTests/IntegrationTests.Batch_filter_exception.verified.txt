@@ -1,0 +1,18 @@
+﻿{
+  target: {
+    Type: Exception,
+    Message: Failed to execute batch filter. TEntity: ParentEntity.,
+    InnerException: {
+      $type: Exception,
+      Type: Exception,
+      Message: Batch filter failed
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+order by p.Property
+  }
+}

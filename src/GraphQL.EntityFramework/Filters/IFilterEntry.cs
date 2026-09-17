@@ -18,3 +18,23 @@ interface IFilterEntry<TDbContext>
         ClaimsPrincipal? userPrincipal,
         object entity);
 }
+
+/// <summary>
+/// A filter that decides for many items in one call. The items are projected first, and the
+/// filter is passed the distinct projections.
+/// </summary>
+interface IBatchFilterEntry<TDbContext> :
+    IFilterEntry<TDbContext>
+    where TDbContext : DbContext
+{
+    object? Project(object entity);
+
+    /// <summary>
+    /// Returns whether each of <paramref name="projections"/> is included.
+    /// </summary>
+    Task<Func<object?, bool>> Filter(
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal,
+        IReadOnlyCollection<object?> projections);
+}

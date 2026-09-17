@@ -141,7 +141,8 @@ partial class EfGraphQLService<TDbContext>
         {
             Name = name,
             Type = graphType,
-            Resolver = new FuncFieldResolver<TSource, TReturn?>(
+            // object rather than TReturn, since a batch filter makes the value a deferred result
+            Resolver = new FuncFieldResolver<TSource, object>(
                 async context =>
                 {
                     var fieldContext = BuildContext(context);
@@ -205,21 +206,39 @@ partial class EfGraphQLService<TDbContext>
                             exception);
                     }
 
-                    if (single is not null)
+                    if (single is null)
                     {
-                        if (fieldContext.Filters == null ||
-                            await fieldContext.Filters.ShouldInclude(context.UserContext, fieldContext.DbContext, context.User, single))
-                        {
-                            if (mutate is not null)
-                            {
-                                await mutate.Invoke(fieldContext, single);
-                            }
-
-                            return single;
-                        }
+                        return ReturnNullable(query);
                     }
 
-                    return ReturnNullable(query);
+                    if (fieldContext.Filters == null)
+                    {
+                        return await Complete(single);
+                    }
+
+                    return await fieldContext.Filters.Apply(
+                        context,
+                        fieldContext.DbContext,
+                        [single],
+                        async included =>
+                        {
+                            if (included.Count == 0)
+                            {
+                                return ReturnNullable(query);
+                            }
+
+                            return await Complete(single);
+                        });
+
+                    async ValueTask<object?> Complete(TReturn item)
+                    {
+                        if (mutate is not null)
+                        {
+                            await mutate.Invoke(fieldContext, item);
+                        }
+
+                        return item;
+                    }
                 })
         };
 

@@ -1,0 +1,67 @@
+﻿{
+  target: {
+    Data: {
+      parentEntitiesConnection: {
+        totalCount: 3,
+        items: [
+          {
+            property: Parent1,
+            children: [
+              {
+                property: Child1
+              }
+            ]
+          },
+          {
+            property: Parent2,
+            children: [
+              {
+                property: Child2
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   ParentEntities as p
+    },
+    {
+      Text:
+select   p0.Id,
+         c.Id,
+         c.ParentId,
+         c.Property,
+         p0.Property
+from     (select   p.Id,
+                   p.Property
+          from     ParentEntities as p
+          order by p.Property
+          offset @p rows fetch next @p1 rows only) as p0
+         left outer join
+         ChildEntities as c
+         on p0.Id = c.ParentId
+order by p0.Property,
+         p0.Id,
+         c.Id,
+      Parameters: {
+        @p: 0,
+        @p1: 10
+      }
+    }
+  ],
+  parentBatch: [
+    Ignore,
+    Parent1,
+    Parent2
+  ],
+  childBatch: [
+    Child1,
+    Child2,
+    Ignore
+  ]
+}

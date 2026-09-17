@@ -32,8 +32,10 @@ public class Filters<TDbContext>
     public delegate bool Filter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 
     public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
+
+    public delegate Task<IReadOnlySet<TProjection>> BatchFilter<TProjection>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, IReadOnlyCollection<TProjection> inputs);
 ```
-<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-FiltersSignature' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/Filters/Filters.cs#L3-L14' title='Snippet source file'>snippet source</a> | <a href='#snippet-FiltersSignature' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -285,6 +287,38 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
 <!-- endSnippet -->
 
 
+## Batch Filters
+
+An async filter runs once per item, so a filter that queries the database makes one query for every item a response returns. A batch filter decides for many items in one call:
+
+<!-- snippet: batch-filter -->
+<a id='snippet-batch-filter'></a>
+```cs
+var filters = new Filters<MyDbContext>();
+filters.For<Product>().AddBatch(
+    projection: _ => _.CategoryId,
+    filter: async (_, dbContext, _, categoryIds) =>
+        await dbContext.Categories
+            .Where(_ => categoryIds.Contains(_.Id) && _.IsVisible)
+            .Select(_ => _.Id)
+            .ToHashSetAsync());
+EfGraphQLConventions.RegisterInContainer<MyDbContext>(
+    services,
+    resolveFilters: _ => filters);
+```
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L224-L238' title='Snippet source file'>snippet source</a> | <a href='#snippet-batch-filter' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+The filter is passed the distinct projections of the items, and returns the projections to include. An item whose projection is not returned is excluded.
+
+Items are batched across the response, not only within one list. A field whose items have a batch filter resolves to a deferred result, and GraphQL.NET completes deferred results after the other fields at the same depth. So the items at one depth of the query share one call per batch filter, whichever row or field returned them. For example, the children of every parent in a list are filtered in one call, rather than one call per parent.
+
+Notes:
+
+ * Per item filters on the same type run first, and only the items they include are passed to the batch filter.
+ * Batching across rows needs an execution to share, which every query run through `EfDocumentExecuter` has. A resolve context built outside an execution filters the items of each field in a separate call.
+
+
 ## Navigation Properties
 
 Filters can project through navigation properties to access related entity data:
@@ -300,7 +334,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L224-L234' title='Snippet source file'>snippet source</a> | <a href='#snippet-navigation-property-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L243-L253' title='Snippet source file'>snippet source</a> | <a href='#snippet-navigation-property-filter' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -325,7 +359,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L239-L255' title='Snippet source file'>snippet source</a> | <a href='#snippet-boolean-expression-filter' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L258-L274' title='Snippet source file'>snippet source</a> | <a href='#snippet-boolean-expression-filter' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 This shorthand is useful when:
@@ -359,7 +393,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L260-L277' title='Snippet source file'>snippet source</a> | <a href='#snippet-filter-without-projection' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L279-L296' title='Snippet source file'>snippet source</a> | <a href='#snippet-filter-without-projection' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 This overload is useful when:
@@ -399,7 +433,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L282-L305' title='Snippet source file'>snippet source</a> | <a href='#snippet-async-filter-without-projection' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L301-L324' title='Snippet source file'>snippet source</a> | <a href='#snippet-async-filter-without-projection' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 This is useful when:
@@ -424,7 +458,7 @@ public class Accommodation
     public int Capacity { get; set; }
 }
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L308-L318' title='Snippet source file'>snippet source</a> | <a href='#snippet-simplified-filter-api' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L327-L337' title='Snippet source file'>snippet source</a> | <a href='#snippet-simplified-filter-api' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-simplified-filter-api-1'></a>
 ```cs
 var filters = new Filters<MyDbContext>();
@@ -471,7 +505,7 @@ EfGraphQLConventions.RegisterInContainer<MyDbContext>(
     services,
     resolveFilters: _ => filters);
 ```
-<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L322-L368' title='Snippet source file'>snippet source</a> | <a href='#snippet-simplified-filter-api-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Snippets/GlobalFilterSnippets.cs#L341-L387' title='Snippet source file'>snippet source</a> | <a href='#snippet-simplified-filter-api-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### When to Use the Simplified API

@@ -9,6 +9,8 @@ public class Filters<TDbContext>
 
     public delegate Task<bool> AsyncFilter<in TEntity>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, TEntity input);
 
+    public delegate Task<IReadOnlySet<TProjection>> BatchFilter<TProjection>(object userContext, TDbContext data, ClaimsPrincipal? userPrincipal, IReadOnlyCollection<TProjection> inputs);
+
     #endregion
 
     /// <summary>
@@ -74,6 +76,12 @@ public class Filters<TDbContext>
             },
             projection));
 
+    internal void AddBatch<TEntity, TProjection>(
+        Expression<Func<TEntity, TProjection>> projection,
+        BatchFilter<TProjection> filter)
+        where TEntity : class =>
+        AddEntry<TEntity>(new BatchFilterEntry<TDbContext, TEntity, TProjection>(filter, projection));
+
     Dictionary<Type, List<IFilterEntry<TDbContext>>> entries = [];
 
     /// <summary>
@@ -102,15 +110,26 @@ public class Filters<TDbContext>
     /// list, and a field typed as object is filtered the same as a typed one. Looked up per item,
     /// so the result is cached per type; the cache is reset when a filter is added.
     /// </summary>
-    ConcurrentDictionary<Type, List<IFilterEntry<TDbContext>>> filtersByType = new();
+    ConcurrentDictionary<Type, TypeFilters> filtersByType = new();
 
-    List<IFilterEntry<TDbContext>> GetFilters(Type entityType) =>
+    TypeFilters GetFilters(Type entityType) =>
         filtersByType.GetOrAdd(
             entityType,
-            type => entries
-                .Where(_ => _.Key.IsAssignableFrom(type))
-                .SelectMany(_ => _.Value)
-                .ToList());
+            type =>
+            {
+                var forType = entries
+                    .Where(_ => _.Key.IsAssignableFrom(type))
+                    .SelectMany(_ => _.Value)
+                    .ToList();
+                return new(
+                    forType.Where(_ => _ is not IBatchFilterEntry<TDbContext>).ToList(),
+                    forType.OfType<IBatchFilterEntry<TDbContext>>().ToList());
+            });
+
+    // Per item filters run on each item as it is filtered. Batch filters run once over many items.
+    sealed record TypeFilters(
+        IReadOnlyList<IFilterEntry<TDbContext>> PerItem,
+        IReadOnlyList<IBatchFilterEntry<TDbContext>> Batch);
 
     /// <summary>
     /// The filters whose projection requirements a query for <paramref name="entityType"/> has to
@@ -134,6 +153,9 @@ public class Filters<TDbContext>
     /// </summary>
     internal bool HasFilters => entries.Count > 0;
 
+    /// <summary>
+    /// Without an execution to share, batch filters run once over <paramref name="result"/>.
+    /// </summary>
     internal virtual async Task<IEnumerable<TEntity>> ApplyFilter<TEntity>(
         IEnumerable<TEntity> result,
         object userContext,
@@ -146,25 +168,143 @@ public class Filters<TDbContext>
             return result;
         }
 
-        var list = new List<TEntity>();
-        foreach (var item in result)
+        var filtered = await Apply(userContext, userPrincipal, null, data, result, _ => new(_));
+        return (IEnumerable<TEntity>)filtered!;
+    }
+
+    // One per execution, so the rows an execution resolves share a batch
+    ConditionalWeakTable<IExecutionContext, OpenFilterBatch<TDbContext>> openBatches = new();
+
+    /// <summary>
+    /// Filters the items a resolver returns and passes the included ones, in order, to
+    /// <paramref name="complete"/>, whose result is the field's value. Null items are passed through.
+    /// Per item filters run now. Batch filters do not: the items join the execution's open
+    /// <see cref="FilterBatch{TDbContext}"/> and a deferred result is returned, so the rows of a
+    /// response share one call per batch filter rather than making one each.
+    /// </summary>
+    internal ValueTask<object?> Apply<TItem>(
+        IResolveFieldContext context,
+        TDbContext data,
+        IEnumerable<TItem> items,
+        Func<List<TItem>, ValueTask<object?>> complete) =>
+        Apply(context.UserContext, context.User, context.ExecutionContext, data, items, complete);
+
+    async ValueTask<object?> Apply<TItem>(
+        object userContext,
+        ClaimsPrincipal? userPrincipal,
+        IExecutionContext? execution,
+        TDbContext data,
+        IEnumerable<TItem> items,
+        Func<List<TItem>, ValueTask<object?>> complete)
+    {
+        if (entries.Count == 0)
         {
-            if (await ShouldIncludeItem(userContext, data, userPrincipal, item))
+            return await complete(items as List<TItem> ?? [.. items]);
+        }
+
+        var candidates = new List<Candidate<TItem>>();
+        List<(IBatchFilterEntry<TDbContext> Entry, object? Projection)>? batchInputs = null;
+        foreach (var item in items)
+        {
+            if (item is null)
             {
-                list.Add(item);
+                candidates.Add(new(item, null));
+                continue;
+            }
+
+            var filters = GetFilters(item.GetType());
+            if (!await IncludedByPerItemFilters(filters.PerItem, userContext, data, userPrincipal, item))
+            {
+                continue;
+            }
+
+            if (filters.Batch.Count == 0)
+            {
+                candidates.Add(new(item, null));
+                continue;
+            }
+
+            var checks = new (IBatchFilterEntry<TDbContext> Entry, object? Projection)[filters.Batch.Count];
+            for (var index = 0; index < checks.Length; index++)
+            {
+                var entry = filters.Batch[index];
+                checks[index] = (entry, entry.Project(item));
+            }
+
+            candidates.Add(new(item, checks));
+            batchInputs ??= [];
+            batchInputs.AddRange(checks);
+        }
+
+        if (batchInputs is null)
+        {
+            return await complete(candidates.Select(_ => _.Item).ToList());
+        }
+
+        if (execution is null)
+        {
+            var batch = new FilterBatch<TDbContext>(new());
+            batch.Add(batchInputs);
+            return await CompleteBatch(batch);
+        }
+
+        var shared = openBatches.GetValue(execution, _ => new()).Add(batchInputs);
+        return new DeferredFilterResult(async () => await CompleteBatch(shared));
+
+        async ValueTask<object?> CompleteBatch(FilterBatch<TDbContext> batch)
+        {
+            var results = await batch.Run(userContext, data, userPrincipal);
+            var included = new List<TItem>(candidates.Count);
+            foreach (var (item, checks) in candidates)
+            {
+                if (checks is null ||
+                    checks.All(_ => results[_.Entry](_.Projection)))
+                {
+                    included.Add(item);
+                }
+            }
+
+            return await complete(included);
+        }
+    }
+
+    // An item that passed the per item filters, and the batch filter checks it still has to pass
+    readonly record struct Candidate<TItem>(
+        TItem Item,
+        (IBatchFilterEntry<TDbContext> Entry, object? Projection)[]? Checks);
+
+    static async Task<bool> IncludedByPerItemFilters(
+        IReadOnlyList<IFilterEntry<TDbContext>> filters,
+        object userContext,
+        TDbContext data,
+        ClaimsPrincipal? userPrincipal,
+        object item)
+    {
+        foreach (var entry in filters)
+        {
+            if (!await entry.ShouldIncludeWithProjection(userContext, data, userPrincipal, item))
+            {
+                return false;
             }
         }
 
-        return list;
+        return true;
     }
 
+    // A single item on its own, so batch filters run over just this item
     async Task<bool> ShouldIncludeItem(
         object userContext,
         TDbContext data,
         ClaimsPrincipal? userPrincipal,
         object item)
     {
-        foreach (var entry in GetFilters(item.GetType()))
+        var filters = GetFilters(item.GetType());
+        if (!await IncludedByPerItemFilters(filters.PerItem, userContext, data, userPrincipal, item))
+        {
+            return false;
+        }
+
+        foreach (var entry in filters.Batch)
         {
             if (!await entry.ShouldIncludeWithProjection(userContext, data, userPrincipal, item))
             {

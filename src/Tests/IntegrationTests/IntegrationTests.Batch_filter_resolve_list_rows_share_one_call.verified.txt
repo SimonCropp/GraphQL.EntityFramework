@@ -1,0 +1,49 @@
+﻿{
+  target: {
+    Data: {
+      parentEntities: [
+        {
+          property: Parent1,
+          childrenViaResolveList: [
+            {
+              property: Child1
+            }
+          ]
+        },
+        {
+          property: Parent2,
+          childrenViaResolveList: [
+            {
+              property: Child2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   p.Id,
+         c.Id,
+         c.ParentId,
+         c.Property,
+         p.Property
+from     ParentEntities as p
+         left outer join
+         ChildEntities as c
+         on p.Id = c.ParentId
+order by p.Property,
+         p.Id,
+         c.Id
+  },
+  parentBatch: [
+    Ignore,
+    Parent1,
+    Parent2
+  ],
+  childBatch: [
+    Child1,
+    Child2,
+    Ignore
+  ]
+}

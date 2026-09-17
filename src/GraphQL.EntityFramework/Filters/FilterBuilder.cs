@@ -58,6 +58,34 @@ public class FilterBuilder<TDbContext, TEntity>
         filters.Add(projection, filter);
 
     /// <summary>
+    /// Add a filter that decides for many items in one call, such as one database query for a whole
+    /// response rather than one per item.
+    /// </summary>
+    /// <typeparam name="TProjection">The projection type (inferred from the projection expression).</typeparam>
+    /// <param name="projection">Expression projecting the entity to the value the filter decides on.</param>
+    /// <param name="filter">
+    /// Passed the distinct projections of the items to filter, and returns those to include. An item
+    /// whose projection is not returned is excluded.
+    /// </param>
+    /// <remarks>
+    /// The items a response returns at the same depth are passed in one call, whichever row or field
+    /// returned them:
+    /// <code>
+    /// filters.For&lt;Product&gt;().AddBatch(
+    ///     projection: _ => _.CategoryId,
+    ///     filter: async (_, dbContext, _, categoryIds) =>
+    ///         await dbContext.Categories
+    ///             .Where(_ => categoryIds.Contains(_.Id) &amp;&amp; _.IsVisible)
+    ///             .Select(_ => _.Id)
+    ///             .ToHashSetAsync());
+    /// </code>
+    /// </remarks>
+    public void AddBatch<TProjection>(
+        Expression<Func<TEntity, TProjection>> projection,
+        Filters<TDbContext>.BatchFilter<TProjection> filter) =>
+        filters.AddBatch(projection, filter);
+
+    /// <summary>
     /// Add a filter using a boolean expression.
     /// </summary>
     /// <param name="filter">Expression that projects to a boolean value and determines if the entity should be included.</param>
