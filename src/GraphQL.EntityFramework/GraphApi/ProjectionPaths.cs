@@ -18,12 +18,19 @@ sealed class ProjectionPaths
     public string? PrimaryRoot =>
         Groups.Count == 0 ? null : Groups[0].Root;
 
-    public static ProjectionPaths Analyze(LambdaExpression projection)
+    public static ProjectionPaths Analyze(LambdaExpression projection) =>
+        Analyze([projection]);
+
+    /// <summary>
+    /// The paths of every projection a field declares, in the order they were declared. A field
+    /// can be given more than one projection, and each one's data has to be loaded.
+    /// </summary>
+    public static ProjectionPaths Analyze(IReadOnlyList<LambdaExpression> projections)
     {
         var groups = new List<ProjectionPathGroup>();
         var byRoot = new Dictionary<string, ProjectionPathGroup>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var path in ProjectionAnalyzer.ExtractPropertyPaths(projection))
+        foreach (var path in projections.SelectMany(ProjectionAnalyzer.ExtractPropertyPaths))
         {
             var dotIndex = path.IndexOf('.');
             var root = dotIndex >= 0 ? path[..dotIndex] : path;
@@ -70,6 +77,12 @@ sealed class ProjectionPathGroup(string root)
 
     internal void Add(string path)
     {
+        // Two projections on one field can read the same path.
+        if (nested.Contains(path))
+        {
+            return;
+        }
+
         nested.Add(path);
         if (!path.Contains('.'))
         {

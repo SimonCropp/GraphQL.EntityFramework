@@ -1,0 +1,21 @@
+﻿{
+  target: {
+    Data: {
+      fieldBuilderProjectionEntities: [
+        {
+          name: BothProjections,
+          statusAndAgeViaTwoProjections: Pending at 41
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   f.Age,
+         f.Id,
+         f.Name,
+         f.Status
+from     FieldBuilderProjectionEntities as f
+order by f.Name
+  }
+}
