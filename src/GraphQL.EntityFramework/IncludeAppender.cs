@@ -862,11 +862,39 @@
     const string projectionKey = "_EF_Projection";
     const string projectionPathsKey = "_EF_ProjectionPaths";
 
+    /// <summary>
+    /// Adds a projection to a field. A field can be given several, and every one of them is loaded.
+    /// They replaced each other, so a field with two projections loaded only the last one's data
+    /// and its other resolver read an unloaded property.
+    /// </summary>
     public static void SetProjectionMetadata(FieldType fieldType, LambdaExpression projection)
     {
-        fieldType.Metadata[projectionKey] = projection;
+        var projections = Projections(fieldType);
+        projections.Add(projection);
+        fieldType.Metadata[projectionKey] = projections;
         // Analyzed here, once, rather than on every request that selects the field
-        fieldType.Metadata[projectionPathsKey] = ProjectionPaths.Analyze(projection);
+        fieldType.Metadata[projectionPathsKey] = ProjectionPaths.Analyze(projections);
+    }
+
+    static List<LambdaExpression> Projections(FieldType fieldType)
+    {
+        if (!fieldType.Metadata.TryGetValue(projectionKey, out var existing))
+        {
+            return [];
+        }
+
+        if (existing is List<LambdaExpression> projections)
+        {
+            return projections;
+        }
+
+        // An expression placed in the metadata directly, without going through here
+        if (existing is LambdaExpression expression)
+        {
+            return [expression];
+        }
+
+        return [];
     }
 
     static bool TryGetProjectionMetadata(FieldType fieldType, [NotNullWhen(true)] out ProjectionPaths? projection)

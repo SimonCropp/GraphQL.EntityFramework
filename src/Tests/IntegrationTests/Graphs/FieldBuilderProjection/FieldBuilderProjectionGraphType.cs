@@ -75,6 +75,13 @@ public class FieldBuilderProjectionGraphType :
                 _ => "Unknown"
             });
 
+        // Two projections on one field. Both are loaded: the second used to replace the first,
+        // leaving the resolver to read whatever the first one asked for as a default value.
+        Field<NonNullGraphType<StringGraphType>, string>("statusAndAgeViaTwoProjections")
+            .WithProjection(_ => _.Status)
+            .WithProjection(_ => _.Age)
+            .Resolve(_ => $"{_.Source.Status} at {_.Source.Age}");
+
         AutoMap(exclusions: [nameof(FieldBuilderProjectionEntity.Parent)]);
     }
 }

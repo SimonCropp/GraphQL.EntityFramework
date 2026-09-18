@@ -188,6 +188,9 @@ Field<NonNullGraphType<StringGraphType>, string>("statusLabel")
 3. Scalar properties referenced in the expression (e.g., `Status`) are added to the SELECT column list
 4. Navigation properties referenced in the expression trigger the appropriate `Include` calls
 
+`WithProjection` can be called more than once on a field, and the data of every projection is
+loaded. This suits a field whose value comes from several checks, each declaring what it reads.
+
 **When to use `WithProjection` vs `Resolve<..., TProjection>`:**
 
 | Scenario | Use |

@@ -433,4 +433,31 @@
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
+
+    [Fact]
+    public async Task FieldBuilder_WithProjection_twice_includes_both_in_select()
+    {
+        // Both projections of a field are loaded. The second replaced the first, so the resolver
+        // read the property the first one asked for as its default value.
+        var query =
+            """
+            {
+              fieldBuilderProjectionEntities
+              {
+                name
+                statusAndAgeViaTwoProjections
+              }
+            }
+            """;
+
+        var entity = new FieldBuilderProjectionEntity
+        {
+            Name = "BothProjections",
+            Age = 41,
+            Status = EntityStatus.Pending
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity]);
+    }
 }

@@ -1437,6 +1437,7 @@ type FieldBuilderProjection {
   statusDisplay: String!
   parentName: String!
   statusViaWithProjection: String!
+  statusAndAgeViaTwoProjections: String!
   age: Int!
   createdAt: DateTime!
   id: ID!
