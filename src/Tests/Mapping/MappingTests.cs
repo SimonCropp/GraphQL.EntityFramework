@@ -92,7 +92,7 @@ public class MappingTests
             .Snapshot(
                 """
                 {
-                  expression: source => Convert(source.Property, Object),
+                  expression: _ => Convert(_.Property, Object),
                   result: value
                 }
                 """);

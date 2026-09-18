@@ -357,7 +357,7 @@ static class SelectExpressionBuilder
 
         if (navProjection.IsCollection)
         {
-            var navParam = Expression.Parameter(navType, "n");
+            var navParam = Expression.Parameter(navType, "_");
 
             if (!TryBuildEntityInit(navParam, navType, navProjection.Projection, state, path, out var itemInit))
             {
@@ -400,7 +400,7 @@ static class SelectExpressionBuilder
         {
             var navType = navProjection.EntityType;
             var navMetadata = GetEntityMetadata(navType);
-            var navParam = Expression.Parameter(navType, "n");
+            var navParam = Expression.Parameter(navType, "_");
             var source = ApplyArguments(navAccess, navParam, navType, navProjection, state, false);
             return Expression.Bind(navAccess.Member, Expression.Call(null, navMetadata.ToListMethod, source));
         }
@@ -528,7 +528,7 @@ static class SelectExpressionBuilder
     static EntityTypeMetadata GetEntityMetadata(Type type) =>
         entityMetadataCache.GetOrAdd(type, type =>
         {
-            var parameter = Expression.Parameter(type, "x");
+            var parameter = Expression.Parameter(type, "_");
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var dictionary = new Dictionary<string, PropertyMetadata>(properties.Length, StringComparer.OrdinalIgnoreCase);
 

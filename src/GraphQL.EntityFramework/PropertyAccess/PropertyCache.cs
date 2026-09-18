@@ -25,7 +25,7 @@ static class PropertyCache
 
 static class PropertyCache<TInput>
 {
-    public static ParameterExpression SourceParameter = Expression.Parameter(typeof(TInput));
+    public static ParameterExpression SourceParameter = Expression.Parameter(typeof(TInput), "_");
     static ConcurrentDictionary<string, Property<TInput>> properties = [];
 
     // Used by tests to assert the cache stays bounded.

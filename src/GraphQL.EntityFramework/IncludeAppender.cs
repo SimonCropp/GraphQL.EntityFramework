@@ -79,16 +79,16 @@
         where TItem : class
     {
         var itemType = typeof(TItem);
-        var parameter = Expression.Parameter(itemType, "e");
+        var parameter = Expression.Parameter(itemType, "_");
 
         foreach (var (derivedType, navDict) in derivedNavigations)
         {
-            // Cast: (DerivedType)e
+            // Cast: (DerivedType)_
             var cast = Expression.Convert(parameter, derivedType);
 
             foreach (var (navName, _) in navDict)
             {
-                // Property access: ((DerivedType)e).Navigation
+                // Property access: ((DerivedType)_).Navigation
                 var property = derivedType.GetProperty(navName);
                 if (property == null)
                 {
@@ -97,7 +97,7 @@
 
                 var propertyAccess = Expression.Property(cast, property);
 
-                // Build lambda: e => ((DerivedType)e).Navigation
+                // Build lambda: _ => ((DerivedType)_).Navigation
                 var lambda = Expression.Lambda(propertyAccess, parameter);
 
                 // Call EntityFrameworkQueryableExtensions.Include(query, lambda)

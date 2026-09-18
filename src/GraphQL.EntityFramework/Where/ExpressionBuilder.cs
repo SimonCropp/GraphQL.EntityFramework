@@ -183,7 +183,7 @@ public static partial class ExpressionBuilder<T>
         // the list holds the enclosing type, that is the same instance as the outer parameter, and
         // EF's parameter replacement then rewrites the inner lambda as well. Rebind the inner lambda
         // to its own parameter.
-        var itemParameter = Expression.Parameter(listItemType, "item");
+        var itemParameter = Expression.Parameter(listItemType, "_");
         var body = new ParameterReplacer(subPredicate.Parameters[0], itemParameter).Visit(subPredicate.Body);
         var itemPredicate = Expression.Lambda(body, itemParameter);
 
@@ -222,7 +222,7 @@ public static partial class ExpressionBuilder<T>
         var (any, all) = QuantifierMethods(itemType);
 
         LambdaExpression itemPredicate;
-        var itemParameter = Expression.Parameter(itemType, "item");
+        var itemParameter = Expression.Parameter(itemType, "_");
         if (wheres.Count == 0)
         {
             // any: {} is has any items

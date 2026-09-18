@@ -261,7 +261,7 @@ public static class Mapper<TDbContext>
     internal static Expression<Func<TSource, object>> PropertyToObject<TSource>(string member)
     {
         // TSource parameter
-        var parameter = Expression.Parameter(typeof(TSource), "source");
+        var parameter = Expression.Parameter(typeof(TSource), "_");
         // get property from source instance
         var property = Expression.Property(parameter, member);
         // convert member instance to object
