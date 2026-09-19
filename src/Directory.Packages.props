@@ -24,19 +24,19 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
-    <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.5" />
-    <PackageVersion Include="Polyfill" Version="11.3.0" />
+    <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.12" />
+    <PackageVersion Include="Polyfill" Version="11.4.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.181" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="10.0.12" />
     <PackageVersion Include="Verify.DiffPlex" Version="3.3.1" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
     <PackageVersion Include="Verify.SqlServer" Version="12.2.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="33.0.2" />
+    <PackageVersion Include="Verify.XunitV3" Version="33.1.0" />
     <PackageVersion Include="xunit.v3" Version="4.0.1" />
     <PackageVersion Include="Argon" Version="0.37.0" />
     <PackageVersion Include="DiffEngine" Version="20.3.1" />
     <PackageVersion Include="EmptyFiles" Version="8.18.2" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.0" />
-    <PackageVersion Include="Verify" Version="33.0.2" />
+    <PackageVersion Include="Verify" Version="33.1.0" />
   </ItemGroup>
 </Project>
