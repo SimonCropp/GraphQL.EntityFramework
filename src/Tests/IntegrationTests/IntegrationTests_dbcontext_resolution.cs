@@ -69,4 +69,34 @@ public partial class IntegrationTests
                     RequestServices = provider
                 });
     }
+
+    // A field context built outside an execution, such as the ResolveEfFieldContext handed to a
+    // query field's resolve, has no execution to hold the DbContext against. It used to throw; it
+    // is resolved from the context's own request services instead, and not held.
+    [Fact]
+    public async Task DbContext_resolved_without_an_execution()
+    {
+        await using var database = await sqlInstance.Build();
+        var dbContext = database.Context;
+        var services = new ServiceCollection();
+        services.AddSingleton(dbContext);
+        await using var provider = services.BuildServiceProvider();
+
+        var resolves = 0;
+        var service = new EfGraphQLService<IntegrationDbContext>(
+            dbContext.Model,
+            (_, requestServices) =>
+            {
+                resolves++;
+                return requestServices!.GetRequiredService<IntegrationDbContext>();
+            });
+        var fieldContext = new ResolveFieldContext
+        {
+            RequestServices = provider
+        };
+
+        Assert.Same(dbContext, service.ResolveDbContext(fieldContext));
+        Assert.Same(dbContext, service.ResolveDbContext(fieldContext));
+        Assert.Equal(2, resolves);
+    }
 }

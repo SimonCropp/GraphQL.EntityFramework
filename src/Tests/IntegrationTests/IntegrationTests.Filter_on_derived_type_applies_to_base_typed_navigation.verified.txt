@@ -1,0 +1,40 @@
+﻿{
+  target: {
+    Data: {
+      derivedChildEntities: [
+        {
+          property: Child1,
+          parent: null
+        },
+        {
+          property: Child2,
+          parent: {
+            property: Value1
+          }
+        },
+        {
+          property: Child3,
+          parent: {
+            property: Value2
+          }
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   d.Id,
+         b.Id,
+         b.Discriminator,
+         b.Property,
+         b.Status,
+         d.ParentId,
+         d.Property,
+         d.TypedParentId
+from     DerivedChildEntities as d
+         left outer join
+         BaseEntities as b
+         on d.ParentId = b.Id
+order by d.Property
+  }
+}
