@@ -32,6 +32,8 @@ It has access to the current GraphQL user context.
 
 If null then the DbContext will be resolved from the container.
 
+It is called once per execution, when a field first needs the DbContext, and every other field of that execution reuses the DbContext it returned. An execution is served by one DbContext, which is why queries use the [serial execution strategy](#documentexecuter), so a delegate that creates a new DbContext on every call gets one per request.
+
 
 #### Resolve Filters
 
