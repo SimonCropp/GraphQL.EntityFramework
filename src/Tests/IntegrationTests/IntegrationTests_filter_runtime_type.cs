@@ -110,6 +110,101 @@ public partial class IntegrationTests
         await RunQuery(database, query, filters, [leaf]);
     }
 
+    // A result is only filtered when a filter applies to one of its items, and finding that walks
+    // every item. The first item here is of a type with no filter, so a walk that stopped at the
+    // first item, or the first type, would return the filtered item unfiltered.
+    [Fact]
+    public async Task Filter_on_derived_type_applies_when_not_first_in_list()
+    {
+        var query =
+            """
+            {
+              baseEntities(orderBy: {property: ascending})
+              {
+                property
+              }
+            }
+            """;
+
+        var unfiltered = new DerivedWithNavigationEntity
+        {
+            Property = "A"
+        };
+        var derived = new DerivedEntity
+        {
+            Property = "Ignore"
+        };
+        var derivedKept = new DerivedEntity
+        {
+            Property = "Value1"
+        };
+
+        var filters = new Filters<IntegrationDbContext>();
+        filters.For<DerivedEntity>().Add(
+            projection: _ => _.Property,
+            filter: (_, _, _, property) => property != "Ignore");
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, filters, [unfiltered, derived, derivedKept]);
+    }
+
+    // The navigation variant. The navigation is typed as the abstract base, so whether a filter
+    // applies has to be decided from the runtime type of the parent it returns, not the navigation's
+    // type, which no filter is registered for.
+    [Fact]
+    public async Task Filter_on_derived_type_applies_to_base_typed_navigation()
+    {
+        var query =
+            """
+            {
+              derivedChildEntities(orderBy: {property: ascending})
+              {
+                property
+                parent
+                {
+                  property
+                }
+              }
+            }
+            """;
+
+        var ignored = new DerivedEntity
+        {
+            Property = "Ignore"
+        };
+        var kept = new DerivedEntity
+        {
+            Property = "Value1"
+        };
+        var unfiltered = new DerivedWithNavigationEntity
+        {
+            Property = "Value2"
+        };
+        var child1 = new DerivedChildEntity
+        {
+            Property = "Child1",
+            Parent = ignored
+        };
+        var child2 = new DerivedChildEntity
+        {
+            Property = "Child2",
+            Parent = kept
+        };
+        var child3 = new DerivedChildEntity
+        {
+            Property = "Child3",
+            Parent = unfiltered
+        };
+
+        var filters = new Filters<IntegrationDbContext>();
+        filters.For<DerivedEntity>().Add(
+            projection: _ => _.Property,
+            filter: (_, _, _, property) => property != "Ignore");
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, filters, [ignored, kept, unfiltered, child1, child2, child3]);
+    }
+
     // The projection requirements of a derived type filter are loaded by a base typed query, so
     // the filter can read them from the derived items it is applied to.
     [Fact]

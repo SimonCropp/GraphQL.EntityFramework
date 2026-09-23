@@ -92,12 +92,34 @@ public partial class EfGraphQLService<TDbContext> :
             User = context.User
         };
 
+    /// <summary>
+    /// The DbContext of each execution. Every resolver that needed it resolved it again, and a
+    /// navigation field resolves once per parent row, so a page of rows cost thousands of scoped
+    /// service lookups, each taking the scope's lock. A request is served by the one DbContext,
+    /// which is why queries execute serially, so it is resolved on first use and reused for the
+    /// rest of the execution. Held weakly, so it lives no longer than the execution.
+    /// </summary>
+    ConditionalWeakTable<IExecutionContext, TDbContext> dbContexts = new();
+
     public TDbContext ResolveDbContext(IResolveFieldContext fieldContext)
     {
-        var userContext = fieldContext.UserContext;
         var executionContext = fieldContext.ExecutionContext;
+        // A context built outside an execution has nothing to hold the DbContext against
+        if (executionContext is null)
+        {
+            return resolveDbContext(fieldContext.UserContext, fieldContext.RequestServices);
+        }
+
+        if (dbContexts.TryGetValue(executionContext, out var dbContext))
+        {
+            return dbContext;
+        }
+
         var requestServices = executionContext.RequestServices ?? executionContext.ExecutionOptions.RequestServices;
-        return resolveDbContext(userContext, requestServices);
+        dbContext = resolveDbContext(fieldContext.UserContext, requestServices);
+        // Only a parallel execution strategy can race here, and the loser's DbContext is dropped
+        // in favour of the one already held, so the execution still sees a single DbContext
+        return dbContexts.GetOrAdd(executionContext, dbContext);
     }
 
     public Filters<TDbContext>? ResolveFilters(IResolveFieldContext context) =>

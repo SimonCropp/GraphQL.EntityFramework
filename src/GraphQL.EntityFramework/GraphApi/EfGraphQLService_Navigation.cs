@@ -63,14 +63,13 @@ partial class EfGraphQLService<TDbContext>
                         exception);
                 }
 
-                if (filters == null)
+                // Checked here rather than left to Apply, since this runs per row and a result no
+                // filter applies to would be wrapped in a list only to be unwrapped again
+                if (filters == null ||
+                    result is null ||
+                    !filters.AppliesTo(result.GetType()))
                 {
                     return result;
-                }
-
-                if (result is null)
-                {
-                    return null;
                 }
 
                 return await filters.Apply(context, dbContext, [result], _ => new(_.FirstOrDefault()));

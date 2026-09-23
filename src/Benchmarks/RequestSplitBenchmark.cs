@@ -275,9 +275,9 @@ public class PlainSchema :
 
 public static class Seed
 {
-    public static async Task Run(BenchmarkDbContext database)
+    public static async Task Run(BenchmarkDbContext database, int parents = 100)
     {
-        for (var i = 0; i < 100; i++)
+        for (var i = 0; i < parents; i++)
         {
             var parent = new ParentEntity { Property = $"Parent {i}" };
             for (var j = 0; j < 5; j++)

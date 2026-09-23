@@ -274,16 +274,17 @@ public static class FieldBuilderExtensions
         TReturn result)
         where TDbContext : DbContext
     {
-        // Value types don't support filtering - return as-is
+        // Value types don't support filtering - return as-is. Matched on the runtime type of the
+        // result, so a field typed as object is filtered the same as a typed one, and one no filter
+        // applies to is returned without the list Apply would wrap it in
         if (typeof(TReturn).IsValueType ||
             filters is not { HasFilters: true } ||
-            result is null)
+            result is null ||
+            !filters.AppliesTo(result.GetType()))
         {
             return new(result);
         }
 
-        // Matched on the runtime type of the result, so a field typed as object is filtered the
-        // same as a typed one
         return filters.Apply(context, dbContext, [result], _ => new(_.FirstOrDefault()));
     }
 
