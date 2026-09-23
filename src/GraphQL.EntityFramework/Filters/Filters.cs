@@ -112,10 +112,14 @@ public class Filters<TDbContext>
     /// </summary>
     ConcurrentDictionary<Type, TypeFilters> filtersByType = new();
 
+    /// <summary>
+    /// The factory is static and is handed the entries. A lambda capturing this instance allocated
+    /// a delegate on every lookup, cache hit or not, and this runs for every item of every result.
+    /// </summary>
     TypeFilters GetFilters(Type entityType) =>
         filtersByType.GetOrAdd(
             entityType,
-            type =>
+            static (type, entries) =>
             {
                 var forType = entries
                     .Where(_ => _.Key.IsAssignableFrom(type))
@@ -124,7 +128,57 @@ public class Filters<TDbContext>
                 return new(
                     forType.Where(_ => _ is not IBatchFilterEntry<TDbContext>).ToList(),
                     forType.OfType<IBatchFilterEntry<TDbContext>>().ToList());
-            });
+            },
+            entries);
+
+    /// <summary>
+    /// Whether a filter applies to an item of this runtime type. Most results have none, and they
+    /// are returned as they are rather than going through <see cref="Apply{TItem}(IResolveFieldContext, TDbContext, IEnumerable{TItem}, Func{List{TItem}, ValueTask{object?}})"/>.
+    /// </summary>
+    internal bool AppliesTo(Type type)
+    {
+        if (entries.Count == 0)
+        {
+            return false;
+        }
+
+        var filters = GetFilters(type);
+        return filters.PerItem.Count > 0 ||
+               filters.Batch.Count > 0;
+    }
+
+    // The items of a result are nearly always one type, so each run of a type is looked up once
+    bool AppliesToAny<TItem>(List<TItem> items)
+    {
+        if (entries.Count == 0)
+        {
+            return false;
+        }
+
+        Type? checkedType = null;
+        foreach (var item in items)
+        {
+            if (item is null)
+            {
+                continue;
+            }
+
+            var type = item.GetType();
+            if (type == checkedType)
+            {
+                continue;
+            }
+
+            if (AppliesTo(type))
+            {
+                return true;
+            }
+
+            checkedType = type;
+        }
+
+        return false;
+    }
 
     // Per item filters run on each item as it is filtered. Batch filters run once over many items.
     sealed record TypeFilters(
@@ -139,10 +193,12 @@ public class Filters<TDbContext>
     internal IReadOnlyList<IFilterEntry<TDbContext>> GetFiltersForHierarchy(Type entityType) =>
         filtersForHierarchy.GetOrAdd(
             entityType,
-            type => entries
+            // Static for the same reason as GetFilters
+            static (type, entries) => entries
                 .Where(_ => _.Key.IsAssignableFrom(type) || type.IsAssignableFrom(_.Key))
                 .SelectMany(_ => _.Value)
-                .ToList());
+                .ToList(),
+            entries);
 
     // Looked up for every entity type in a projection on every request, so cached per type the
     // same way as GetFilters, and reset when a filter is added
@@ -197,14 +253,20 @@ public class Filters<TDbContext>
         IEnumerable<TItem> items,
         Func<List<TItem>, ValueTask<object?>> complete)
     {
-        if (entries.Count == 0)
+        // Materialized once, since the items are read to find whether any filter applies, and read
+        // again to filter them when one does
+        var list = items as List<TItem> ?? [.. items];
+
+        // Most results have no filter that applies to them. They were still walked into candidate
+        // lists and copied out again, per row for the navigation fields.
+        if (!AppliesToAny(list))
         {
-            return await complete(items as List<TItem> ?? [.. items]);
+            return await complete(list);
         }
 
-        var candidates = new List<Candidate<TItem>>();
+        var candidates = new List<Candidate<TItem>>(list.Count);
         List<(IBatchFilterEntry<TDbContext> Entry, object? Projection)>? batchInputs = null;
-        foreach (var item in items)
+        foreach (var item in list)
         {
             if (item is null)
             {
