@@ -1,6 +1,6 @@
 ﻿# <img src="/src/icon.png" height="30px"> GraphQL.EntityFramework
 
-[![Build status](https://img.shields.io/appveyor/build/SimonCropp/graphql-entityframework)](https://ci.appveyor.com/project/SimonCropp/graphql-entityframework)
+[![Build status](https://github.com/SimonCropp/GraphQL.EntityFramework/actions/workflows/build.yml/badge.svg)](https://github.com/SimonCropp/GraphQL.EntityFramework/actions/workflows/build.yml)
 [![NuGet Status](https://img.shields.io/nuget/v/GraphQL.EntityFramework.svg)](https://www.nuget.org/packages/GraphQL.EntityFramework/)
 
 
