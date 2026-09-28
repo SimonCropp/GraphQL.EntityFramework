@@ -1,0 +1,39 @@
+﻿{
+  target: {
+    Data: {
+      splitParentEntitiesConnection: {
+        totalCount: 3,
+        items: [
+          {
+            property: Ignore
+          },
+          {
+            property: Parent1
+          },
+          {
+            property: Parent2
+          }
+        ]
+      }
+    }
+  },
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   ParentEntities as p
+    },
+    {
+      Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+order by p.Property
+offset @p rows fetch next @p1 rows only,
+      Parameters: {
+        @p: 0,
+        @p1: 10
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+﻿{
+  target: {
+    Data: {
+      splitParentEntitiesConnection: {
+        totalCount: 3,
+        items: [
+          {
+            property: Ignore,
+            children: [
+              {
+                property: Child3
+              }
+            ]
+          },
+          {
+            property: Parent1,
+            children: [
+              {
+                property: Child1
+              },
+              {
+                property: Ignore
+              }
+            ]
+          },
+          {
+            property: Parent2,
+            children: [
+              {
+                property: Child2
+              },
+              {
+                property: Ignore
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  sql: [
+    {
+      Text:
+select COUNT(*)
+from   ParentEntities as p
+    },
+    {
+      Text:
+select   p.Id,
+         p.Property
+from     ParentEntities as p
+order by p.Property,
+         p.Id
+offset @p rows fetch next @p1 rows only,
+      Parameters: {
+        @p: 0,
+        @p1: 10
+      }
+    },
+    {
+      Text:
+select   c1.Id,
+         c1.ParentId,
+         c1.Property,
+         p0.Id
+from     (select   p.Id,
+                   p.Property
+          from     ParentEntities as p
+          order by p.Property,
+                   p.Id
+          offset @p rows fetch next @p1 rows only) as p0
+         inner join
+         ChildEntities as c1
+         on p0.Id = c1.ParentId
+order by p0.Property,
+         p0.Id,
+         c1.Property,
+      Parameters: {
+        @p: 0,
+        @p1: 10
+      }
+    }
+  ]
+}
