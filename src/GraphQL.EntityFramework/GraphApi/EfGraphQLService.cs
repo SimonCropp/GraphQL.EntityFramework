@@ -105,6 +105,7 @@ public partial class EfGraphQLService<TDbContext> :
     {
         var executionContext = fieldContext.ExecutionContext;
         // A context built outside an execution has nothing to hold the DbContext against
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (executionContext is null)
         {
             return resolveDbContext(fieldContext.UserContext, fieldContext.RequestServices);

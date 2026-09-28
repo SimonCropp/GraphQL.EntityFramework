@@ -106,7 +106,7 @@ public class DbContextResolutionBenchmark
     {
         IServiceCollection services = new ServiceCollection();
         // Disposed with the request's scope, whether one per request or one per resolve
-        services.Add(new ServiceDescriptor(typeof(BenchmarkDbContext), _ => new BenchmarkDbContext(options), lifetime));
+        services.Add(new(typeof(BenchmarkDbContext), _ => new BenchmarkDbContext(options), lifetime));
         services.AddSingleton<ParentGraphType>();
         services.AddSingleton<ChildGraphType>();
         services.AddSingleton<BenchmarkQuery>();
@@ -207,7 +207,7 @@ public class DbContextResolveBenchmark
         }
 
         IServiceCollection services = new ServiceCollection();
-        services.Add(new ServiceDescriptor(typeof(BenchmarkDbContext), _ => new BenchmarkDbContext(options), Lifetime));
+        services.Add(new(typeof(BenchmarkDbContext), _ => new BenchmarkDbContext(options), Lifetime));
         // No resolver, so the DbContext comes from the request's container, as it does by default
         EfGraphQLConventions.RegisterInContainer<BenchmarkDbContext>(services, model: model);
         provider = services.BuildServiceProvider();
