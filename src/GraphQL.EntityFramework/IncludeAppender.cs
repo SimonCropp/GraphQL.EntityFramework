@@ -39,6 +39,11 @@
             return AddIncludesFromProjection(query, projection);
         }
 
+        if (!LoadsCollection(projection))
+        {
+            query = QuerySplitting.Remove(query);
+        }
+
         foreach (var includePath in includePaths)
         {
             query = query.Include(includePath);
@@ -47,6 +52,48 @@
         PushDown.Mark(context, argumentFields);
 
         return query.Select(expression);
+    }
+
+    /// <summary>
+    /// Whether the projection loads a collection at any depth, the only case where query splitting
+    /// changes anything.
+    /// </summary>
+    static bool LoadsCollection(FieldProjectionInfo projection)
+    {
+        if (projection.Navigations is not null &&
+            LoadsCollection(projection.Navigations))
+        {
+            return true;
+        }
+
+        if (projection.DerivedNavigations is null)
+        {
+            return false;
+        }
+
+        foreach (var navigations in projection.DerivedNavigations.Values)
+        {
+            if (LoadsCollection(navigations))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static bool LoadsCollection(Dictionary<string, NavigationProjectionInfo> navigations)
+    {
+        foreach (var navigation in navigations.Values)
+        {
+            if (navigation.IsCollection ||
+                LoadsCollection(navigation.Projection))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     IQueryable<TItem> AddIncludesFromProjection<TItem>(

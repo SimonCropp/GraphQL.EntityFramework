@@ -83,6 +83,14 @@
                 resolve: _ => _.DbContext.ParentEntities.OrderBy(_ => _.Property))
             .PageSize(10);
 
+        // Split for the children a request might select. With none selected the split does nothing.
+        efGraphQlService
+            .AddQueryConnectionField<ParentGraphType, ParentEntity>(
+                this,
+                name: "splitParentEntitiesConnection",
+                resolve: _ => _.DbContext.ParentEntities.AsSplitQuery().OrderBy(_ => _.Property))
+            .PageSize(10);
+
         efGraphQlService.AddQueryConnectionField<ChildGraphType, ChildEntity>(
             this,
             name: "childEntitiesConnection",
