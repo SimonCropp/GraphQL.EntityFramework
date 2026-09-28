@@ -106,6 +106,18 @@
     where: BaseEntityWhere,
     orderBy: [BaseEntityOrderBy!],
     ids: [ID!]): BaseConnection!
+  splitInterfaceGraphConnection(
+    "Only return edges after the specified cursor."
+    after: String,
+    "Specifies the maximum number of edges to return, starting after the cursor specified by 'after', or the first number of edges if 'after' is not specified."
+    first: Int,
+    "Only return edges prior to the specified cursor."
+    before: String,
+    "Specifies the maximum number of edges to return, starting prior to the cursor specified by 'before', or the last number of edges if 'before' is not specified."
+    last: Int,
+    where: BaseEntityWhere,
+    orderBy: [BaseEntityOrderBy!],
+    ids: [ID!]): BaseConnection!
   baseEntities(id: ID, ids: [ID!], where: BaseEntityWhere, orderBy: [BaseEntityOrderBy!], skip: Int, take: Int): [BaseEntity]!
   derivedEntities(id: ID, ids: [ID!], where: DerivedEntityWhere, orderBy: [DerivedEntityOrderBy!], skip: Int, take: Int): [Derived!]!
   derivedEntity(id: ID, ids: [ID!], where: DerivedEntityWhere): Derived!

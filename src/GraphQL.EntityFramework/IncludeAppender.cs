@@ -34,14 +34,16 @@
             projection = MergeFilterFieldsIntoProjection(projection, filters, type);
         }
 
-        if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths, out var argumentFields))
-        {
-            return AddIncludesFromProjection(query, projection);
-        }
-
+        // Includes are built from the same projection, so without a collection in it neither the
+        // select nor the includes fallback loads one
         if (!LoadsCollection(projection))
         {
             query = QuerySplitting.Remove(query);
+        }
+
+        if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths, out var argumentFields))
+        {
+            return AddIncludesFromProjection(query, projection);
         }
 
         foreach (var includePath in includePaths)
