@@ -37,9 +37,6 @@
       Text:
 select COUNT(*)
 from   ChildEntities as c
-       left outer join
-       ParentEntities as p
-       on c.ParentId = p.Id
     },
     {
       Text:
@@ -47,9 +44,6 @@ select   c.Id,
          c.ParentId,
          c.Property
 from     ChildEntities as c
-         left outer join
-         ParentEntities as p
-         on c.ParentId = p.Id
 order by c.Property
 offset @p rows fetch next @p1 rows only,
       Parameters: {
