@@ -22,6 +22,68 @@
         return false;
     }
 
+    /// <summary>
+    /// The query with its ordering removed, for an ordering that replaces it. Only the query's
+    /// own chain is stripped, and only above any Skip or Take, since below one the ordering
+    /// decides which rows are included.
+    /// </summary>
+    internal static IQueryable<T> WithoutOrdering<T>(IQueryable<T> queryable) =>
+        Strip(queryable, IsOrdering);
+
+    /// <summary>
+    /// The query to count, without the operators that only shape the entities returned, which a
+    /// count does not return: ordering, includes, split queries, and tracking.
+    /// </summary>
+    static IQueryable<T> ForCount<T>(IQueryable<T> queryable) =>
+        Strip(queryable, _ => IsOrdering(_) || _ is
+            "Include" or "ThenInclude" or
+            "AsSplitQuery" or "AsSingleQuery" or
+            "AsNoTracking" or "AsNoTrackingWithIdentityResolution" or "AsTracking");
+
+    static bool IsOrdering(string methodName) =>
+        methodName is "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending";
+
+    static IQueryable<T> Strip<T>(IQueryable<T> queryable, Func<string, bool> isStripped)
+    {
+        var expression = Strip(queryable.Expression, isStripped);
+        if (expression == queryable.Expression)
+        {
+            return queryable;
+        }
+
+        return queryable.Provider.CreateQuery<T>(expression);
+    }
+
+    static Expression Strip(Expression expression, Func<string, bool> isStripped)
+    {
+        // Queryable operators, and extensions such as Include and AsNoTracking, take the query
+        // they build on as their first argument
+        if (expression is not MethodCallExpression { Object: null, Arguments.Count: > 0 } methodCall ||
+            !typeof(IQueryable).IsAssignableFrom(methodCall.Arguments[0].Type))
+        {
+            return expression;
+        }
+
+        var methodName = methodCall.Method.Name;
+        if (isStripped(methodName))
+        {
+            return Strip(methodCall.Arguments[0], isStripped);
+        }
+
+        if (methodName is "Skip" or "Take" or "SkipLast" or "TakeLast" or "SkipWhile" or "TakeWhile")
+        {
+            return expression;
+        }
+
+        var source = Strip(methodCall.Arguments[0], isStripped);
+        if (source == methodCall.Arguments[0])
+        {
+            return expression;
+        }
+
+        return methodCall.Update(methodCall.Object, [source, .. methodCall.Arguments.Skip(1)]);
+    }
+
     public static Connection<T> ApplyConnectionContext<T>(List<T> list, int? first, string? afterString, int? last, string? beforeString)
         where T : class
     {
@@ -170,7 +232,7 @@
         List<TItem> rows;
         if (NeedsCount(context, last, before))
         {
-            count = await queryable.CountAsync(cancel);
+            count = await ForCount(queryable).CountAsync(cancel);
             cancel.ThrowIfCancellationRequested();
             int take;
             (skip, take) = Window(first, after, last, before, count.Value);

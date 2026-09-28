@@ -8,7 +8,7 @@
                 dbContext.AddRange(list.Select(_ => new Entity {Property = _}));
                 await dbContext.SaveChangesAsync();
             },
-            constructInstance: builder => new(builder.Options));
+            constructInstance: builder => new(builder.ThrowOnAntiPatterns().Options));
 
     static List<string> list = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
 

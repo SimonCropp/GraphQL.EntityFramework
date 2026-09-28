@@ -53,6 +53,10 @@
             resolve: _ => _.DbContext.ParentEntities);
 
         AddQueryField(
+            name: "orderedParentEntities",
+            resolve: _ => _.DbContext.ParentEntities.OrderByDescending(_ => _.Property));
+
+        AddQueryField(
             name: "childEntities",
             resolve: _ => _.DbContext.ChildEntities);
 

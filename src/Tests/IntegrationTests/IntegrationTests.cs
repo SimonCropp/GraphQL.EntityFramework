@@ -21,6 +21,7 @@
                     _.Ignore(
                         CoreEventId.ShadowForeignKeyPropertyCreated,
                         CoreEventId.CollectionWithoutComparer));
+                builder.ThrowOnAntiPatterns();
                 return new(builder.Options);
             });
 
@@ -527,6 +528,34 @@
             """
             {
               parentEntities (take: 1, orderBy: {property: ascending})
+              {
+                property
+              }
+            }
+            """;
+
+        var entity1 = new ParentEntity
+        {
+            Property = "Value1"
+        };
+        var entity2 = new ParentEntity
+        {
+            Property = "Value2"
+        };
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [entity1, entity2]);
+    }
+
+    // The orderBy argument replaces the ordering the resolver applied, rather than being added
+    // after it, where EF discards the resolver's ordering
+    [Fact]
+    public async Task OrderByArgumentReplacesResolverOrdering()
+    {
+        var query =
+            """
+            {
+              orderedParentEntities (orderBy: {property: ascending})
               {
                 property
               }
