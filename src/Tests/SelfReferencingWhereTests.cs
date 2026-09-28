@@ -29,7 +29,7 @@ public class SelfReferencingWhereTests
             data.AddRange(root, other);
             await data.SaveChangesAsync();
         },
-        constructInstance: builder => new(builder.Options));
+        constructInstance: builder => new(builder.ThrowOnAntiPatterns().Options));
 
     [Fact]
     public async Task List_path_into_same_type()

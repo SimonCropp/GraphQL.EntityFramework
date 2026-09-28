@@ -65,6 +65,9 @@ public static partial class ArgumentProcessor
             return (queryable, false);
         }
 
+        // The argument replaces any ordering the resolver applied, which EF would discard anyway
+        queryable = ConnectionConverter.WithoutOrdering(queryable);
+
         var orderBy = orderBys.First();
         var property = PropertyCache<TItem>.GetProperty(orderBy.Path)
             .Lambda;

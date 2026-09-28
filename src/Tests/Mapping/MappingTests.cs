@@ -15,6 +15,7 @@ public class MappingTests
                     CoreEventId.ShadowForeignKeyPropertyCreated,
                     CoreEventId.RowLimitingOperationWithoutOrderByWarning,
                     CoreEventId.CollectionWithoutComparer));
+            builder.ThrowOnAntiPatterns();
             return new(builder.Options);
         });
     }

@@ -3,9 +3,9 @@
     [Fact]
     public async Task Run()
     {
-        var sqlInstance1 = new SqlInstance<DbContext1>(constructInstance: builder => new(builder.Options));
+        var sqlInstance1 = new SqlInstance<DbContext1>(constructInstance: builder => new(builder.ThrowOnAntiPatterns().Options));
 
-        var sqlInstance2 = new SqlInstance<DbContext2>(constructInstance: builder => new(builder.Options));
+        var sqlInstance2 = new SqlInstance<DbContext2>(constructInstance: builder => new(builder.ThrowOnAntiPatterns().Options));
 
         var query =
             """

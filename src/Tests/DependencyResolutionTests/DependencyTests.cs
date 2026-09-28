@@ -3,7 +3,7 @@
     static SqlInstance<DependencyDbContext> sqlInstance;
 
     static DependencyTests() =>
-        sqlInstance = new(builder => new(builder.Options));
+        sqlInstance = new(builder => new(builder.ThrowOnAntiPatterns().Options));
 
     static string query = """
         {

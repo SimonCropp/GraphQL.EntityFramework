@@ -9,6 +9,7 @@
   namedEntities(id: ID, ids: [ID!], where: NamedIdEntityWhere, orderBy: [NamedIdEntityOrderBy!], skip: Int, take: Int): [NamedId!]!
   misNamed(id: ID, ids: [ID!], where: WithMisNamedQueryParentEntityWhere, orderBy: [WithMisNamedQueryParentEntityOrderBy!], skip: Int, take: Int): [WithMisNamedQueryParent!]!
   parentEntities(id: ID, ids: [ID!], where: ParentEntityWhere, orderBy: [ParentEntityOrderBy!], skip: Int, take: Int): [Parent!]!
+  orderedParentEntities(id: ID, ids: [ID!], where: ParentEntityWhere, orderBy: [ParentEntityOrderBy!], skip: Int, take: Int): [Parent!]!
   childEntities(id: ID, ids: [ID!], where: ChildEntityWhere, orderBy: [ChildEntityOrderBy!], skip: Int, take: Int): [Child!]!
   dateEntities(id: ID, ids: [ID!], where: DateEntityWhere, orderBy: [DateEntityOrderBy!], skip: Int, take: Int): [DateEntity!]!
   enumEntities(id: ID, ids: [ID!], where: EnumEntityWhere, orderBy: [EnumEntityOrderBy!], skip: Int, take: Int): [EnumEntity!]!
