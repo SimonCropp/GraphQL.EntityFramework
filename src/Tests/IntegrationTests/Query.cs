@@ -172,6 +172,13 @@
             name: "interfaceGraphConnection",
             resolve: _ => _.DbContext.BaseEntities.OrderBy(_ => _.Property));
 
+        // Split for the children a request might select, over a type with derived types
+        efGraphQlService.AddQueryConnectionField<BaseEntity>(
+            this,
+            itemGraphType: typeof(BaseGraphType),
+            name: "splitInterfaceGraphConnection",
+            resolve: _ => _.DbContext.BaseEntities.AsSplitQuery().OrderBy(_ => _.Property));
+
         AddQueryField(
             name: "baseEntities",
             graphType: typeof(BaseGraphType),
