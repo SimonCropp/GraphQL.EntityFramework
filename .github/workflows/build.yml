@@ -53,6 +53,14 @@ jobs:
       - name: Build
         run: dotnet build src --configuration Release ${{ env.VERSION_ARGUMENT }}
 
+      # LocalDB's first start on a fresh runner does one-off setup. Paying it once here, rather than
+      # while the test projects start several instances in parallel, avoids "SQL Server process failed to start".
+      - name: Warm up LocalDB
+        run: |
+          sqllocaldb info
+          sqllocaldb start MSSQLLocalDB
+          sqllocaldb info MSSQLLocalDB
+
       - name: Test
         run: dotnet test --solution src/GraphQL.EntityFramework.slnx --configuration Release --no-build --no-restore
 
