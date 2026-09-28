@@ -33,7 +33,7 @@ public partial class IntegrationTests
                 totalCount
                 items {
                   property
-                  children {
+                  children(orderBy: {property: ascending}) {
                     property
                   }
                 }

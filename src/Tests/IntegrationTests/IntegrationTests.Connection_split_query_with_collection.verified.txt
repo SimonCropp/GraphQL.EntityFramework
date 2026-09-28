@@ -27,10 +27,10 @@
             property: Parent2,
             children: [
               {
-                property: Ignore
+                property: Child2
               },
               {
-                property: Child2
+                property: Ignore
               }
             ]
           }
@@ -74,7 +74,7 @@ from     (select   p.Id,
          on p0.Id = c1.ParentId
 order by p0.Property,
          p0.Id,
-         c1.Id,
+         c1.Property,
       Parameters: {
         @p: 0,
         @p1: 10
