@@ -273,8 +273,15 @@
     /// <summary>
     /// The page size plus the one row read past it, capped so the largest page size does not wrap.
     /// </summary>
-    static int Peek(int first) =>
-        first == int.MaxValue ? first : first + 1;
+    static int Peek(int first)
+    {
+        if (first == int.MaxValue)
+        {
+            return first;
+        }
+
+        return first + 1;
+    }
 
     /// <summary>
     /// Whether the count query has to run: when totalCount is selected, or when the window is

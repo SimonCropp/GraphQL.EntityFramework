@@ -136,10 +136,15 @@ public class AbstractNavigationProjectionCodeFixProvider : CodeFixProvider
             _ => null
         };
 
-    static ExpressionSyntax UnwrapNullForgiving(ExpressionSyntax expression) =>
-        expression is PostfixUnaryExpressionSyntax { RawKind: (int)SyntaxKind.SuppressNullableWarningExpression } postfix
-            ? postfix.Operand
-            : expression;
+    static ExpressionSyntax UnwrapNullForgiving(ExpressionSyntax expression)
+    {
+        if (expression is PostfixUnaryExpressionSyntax { RawKind: (int)SyntaxKind.SuppressNullableWarningExpression } postfix)
+        {
+            return postfix.Operand;
+        }
+
+        return expression;
+    }
 
     static List<PropertyAccess> ExtractAccessedProperties(CSharpSyntaxNode body, string paramName)
     {

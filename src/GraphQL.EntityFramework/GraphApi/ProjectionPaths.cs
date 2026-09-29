@@ -15,8 +15,18 @@ sealed class ProjectionPaths
     /// The root of the first path read. It receives the field's selection set when the type the
     /// field returns cannot say which navigation the selection applies to.
     /// </summary>
-    public string? PrimaryRoot =>
-        Groups.Count == 0 ? null : Groups[0].Root;
+    public string? PrimaryRoot
+    {
+        get
+        {
+            if (Groups.Count == 0)
+            {
+                return null;
+            }
+
+            return Groups[0].Root;
+        }
+    }
 
     public static ProjectionPaths Analyze(LambdaExpression projection) =>
         Analyze([projection]);

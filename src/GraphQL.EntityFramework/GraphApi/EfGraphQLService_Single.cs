@@ -249,7 +249,14 @@ partial class EfGraphQLService<TDbContext>
 
         return type;
 
-        TReturn? ReturnNullable(IQueryable<TReturn>? query = null) =>
-            nullable ? null : throw new SingleEntityNotFoundException(NotFoundQueryText(query));
+        TReturn? ReturnNullable(IQueryable<TReturn>? query = null)
+        {
+            if (nullable)
+            {
+                return null;
+            }
+
+            throw new SingleEntityNotFoundException(NotFoundQueryText(query));
+        }
     }
 }

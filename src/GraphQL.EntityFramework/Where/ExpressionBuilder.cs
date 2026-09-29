@@ -204,7 +204,15 @@ public static partial class ExpressionBuilder<T>
         }
 
         return values
-            .Select(_ => _ is null ? null : Convert.ToString(_, CultureInfo.InvariantCulture))
+            .Select(_ =>
+            {
+                if (_ is null)
+                {
+                    return null;
+                }
+
+                return Convert.ToString(_, CultureInfo.InvariantCulture);
+            })
             .ToArray();
     }
 
