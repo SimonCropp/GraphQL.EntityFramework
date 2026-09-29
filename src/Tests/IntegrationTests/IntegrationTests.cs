@@ -15,25 +15,30 @@
                             from ParentEntities
                     """);
             },
-            constructInstance: builder =>
-            {
-                builder.ConfigureWarnings(_ =>
-                    _.Ignore(
-                        CoreEventId.ShadowForeignKeyPropertyCreated,
-                        CoreEventId.CollectionWithoutComparer));
-                builder.ThrowOnAntiPatterns();
-                return new(builder.Options);
-            });
+            constructInstance: Construct);
+
+    static IntegrationDbContext Construct(DbContextOptionsBuilder<IntegrationDbContext> builder)
+    {
+        builder.ConfigureWarnings(_ =>
+            _.Ignore(
+                CoreEventId.ShadowForeignKeyPropertyCreated,
+                CoreEventId.CollectionWithoutComparer));
+        builder.ThrowOnAntiPatterns();
+        return new(builder.Options);
+    }
+
+    // For tests that only need the model or a context instance: the connection is never opened
+    static IntegrationDbContext NewModelOnlyContext() =>
+        Construct(new DbContextOptionsBuilder<IntegrationDbContext>().UseSqlServer("Server=unused"));
 
     [Fact]
     public async Task SchemaPrint()
     {
-        await using var database = await sqlInstance.Build();
-        var dbContext = database.Context;
+        await using var dbContext = NewModelOnlyContext();
         var services = new ServiceCollection();
         services.AddSingleton<Query>();
         services.AddSingleton<Mutation>();
-        services.AddSingleton(database.Context);
+        services.AddSingleton(dbContext);
         services.AddGraphQL(null);
         foreach (var type in GetGraphQlTypes())
         {

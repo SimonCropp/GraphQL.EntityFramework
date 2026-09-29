@@ -76,8 +76,7 @@ public partial class IntegrationTests
     [Fact]
     public async Task DbContext_resolved_without_an_execution()
     {
-        await using var database = await sqlInstance.Build();
-        var dbContext = database.Context;
+        await using var dbContext = NewModelOnlyContext();
         var services = new ServiceCollection();
         services.AddSingleton(dbContext);
         await using var provider = services.BuildServiceProvider();
