@@ -121,5 +121,4 @@ public partial class IntegrationTests
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, BuildFilters(), false, [level1, level2, level3Ignored]);
     }
-
 }
