@@ -11,7 +11,6 @@
     <PackageReference Include="GraphQL.SystemTextJson" />
     <PackageReference Include="EfLocalDb" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
-    <PackageReference Include="Verify.DiffPlex" />
     <PackageReference Include="EfOrderBy" />
     <PackageReference Include="Verify.EntityFramework" />
     <PackageReference Include="Verify.GraphQL" />
