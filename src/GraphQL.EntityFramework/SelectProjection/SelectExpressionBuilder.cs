@@ -381,6 +381,14 @@ static class SelectExpressionBuilder
             return false;
         }
 
+        // A required navigation is never null, and EF translates a null check on one to an always
+        // false comparison, so it is only checked when optional
+        if (navProjection.IsRequired)
+        {
+            binding = Expression.Bind(navAccess.Member, init);
+            return true;
+        }
+
         // source.Parent == null ? null : new Parent { ... }
         var conditional = Expression.Condition(
             Expression.Equal(navAccess, navMetadata.NullConstant),

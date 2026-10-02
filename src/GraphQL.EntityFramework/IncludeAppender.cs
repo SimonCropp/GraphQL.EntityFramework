@@ -9,17 +9,20 @@
     /// where the entity can be projected, otherwise includes. A projected navigation whose type
     /// cannot be projected is bound whole, and the navigations under it are then loaded through
     /// includes alongside the select, since EF applies includes to the entities in a projection.
+    /// <paramref name="disableTracking"/> applies AsNoTracking only when no select is added, since
+    /// a select creates new instances that EF does not track, so AsNoTracking would do nothing.
     /// </summary>
     public IQueryable<TItem> ApplyProjection<TDbContext, TItem>(
         IResolveFieldContext context,
         Filters<TDbContext>? filters,
-        IQueryable<TItem> query)
+        IQueryable<TItem> query,
+        bool disableTracking = false)
         where TDbContext : DbContext
         where TItem : class
     {
         if (context.SubFields is null)
         {
-            return query;
+            return ApplyTracking(query, disableTracking);
         }
 
         var type = typeof(TItem);
@@ -43,7 +46,7 @@
 
         if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths, out var argumentFields))
         {
-            return AddIncludesFromProjection(query, projection);
+            return ApplyTracking(AddIncludesFromProjection(query, projection), disableTracking);
         }
 
         foreach (var includePath in includePaths)
@@ -55,6 +58,10 @@
 
         return query.Select(expression);
     }
+
+    static IQueryable<TItem> ApplyTracking<TItem>(IQueryable<TItem> query, bool disableTracking)
+        where TItem : class =>
+        disableTracking ? query.AsNoTracking() : query;
 
     /// <summary>
     /// Whether the projection loads a collection at any depth, the only case where query splitting
@@ -432,7 +439,8 @@
                 new(
                     navType,
                     navigation.IsCollection,
-                    GetNestedProjection(field.SelectionSet, navGraphType, navType, nestedNavProps, nestedKeys, nestedFks, context)));
+                    GetNestedProjection(field.SelectionSet, navGraphType, navType, nestedNavProps, nestedKeys, nestedFks, context),
+                    IsRequired: navigation.IsRequired));
         }
 
         return result;
@@ -686,7 +694,7 @@
                 nestedProjection = new(nestedScalarFields, nestedKeys ?? [], nestedFks ?? new HashSet<string>(), []);
             }
 
-            AddNavigation(navProjections, navigation.Name, new(navType, navigation.IsCollection, nestedProjection, isWhole, arguments));
+            AddNavigation(navProjections, navigation.Name, new(navType, navigation.IsCollection, nestedProjection, isWhole, arguments, navigation.IsRequired));
         }
     }
 
@@ -891,7 +899,8 @@
             new(
                 navType,
                 navigation.IsCollection,
-                GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), navType, nestedNavProps, nestedKeys, nestedFks, context)));
+                GetNestedProjection(field.SelectionSet, GetComplexGraphType(fieldType), navType, nestedNavProps, nestedKeys, nestedFks, context),
+                IsRequired: navigation.IsRequired));
     }
 
     /// <summary>

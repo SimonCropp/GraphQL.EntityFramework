@@ -11,8 +11,7 @@
   },
   sql: {
     Text:
-select top (2) cast (0 as bit),
-               o.Child1_Property,
+select top (2) o.Child1_Property as Property,
                o.Id,
                o.Property
 from   OwnedParents as o

@@ -159,14 +159,9 @@ partial class EfGraphQLService<TDbContext>
                         return ReturnNullable();
                     }
 
-                    if (disableTracking)
-                    {
-                        query = query.AsNoTracking();
-                    }
-
                     query = query.ApplyGraphQlArguments(context, names, false, omitQueryArguments);
 
-                    query = includeAppender.ApplyProjection(context, fieldContext.Filters, query);
+                    query = includeAppender.ApplyProjection(context, fieldContext.Filters, query, disableTracking);
 
                     QueryLogger.Write(query);
 

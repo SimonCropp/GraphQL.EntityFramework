@@ -3,6 +3,10 @@
 /// itself rather than properties of it. The select projection then binds the navigation whole
 /// instead of building a member init from <paramref name="Projection"/>.
 /// </param>
+/// <param name="IsRequired">
+/// The navigation is required in the EF model, so is never null. The select projection then
+/// skips the null check, which EF would otherwise translate to an always false comparison.
+/// </param>
 /// <param name="Arguments">
 /// The field's ids, where and orderBy, to apply inside the collection subquery. Null when the
 /// navigation was selected more than once, since one loaded collection cannot satisfy two sets
@@ -13,7 +17,8 @@ record NavigationProjectionInfo(
     bool IsCollection,
     FieldProjectionInfo Projection,
     bool IsWhole = false,
-    NavigationArguments? Arguments = null)
+    NavigationArguments? Arguments = null,
+    bool IsRequired = false)
 {
     public NavigationProjectionInfo Merge(NavigationProjectionInfo other) =>
         this with

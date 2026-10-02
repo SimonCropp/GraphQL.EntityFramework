@@ -11,7 +11,6 @@
   sql: {
     Text:
 select i0.Id,
-       case when i1.Id is null then cast (1 as bit) else cast (0 as bit) end,
        i1.Id
 from   IncludeNonQueryableBs as i
        inner join

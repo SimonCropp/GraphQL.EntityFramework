@@ -109,7 +109,7 @@
                 var navMetadata = FindNavigation(navigationProperties, navName)!;
                 mergedNavigations[navName] = mergedNavigations.TryGetValue(navName, out var existingNav)
                     ? existingNav with { IsWhole = true }
-                    : new(navMetadata.Type, navMetadata.IsCollection, new([], null, null, null), true);
+                    : new(navMetadata.Type, navMetadata.IsCollection, new([], null, null, null), true, IsRequired: navMetadata.IsRequired);
             }
         }
 
@@ -135,7 +135,7 @@
                 }
                 else
                 {
-                    mergedNavigations[navName] = new(navMetadata.Type, navMetadata.IsCollection, new(requiredProps, null, null, null));
+                    mergedNavigations[navName] = new(navMetadata.Type, navMetadata.IsCollection, new(requiredProps, null, null, null), IsRequired: navMetadata.IsRequired);
                 }
             }
         }
