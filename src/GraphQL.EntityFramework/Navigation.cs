@@ -7,5 +7,6 @@ public record Navigation
     Type Type,
     bool IsNullable,
     bool IsCollection,
-    string? InverseName = null
+    string? InverseName = null,
+    bool IsRequired = false
 );

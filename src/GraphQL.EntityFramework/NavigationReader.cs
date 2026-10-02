@@ -20,10 +20,18 @@
                 _ =>
                 {
                     var (itemType, isCollection) = GetNavigationType(_);
-                    return new Navigation(_.Name, itemType, _.PropertyInfo!.IsNullable(), isCollection, _.Inverse?.Name);
+                    return new Navigation(_.Name, itemType, _.PropertyInfo!.IsNullable(), isCollection, _.Inverse?.Name, IsRequired(_));
                 })
             .ToDictionary(_ => _.Name.ToLowerInvariant(), StringComparer.OrdinalIgnoreCase);
     }
+
+    // EF never materializes a required reference navigation as null, so the select projection
+    // can skip the null check on it
+    static bool IsRequired(INavigationBase navigation) =>
+        navigation is INavigation { IsCollection: false } reference &&
+        (reference.IsOnDependent
+            ? reference.ForeignKey.IsRequired
+            : reference.ForeignKey.IsRequiredDependent);
 
     static (Type itemType, bool isCollection) GetNavigationType(INavigationBase navigation)
     {

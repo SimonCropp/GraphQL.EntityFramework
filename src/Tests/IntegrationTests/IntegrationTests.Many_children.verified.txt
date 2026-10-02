@@ -12,8 +12,7 @@
   },
   sql: {
     Text:
-select case when c.Id is null then cast (1 as bit) else cast (0 as bit) end,
-       c.Id,
+select c.Id,
        c.ParentId,
        c0.Id,
        c0.ParentId,

@@ -16,8 +16,7 @@
   },
   sql: {
     Text:
-select   cast (0 as bit),
-         d.Id,
+select   d.Id,
          d.IsActive,
          d.Name,
          e.DepartmentId,
