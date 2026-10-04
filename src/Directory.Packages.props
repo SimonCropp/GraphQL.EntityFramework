@@ -35,7 +35,7 @@
     <PackageVersion Include="xunit.v3" Version="4.0.1" />
     <PackageVersion Include="Argon" Version="0.37.0" />
     <PackageVersion Include="DiffEngine" Version="20.6.0" />
-    <PackageVersion Include="EmptyFiles" Version="8.19.0" />
+    <PackageVersion Include="EmptyFiles" Version="8.20.0" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.0" />
     <PackageVersion Include="Verify" Version="33.2.0" />
   </ItemGroup>
