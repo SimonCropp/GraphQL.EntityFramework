@@ -438,6 +438,101 @@ public class ExpressionBuilderTests
         public string? Field;
     }
 
+    // A non nullable string is a required property in the EF model. EF removes a null check on
+    // one, and Verify.EntityFramework throws for it.
+    [Theory]
+    [InlineData(Comparison.StartsWith)]
+    [InlineData(Comparison.EndsWith)]
+    [InlineData(Comparison.Contains)]
+    public void Non_nullable_string_has_no_null_check(Comparison comparison)
+    {
+        var predicate = ExpressionBuilder<TargetWithNonNullable>.BuildPredicate("Member", comparison, ["a"]);
+        Assert.DoesNotContain("!= null", predicate.ToString());
+    }
+
+    [Theory]
+    [InlineData(Comparison.StartsWith)]
+    [InlineData(Comparison.EndsWith)]
+    [InlineData(Comparison.Contains)]
+    public void Nullable_string_has_null_check(Comparison comparison)
+    {
+        var predicate = ExpressionBuilder<Target>.BuildPredicate("Member", comparison, ["a"]);
+        Assert.Contains("(_.Member != null)", predicate.ToString());
+    }
+
+    // The navigation can be null, and then so is the member read through it
+    [Fact]
+    public void Non_nullable_string_through_navigation_has_null_check()
+    {
+        var predicate = ExpressionBuilder<TargetWithNonNullable>.BuildPredicate("Parent.Member", Comparison.StartsWith, ["a"]);
+        Assert.Contains("(_.Parent.Member != null)", predicate.ToString());
+    }
+
+    [Fact]
+    public void Non_nullable_string_in_list_has_no_null_check()
+    {
+        var predicate = ExpressionBuilder<TargetWithNonNullable>.BuildPredicate("Children[Member]", Comparison.StartsWith, ["a"]);
+        Assert.DoesNotContain("!= null", predicate.ToString());
+    }
+
+    // notEqual and notIn are already negated, so negating them again unwraps them
+    [Theory]
+    [InlineData(Comparison.NotEqual)]
+    [InlineData(Comparison.NotIn)]
+    public void Negated_negative_comparison_is_not_negated_twice(Comparison comparison)
+    {
+        var list = new List<Target>
+        {
+            new()
+            {
+                Member = "a"
+            },
+            new()
+            {
+                Member = "b"
+            }
+        };
+
+        var predicate = ExpressionBuilder<Target>.BuildPredicate("Member", comparison, ["a"], true);
+
+        Assert.DoesNotContain("Not(", predicate.ToString());
+        var result = list
+            .AsQueryable()
+            .Where(predicate)
+            .Single();
+        Assert.Equal("a", result.Member);
+    }
+
+    [Fact]
+    public void Negated_none_is_not_negated_twice()
+    {
+        var predicate = ExpressionBuilder<TargetWithNonNullable>.BuildPredicate(
+            new WhereExpression
+            {
+                Path = "Children",
+                Quantifier = Quantifier.None,
+                Negate = true,
+                GroupedExpressions =
+                [
+                    new()
+                    {
+                        Path = "Member",
+                        Comparison = Comparison.Equal,
+                        Value = ["a"]
+                    }
+                ]
+            });
+
+        Assert.DoesNotContain("Not(", predicate.ToString());
+    }
+
+    public class TargetWithNonNullable
+    {
+        public string Member { get; set; } = "";
+        public TargetWithNonNullable? Parent { get; set; }
+        public List<TargetWithNonNullable> Children { get; set; } = [];
+    }
+
     [Theory]
     [InlineData("Name", Comparison.Equal, "Person 1", "Person 1")]
     [InlineData("Name", Comparison.Equal, "Person 2", "Person 1", true)]

@@ -379,7 +379,6 @@ public static partial class ExpressionBuilder<T>
         var left = property.Left;
 
         var valueConstant = MakeParameterizedConstant(value, typeof(string));
-        var nullCheck = Expression.NotEqual(left, ExpressionCache.Null);
 
         switch (comparison)
         {
@@ -391,17 +390,33 @@ public static partial class ExpressionBuilder<T>
                 return Expression.Call(null, ReflectionCache.StringLike, ExpressionCache.EfFunction, left, valueConstant);
             case Comparison.StartsWith:
                 var startsWithExpression = Expression.Call(left, ReflectionCache.StringStartsWith, valueConstant);
-                return Expression.AndAlso(nullCheck, startsWithExpression);
+                return WithNullCheck(property, startsWithExpression);
             case Comparison.EndsWith:
                 var endsWithExpression = Expression.Call(left, ReflectionCache.StringEndsWith, valueConstant);
-                return Expression.AndAlso(nullCheck, endsWithExpression);
+                return WithNullCheck(property, endsWithExpression);
             case Comparison.Contains:
                 var indexOfExpression = Expression.Call(left, ReflectionCache.StringIndexOf, valueConstant);
                 var notEqualExpression = Expression.NotEqual(indexOfExpression, ExpressionCache.NegativeOne);
-                return Expression.AndAlso(nullCheck, notEqualExpression);
+                return WithNullCheck(property, notEqualExpression);
         }
 
         throw new($"Invalid comparison operator '{comparison}'.");
+    }
+
+    // A non nullable string on the item itself is a required property in the EF model, so is never
+    // null, and EF removes a null check on it. Reached through a navigation it is still checked,
+    // since the navigation can be null. So is a member of unknown nullability, which EF maps as
+    // optional.
+    static Expression WithNullCheck(Property<T> property, Expression comparison)
+    {
+        var left = property.Left;
+        if (left is MemberExpression { Expression: ParameterExpression } &&
+            property.Info.GetNullability() == NullabilityState.NotNull)
+        {
+            return comparison;
+        }
+
+        return Expression.AndAlso(Expression.NotEqual(left, ExpressionCache.Null), comparison);
     }
 
     static Expression MakeSingleObjectComparison(Comparison comparison, object? value, Property<T> property)
@@ -441,8 +456,17 @@ public static partial class ExpressionBuilder<T>
             _ => throw new($"Invalid connector operator '{connector}'.")
         };
 
-    static Expression NegateExpression(Expression expression) =>
-        Expression.Not(expression);
+    // Negating an expression that is already negated, such as a notEqual, a notIn or a none,
+    // unwraps it rather than wrapping it again
+    static Expression NegateExpression(Expression expression)
+    {
+        if (expression is UnaryExpression { NodeType: ExpressionType.Not } not)
+        {
+            return not.Operand;
+        }
+
+        return Expression.Not(expression);
+    }
 
     [GeneratedRegex(@"\[(.*)\]")]
     private static partial Regex ListPropertyRegex();
