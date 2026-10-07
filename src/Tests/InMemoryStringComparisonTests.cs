@@ -54,6 +54,38 @@ public class InMemoryStringComparisonTests
         Assert.Equal(["Other"], result.Select(_ => _.Property));
     }
 
+    // The where has no null check on a non nullable string, and the member can still be null in
+    // memory, for example when it was not loaded
+    [Theory]
+    [InlineData(Comparison.StartsWith)]
+    [InlineData(Comparison.EndsWith)]
+    [InlineData(Comparison.Contains)]
+    public void Null_in_non_nullable_string_does_not_match(Comparison comparison)
+    {
+        var context = BuildContext(
+            new()
+            {
+                Path = "Member",
+                Comparison = comparison,
+                Value = ["a"]
+            });
+
+        var result = new List<WithNonNullable>
+            {
+                new() {Member = null!},
+                new() {Member = "A"}
+            }
+            .ApplyGraphQlArguments(false, context, false)
+            .ToList();
+
+        Assert.Equal(["A"], result.Select(_ => _.Member));
+    }
+
+    public class WithNonNullable
+    {
+        public string Member { get; set; } = "";
+    }
+
     static List<ParentEntity> Apply(Comparison comparison, string value, params ParentEntity[] entities)
     {
         var context = BuildContext(

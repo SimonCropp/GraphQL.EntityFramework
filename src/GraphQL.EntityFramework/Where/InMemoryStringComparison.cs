@@ -15,14 +15,14 @@ class InMemoryStringComparison :
     static MethodInfo equals = typeof(string)
         .GetMethod(nameof(string.Equals), [typeof(string), typeof(string), typeof(StringComparison)])!;
 
-    static MethodInfo startsWith = typeof(string)
-        .GetMethod(nameof(string.StartsWith), [typeof(string), typeof(StringComparison)])!;
+    static MethodInfo startsWith = typeof(InMemoryStringComparison)
+        .GetMethod(nameof(StartsWith), BindingFlags.Static | BindingFlags.NonPublic)!;
 
-    static MethodInfo endsWith = typeof(string)
-        .GetMethod(nameof(string.EndsWith), [typeof(string), typeof(StringComparison)])!;
+    static MethodInfo endsWith = typeof(InMemoryStringComparison)
+        .GetMethod(nameof(EndsWith), BindingFlags.Static | BindingFlags.NonPublic)!;
 
-    static MethodInfo indexOf = typeof(string)
-        .GetMethod(nameof(string.IndexOf), [typeof(string), typeof(StringComparison)])!;
+    static MethodInfo indexOf = typeof(InMemoryStringComparison)
+        .GetMethod(nameof(IndexOf), BindingFlags.Static | BindingFlags.NonPublic)!;
 
     static MethodInfo like = typeof(InMemoryStringComparison)
         .GetMethod(nameof(Like), BindingFlags.Static | BindingFlags.NonPublic)!;
@@ -41,17 +41,17 @@ class InMemoryStringComparison :
 
         if (method == ReflectionCache.StringStartsWith)
         {
-            return Expression.Call(Visit(node.Object)!, startsWith, Visit(node.Arguments[0]), ignoreCase);
+            return Expression.Call(startsWith, Visit(node.Object)!, Visit(node.Arguments[0]));
         }
 
         if (method == ReflectionCache.StringEndsWith)
         {
-            return Expression.Call(Visit(node.Object)!, endsWith, Visit(node.Arguments[0]), ignoreCase);
+            return Expression.Call(endsWith, Visit(node.Object)!, Visit(node.Arguments[0]));
         }
 
         if (method == ReflectionCache.StringIndexOf)
         {
-            return Expression.Call(Visit(node.Object)!, indexOf, Visit(node.Arguments[0]), ignoreCase);
+            return Expression.Call(indexOf, Visit(node.Object)!, Visit(node.Arguments[0]));
         }
 
         if (method == ReflectionCache.StringLike)
@@ -60,6 +60,27 @@ class InMemoryStringComparison :
         }
 
         return base.VisitMethodCall(node);
+    }
+
+    // The where expression has no null check on a non nullable string, since in a query the
+    // column is required. In memory the member can still be null, for example when it was not
+    // loaded, so a null input matches nothing rather than throwing.
+    static bool StartsWith(string? input, string value) =>
+        input is not null &&
+        input.StartsWith(value, StringComparison.OrdinalIgnoreCase);
+
+    static bool EndsWith(string? input, string value) =>
+        input is not null &&
+        input.EndsWith(value, StringComparison.OrdinalIgnoreCase);
+
+    static int IndexOf(string? input, string value)
+    {
+        if (input is null)
+        {
+            return -1;
+        }
+
+        return input.IndexOf(value, StringComparison.OrdinalIgnoreCase);
     }
 
     static ConcurrentDictionary<string, Regex> patterns = new();

@@ -114,8 +114,7 @@
         {
             foreach (var (navName, navProjection) in projection.Navigations)
             {
-                query = query.Include(navName);
-                query = AddNestedIncludes(query, navName, typeof(TItem), navName, navProjection);
+                query = AddIncludes(query, navName, typeof(TItem), navName, navProjection);
             }
         }
 
@@ -185,6 +184,8 @@
             _ => includeMethodDefinition.MakeGenericMethod(_.entity, _.property));
 
     /// <summary>
+    /// Includes <paramref name="includePath"/> and the navigations selected under it. A path is
+    /// only included when no longer path is, since including Parent.Children loads Parent too.
     /// The one nested include EF rejects, in a no tracking query, is the inverse of the navigation
     /// just traversed: Attachments then Request, where Request is the other end of Attachments.
     /// EF fixes that inverse up while materializing the include anyway, so skipping it loses
@@ -192,7 +193,7 @@
     /// one, which dropped legitimate includes such as a second, unrelated navigation to the root's
     /// base type.
     /// </summary>
-    IQueryable<TItem> AddNestedIncludes<TItem>(
+    IQueryable<TItem> AddIncludes<TItem>(
         IQueryable<TItem> query,
         string includePath,
         Type parentType,
@@ -200,26 +201,29 @@
         NavigationProjectionInfo navProjection)
         where TItem : class
     {
+        var hasNested = false;
         var projection = navProjection.Projection;
-        if (projection.Navigations is not { Count: > 0 })
+        if (projection.Navigations is { Count: > 0 })
+        {
+            var inverseName = InverseName(parentType, navName);
+            foreach (var (nestedName, nestedProjection) in projection.Navigations)
+            {
+                if (string.Equals(nestedName, inverseName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                hasNested = true;
+                query = AddIncludes(query, $"{includePath}.{nestedName}", navProjection.EntityType, nestedName, nestedProjection);
+            }
+        }
+
+        if (hasNested)
         {
             return query;
         }
 
-        var inverseName = InverseName(parentType, navName);
-        foreach (var (nestedName, nestedProjection) in projection.Navigations)
-        {
-            if (string.Equals(nestedName, inverseName, StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            var nestedPath = $"{includePath}.{nestedName}";
-            query = query.Include(nestedPath);
-            query = AddNestedIncludes(query, nestedPath, navProjection.EntityType, nestedName, nestedProjection);
-        }
-
-        return query;
+        return query.Include(includePath);
     }
 
     string? InverseName(Type entityType, string navName)

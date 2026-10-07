@@ -528,8 +528,14 @@ static class SelectExpressionBuilder
         void AddIncludePath(string path, string name, FieldProjectionInfo projection)
         {
             var nestedPath = $"{path}.{name}";
-            IncludePaths.Add(nestedPath);
+            var count = IncludePaths.Count;
             AddIncludePaths(nestedPath, projection);
+
+            // A longer path loads this one too, so it is only added when nothing under it was
+            if (IncludePaths.Count == count)
+            {
+                IncludePaths.Add(nestedPath);
+            }
         }
     }
 
