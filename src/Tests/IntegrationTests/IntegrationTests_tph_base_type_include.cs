@@ -20,7 +20,7 @@
         };
         leaf.Attachments.Add(attachment);
 
-        // Query the abstract middle type (TphMiddleEntity) which triggers the includes path.
+        // summary is read only, so cannot be bound by a select, which triggers the includes path.
         // The filter on TphAttachmentEntity accesses _.Request.Property, adding a navigation
         // back to TphRootEntity. Without the skip, this would cause:
         //   .Include("Attachments.Request") -> the inverse of Attachments, a cycle EF rejects
@@ -30,6 +30,7 @@
               tphMiddleEntities
               {
                 property
+                summary
                 attachments
                 {
                   property
@@ -63,6 +64,7 @@
               tphMiddleEntity(id: "{{leaf.Id}}")
               {
                 property
+                summary
                 attachments
                 {
                   property

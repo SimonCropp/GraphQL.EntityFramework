@@ -4,6 +4,7 @@
       tphMiddleEntities: [
         {
           property: TheRequest,
+          summary: Summary of TheRequest,
           attachments: [
             {
               property: TheAttachment,

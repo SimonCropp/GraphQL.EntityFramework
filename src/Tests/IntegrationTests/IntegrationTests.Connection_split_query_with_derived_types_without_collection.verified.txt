@@ -22,10 +22,10 @@ from   BaseEntities as b
     },
     {
       Text:
-select   b.Id,
-         b.Discriminator,
+select   case when b.Discriminator = N'DerivedWithNavigationEntity' then cast (1 as bit) else cast (0 as bit) end,
+         b.Id,
          b.Property,
-         b.Status
+         case when b.Discriminator = N'DerivedEntity' then cast (1 as bit) else cast (0 as bit) end
 from     BaseEntities as b
 order by b.Property
 offset @p rows fetch next @p1 rows only,

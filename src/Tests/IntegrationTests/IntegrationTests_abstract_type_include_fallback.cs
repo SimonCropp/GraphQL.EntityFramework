@@ -1,7 +1,9 @@
 public partial class IntegrationTests
 {
+    // An abstract type is projected as a chain of type tests, each creating a concrete derived
+    // type. It used to be loaded whole through includes.
     [Fact]
-    public async Task Abstract_root_type_query_falls_back_to_include()
+    public async Task Abstract_root_type_query_is_projected()
     {
         var derivedEntity = new DerivedEntity
         {
@@ -31,8 +33,58 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [derivedEntity, child]);
     }
 
+    // A collection selected on a type with derived types is bound once, to whichever type the
+    // chain of type tests created. Bound inside each type's member init it was joined once per
+    // concrete type.
     [Fact]
-    public async Task Navigation_to_abstract_type_falls_back_to_full_include()
+    public async Task Abstract_root_type_collection_is_loaded_once()
+    {
+        var parent = new DerivedEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000001"),
+            Property = "Parent1"
+        };
+        var child1 = new DerivedChildEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000002"),
+            Property = "Child1",
+            Parent = parent
+        };
+        var child2 = new DerivedChildEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000003"),
+            Property = "Child2",
+            Parent = parent
+        };
+        var other = new DerivedWithNavigationEntity
+        {
+            Id = new("00000000-0000-0000-0000-000000000004"),
+            Property = "Parent2"
+        };
+
+        var query =
+            """
+            {
+              baseEntities(orderBy: {property: ascending})
+              {
+                property
+                childrenFromInterface(orderBy: {property: ascending})
+                {
+                  items
+                  {
+                    property
+                  }
+                }
+              }
+            }
+            """;
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [parent, child1, child2, other]);
+    }
+
+    [Fact]
+    public async Task Navigation_to_abstract_type_is_projected()
     {
         var parent = new DerivedEntity
         {

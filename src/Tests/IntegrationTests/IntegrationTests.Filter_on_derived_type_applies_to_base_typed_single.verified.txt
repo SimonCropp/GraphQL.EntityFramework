@@ -5,10 +5,9 @@
   },
   sql: {
     Text:
-select top (2) t.Id,
-               t.Discriminator,
-               t.Property,
-               t.LeafProperty
+select top (2) cast (1 as bit),
+               t.Id,
+               t.Property
 from   TphRootEntities as t
 where  t.Id = @p1,
     Parameters: {

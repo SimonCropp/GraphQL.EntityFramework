@@ -1,13 +1,11 @@
 ﻿{
   target: {
     Data: {
-      interfaceGraphConnection: {
-        items: [
-          {
-            property: Value2
-          }
-        ]
-      }
+      baseEntities: [
+        {
+          property: Derived1
+        }
+      ]
     }
   },
   sql: {
@@ -15,14 +13,8 @@
 select   case when b.Discriminator = N'DerivedWithNavigationEntity' then cast (1 as bit) else cast (0 as bit) end,
          b.Id,
          b.Property,
-         b.Status,
          case when b.Discriminator = N'DerivedEntity' then cast (1 as bit) else cast (0 as bit) end
 from     BaseEntities as b
 order by b.Property
-offset @p rows fetch next @p1 rows only,
-    Parameters: {
-      @p: 0,
-      @p1: 11
-    }
   }
 }

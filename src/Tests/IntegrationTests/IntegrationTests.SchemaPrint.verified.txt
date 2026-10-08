@@ -1790,6 +1790,7 @@ input DiscriminatorDerivedBEntityOrderBy {
 interface TphMiddleEntity {
   id: ID!
   property: String
+  summary: String!
   attachments(id: ID, ids: [ID!], where: TphAttachmentEntityWhere, orderBy: [TphAttachmentEntityOrderBy!], skip: Int, take: Int): [TphAttachment!]!
 }
 
@@ -2010,6 +2011,7 @@ type TphLeaf implements TphMiddleEntity {
   id: ID!
   leafProperty: String
   property: String
+  summary: String!
 }
 
 type TphDerivedNavCategory implements TphDerivedNavBaseEntity {

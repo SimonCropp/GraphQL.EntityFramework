@@ -30,6 +30,19 @@ static class ForeignKeyExtractor
             }
         }
 
+        // A query for this type also returns its derived types, each projected as itself, so the
+        // foreign keys they declare are loaded too. A name is only bound on the types that have it.
+        foreach (var derived in entity.GetDerivedTypes())
+        {
+            foreach (var foreignKey in derived.GetDeclaredForeignKeys())
+            {
+                foreach (var property in foreignKey.Properties)
+                {
+                    foreignKeyNames.Add(property.Name);
+                }
+            }
+        }
+
         // Include TPH discriminator property so projected entities maintain correct type identity.
         // Without this, projected entities get the default discriminator value (e.g. enum value 0)
         // instead of the actual value, causing downstream code that switches on the discriminator to fail.

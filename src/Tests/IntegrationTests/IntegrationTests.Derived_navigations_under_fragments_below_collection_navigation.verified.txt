@@ -26,36 +26,42 @@
     Text:
 select   t.Id,
          t.ItemId,
+         s.c,
          s.Id,
-         s.Discriminator,
          s.OwnerId,
          s.Property,
-         s.CategoryId,
-         s.RegionId,
+         s.c0,
          s.Id0,
          s.Name,
+         s.RegionId,
+         s.c1,
+         s.c2,
          s.Id1,
          s.Name0,
+         s.CategoryId,
          t.Property
 from     TphDerivedNavOwners as t
          left outer join
-         (select t0.Id,
-                 t0.Discriminator,
+         (select case when t0.Discriminator = N'TphDerivedNavRegionEntity' then cast (1 as bit) else cast (0 as bit) end as c,
+                 t0.Id,
                  t0.OwnerId,
                  t0.Property,
-                 t0.CategoryId,
+                 case when r.Id is null then cast (1 as bit) else cast (0 as bit) end as c0,
+                 r.Id as Id0,
+                 r.Name,
                  t0.RegionId,
-                 c.Id as Id0,
-                 c.Name,
-                 r.Id as Id1,
-                 r.Name as Name0
+                 case when t0.Discriminator = N'TphDerivedNavCategoryEntity' then cast (1 as bit) else cast (0 as bit) end as c1,
+                 case when c.Id is null then cast (1 as bit) else cast (0 as bit) end as c2,
+                 c.Id as Id1,
+                 c.Name as Name0,
+                 t0.CategoryId
           from   TphDerivedNavBaseEntities as t0
                  left outer join
-                 CategoryEntities as c
-                 on t0.CategoryId = c.Id
-                 left outer join
                  RegionEntities as r
-                 on t0.RegionId = r.Id) as s
+                 on t0.RegionId = r.Id
+                 left outer join
+                 CategoryEntities as c
+                 on t0.CategoryId = c.Id) as s
          on t.Id = s.OwnerId
 order by t.Id,
          s.Property,

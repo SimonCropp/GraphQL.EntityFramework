@@ -63,7 +63,7 @@ static class SelectExpressionBuilder
     record EntityTypeMetadata(
         ParameterExpression Parameter,
         IReadOnlyDictionary<string, PropertyMetadata> Properties,
-        NewExpression NewInstance,
+        NewExpression? NewInstance,
         MethodInfo SelectMethod,
         MethodInfo ToListMethod,
         ConstantExpression NullConstant);
@@ -122,11 +122,6 @@ static class SelectExpressionBuilder
         argumentFields = state.ArgumentFields;
         var entityType = typeof(TEntity);
 
-        if (entityType.IsAbstract)
-        {
-            return false;
-        }
-
         var parameter = GetEntityMetadata(entityType).Parameter;
         if (!TryBuildEntityInit(parameter, entityType, projection, state, null, out var body))
         {
@@ -143,6 +138,13 @@ static class SelectExpressionBuilder
     /// matching type, most derived first. False when the entity, or one of the navigations under
     /// it that has no writable property to fall back to, cannot be projected.
     /// </summary>
+    /// <remarks>
+    /// An abstract type cannot be created by a member init, but no row is ever of that type
+    /// itself: each is one of its concrete derived types, and the chain of type tests creates
+    /// those. So the chain ends in null where a concrete type's ends in its own member init. An
+    /// abstract type used to be loaded whole through includes, every column of it and of every
+    /// entity under it, whatever was selected.
+    /// </remarks>
     static bool TryBuildEntityInit(
         Expression source,
         Type entityType,
@@ -152,15 +154,37 @@ static class SelectExpressionBuilder
         [NotNullWhen(true)] out Expression? expression)
     {
         expression = null;
+        state.DerivedTypes.TryGetValue(entityType, out var derived);
 
-        if (!TryBuildMemberInit(source, entityType, projection, state, path, out var memberInit))
+        List<(PropertyMetadata Metadata, NavigationProjectionInfo Navigation)>? hoisted = null;
+        if (derived is not null)
         {
-            return false;
+            projection = Hoist(entityType, projection, out hoisted);
         }
 
-        expression = memberInit;
-        if (!state.DerivedTypes.TryGetValue(entityType, out var derived))
+        Expression result;
+        if (entityType.IsAbstract)
         {
+            if (!HasConcrete(derived))
+            {
+                return false;
+            }
+
+            result = GetEntityMetadata(entityType).NullConstant;
+        }
+        else
+        {
+            if (!TryBuildMemberInit(source, entityType, projection, state, path, out var memberInit))
+            {
+                return false;
+            }
+
+            result = memberInit;
+        }
+
+        if (derived is null)
+        {
+            expression = result;
             return true;
         }
 
@@ -179,13 +203,88 @@ static class SelectExpressionBuilder
                 return false;
             }
 
-            expression = Expression.Condition(
+            result = Expression.Condition(
                 Expression.TypeIs(source, derivedType),
                 Expression.Convert(derivedInit, entityType),
-                expression);
+                result);
         }
 
+        if (hoisted is not null)
+        {
+            foreach (var (metadata, navigation) in hoisted)
+            {
+                var binding = BuildNavigationBinding(source, metadata, navigation, state, path);
+                if (binding is not null)
+                {
+                    result = HoistedNavigation.Assign(result, entityType, metadata.Property, binding.Expression);
+                }
+            }
+        }
+
+        expression = result;
         return true;
+    }
+
+    /// <summary>
+    /// Takes the navigations out of the projection of a type with derived types. Each type test
+    /// in the chain creates its own member init, so a navigation bound in them was repeated once
+    /// per concrete type. EF does not recognise a repeated collection subquery as the same one,
+    /// so it joined, or split out, the collection once for every type. A reference navigation is
+    /// joined once regardless, but everything under it was repeated in the expression, and a
+    /// hierarchy under a hierarchy multiplied. These are instead bound once, to whichever type
+    /// the chain created.
+    /// </summary>
+    static FieldProjectionInfo Hoist(
+        Type entityType,
+        FieldProjectionInfo projection,
+        out List<(PropertyMetadata Metadata, NavigationProjectionInfo Navigation)>? hoisted)
+    {
+        hoisted = null;
+        if (projection.Navigations is null)
+        {
+            return projection;
+        }
+
+        var properties = GetEntityMetadata(entityType).Properties;
+        Dictionary<string, NavigationProjectionInfo>? kept = null;
+        foreach (var (name, navigation) in projection.Navigations)
+        {
+            if (!properties.TryGetValue(name, out var metadata) ||
+                !metadata.CanWrite)
+            {
+                continue;
+            }
+
+            hoisted ??= [];
+            hoisted.Add((metadata, navigation));
+            kept ??= new(projection.Navigations);
+            kept.Remove(name);
+        }
+
+        if (kept is null)
+        {
+            return projection;
+        }
+
+        return projection with { Navigations = kept };
+    }
+
+    static bool HasConcrete(IReadOnlyList<Type>? types)
+    {
+        if (types is null)
+        {
+            return false;
+        }
+
+        foreach (var type in types)
+        {
+            if (!type.IsAbstract)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -218,7 +317,7 @@ static class SelectExpressionBuilder
             return false;
         }
 
-        memberInit = Expression.MemberInit(GetEntityMetadata(entityType).NewInstance, bindings);
+        memberInit = Expression.MemberInit(GetEntityMetadata(entityType).NewInstance!, bindings);
         return true;
     }
 
@@ -300,28 +399,46 @@ static class SelectExpressionBuilder
                     continue;
                 }
 
-                var navAccess = Expression.Property(source, metadata.Property);
-                var navPath = path is null ? metadata.Property.Name : $"{path}.{metadata.Property.Name}";
-                if (!TryBuildNavigationBinding(navAccess, navProjection, state, navPath, out var binding))
+                var binding = BuildNavigationBinding(source, metadata, navProjection, state, path);
+                if (binding is not null)
                 {
-                    if (!metadata.CanWrite)
-                    {
-                        continue;
-                    }
-
-                    // Can't project navigation (e.g. read-only properties on target entity)
-                    // Fall back to including the full navigation entity
-                    binding = BuildFullNavigationBinding(navAccess, navProjection, state);
-                    state.AddIncludePaths(navPath, navProjection.Projection);
+                    bindings.Add(binding);
                 }
-
-                bindings.Add(binding);
             }
         }
 
         Sort(bindings);
 
         return true;
+    }
+
+    /// <summary>
+    /// The binding of a navigation: projected where it can be, otherwise bound whole, with what
+    /// was requested under it loaded through includes. Null when it can be neither.
+    /// </summary>
+    static MemberAssignment? BuildNavigationBinding(
+        Expression source,
+        PropertyMetadata metadata,
+        NavigationProjectionInfo navProjection,
+        BuildState state,
+        string? path)
+    {
+        var navAccess = Expression.Property(source, metadata.Property);
+        var navPath = path is null ? metadata.Property.Name : $"{path}.{metadata.Property.Name}";
+        if (TryBuildNavigationBinding(navAccess, navProjection, state, navPath, out var binding))
+        {
+            return binding;
+        }
+
+        if (!metadata.CanWrite)
+        {
+            return null;
+        }
+
+        // Can't project navigation (e.g. read-only properties on target entity)
+        // Fall back to including the full navigation entity
+        state.AddIncludePaths(navPath, navProjection.Projection);
+        return BuildFullNavigationBinding(navAccess, navProjection, state);
     }
 
     static MemberAssignment Bind(Expression source, PropertyMetadata metadata) =>
@@ -346,9 +463,9 @@ static class SelectExpressionBuilder
         binding = null;
         var navType = navProjection.EntityType;
 
-        // An abstract type cannot be created by a member init, and a navigation wanted whole has
-        // no field list to build one from. Both fall back to binding the navigation itself.
-        if (navType.IsAbstract || navProjection.IsWhole)
+        // A navigation wanted whole has no field list to build a member init from, so it falls
+        // back to binding the navigation itself.
+        if (navProjection.IsWhole)
         {
             return false;
         }
@@ -554,7 +671,8 @@ static class SelectExpressionBuilder
                 dictionary[property.Name] = new(type, property, canWrite, isAutoProperty);
             }
 
-            var newInstance = Expression.New(type);
+            // Never created, so never asked for: see TryBuildEntityInit
+            var newInstance = type.IsAbstract ? null : Expression.New(type);
             var selectMethod = SelectExpressionBuilder.selectMethod.MakeGenericMethod(type, type);
             var toListMethod = SelectExpressionBuilder.toListMethod.MakeGenericMethod(type);
             var nullConstant = Expression.Constant(null, type);

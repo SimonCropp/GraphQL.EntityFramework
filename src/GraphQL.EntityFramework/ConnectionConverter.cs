@@ -32,13 +32,32 @@
 
     /// <summary>
     /// The query to count, without the operators that only shape the entities returned, which a
-    /// count does not return: ordering, includes, split queries, and tracking.
+    /// count does not return: the select projection, ordering, includes, split queries, and
+    /// tracking.
     /// </summary>
     static IQueryable<T> ForCount<T>(IQueryable<T> queryable) =>
-        Strip(queryable, _ => IsOrdering(_) || _ is
+        Strip(WithoutProjection(queryable), _ => IsOrdering(_) || _ is
             "Include" or "ThenInclude" or
             "AsSplitQuery" or "AsSingleQuery" or
             "AsNoTracking" or "AsNoTrackingWithIdentityResolution" or "AsTracking");
+
+    /// <summary>
+    /// The select projection is the last operator applied, and creates the same type it reads, so
+    /// there are as many rows without it. EF drops it from the count it translates, but only after
+    /// the whole projection, and every collection in it, has been compiled as part of the query.
+    /// A select that changes the type, or one further down, belongs to the resolver and is kept.
+    /// </summary>
+    static IQueryable<T> WithoutProjection<T>(IQueryable<T> queryable)
+    {
+        if (queryable.Expression is MethodCallExpression { Method.Name: "Select", Object: null, Arguments.Count: 2 } select &&
+            select.Method.DeclaringType == typeof(Queryable) &&
+            typeof(IQueryable<T>).IsAssignableFrom(select.Arguments[0].Type))
+        {
+            return queryable.Provider.CreateQuery<T>(select.Arguments[0]);
+        }
+
+        return queryable;
+    }
 
     static bool IsOrdering(string methodName) =>
         methodName is "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending";
