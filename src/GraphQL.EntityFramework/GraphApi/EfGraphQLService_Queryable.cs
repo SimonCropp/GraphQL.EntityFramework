@@ -87,6 +87,8 @@ partial class EfGraphQLService<TDbContext>
         var names = GetKeyNames<TReturn>();
         if (resolve is not null)
         {
+            IncludeAppender.SetQueryFieldMetadata(fieldType);
+
             // object rather than the list, since a batch filter makes the value a deferred result
             fieldType.Resolver = new FuncFieldResolver<TSource, object>(
                 async context =>

@@ -341,6 +341,15 @@
             return;
         }
 
+        // A query field runs a query of its own and reads nothing from its source but the keys,
+        // which are always projected. Matched by name it was projected as the navigation it is
+        // named after, so the parent query joined a collection that the field then queried again.
+        if (fieldType is not null &&
+            IsQueryField(fieldType))
+        {
+            return;
+        }
+
         ProcessNavigationOrScalar(fieldName, field, fieldType, navigationProperties, scalarFields, navProjections, context);
     }
 
@@ -401,6 +410,7 @@
         {
             if (fieldGraphType is null ||
                 ReferenceEquals(fieldGraphType, leafGraphType) ||
+                fieldGraphType.GetField(field.Name.Value) is { } derivedField && IsQueryField(derivedField) ||
                 !TryFindDerivedClrType(fieldGraphType, out var derivedType) ||
                 derivedType == entityType ||
                 !entityType.IsAssignableFrom(derivedType))
@@ -923,6 +933,18 @@
 
     const string projectionKey = "_EF_Projection";
     const string projectionPathsKey = "_EF_ProjectionPaths";
+    const string queryFieldKey = "_EF_QueryField";
+
+    /// <summary>
+    /// Marks a field as resolved by a query of its own, so it is not projected from its source as
+    /// the navigation or property it shares a name with. Data its resolver does read from the
+    /// source is declared with WithProjection, which takes precedence over the mark.
+    /// </summary>
+    public static void SetQueryFieldMetadata(FieldType fieldType) =>
+        fieldType.Metadata[queryFieldKey] = true;
+
+    static bool IsQueryField(FieldType fieldType) =>
+        fieldType.Metadata.ContainsKey(queryFieldKey);
 
     /// <summary>
     /// Adds a projection to a field. A field can be given several, and every one of them is loaded.

@@ -59,6 +59,7 @@ partial class EfGraphQLService<TDbContext>
 
         if (resolve is not null)
         {
+            IncludeAppender.SetQueryFieldMetadata(builder.FieldType);
             var names = GetKeyNames<TReturn>();
             builder.ResolveAsync(async context =>
             {

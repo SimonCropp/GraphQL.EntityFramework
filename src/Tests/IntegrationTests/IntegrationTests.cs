@@ -2758,6 +2758,34 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity5]);
     }
 
+    [Fact]
+    public async Task Query_field_named_after_navigation_is_not_projected_by_parent()
+    {
+        var query =
+            """
+            {
+              misNamed
+              {
+                id
+                children
+                {
+                  id
+                }
+              }
+            }
+            """;
+
+        var parent = new WithMisNamedQueryParentEntity();
+        var child = new WithMisNamedQueryChildEntity
+        {
+            Parent = parent
+        };
+        parent.Children.Add(child);
+
+        await using var database = await sqlInstance.Build();
+        await RunQuery(database, query, null, null, false, [parent, child]);
+    }
+
     [Fact(Skip = "fix order")]
     public async Task MisNamedQuery()
     {

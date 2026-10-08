@@ -1,0 +1,36 @@
+﻿{
+  target: {
+    Data: {
+      misNamed: [
+        {
+          id: Guid_1,
+          children: [
+            {
+              id: Guid_2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  sql: [
+    {
+      Text:
+select w.Id
+from   WithMisNamedQueryParentEntities as w
+    },
+    {
+      Text:
+select w.Id,
+       w.ParentId
+from   WithMisNamedQueryChildEntities as w
+where  w.ParentId = @parentId,
+      Parameters: {
+        @parentId: {
+          Value: Guid_1,
+          IsNullable: true
+        }
+      }
+    }
+  ]
+}
