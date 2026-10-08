@@ -301,7 +301,8 @@
             GetComplexGraphType(context.FieldDefinition),
             entityType,
             scalarFields,
-            context);
+            context,
+            root: true);
 
         return new(scalarFields, keys, foreignKeyNames, navProjections, derivedNavigations);
     }
@@ -341,6 +342,12 @@
             return;
         }
 
+        if (parentGraphType is IInterfaceGraphType interfaceType &&
+            ProcessImplementingFields(field, interfaceType, navigationProperties, scalarFields, navProjections, context))
+        {
+            return;
+        }
+
         // A query field runs a query of its own and reads nothing from its source but the keys,
         // which are always projected. Matched by name it was projected as the navigation it is
         // named after, so the parent query joined a collection that the field then queried again.
@@ -351,6 +358,54 @@
         }
 
         ProcessNavigationOrScalar(fieldName, field, fieldType, navigationProperties, scalarFields, navProjections, context);
+    }
+
+    /// <summary>
+    /// A field selected on an interface is resolved by the field of whichever implementing type
+    /// the row turns out to be, so it is those fields that say what has to be loaded. The field of
+    /// the interface has no resolver, and is usually declared with no projection. Only it was
+    /// looked at, so a resolver's projection was applied when its field was selected through a
+    /// fragment on its own type, and not when selected on the interface. That went unnoticed
+    /// while an abstract type was loaded whole.
+    /// True when the implementing types account for the field: each declares a projection, or
+    /// runs a query of its own. Otherwise the field is also matched by name, as before.
+    /// </summary>
+    bool ProcessImplementingFields(
+        GraphQLField field,
+        IInterfaceGraphType interfaceType,
+        IReadOnlyDictionary<string, Navigation>? navigationProperties,
+        HashSet<string> scalarFields,
+        Dictionary<string, NavigationProjectionInfo> navProjections,
+        IResolveFieldContext context)
+    {
+        var accounted = false;
+        var byName = false;
+
+        foreach (var implementingType in interfaceType.PossibleTypes)
+        {
+            var implementingField = implementingType.GetField(field.Name.Value);
+            if (implementingField is null)
+            {
+                continue;
+            }
+
+            if (TryGetProjectionMetadata(implementingField, out var projection))
+            {
+                ProcessProjectionExpression(field, implementingField, implementingType, projection, navigationProperties, scalarFields, navProjections, context);
+                accounted = true;
+                continue;
+            }
+
+            if (IsQueryField(implementingField))
+            {
+                accounted = true;
+                continue;
+            }
+
+            byName = true;
+        }
+
+        return accounted && !byName;
     }
 
     void ProcessSelectionSet(
@@ -394,8 +449,10 @@
         IComplexGraphType? graphType,
         Type entityType,
         HashSet<string> scalarFields,
-        IResolveFieldContext context)
+        IResolveFieldContext context,
+        bool root = false)
     {
+        var rootSelectionSet = selectionSet;
         IComplexGraphType? leafGraphType;
         (selectionSet, leafGraphType) = GetLeafSelection(selectionSet, graphType);
         if (selectionSet?.Selections is null ||
@@ -404,13 +461,24 @@
             return null;
         }
 
+        // The root sub fields exclude fields conditional on another type, so at the root this is
+        // the only place a field in a fragment on a derived type is seen, and its projection has
+        // to be read here. It was not, so such a field was matched by name alone. Below the root,
+        // and under the items of a root connection, the selection set walk has already read it.
+        var readProjections = root && ReferenceEquals(selectionSet, rootSelectionSet);
+
         Dictionary<Type, Dictionary<string, NavigationProjectionInfo>>? result = null;
 
         foreach (var (field, fieldGraphType) in EnumerateFields(selectionSet, leafGraphType, context))
         {
             if (fieldGraphType is null ||
-                ReferenceEquals(fieldGraphType, leafGraphType) ||
-                fieldGraphType.GetField(field.Name.Value) is { } derivedField && IsQueryField(derivedField) ||
+                ReferenceEquals(fieldGraphType, leafGraphType))
+            {
+                continue;
+            }
+
+            var derivedField = fieldGraphType.GetField(field.Name.Value);
+            if (derivedField is not null && IsQueryField(derivedField) ||
                 !TryFindDerivedClrType(fieldGraphType, out var derivedType) ||
                 derivedType == entityType ||
                 !entityType.IsAssignableFrom(derivedType))
@@ -419,6 +487,22 @@
             }
 
             navigations.TryGetValue(derivedType, out var derivedNavProps);
+
+            if (readProjections &&
+                derivedField is not null &&
+                TryGetProjectionMetadata(derivedField, out var projection))
+            {
+                result ??= [];
+                if (!result.TryGetValue(derivedType, out var projected))
+                {
+                    projected = [];
+                    result[derivedType] = projected;
+                }
+
+                ProcessProjectionExpression(field, derivedField, fieldGraphType, projection, derivedNavProps, scalarFields, projected, context);
+                continue;
+            }
+
             if (derivedNavProps is null ||
                 !derivedNavProps.TryGetValue(field.Name.StringValue, out var navigation))
             {

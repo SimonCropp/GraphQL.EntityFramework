@@ -760,13 +760,24 @@ public class BaseGraphType :
     EfInterfaceGraphType<IntegrationDbContext, BaseEntity>
 {
     public BaseGraphType(IEfGraphQLService<IntegrationDbContext> graphQlService) :
-        base(graphQlService) =>
+        base(graphQlService)
+    {
         AddNavigationConnectionField(
             name: "childrenFromInterface",
             projection: _ => _.ChildrenFromBase);
+
+        // An interface field has no resolver, so nothing to declare a projection for. The
+        // implementing types declare what their resolvers read.
+        AddField(
+            new()
+            {
+                Name = "statusSummary",
+                Type = typeof(StringGraphType)
+            });
+    }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/BaseGraphType.cs#L1-L9' title='Snippet source file'>snippet source</a> | <a href='#snippet-BaseGraphType.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/BaseGraphType.cs#L1-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-BaseGraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 <!-- snippet: DerivedGraphType.cs -->
@@ -782,13 +793,16 @@ public class DerivedGraphType :
             name: "childrenFromInterface",
             projection: _ => _.ChildrenFromBase,
             resolve: _ => _.Projection);
+        Field<StringGraphType>("statusSummary")
+            .Resolve(_ => $"Status is {_.Source.Status}")
+            .WithProjection(_ => _.Status);
         AutoMap();
         Interface<BaseGraphType>();
         IsTypeOf = obj => obj is DerivedEntity;
     }
 }
 ```
-<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraphType.cs#L1-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraphType.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/IntegrationTests/Graphs/Inheritance/DerivedGraphType.cs#L1-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-DerivedGraphType.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
