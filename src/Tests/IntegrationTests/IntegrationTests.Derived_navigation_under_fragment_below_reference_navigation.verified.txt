@@ -17,14 +17,19 @@
   sql: {
     Text:
 select t.Id,
+       case when t0.Id is null then cast (1 as bit) else cast (0 as bit) end,
+       case when t0.Discriminator = N'TphDerivedNavRegionEntity'
+                 and t0.Discriminator is not null then cast (1 as bit) else cast (0 as bit) end,
        t0.Id,
-       t0.Discriminator,
        t0.OwnerId,
        t0.Property,
-       t0.CategoryId,
        t0.RegionId,
+       case when t0.Discriminator = N'TphDerivedNavCategoryEntity'
+                 and t0.Discriminator is not null then cast (1 as bit) else cast (0 as bit) end,
+       case when c.Id is null then cast (1 as bit) else cast (0 as bit) end,
        c.Id,
        c.Name,
+       t0.CategoryId,
        t.ItemId,
        t.Property
 from   TphDerivedNavOwners as t

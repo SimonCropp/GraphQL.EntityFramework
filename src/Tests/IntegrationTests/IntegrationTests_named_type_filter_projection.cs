@@ -180,8 +180,8 @@ public partial class IntegrationTests
 
     /// <summary>
     /// Tests that filter projections accessing navigation properties of abstract types
-    /// do not throw InvalidOperationException. The projection system should fall back to
-    /// loading the full navigation entity when it cannot project an abstract type.
+    /// do not throw InvalidOperationException. The abstract navigation is projected as a
+    /// chain of type tests, each creating a concrete derived type.
     ///
     /// This reproduces the scenario where:
     /// - DerivedChildEntity (like Accommodation) has a navigation to BaseEntity (abstract)

@@ -3,7 +3,8 @@ public partial class IntegrationTests
     // The include path skipped every navigation to a type already on the path, or to a base of
     // one. So a second, unrelated navigation from an attachment back to the root's base type was
     // never included, and came back null. Only the inverse of the navigation just traversed is
-    // skipped now, which is the one nested include EF rejects.
+    // skipped now, which is the one nested include EF rejects. summary is read only, so cannot be
+    // bound by a select, which is what puts these queries on the includes path.
     [Fact]
     public async Task Unrelated_navigation_to_base_type_is_included()
     {
@@ -31,6 +32,7 @@ public partial class IntegrationTests
               tphMiddleEntities(where: {property: {equal: "TheRequest"}})
               {
                 property
+                summary
                 attachments
                 {
                   property
@@ -69,6 +71,7 @@ public partial class IntegrationTests
               tphMiddleEntities
               {
                 property
+                summary
                 attachments
                 {
                   property

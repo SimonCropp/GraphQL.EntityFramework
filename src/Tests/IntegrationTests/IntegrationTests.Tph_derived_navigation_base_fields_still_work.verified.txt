@@ -13,12 +13,13 @@
   },
   sql: {
     Text:
-select   t.Id,
-         t.Discriminator,
+select   case when t.Discriminator = N'TphDerivedNavRegionEntity' then cast (1 as bit) else cast (0 as bit) end,
+         t.Id,
          t.OwnerId,
          t.Property,
-         t.CategoryId,
-         t.RegionId
+         t.RegionId,
+         case when t.Discriminator = N'TphDerivedNavCategoryEntity' then cast (1 as bit) else cast (0 as bit) end,
+         t.CategoryId
 from     TphDerivedNavBaseEntities as t
 order by t.Property
   }

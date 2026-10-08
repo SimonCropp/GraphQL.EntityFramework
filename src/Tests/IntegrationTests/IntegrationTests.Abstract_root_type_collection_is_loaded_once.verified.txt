@@ -1,0 +1,45 @@
+﻿{
+  target: {
+    Data: {
+      baseEntities: [
+        {
+          property: Parent1,
+          childrenFromInterface: {
+            items: [
+              {
+                property: Child1
+              },
+              {
+                property: Child2
+              }
+            ]
+          }
+        },
+        {
+          property: Parent2,
+          childrenFromInterface: {
+            items: []
+          }
+        }
+      ]
+    }
+  },
+  sql: {
+    Text:
+select   case when b.Discriminator = N'DerivedWithNavigationEntity' then cast (1 as bit) else cast (0 as bit) end,
+         b.Id,
+         b.Property,
+         case when b.Discriminator = N'DerivedEntity' then cast (1 as bit) else cast (0 as bit) end,
+         d.Id,
+         d.ParentId,
+         d.Property,
+         d.TypedParentId
+from     BaseEntities as b
+         left outer join
+         DerivedChildEntities as d
+         on b.Id = d.ParentId
+order by b.Property,
+         b.Id,
+         d.Property
+  }
+}
