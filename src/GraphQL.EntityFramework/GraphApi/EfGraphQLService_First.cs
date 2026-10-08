@@ -242,6 +242,8 @@ partial class EfGraphQLService<TDbContext>
             type.Arguments = ArgumentAppender.GetQueryArguments(typeof(TReturn), hasId, false, idOnly, omitQueryArguments);
         }
 
+        IncludeAppender.SetQueryFieldMetadata(type);
+
         return type;
 
         TReturn? ReturnNullable(IQueryable<TReturn>? query = null)

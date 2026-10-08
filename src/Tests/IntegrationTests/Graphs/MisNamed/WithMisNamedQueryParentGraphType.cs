@@ -12,6 +12,15 @@
                 return context.DbContext.WithMisNamedQueryChildEntities
                     .Where(_ => _.ParentId == parentId);
             });
-        AutoMap();
+        // Named after the navigation, but resolved by a query of its own
+        AddQueryField(
+            name: "children",
+            resolve: context =>
+            {
+                var parentId = context.Source.Id;
+                return context.DbContext.WithMisNamedQueryChildEntities
+                    .Where(_ => _.ParentId == parentId);
+            });
+        AutoMap([nameof(WithMisNamedQueryParentEntity.Children)]);
     }
 }
