@@ -30,7 +30,7 @@
     <PackageVersion Include="System.Text.Encodings.Web" Version="10.0.12" />
     <PackageVersion Include="Verify.EntityFramework" Version="16.0.0" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
-    <PackageVersion Include="Verify.SqlServer" Version="12.2.0" />
+    <PackageVersion Include="Verify.SqlServer" Version="12.3.1" />
     <PackageVersion Include="Verify.XunitV3" Version="33.3.2" />
     <PackageVersion Include="xunit.v3" Version="4.0.1" />
     <PackageVersion Include="Argon" Version="0.38.2" />
