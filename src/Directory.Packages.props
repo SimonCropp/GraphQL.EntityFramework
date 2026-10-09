@@ -32,7 +32,7 @@
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
     <PackageVersion Include="Verify.SqlServer" Version="12.3.1" />
     <PackageVersion Include="Verify.XunitV3" Version="33.3.2" />
-    <PackageVersion Include="xunit.v3" Version="4.0.1" />
+    <PackageVersion Include="xunit.v3" Version="4.0.2" />
     <PackageVersion Include="Argon" Version="0.38.2" />
     <PackageVersion Include="DiffEngine" Version="20.7.2" />
     <PackageVersion Include="EmptyFiles" Version="8.20.1" />
