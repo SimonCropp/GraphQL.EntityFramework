@@ -16,10 +16,9 @@
   sql: {
     Text:
 select   r1.Id,
-         r0.Id,
-         r0.Age,
          r0.ComputedInDb,
          r0.FirstName,
+         r0.Id,
          r0.LastName,
          r0.ReadOnlyParentId,
          r1.Property
@@ -31,6 +30,7 @@ from     (select top (2) r.Id,
          ReadOnlyEntities as r0
          on r1.Id = r0.ReadOnlyParentId
 order by r1.Id,
+         r0.Id,
     Parameters: {
       @p1: Guid_1
     }

@@ -2,7 +2,8 @@
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, Navigation>> navigations,
     IReadOnlyDictionary<Type, List<string>> keyNames,
     IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys,
-    IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes)
+    IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+    IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields = null)
 {
     /// <summary>
     /// Narrow <paramref name="query"/> to the fields the request asked for: a select projection
@@ -44,7 +45,7 @@
             query = QuerySplitting.Remove(query);
         }
 
-        if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths, out var argumentFields))
+        if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths, out var argumentFields, backingFields))
         {
             return ApplyTracking(AddIncludesFromProjection(query, projection), disableTracking);
         }

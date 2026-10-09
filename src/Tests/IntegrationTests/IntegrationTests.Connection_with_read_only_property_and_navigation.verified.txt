@@ -30,19 +30,16 @@ from   ReadOnlyEntities as r
     },
     {
       Text:
-select   r1.Id,
-         r1.Age,
-         r1.ComputedInDb,
+select   r1.ComputedInDb,
          r1.FirstName,
-         r1.LastName,
-         r1.ReadOnlyParentId,
+         r1.Id,
+         case when r0.Id is null then cast (1 as bit) else cast (0 as bit) end,
          r0.Id,
-         r0.Property
+         r0.Property,
+         r1.ReadOnlyParentId
 from     (select   r.Id,
-                   r.Age,
                    r.ComputedInDb,
                    r.FirstName,
-                   r.LastName,
                    r.ReadOnlyParentId
           from     ReadOnlyEntities as r
           order by r.FirstName

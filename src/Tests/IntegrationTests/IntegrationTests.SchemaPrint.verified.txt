@@ -1957,6 +1957,7 @@ input TphDerivedNavOwnerEntityOrderBy {
 
 type Mutation {
   parentEntityMutation(id: ID, ids: [ID!], where: ParentEntityWhere): Parent!
+  changeParentAndReadBack(id: ID!): Parent
 }
 
 type DerivedWithNavigation implements BaseEntity {

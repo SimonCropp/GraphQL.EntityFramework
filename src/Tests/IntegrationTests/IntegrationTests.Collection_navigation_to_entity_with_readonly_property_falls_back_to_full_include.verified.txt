@@ -7,7 +7,7 @@
           children: [
             {
               firstName: John,
-              computedInDb: John Smith
+              displayName: John Smith
             }
           ]
         }
