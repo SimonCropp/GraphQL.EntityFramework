@@ -587,7 +587,7 @@ public class EmployeeGraph :
         AddNavigationField(
             name: "company",
             resolve: context => context.Source.Company);
-        Field(employee => employee.Age);
+        Field(employee => _.Age);
         Field(employee => employee.Content);
         Field(employee => employee.CompanyId);
         Field(employee => employee.Id);

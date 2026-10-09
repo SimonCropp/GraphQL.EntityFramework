@@ -385,7 +385,7 @@ public class ExampleGraph : ObjectGraphType<Example>
 {
     public ExampleGraph()
     {
-        Field(x => x.DayOfTheWeek, type: typeof(DayOfTheWeekGraph));
+        Field(_ => _.DayOfTheWeek, type: typeof(DayOfTheWeekGraph));
     }
 }
 ```
@@ -408,11 +408,11 @@ public class EmployeeGraph :
     {
         AddNavigationField(
             name: "company",
-            resolve: context => context.Source.Company);
-        Field(employee => employee.Age);
-        Field(employee => employee.Content);
-        Field(employee => employee.CompanyId);
-        Field(employee => employee.Id);
+            resolve: _ => _.Source.Company);
+        Field(_ => _.Age);
+        Field(_ => _.Content);
+        Field(_ => _.CompanyId);
+        Field(_ => _.Id);
     }
 }
 ```
