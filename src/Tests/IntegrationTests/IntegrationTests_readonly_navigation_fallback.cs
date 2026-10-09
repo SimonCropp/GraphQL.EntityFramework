@@ -1,5 +1,8 @@
 public partial class IntegrationTests
 {
+    // displayName is expression bodied: it has no column to select and no field to bind, so the
+    // navigation is bound whole. A get only property that is mapped, such as computedInDb, is
+    // bound through its backing field and no longer causes this.
     [Fact]
     public async Task Collection_navigation_to_entity_with_readonly_property_falls_back_to_full_include()
     {
@@ -26,7 +29,7 @@ public partial class IntegrationTests
                 children
                 {
                   firstName
-                  computedInDb
+                  displayName
                 }
               }
             }

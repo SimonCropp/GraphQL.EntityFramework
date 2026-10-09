@@ -1,0 +1,78 @@
+﻿{
+  target: {
+    Data: {
+      changeParentAndReadBack: {
+        property: Foo,
+        children: [
+          {
+            property: Value3
+          },
+          {
+            property: Value2
+          }
+        ]
+      }
+    }
+  },
+  sql: [
+    {
+      Text:
+select top (2) p.Id,
+               p.Property
+from   ParentEntities as p
+where  p.Id = @id,
+      Parameters: {
+        @id: Guid_1
+      }
+    },
+    {
+      Text:
+set implicit_transactions off;
+
+set nocount on;
+
+update ParentEntities
+set    Property = @p0
+output 1
+where  Id = @p1,
+      Parameters: {
+        @p1: Guid_1,
+        @p0: {
+          Value: Foo,
+          Size: 4000,
+          IsNullable: true
+        }
+      }
+    },
+    {
+      Text:
+select   top (2) p.Id,
+                 p.Property
+from     ParentEntities as p
+where    p.Id = @id
+order by p.Id,
+      Parameters: {
+        @id: Guid_1
+      }
+    },
+    {
+      Text:
+select   c1.Id,
+         c1.ParentId,
+         c1.Property,
+         p0.Id
+from     (select   top (1) p.Id
+          from     ParentEntities as p
+          where    p.Id = @id
+          order by p.Id) as p0
+         inner join
+         ChildEntities as c1
+         on p0.Id = c1.ParentId
+order by p0.Id,
+         c1.Property desc,
+      Parameters: {
+        @id: Guid_1
+      }
+    }
+  ]
+}

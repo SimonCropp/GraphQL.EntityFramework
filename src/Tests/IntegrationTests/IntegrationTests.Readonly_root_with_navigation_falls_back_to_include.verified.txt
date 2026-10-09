@@ -4,7 +4,7 @@
       readOnlyEntities: [
         {
           firstName: John,
-          computedInDb: John Smith,
+          displayName: John Smith,
           readOnlyParent: {
             property: TheParent
           }

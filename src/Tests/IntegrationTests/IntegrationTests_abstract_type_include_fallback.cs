@@ -117,6 +117,8 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child]);
     }
 
+    // displayName is expression bodied, so the select cannot bind it and the query falls back to
+    // includes. A mapped get only property, such as computedInDb, no longer causes this.
     [Fact]
     public async Task Readonly_root_with_navigation_falls_back_to_include()
     {
@@ -139,7 +141,7 @@ public partial class IntegrationTests
               readOnlyEntities
               {
                 firstName
-                computedInDb
+                displayName
                 readOnlyParent
                 {
                   property

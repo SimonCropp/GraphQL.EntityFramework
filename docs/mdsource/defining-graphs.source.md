@@ -201,14 +201,46 @@ loaded. This suits a field whose value comes from several checks, each declaring
 | Fields resolved via reflection or external logic | `WithProjection` |
 
 
+### Read-Only Properties
+
+A property with no setter that is mapped in the model, such as a database computed column, is projected like any other column. A select cannot assign a property that has no setter, so it assigns the field Entity Framework itself writes the property through.
+
+snippet: ProjectionReadOnlyProperty
+
+Selecting `lastModified` loads that one column. Entity Framework does not map a property with no setter by convention, so this applies to one that has been configured in the model, for example with `HasComputedColumnSql`. Selecting `summary` cannot be done by a select: see [When Projections Are Not Used](#when-projections-are-not-used).
+
+
+### Abstract Types
+
+A query for an abstract entity type, or a navigation to one, is projected too. No row is ever of the abstract type itself, so each row is created as its concrete derived type, with only the requested columns. The same is done for a concrete type that has derived types, so a row keeps its derived type.
+
+
+### Applying the Projection to a Custom Query
+
+The query fields (`AddQueryField`, `AddSingleField`, `AddFirstField` and `AddQueryConnectionField`) apply the projection themselves. A resolver that builds a query of its own, such as a mutation reading back the entity it returns, applies the same projection with `IEfGraphQLService.ApplyProjection`:
+
+snippet: ProjectionApplyToQuery
+
+`ApplyProjection` narrows the query to what the request selected under the field being resolved. It builds the select a query field would build: the keys and foreign keys, the selected columns, what the fields declare through `WithProjection` and the projection-based resolve methods, and the navigations, with the `ids`, `where` and `orderBy` arguments of navigation fields applied by the database. Where the entity cannot be projected it adds includes instead.
+
+ * The field being resolved has to return the graph type of the entity the query returns.
+ * Add any `Where` to the query before calling `ApplyProjection`, and execute what it returns as it is.
+ * Call `AsSplitQuery` on the query if the request might select a collection. It is removed when the request selects none.
+
+Loading the entity with hand-built `Include` calls instead loads every column of every included entity, and gives the resolvers of the returned entity a different entity to the one a query gives them.
+
+
 ### When Projections Are Not Used
 
-Projections are bypassed and the full entity is loaded in these cases:
+The select is given up on, and the entity loaded whole through includes, when the request selects something a select cannot bind:
 
-1. **Read-only computed properties** - When any property has no setter or is expression-bodied (at any level, including nested navigations)
-2. **Abstract entity types** - When the root entity type or any navigation property type is abstract
+1. **A read-only property that is not a column** - an expression-bodied property, or any other property with no setter that is not mapped in the model.
+2. **A key that cannot be assigned** - a key property with no setter, or with a setter that does more than assign.
+3. **An abstract type with no concrete derived type in the model.**
 
-In these cases, the query falls back to loading the complete entity with all its properties.
+When this happens under a navigation, that navigation is loaded whole and the rest of the query is still projected.
+
+Do not rely on this to load what a resolver reads. Whether it happens depends on what else the request selects, so a resolver that reads a property it has not declared can work in one query and read a default value in the next. Declare what a resolver reads with a projection.
 
 
 ### Performance Benefits

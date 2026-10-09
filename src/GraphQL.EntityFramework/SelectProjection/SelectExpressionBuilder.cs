@@ -113,11 +113,12 @@ static class SelectExpressionBuilder
         IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
         [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression,
         out IReadOnlyList<string> includePaths,
-        out IReadOnlyList<GraphQLField> argumentFields)
+        out IReadOnlyList<GraphQLField> argumentFields,
+        IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields = null)
         where TEntity : class
     {
         expression = null;
-        var state = new BuildState(keyNames, derivedTypes);
+        var state = new BuildState(keyNames, derivedTypes, backingFields);
         includePaths = state.IncludePaths;
         argumentFields = state.ArgumentFields;
         var entityType = typeof(TEntity);
@@ -378,10 +379,19 @@ static class SelectExpressionBuilder
             {
                 if (!metadata.CanWrite)
                 {
-                    // Read-only property (expression-bodied or database computed column)
-                    // Can't use projection - return false to load full entity
-                    bindings = null;
-                    return false;
+                    // A mapped property with no setter, such as a database computed column, is
+                    // bound through the field EF writes it through. Selecting one used to give up
+                    // on the select and load the whole entity, and everything under it, through
+                    // includes. An expression bodied property has no field and no column, so it
+                    // still does.
+                    if (!state.TryGetBackingField(entityType, fieldName, out var backingField))
+                    {
+                        bindings = null;
+                        return false;
+                    }
+
+                    bindings.Add(Expression.Bind(backingField, Expression.Property(source, metadata.Property)));
+                    continue;
                 }
 
                 bindings.Add(Bind(source, metadata));
@@ -608,12 +618,21 @@ static class SelectExpressionBuilder
     /// </summary>
     sealed class BuildState(
         IReadOnlyDictionary<Type, List<string>> keyNames,
-        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes)
+        IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
+        IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields)
     {
         public IReadOnlyDictionary<Type, List<string>> KeyNames { get; } = keyNames;
         public IReadOnlyDictionary<Type, IReadOnlyList<Type>> DerivedTypes { get; } = derivedTypes;
         public List<string> IncludePaths { get; } = [];
         public List<GraphQLField> ArgumentFields { get; } = [];
+
+        public bool TryGetBackingField(Type entityType, string name, [NotNullWhen(true)] out FieldInfo? field)
+        {
+            field = null;
+            return backingFields is not null &&
+                   backingFields.TryGetValue(entityType, out var fields) &&
+                   fields.TryGetValue(name, out field);
+        }
 
         /// <summary>
         /// A navigation bound whole is materialized as a full entity, so everything requested

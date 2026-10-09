@@ -40,7 +40,7 @@ public partial class EfGraphQLService<TDbContext> :
                     .OrderBy(derived => Depth(derived.ClrType))
                     .Select(derived => derived.ClrType)
                     .ToList());
-        includeAppender = new(Navigations, keyNames, foreignKeys, derivedTypes);
+        includeAppender = new(Navigations, keyNames, foreignKeys, derivedTypes, BackingFieldReader.GetBackingFields(model));
     }
 
     static int Depth(Type type)
@@ -125,6 +125,10 @@ public partial class EfGraphQLService<TDbContext> :
 
     public Filters<TDbContext>? ResolveFilters(IResolveFieldContext context) =>
         resolveFilters?.Invoke(context.UserContext);
+
+    public IQueryable<TItem> ApplyProjection<TItem>(IResolveFieldContext context, IQueryable<TItem> query)
+        where TItem : class =>
+        includeAppender.ApplyProjection(context, ResolveFilters(context), query, disableTracking);
 
     /// <summary>
     /// The generated sql carries table and column names and, depending on the provider, the parameter

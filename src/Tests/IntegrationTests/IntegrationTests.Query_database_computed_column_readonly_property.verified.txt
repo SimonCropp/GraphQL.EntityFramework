@@ -17,10 +17,9 @@
   },
   sql: {
     Text:
-select   r.Id,
-         r.Age,
-         r.ComputedInDb,
+select   r.ComputedInDb as <ComputedInDb>k__BackingField,
          r.FirstName,
+         r.Id,
          r.LastName,
          r.ReadOnlyParentId
 from     ReadOnlyEntities as r
