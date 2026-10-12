@@ -21,23 +21,24 @@ static class QuerySplitting
         // Queryable operators, and extensions such as AsSplitQuery, take the query they build on
         // as their first argument. Unlike ordering, splitting never decides which rows a Skip or
         // Take keeps, so the whole chain is walked.
-        if (expression is not MethodCallExpression { Object: null, Arguments.Count: > 0 } methodCall ||
-            !typeof(IQueryable).IsAssignableFrom(methodCall.Arguments[0].Type))
+        if (expression is not MethodCallExpression { Object: null, Arguments.Count: > 0 } call ||
+            !typeof(IQueryable).IsAssignableFrom(call.Arguments[0].Type))
         {
             return expression;
         }
 
-        if (methodCall.Method.Name is "AsSplitQuery" or "AsSingleQuery")
+        if (call.Method.Name is "AsSplitQuery" or "AsSingleQuery")
         {
-            return Remove(methodCall.Arguments[0]);
+            // ReSharper disable once TailRecursiveCall
+            return Remove(call.Arguments[0]);
         }
 
-        var source = Remove(methodCall.Arguments[0]);
-        if (source == methodCall.Arguments[0])
+        var source = Remove(call.Arguments[0]);
+        if (source == call.Arguments[0])
         {
             return expression;
         }
 
-        return methodCall.Update(methodCall.Object, [source, .. methodCall.Arguments.Skip(1)]);
+        return call.Update(call.Object, [source, .. call.Arguments.Skip(1)]);
     }
 }
