@@ -86,6 +86,7 @@
         var methodName = methodCall.Method.Name;
         if (isStripped(methodName))
         {
+            // ReSharper disable once TailRecursiveCall
             return Strip(methodCall.Arguments[0], isStripped);
         }
 

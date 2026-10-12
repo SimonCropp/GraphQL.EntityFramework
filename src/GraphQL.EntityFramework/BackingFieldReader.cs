@@ -20,8 +20,14 @@ static class BackingFieldReader
             Dictionary<string, FieldInfo>? fields = null;
             foreach (var property in entityType.GetProperties())
             {
-                if (property.PropertyInfo is { CanWrite: false } propertyInfo &&
-                    property.FieldInfo is { } field &&
+                if (property is
+                    {
+                        PropertyInfo:
+                        {
+                            CanWrite: false
+                        } propertyInfo,
+                        FieldInfo: { } field
+                    } &&
                     field.FieldType == propertyInfo.PropertyType)
                 {
                     fields ??= new(StringComparer.OrdinalIgnoreCase);

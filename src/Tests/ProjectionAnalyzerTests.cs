@@ -177,7 +177,7 @@ public class ProjectionAnalyzerTests
     [Fact]
     public void CollectionPassingItemToMethodIsWhole() =>
         AssertPaths(
-            _ => _.Items.Select(item => Describe(item)).ToList(),
+            _ => _.Items.Select(Describe).ToList(),
             "Items");
 
     // Nothing says which properties a count needs, so this is unchanged
