@@ -13,24 +13,24 @@
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.5" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.5" />
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.5.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.13" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
-    <PackageVersion Include="Polyfill" Version="11.4.4" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+    <PackageVersion Include="Polyfill" Version="11.4.5" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.184" />
     <PackageVersion Include="Sbom" Version="0.3.1" />
-    <PackageVersion Include="System.Text.Encodings.Web" Version="10.0.12" />
-    <PackageVersion Include="Verify.EntityFramework" Version="16.1.1" />
+    <PackageVersion Include="System.Text.Encodings.Web" Version="10.0.13" />
+    <PackageVersion Include="Verify.EntityFramework" Version="16.2.0" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
-    <PackageVersion Include="Verify.SqlServer" Version="12.3.1" />
+    <PackageVersion Include="Verify.SqlServer" Version="12.4.0" />
     <PackageVersion Include="Verify.XunitV3" Version="33.3.3" />
     <PackageVersion Include="xunit.v3" Version="4.0.2" />
     <PackageVersion Include="Argon" Version="0.38.2" />
