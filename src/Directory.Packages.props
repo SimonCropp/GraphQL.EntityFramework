@@ -31,13 +31,13 @@
     <PackageVersion Include="Verify.EntityFramework" Version="16.2.0" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
     <PackageVersion Include="Verify.SqlServer" Version="12.4.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="33.3.3" />
+    <PackageVersion Include="Verify.XunitV3" Version="33.3.4" />
     <PackageVersion Include="xunit.v3" Version="4.0.2" />
     <PackageVersion Include="Argon" Version="0.38.2" />
-    <PackageVersion Include="DiffEngine" Version="20.8.1" />
+    <PackageVersion Include="DiffEngine" Version="20.8.2" />
     <PackageVersion Include="EmptyFiles" Version="8.20.1" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.1" />
-    <PackageVersion Include="Verify" Version="33.3.3" />
+    <PackageVersion Include="Verify" Version="33.3.4" />
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
   </ItemGroup>
 </Project>
