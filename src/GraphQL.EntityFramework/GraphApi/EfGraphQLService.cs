@@ -12,12 +12,14 @@ public partial class EfGraphQLService<TDbContext> :
 
     /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
     /// <param name="includeSqlInExceptions">Include the generated sql in exception messages. Off by default, since those messages can reach clients and the sql carries table and column names and, depending on the provider, parameter values.</param>
+    /// <param name="splitSideBySideCollections">Use <see cref="RelationalQueryableExtensions.AsSplitQuery{TEntity}"/> for a query whose request selects collections side by side, which multiply each other's rows in a single query. A query the resolver already called AsSplitQuery or AsSingleQuery on is left as it is. Needs a relational provider.</param>
     public EfGraphQLService(
         IModel model,
         ResolveDbContext<TDbContext> resolveDbContext,
         ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
-        bool includeSqlInExceptions = false)
+        bool includeSqlInExceptions = false,
+        bool splitSideBySideCollections = false)
     {
         this.resolveFilters = resolveFilters;
         this.disableTracking = disableTracking;
@@ -40,7 +42,7 @@ public partial class EfGraphQLService<TDbContext> :
                     .OrderBy(derived => Depth(derived.ClrType))
                     .Select(derived => derived.ClrType)
                     .ToList());
-        includeAppender = new(Navigations, keyNames, foreignKeys, derivedTypes, BackingFieldReader.GetBackingFields(model));
+        includeAppender = new(Navigations, keyNames, foreignKeys, derivedTypes, BackingFieldReader.GetBackingFields(model), splitSideBySideCollections);
     }
 
     static int Depth(Type type)

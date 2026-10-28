@@ -3,7 +3,8 @@
     IReadOnlyDictionary<Type, List<string>> keyNames,
     IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys,
     IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
-    IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields = null)
+    IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields = null,
+    bool splitSideBySideCollections = false)
 {
     /// <summary>
     /// Narrow <paramref name="query"/> to the fields the request asked for: a select projection
@@ -43,6 +44,12 @@
         if (!LoadsCollection(projection))
         {
             query = QuerySplitting.Remove(query);
+        }
+        else if (splitSideBySideCollections &&
+                 SideBySideCollections.Count(projection) > 1 &&
+                 !QuerySplitting.IsChosen(query.Expression))
+        {
+            query = query.AsSplitQuery();
         }
 
         if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths, out var argumentFields, backingFields))

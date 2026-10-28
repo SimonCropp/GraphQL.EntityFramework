@@ -11,6 +11,7 @@ public static class EfGraphQLConventions
     /// <param name="resolveFilters">A function to obtain a list of filters to apply to the returned data. If null, then it will be extracted from the <see cref="IServiceProvider"/>.</param>
     /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
     /// <param name="includeSqlInExceptions">Include the generated sql in exception messages. Off by default, since those messages can reach clients and the sql carries table and column names and, depending on the provider, parameter values.</param>
+    /// <param name="splitSideBySideCollections">Use <see cref="RelationalQueryableExtensions.AsSplitQuery{TEntity}"/> for a query whose request selects collections side by side, which multiply each other's rows in a single query. A query the resolver already called AsSplitQuery or AsSingleQuery on is left as it is. Needs a relational provider.</param>
 
     #region RegisterInContainer
 
@@ -20,7 +21,8 @@ public static class EfGraphQLConventions
             IModel? model = null,
             ResolveFilters<TDbContext>? resolveFilters = null,
             bool disableTracking = false,
-            bool includeSqlInExceptions = false)
+            bool includeSqlInExceptions = false,
+            bool splitSideBySideCollections = false)
 
         #endregion
 
@@ -29,7 +31,7 @@ public static class EfGraphQLConventions
         RegisterScalarsAndArgs(services);
         services.AddHttpContextAccessor();
         services.AddTransient<HttpContextCapture>();
-        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, includeSqlInExceptions));
+        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, includeSqlInExceptions, splitSideBySideCollections));
         services.AddSingleton<IEfGraphQLService<TDbContext>>(provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
         // The generated where and orderBy input types resolve every registered service, so a
         // type mapped in any of the contexts is found
@@ -42,7 +44,8 @@ public static class EfGraphQLConventions
         ResolveFilters<TDbContext>? filters,
         IServiceProvider provider,
         bool disableTracking,
-        bool includeSqlInExceptions)
+        bool includeSqlInExceptions,
+        bool splitSideBySideCollections)
         where TDbContext : DbContext
     {
         model ??= ResolveModel<TDbContext>(provider);
@@ -54,7 +57,8 @@ public static class EfGraphQLConventions
             dbContextResolver,
             filters,
             disableTracking,
-            includeSqlInExceptions);
+            includeSqlInExceptions,
+            splitSideBySideCollections);
     }
 
     static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider, IServiceProvider? requestServices)
