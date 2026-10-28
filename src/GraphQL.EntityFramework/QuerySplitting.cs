@@ -5,6 +5,27 @@
 /// </summary>
 static class QuerySplitting
 {
+    /// <summary>
+    /// Whether the resolver chose a splitting behavior with AsSplitQuery or AsSingleQuery, which
+    /// is then left as it is.
+    /// </summary>
+    public static bool IsChosen(Expression expression)
+    {
+        var current = expression;
+        while (current is MethodCallExpression { Object: null, Arguments.Count: > 0 } call &&
+               typeof(IQueryable).IsAssignableFrom(call.Arguments[0].Type))
+        {
+            if (call.Method.Name is "AsSplitQuery" or "AsSingleQuery")
+            {
+                return true;
+            }
+
+            current = call.Arguments[0];
+        }
+
+        return false;
+    }
+
     public static IQueryable<T> Remove<T>(IQueryable<T> queryable)
     {
         var expression = Remove(queryable.Expression);

@@ -23,9 +23,10 @@ public static void RegisterInContainer<TDbContext>(
         IModel? model = null,
         ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
-        bool includeSqlInExceptions = false)
+        bool includeSqlInExceptions = false,
+        bool splitSideBySideCollections = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L15-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L16-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
@@ -125,6 +126,21 @@ It defaults to false. Those messages can surface to clients as GraphQL errors, a
 Enable it in development, or where GraphQL errors are not returned to untrusted callers.
 
 
+#### SplitSideBySideCollections
+
+Setting `splitSideBySideCollections` to true calls `AsSplitQuery` on a query whose request selects collections side by side.
+
+A single query joins every collection it loads, so collections side by side multiply each other's rows: a request for a travel request's acting arrangements and its member's roles returns a row for every arrangement and role pair. A collection nested in another does not multiply, since the query returns a row per item of the inner one, so a request for a group's users and each user's groups stays a single query.
+
+The resolver can not know in advance which collections a request will select, so this decides per request, from the same selection the projection is built from.
+
+ * A query the resolver already called `AsSplitQuery` or `AsSingleQuery` on is left as it is.
+ * Split queries are separate round trips, and each sees the data as it is when it runs. Run them in a transaction where the collections have to agree.
+ * It needs a relational provider.
+
+It defaults to false.
+
+
 ### Usage
 
 <!-- snippet: RegisterInContainer -->
@@ -136,9 +152,10 @@ public static void RegisterInContainer<TDbContext>(
         IModel? model = null,
         ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
-        bool includeSqlInExceptions = false)
+        bool includeSqlInExceptions = false,
+        bool splitSideBySideCollections = false)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L15-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L16-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
