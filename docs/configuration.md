@@ -24,9 +24,10 @@ public static void RegisterInContainer<TDbContext>(
         ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
         bool includeSqlInExceptions = false,
-        bool splitSideBySideCollections = false)
+        bool splitSideBySideCollections = false,
+        bool orderNavigationsByKey = true)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L16-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L17-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(
@@ -141,6 +142,18 @@ The resolver can not know in advance which collections a request will select, so
 It defaults to false.
 
 
+#### OrderNavigationsByKey
+
+A navigation list or connection field loaded through a projection, with no `orderBy` argument, is ordered by its key so its items come back in a deterministic order.
+
+Setting `orderNavigationsByKey` to false leaves such a collection unordered, for a model that orders the collections a projection loads by a default of its own. [EfOrderBy](https://github.com/SimonCropp/EntityFramework.OrderBy) 1.4 and later does this. EfOrderBy leaves a collection that is already ordered as it is, so the key ordering otherwise replaces the configured default, and a client that leaves out `orderBy` gets the items in key order rather than in the order the model defines.
+
+ * An `orderBy` argument is still applied, and replaces the default.
+ * A model with no default for an entity leaves that entity's collections in whatever order the database returns them, so only turn this off where every entity has one, for example with EfOrderBy's `requireOrderingForAllEntities`.
+
+It defaults to true.
+
+
 ### Usage
 
 <!-- snippet: RegisterInContainer -->
@@ -153,9 +166,10 @@ public static void RegisterInContainer<TDbContext>(
         ResolveFilters<TDbContext>? resolveFilters = null,
         bool disableTracking = false,
         bool includeSqlInExceptions = false,
-        bool splitSideBySideCollections = false)
+        bool splitSideBySideCollections = false,
+        bool orderNavigationsByKey = true)
 ```
-<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L16-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/GraphQL.EntityFramework/EfGraphQLConventions.cs#L17-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterInContainer' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-RegisterInContainer-1'></a>
 ```cs
 EfGraphQLConventions.RegisterInContainer<MyDbContext>(

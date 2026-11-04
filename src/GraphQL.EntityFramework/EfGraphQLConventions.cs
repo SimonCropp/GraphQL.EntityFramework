@@ -12,6 +12,7 @@ public static class EfGraphQLConventions
     /// <param name="disableTracking">Use <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}"/> for all <see cref="IQueryable{T}"/> operations.</param>
     /// <param name="includeSqlInExceptions">Include the generated sql in exception messages. Off by default, since those messages can reach clients and the sql carries table and column names and, depending on the provider, parameter values.</param>
     /// <param name="splitSideBySideCollections">Use <see cref="RelationalQueryableExtensions.AsSplitQuery{TEntity}"/> for a query whose request selects collections side by side, which multiply each other's rows in a single query. A query the resolver already called AsSplitQuery or AsSingleQuery on is left as it is. Needs a relational provider.</param>
+    /// <param name="orderNavigationsByKey">Order a projected navigation list or connection field that has no orderBy argument by its key, so its items come back in a deterministic order. Pass false when the model orders the collections a projection loads by a default of its own, such as EfOrderBy 1.4 or later does, so that default is used instead of the key.</param>
 
     #region RegisterInContainer
 
@@ -22,7 +23,8 @@ public static class EfGraphQLConventions
             ResolveFilters<TDbContext>? resolveFilters = null,
             bool disableTracking = false,
             bool includeSqlInExceptions = false,
-            bool splitSideBySideCollections = false)
+            bool splitSideBySideCollections = false,
+            bool orderNavigationsByKey = true)
 
         #endregion
 
@@ -31,7 +33,7 @@ public static class EfGraphQLConventions
         RegisterScalarsAndArgs(services);
         services.AddHttpContextAccessor();
         services.AddTransient<HttpContextCapture>();
-        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, includeSqlInExceptions, splitSideBySideCollections));
+        services.AddSingleton(provider => Build(resolveDbContext, model, resolveFilters, provider, disableTracking, includeSqlInExceptions, splitSideBySideCollections, orderNavigationsByKey));
         services.AddSingleton<IEfGraphQLService<TDbContext>>(provider => provider.GetRequiredService<EfGraphQLService<TDbContext>>());
         // The generated where and orderBy input types resolve every registered service, so a
         // type mapped in any of the contexts is found
@@ -45,7 +47,8 @@ public static class EfGraphQLConventions
         IServiceProvider provider,
         bool disableTracking,
         bool includeSqlInExceptions,
-        bool splitSideBySideCollections)
+        bool splitSideBySideCollections,
+        bool orderNavigationsByKey)
         where TDbContext : DbContext
     {
         model ??= ResolveModel<TDbContext>(provider);
@@ -58,7 +61,8 @@ public static class EfGraphQLConventions
             filters,
             disableTracking,
             includeSqlInExceptions,
-            splitSideBySideCollections);
+            splitSideBySideCollections,
+            orderNavigationsByKey);
     }
 
     static TDbContext DbContextFromProvider<TDbContext>(IServiceProvider provider, IServiceProvider? requestServices)

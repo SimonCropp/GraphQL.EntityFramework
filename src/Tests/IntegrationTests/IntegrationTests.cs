@@ -3462,6 +3462,7 @@
         bool disableTracking,
         object[] entities,
         bool includeSqlInExceptions = false,
+        bool orderNavigationsByKey = true,
         [CallerFilePath] string sourceFile = "")
     {
         var dbContext = database.Context;
@@ -3482,7 +3483,7 @@
         ExecutionResult result;
         try
         {
-            result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking, includeSqlInExceptions);
+            result = await QueryExecutor.ExecuteQuery(query, services, context, inputs, filters, disableTracking, includeSqlInExceptions, orderNavigationsByKey);
         }
         catch (ExecutionError executionError)
         {
