@@ -107,6 +107,12 @@ static class SelectExpressionBuilder
     /// The navigation fields whose ids, where and orderBy were applied inside their collection
     /// subquery, so their resolvers know not to apply them again.
     /// </param>
+    /// <param name="orderNavigationsByKey">
+    /// Whether a projected collection without an orderBy is ordered by key. False leaves it
+    /// unordered, for a model that orders the collections a projection loads by a default of its
+    /// own, such as EfOrderBy. Ordering by key there replaced that default, since a collection
+    /// that is already ordered is left as it is.
+    /// </param>
     public static bool TryBuild<TEntity>(
         FieldProjectionInfo projection,
         IReadOnlyDictionary<Type, List<string>> keyNames,
@@ -114,11 +120,12 @@ static class SelectExpressionBuilder
         [NotNullWhen(true)] out Expression<Func<TEntity, TEntity>>? expression,
         out IReadOnlyList<string> includePaths,
         out IReadOnlyList<GraphQLField> argumentFields,
-        IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields = null)
+        IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields = null,
+        bool orderNavigationsByKey = true)
         where TEntity : class
     {
         expression = null;
-        var state = new BuildState(keyNames, derivedTypes, backingFields);
+        var state = new BuildState(keyNames, derivedTypes, backingFields, orderNavigationsByKey);
         includePaths = state.IncludePaths;
         argumentFields = state.ArgumentFields;
         var entityType = typeof(TEntity);
@@ -547,7 +554,8 @@ static class SelectExpressionBuilder
     /// The navigation field's ids, where and orderBy, applied to the collection inside the
     /// subquery so the database evaluates them against the table rather than the resolver
     /// evaluating them in memory against the projected columns. Without an orderBy the
-    /// collection is ordered by key, where <paramref name="orderByKey"/>, for a deterministic result.
+    /// collection is ordered by key, where <paramref name="orderByKey"/> and the build orders
+    /// navigations by key, for a deterministic result.
     /// </summary>
     static Expression ApplyArguments(
         Expression source,
@@ -591,6 +599,7 @@ static class SelectExpressionBuilder
         }
 
         if (orderByKey &&
+            state.OrderNavigationsByKey &&
             state.KeyNames.TryGetValue(navType, out var keys) &&
             keys.Count > 0 &&
             GetEntityMetadata(navType).Properties.TryGetValue(keys[0], out var keyMetadata))
@@ -619,10 +628,12 @@ static class SelectExpressionBuilder
     sealed class BuildState(
         IReadOnlyDictionary<Type, List<string>> keyNames,
         IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
-        IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields)
+        IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields,
+        bool orderNavigationsByKey)
     {
         public IReadOnlyDictionary<Type, List<string>> KeyNames { get; } = keyNames;
         public IReadOnlyDictionary<Type, IReadOnlyList<Type>> DerivedTypes { get; } = derivedTypes;
+        public bool OrderNavigationsByKey { get; } = orderNavigationsByKey;
         public List<string> IncludePaths { get; } = [];
         public List<GraphQLField> ArgumentFields { get; } = [];
 

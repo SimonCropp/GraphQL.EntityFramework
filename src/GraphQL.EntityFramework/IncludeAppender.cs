@@ -4,7 +4,8 @@
     IReadOnlyDictionary<Type, IReadOnlySet<string>> foreignKeys,
     IReadOnlyDictionary<Type, IReadOnlyList<Type>> derivedTypes,
     IReadOnlyDictionary<Type, IReadOnlyDictionary<string, FieldInfo>>? backingFields = null,
-    bool splitSideBySideCollections = false)
+    bool splitSideBySideCollections = false,
+    bool orderNavigationsByKey = true)
 {
     /// <summary>
     /// Narrow <paramref name="query"/> to the fields the request asked for: a select projection
@@ -52,7 +53,7 @@
             query = query.AsSplitQuery();
         }
 
-        if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths, out var argumentFields, backingFields))
+        if (!SelectExpressionBuilder.TryBuild<TItem>(projection, keyNames, derivedTypes, out var expression, out var includePaths, out var argumentFields, backingFields, orderNavigationsByKey))
         {
             return ApplyTracking(AddIncludesFromProjection(query, projection), disableTracking);
         }
