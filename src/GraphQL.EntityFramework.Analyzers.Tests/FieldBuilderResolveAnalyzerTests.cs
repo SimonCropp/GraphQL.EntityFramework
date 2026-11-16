@@ -1,6 +1,6 @@
 public class FieldBuilderResolveAnalyzerTests
 {
-    [Fact]
+    [Test]
     public async Task DetectsResolveWithNavigationPropertyAccess()
     {
         var source = """
@@ -29,11 +29,11 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF002", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF002");
     }
 
-    [Fact]
+    [Test]
     public async Task DetectsResolveAsyncWithNavigationPropertyAccess()
     {
         var source = """
@@ -63,11 +63,11 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF002", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF002");
     }
 
-    [Fact]
+    [Test]
     public async Task DetectsResolveWithDirectNavigationAccess()
     {
         var source = """
@@ -95,11 +95,11 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF002", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF002");
     }
 
-    [Fact]
+    [Test]
     public async Task AllowsResolveWithIdPropertyAccess()
     {
         var source = """
@@ -126,10 +126,10 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task AllowsResolveWithForeignKeyAccess()
     {
         var source = """
@@ -158,10 +158,10 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task DetectsResolveWithScalarProperties()
     {
         var source = """
@@ -195,11 +195,11 @@ public class FieldBuilderResolveAnalyzerTests
 
         var diagnostics = await GetDiagnosticsAsync(source);
         // Should warn because Name, Age, IsActive, CreatedDate are scalar properties, not PK/FK
-        Assert.Equal(2, diagnostics.Length); // Two Resolve calls
-        Assert.All(diagnostics, _ => Assert.Equal("GQLEF002", _.Id));
+        await Assert.That(diagnostics.Length).IsEqualTo(2); // Two Resolve calls
+        await Assert.That(diagnostics).All(_ => _.Id == "GQLEF002");
     }
 
-    [Fact]
+    [Test]
     public async Task AllowsProjectionBasedResolve()
     {
         var source = """
@@ -234,10 +234,10 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task AllowsProjectionBasedResolveAsync()
     {
         var source = """
@@ -273,10 +273,10 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task IgnoresNonEfGraphTypeClasses()
     {
         var source = """
@@ -301,10 +301,10 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task AllowsResolveWithOnlyPKAndFK()
     {
         var source = """
@@ -334,10 +334,10 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task DetectsCollectionNavigationAccess()
     {
         var source = """
@@ -367,11 +367,11 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF002", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF002");
     }
 
-    [Fact]
+    [Test]
     public async Task DetectsResolveWithDiscardVariable()
     {
         var source = """
@@ -401,11 +401,11 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF002", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF002");
     }
 
-    [Fact]
+    [Test]
     public async Task DetectsResolveAsyncWithDiscardVariable()
     {
         var source = """
@@ -435,11 +435,11 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF002", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF002");
     }
 
-    [Fact]
+    [Test]
     public async Task DetectsResolveAsyncWithElidedDelegate()
     {
         var source = """
@@ -469,11 +469,11 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF002", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF002");
     }
 
-    [Fact]
+    [Test]
     public async Task DetectsIdentityProjectionInProjectionBasedResolve()
     {
         var source = """
@@ -504,11 +504,11 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF003", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF003");
     }
 
-    [Fact]
+    [Test]
     public async Task DetectsIdentityProjectionInProjectionBasedResolveAsyncWithPositionalArguments()
     {
         var source = """
@@ -540,8 +540,8 @@ public class FieldBuilderResolveAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF003", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF003");
     }
 
     static async Task<Diagnostic[]> GetDiagnosticsAsync(string source)
@@ -582,9 +582,8 @@ public class FieldBuilderResolveAnalyzerTests
                 references.All(_ => _.Display != assembly.Location))
             {
                 var name = assembly.GetName().Name ?? "";
-                if ((!name.StartsWith("System.") &&
-                     !name.StartsWith("Microsoft.")) ||
-                    name.Contains("xunit", StringComparison.OrdinalIgnoreCase))
+                if (!name.StartsWith("System.") &&
+                    !name.StartsWith("Microsoft."))
                 {
                     continue;
                 }

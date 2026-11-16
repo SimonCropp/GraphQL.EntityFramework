@@ -2,8 +2,8 @@
 {
     // The in memory path assumed the key is named Id, so an entity keyed by anything else failed
     // on the ids argument, while the queryable path resolved the key from the model.
-    [Fact]
-    public void Ids_use_key_name_from_model()
+    [Test]
+    public async Task Ids_use_key_name_from_model()
     {
         var entity1 = new NamedIdEntity
         {
@@ -23,11 +23,12 @@
             .ApplyGraphQlArguments(["NamedId"], context, false)
             .ToList();
 
-        Assert.Equal(["one"], result.Select(_ => _.Property));
+        await Assert.That(result.Select(_ => _.Property))
+            .IsEquivalentTo((string?[]) ["one"], CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void Ids_default_to_Id_for_the_hasId_overload()
+    [Test]
+    public async Task Ids_default_to_Id_for_the_hasId_overload()
     {
         var entity1 = new ParentEntity
         {
@@ -47,12 +48,13 @@
             .ApplyGraphQlArguments(true, context, false)
             .ToList();
 
-        Assert.Equal(["two"], result.Select(_ => _.Property));
+        await Assert.That(result.Select(_ => _.Property))
+            .IsEquivalentTo((string?[]) ["two"], CollectionOrdering.Matching);
     }
 
     // A null ids was dereferenced for its type name in the unsupported type error
-    [Fact]
-    public void Null_ids_is_the_same_as_no_ids()
+    [Test]
+    public async Task Null_ids_is_the_same_as_no_ids()
     {
         var context = BuildContext(null);
 
@@ -70,7 +72,8 @@
             .ApplyGraphQlArguments(true, context, false)
             .ToList();
 
-        Assert.Equal(["one", "two"], result.Select(_ => _.Property));
+        await Assert.That(result.Select(_ => _.Property))
+            .IsEquivalentTo((string?[]) ["one", "two"], CollectionOrdering.Matching);
     }
 
     static ResolveFieldContext BuildContext(Guid? id) =>

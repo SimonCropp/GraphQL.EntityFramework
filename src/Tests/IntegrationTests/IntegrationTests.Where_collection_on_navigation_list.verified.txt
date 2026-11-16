@@ -51,6 +51,7 @@ order by m.LeftName,
          m.Id,
          s.Id,
          s.ManyToManyLeftEntityId,
+         s.ManyToManyRightEntityId,
     Parameters: {
       @p: {
         Value: Left1,

@@ -1,6 +1,6 @@
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task Filter_using_anonymous_type_projection_with_For()
     {
         var query =
@@ -53,7 +53,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3, entity4]);
     }
 
-    [Fact]
+    [Test]
     public async Task Filter_using_anonymous_type_with_async_filter()
     {
         var query =
@@ -104,7 +104,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Filter_using_anonymous_type_with_three_properties()
     {
         var query =
@@ -169,7 +169,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3, entity4]);
     }
 
-    [Fact]
+    [Test]
     public async Task Filter_using_anonymous_type_with_nested_navigation_property()
     {
         var query =

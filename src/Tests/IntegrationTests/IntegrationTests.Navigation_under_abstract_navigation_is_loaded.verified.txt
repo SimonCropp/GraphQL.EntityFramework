@@ -48,7 +48,6 @@ from     DerivedChildEntities as d
 where    d.Property = @p
 order by d.Property,
          d.Id,
-         b.Id,
          d0.Property,
     Parameters: {
       @p: {

@@ -9,8 +9,11 @@
             projection: _ => new { _.Child1, _.Child2 },
             resolve: ctx =>
             {
-                Assert.NotNull(ctx.Projection.Child2);
-                Assert.NotNull(ctx.Projection.Child1);
+                if (ctx.Projection.Child1 is null || ctx.Projection.Child2 is null)
+                {
+                    throw new InvalidOperationException("Expected both Child1 and Child2 to be projected");
+                }
+
                 return ctx.Projection.Child1;
             });
         // Child1 is not the first path in the projection

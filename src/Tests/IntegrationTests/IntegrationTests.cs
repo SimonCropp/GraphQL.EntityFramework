@@ -31,7 +31,7 @@
     static IntegrationDbContext NewModelOnlyContext() =>
         Construct(new DbContextOptionsBuilder<IntegrationDbContext>().UseSqlServer("Server=unused"));
 
-    [Fact]
+    [Test]
     public async Task SchemaPrint()
     {
         await using var dbContext = NewModelOnlyContext();
@@ -53,7 +53,7 @@
         await Verify(print);
     }
 
-    [Fact]
+    [Test]
     public async Task LogQuery()
     {
         string? queryText = null;
@@ -84,10 +84,10 @@
 
         await using var database = await sqlInstance.Build();
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
-        Assert.NotNull(queryText);
+        await Assert.That(queryText).IsNotNull();
     }
 
-    [Fact]
+    [Test]
     public async Task Where_multiple()
     {
         var query =
@@ -118,7 +118,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_date()
     {
         var query =
@@ -141,7 +141,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_date_notEqual()
     {
         var query =
@@ -164,7 +164,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_enum()
     {
         var query =
@@ -187,7 +187,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_enum_notEqual()
     {
         var query =
@@ -210,7 +210,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_string_notEqual()
     {
         var query =
@@ -237,7 +237,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_string_notEqual_diffCase()
     {
         var query =
@@ -264,7 +264,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_string_contains()
     {
         var query =
@@ -311,7 +311,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_string_contains_diffCase()
     {
         var query =
@@ -359,7 +359,7 @@
     }
 
 
-    [Fact]
+    [Test]
     public async Task Where_enum_in()
     {
         var query =
@@ -382,7 +382,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_time()
     {
         var query =
@@ -405,7 +405,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_time_notEqual()
     {
         var query =
@@ -428,7 +428,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_with_nullable_properties1()
     {
         var query = "{ withNullableEntities (where: {nullable: {equal: null}}){ id } }";
@@ -444,7 +444,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_with_nullable_properties1_NotEqual()
     {
         var query = "{ withNullableEntities (where: {nullable: {notEqual: null}}){ id } }";
@@ -460,7 +460,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_with_nullable_properties2()
     {
         var query = "{ withNullableEntities (where: {nullable: {equal: 10}}){ id } }";
@@ -475,7 +475,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_with_nullable_properties2_notEqual()
     {
         var query = "{ withNullableEntities (where: {nullable: {notEqual: 10}}){ id } }";
@@ -490,7 +490,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_null_comparison_value()
     {
         var query = "{ parentEntities (where: {property: {equal: null}}){ id } }";
@@ -508,7 +508,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_null_comparison_value_notEqual()
     {
         var query = "{ parentEntities (where: {property: {notEqual: null}}){ id } }";
@@ -526,7 +526,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Take()
     {
         var query =
@@ -554,7 +554,7 @@
 
     // The orderBy argument replaces the ordering the resolver applied, rather than being added
     // after it, where EF discards the resolver's ordering
-    [Fact]
+    [Test]
     public async Task OrderByArgumentReplacesResolverOrdering()
     {
         var query =
@@ -580,7 +580,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task TakeNoOrder()
     {
         var query =
@@ -606,7 +606,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Skip()
     {
         var query =
@@ -632,7 +632,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task SkipNoOrder()
     {
         var query =
@@ -658,7 +658,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_first_page()
     {
         var query =
@@ -687,7 +687,7 @@
     /// <summary>
     /// The page info without totalCount needs no count: the page query reads one row past the page, and that row answers hasNextPage.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Connection_page_info_without_total_count_peeks()
     {
         var query =
@@ -714,7 +714,7 @@
     /// <summary>
     /// The last page has no row past it to read, so hasNextPage is false without the count.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Connection_page_info_without_total_count_last_page()
     {
         var query =
@@ -741,7 +741,7 @@
     /// <summary>
     /// A page past the end is empty, which proves nothing about rows before it, so hasPreviousPage is false, as the spec allows when paging forward.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Connection_page_info_without_total_count_past_the_end()
     {
         var query =
@@ -768,7 +768,7 @@
     /// <summary>
     /// Nothing selected reads the count, and first and after place the window from the start, so the count query is skipped and the page is a single query.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Connection_items_only_skips_count()
     {
         var query =
@@ -790,7 +790,7 @@
     /// <summary>
     /// Without the count the offset is not clamped to the end, so a page past it is read from the database as an empty page.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Connection_items_only_past_the_end_is_empty()
     {
         var query =
@@ -812,7 +812,7 @@
     /// <summary>
     /// last places the window from the end, which needs the count even when nothing selected reads it.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Connection_items_only_with_last_counts()
     {
         var query =
@@ -831,7 +831,7 @@
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_page_back()
     {
         var query =
@@ -859,7 +859,7 @@
 
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_nested()
     {
         var query =
@@ -888,7 +888,7 @@
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_nested_OmitQueryArguments()
     {
         var query =
@@ -929,7 +929,7 @@
         }
     }
 
-    [Fact]
+    [Test]
     public async Task OrderBy()
     {
         var query =
@@ -955,7 +955,7 @@
         await RunQuery(database, query, null, null, false, [entity2, entity1]);
     }
 
-    [Fact]
+    [Test]
     public async Task OrderByDescending()
     {
         var query =
@@ -981,7 +981,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task OrderByNullable()
     {
         var query =
@@ -1004,7 +1004,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task OrderByNested()
     {
         var query =
@@ -1040,7 +1040,7 @@
         await RunQuery(database, query, null, null, false, [parent1, parent2, entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task OrderByNestedNullable()
     {
         var query =
@@ -1071,7 +1071,7 @@
         await RunQuery(database, query, null, null, false, [parent, entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Like()
     {
         var query =
@@ -1097,7 +1097,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_with_variable()
     {
         var query =
@@ -1130,7 +1130,7 @@
         await RunQuery(database, query, inputs, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_with_variable_notEqual()
     {
         var query =
@@ -1163,7 +1163,7 @@
         await RunQuery(database, query, inputs, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task CustomType()
     {
         var query =
@@ -1189,7 +1189,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Single_NotFound()
     {
         var query =
@@ -1204,7 +1204,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task Single_NotFound_with_sql_included()
     {
         var query =
@@ -1219,7 +1219,7 @@
         await RunQuery(database, query, null, null, false, [], includeSqlInExceptions: true);
     }
 
-    [Fact]
+    [Test]
     public async Task First_NotFound()
     {
         var query =
@@ -1234,7 +1234,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task Single_Found_NoTracking()
     {
         var query =
@@ -1259,7 +1259,7 @@
         await RunQuery(database, query, null, null, true, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task First_Found_NoTracking()
     {
         var query =
@@ -1284,7 +1284,7 @@
         await RunQuery(database, query, null, null, true, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Owned()
     {
         var query =
@@ -1315,7 +1315,7 @@
         await RunQuery(database, query, null, null, false, [entity1]);
     }
 
-    [Fact]
+    [Test]
     public async Task Explicit_Null()
     {
         var query =
@@ -1330,7 +1330,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task Single_Found()
     {
         var query =
@@ -1355,7 +1355,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task First_Found()
     {
         var query =
@@ -1380,7 +1380,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Single_NoArgs()
     {
         var query =
@@ -1410,7 +1410,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task First_NoArgs()
     {
         var query =
@@ -1440,7 +1440,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Single_IdOnly()
     {
         var query =
@@ -1470,7 +1470,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task First_IdOnly()
     {
         var query =
@@ -1500,7 +1500,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task SingleNullable_NotFound()
     {
         var query =
@@ -1515,7 +1515,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task FirstNullable_NotFound()
     {
         var query =
@@ -1530,7 +1530,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task SingleNullable_Found()
     {
         var query =
@@ -1555,7 +1555,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task FirstNullable_Found()
     {
         var query =
@@ -1580,7 +1580,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task SingleParent_Child_mutation()
     {
         var query =
@@ -1631,7 +1631,7 @@
     // A mutation with a resolver of its own reads the entity back through ApplyProjection, so it
     // loads what a query field would: the selected columns, and the children with their orderBy
     // applied by the database.
-    [Fact]
+    [Test]
     public async Task Custom_mutation_reads_back_with_projection()
     {
         var query =
@@ -1669,7 +1669,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task FirstParent_Child_mutation()
     {
         var query =
@@ -1717,7 +1717,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task SingleParent_Child()
     {
         var query =
@@ -1765,7 +1765,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task FirstParent_Child()
     {
         var query =
@@ -1813,7 +1813,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task SingleParent_Child_WithFragment()
     {
         var query =
@@ -1867,7 +1867,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task FirstParent_Child_WithFragment()
     {
         var query =
@@ -1921,7 +1921,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where()
     {
         var query =
@@ -1947,7 +1947,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_sql_injection()
     {
         var query =
@@ -1965,7 +1965,7 @@
         await RunQuery(database, query, null, null, false, [entity1]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_notEqual()
     {
         var query =
@@ -1991,7 +1991,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_default_comparison()
     {
         var query =
@@ -2017,7 +2017,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Id()
     {
         var query =
@@ -2044,7 +2044,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task NamedId()
     {
         var query =
@@ -2071,7 +2071,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Id_multiple()
     {
         var query =
@@ -2105,7 +2105,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task In()
     {
         var query =
@@ -2131,7 +2131,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task In_multiple()
     {
         var query =
@@ -2158,7 +2158,8 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact(Skip = "Work out why include is not used")]
+    [Test]
+    [Skip("Work out why include is not used")]
     public async Task Connection_parent_child()
     {
         var query =
@@ -2214,7 +2215,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task Aliased_scalar_field()
     {
         var query =
@@ -2236,7 +2237,7 @@
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
+    [Test]
     public async Task Aliased_scalar_field_on_navigation()
     {
         var query =
@@ -2267,7 +2268,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Navigation_list_where()
     {
         var query =
@@ -2302,7 +2303,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Multiple_filters_for_same_type_all_apply()
     {
         var filters = new Filters<IntegrationDbContext>();
@@ -2333,7 +2334,7 @@
             ]);
     }
 
-    [Fact]
+    [Test]
     public async Task Child_parent_with_alias()
     {
         var query =
@@ -2380,7 +2381,8 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact(Skip = "TODO")]
+    [Test]
+    [Skip("TODO")]
     public async Task Multiple_nested_AddQueryField()
     {
         var query =
@@ -2406,7 +2408,8 @@
         await RunQuery(database, query, null, null, false, [level1, level2]);
     }
 
-    [Fact(Skip = "fix order")]
+    [Test]
+    [Skip("fix order")]
     public async Task Skip_level()
     {
         var query =
@@ -2439,7 +2442,7 @@
         await RunQuery(database, query, null, null, false, [level1, level2, level3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Multiple_nested()
     {
         var query =
@@ -2475,7 +2478,7 @@
         await RunQuery(database, query, null, null, false, [level1, level2, level3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Null_on_nested()
     {
         var query =
@@ -2518,7 +2521,7 @@
         await RunQuery(database, query, null, null, false, [level1b, level2b, level1a, level2a, level3a]);
     }
 
-    [Fact]
+    [Test]
     public async Task Null_on_nested_notEqual()
     {
         var query =
@@ -2561,7 +2564,7 @@
         await RunQuery(database, query, null, null, false, [level1b, level2b, level1a, level2a, level3a]);
     }
 
-    [Fact]
+    [Test]
     public async Task Query_Cyclic()
     {
         var query =
@@ -2617,7 +2620,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task Query_NoTracking()
     {
         var query =
@@ -2665,7 +2668,7 @@
         await RunQuery(database, query, null, null, true, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task Child_parent()
     {
         var query =
@@ -2713,7 +2716,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task With_null_navigation_property()
     {
         var query =
@@ -2756,7 +2759,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task With_null_navigation_property_notEqual()
     {
         var query =
@@ -2799,7 +2802,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task Query_field_named_after_navigation_is_not_projected_by_parent()
     {
         var query =
@@ -2827,7 +2830,8 @@
         await RunQuery(database, query, null, null, false, [parent, child]);
     }
 
-    [Fact(Skip = "fix order")]
+    [Test]
+    [Skip("fix order")]
     public async Task MisNamedQuery()
     {
         var query =
@@ -2865,7 +2869,8 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact(Skip = "fix order")]
+    [Test]
+    [Skip("fix order")]
     public async Task Parent_child()
     {
         var query =
@@ -2913,7 +2918,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4, entity5]);
     }
 
-    [Fact]
+    [Test]
     public async Task Parent_child_with_id()
     {
         var parent = new ParentEntity
@@ -2949,7 +2954,8 @@
         await RunQuery(database, query, null, null, false, [parent, child1, child2]);
     }
 
-    [Fact(Skip = "fix order")]
+    [Test]
+    [Skip("fix order")]
     public async Task Parent_with_id_child()
     {
         var parent1 = new ParentEntity
@@ -2989,7 +2995,7 @@
         await RunQuery(database, query, null, null, false, [parent1, parent2, child1, child2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Parent_with_id_child_with_id()
     {
         var parent1 = new ParentEntity
@@ -3029,7 +3035,7 @@
         await RunQuery(database, query, null, null, false, [parent1, parent2, child1, child2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Many_children()
     {
         var query =
@@ -3061,7 +3067,8 @@
         await RunQuery(database, query, null, null, false, [parent, child1, child2]);
     }
 
-    [Fact(Skip = "Broke with gql 4")]
+    [Test]
+    [Skip("Broke with gql 4")]
     public async Task InheritedEntityInterface()
     {
         var query =
@@ -3135,7 +3142,7 @@
         await RunQuery(database, query, null, null, false, [derivedEntity1, childEntity1, childEntity2, derivedEntity2, childEntity3, childEntity4]);
     }
 
-    [Fact]
+    [Test]
     public async Task Query_entity_with_readonly_properties()
     {
         var query =
@@ -3168,7 +3175,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Query_readonly_computed_property_should_work()
     {
         var query =
@@ -3201,7 +3208,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Query_database_computed_column_readonly_property()
     {
         var query =
@@ -3234,7 +3241,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task ManyToManyRightWhereAndInclude()
     {
         var query =
@@ -3289,7 +3296,7 @@
         await RunQuery(database, query, null, null, false, [middle11, middle12, middle21]);
     }
 
-    [Fact]
+    [Test]
     public async Task ManyToManyRightWhereAndInclude_notEqual()
     {
         var query =
@@ -3344,7 +3351,7 @@
         await RunQuery(database, query, null, null, false, [middle11, middle12, middle21]);
     }
 
-    [Fact]
+    [Test]
     public async Task ManyToManyLeftWhereAndInclude()
     {
         var query =
@@ -3399,7 +3406,7 @@
         await RunQuery(database, query, null, null, false, [middle11, middle12, middle21]);
     }
 
-    [Fact]
+    [Test]
     public async Task ManyToManyLeftWhereAndInclude_notEqual()
     {
         var query =
@@ -3508,7 +3515,7 @@
             .GetTypes()
             .Where(_ => !_.IsAbstract && _.IsAssignableTo<GraphType>());
 
-    [Fact]
+    [Test]
     public async Task IQueryableFirst()
     {
         var query =
@@ -3523,7 +3530,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task IQueryableSingle()
     {
         var query =
@@ -3538,7 +3545,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task IQueryable()
     {
         var query =
@@ -3553,7 +3560,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task SingleNullQueryableSingle()
     {
         var query =
@@ -3568,7 +3575,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullQueryableFirst()
     {
         var query =
@@ -3583,7 +3590,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskQueryableSingle()
     {
         var query =
@@ -3598,7 +3605,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskInnerQueryableSingle()
     {
         var query =
@@ -3613,7 +3620,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskQueryableFirst()
     {
         var query =
@@ -3628,7 +3635,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskInnerQueryableFirst()
     {
         var query =
@@ -3643,7 +3650,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task SingleNullQueryableSingleDisallowNull()
     {
         var query =
@@ -3658,7 +3665,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullQueryableFirstDisallowNull()
     {
         var query =
@@ -3673,7 +3680,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskQueryableSingleDisallowNull()
     {
         var query =
@@ -3688,7 +3695,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskInnerQueryableSingleDisallowNull()
     {
         var query =
@@ -3703,7 +3710,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskQueryableFirstDisallowNull()
     {
         var query =
@@ -3718,7 +3725,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskInnerQueryableFirstDisallowNull()
     {
         var query =
@@ -3733,7 +3740,7 @@
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task NullQueryConnection()
     {
         var query =
@@ -3759,7 +3766,7 @@
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskQueryConnection()
     {
         var query =
@@ -3785,7 +3792,7 @@
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
+    [Test]
     public async Task NullTaskInnerQueryConnection()
     {
         var query =
@@ -3811,7 +3818,7 @@
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
+    [Test]
     public async Task Filter_with_projection_accesses_foreign_key()
     {
         var query =

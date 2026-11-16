@@ -7,7 +7,7 @@ public partial class IntegrationTests
     /// EF Core throws "Include has been used on non entity queryable" when Include is
     /// applied after Select.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Query_with_select_projection_and_filter()
     {
         var query =
@@ -44,7 +44,7 @@ public partial class IntegrationTests
     /// This is the scenario where GroundTransportOrderedView.Select(_ => _.GroundTransport)
     /// is used, and the filter accesses GroundTransport.TravelRequest.HighestStatusAchieved.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Query_with_select_projection_and_filter_accessing_navigation()
     {
         var query =
@@ -85,7 +85,7 @@ public partial class IntegrationTests
     /// Tests that regular queries (without Select projection in resolver) still work
     /// correctly with filters that require navigation properties.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Query_without_select_projection_with_navigation_filter()
     {
         var query =
@@ -130,7 +130,7 @@ public partial class IntegrationTests
     /// - The filter accesses TravelRequest.HighestStatusAchieved (a navigation property)
     /// - Include must be added to load TravelRequest for the filter to work
     /// </summary>
-    [Fact]
+    [Test]
     public async Task AddSingleField_with_filter_accessing_navigation_uses_include()
     {
         var query =
@@ -176,7 +176,7 @@ public partial class IntegrationTests
     /// Tests that AddSingleField filter correctly denies access when the navigation property
     /// doesn't match the filter criteria.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task AddSingleField_with_filter_accessing_navigation_denies_when_no_match()
     {
         // Query the nullable endpoint to avoid SingleEntityNotFoundException

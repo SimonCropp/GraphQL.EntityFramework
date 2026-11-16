@@ -14,7 +14,7 @@
         }
         """;
 
-    [Fact]
+    [Test]
     public async Task ExplicitModel()
     {
         await using var database = await sqlInstance.Build();
@@ -39,7 +39,7 @@
         await ExecutionResultData(executionOptions);
     }
 
-    [Fact]
+    [Test]
     public async Task ScopedDbContext()
     {
         await using var database = await sqlInstance.Build();
@@ -64,7 +64,7 @@
         await ExecutionResultData(executionOptions);
     }
 
-    [Fact]
+    [Test]
     public async Task TransientDbContext()
     {
         await using var database = await sqlInstance.Build();
@@ -89,7 +89,7 @@
         await ExecutionResultData(options);
     }
 
-    [Fact]
+    [Test]
     public async Task SingletonDbContext()
     {
         await using var database = await sqlInstance.Build();

@@ -2,7 +2,7 @@ public partial class IntegrationTests
 {
     // Tests that AutoMap'd collection navigation fields apply filters correctly
     // FilterParentGraphType uses AutoMap() which registers the Children navigation
-    [Fact]
+    [Test]
     public async Task AutoMap_ListNavigation_AppliesFilters()
     {
         var query =
@@ -42,7 +42,7 @@ public partial class IntegrationTests
 
     // Tests that projection-based AddNavigationListField applies filters
     // This uses the simple projection-based overload: AddNavigationListField(graph, name, projection)
-    [Fact]
+    [Test]
     public async Task ProjectionBased_NavigationList_AppliesFilters()
     {
         var query =
@@ -86,7 +86,7 @@ public partial class IntegrationTests
 
     // Tests that projection-based AddNavigationField applies ShouldInclude filter
     // Multiple_nested_Filtered already tests this scenario with Level3Entity
-    [Fact]
+    [Test]
     public async Task ProjectionBased_NavigationSingle_AppliesFilters()
     {
         var query =

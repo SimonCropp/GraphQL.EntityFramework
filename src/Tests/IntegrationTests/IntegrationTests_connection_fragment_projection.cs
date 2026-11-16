@@ -1,6 +1,6 @@
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task Connection_items_with_inline_fields()
     {
         var query =
@@ -20,7 +20,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_items_with_fragment_spread()
     {
         var query =
@@ -44,7 +44,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_edges_node_with_fragment_spread()
     {
         var query =
@@ -71,7 +71,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_items_with_inline_fragment()
     {
         var query =
@@ -93,7 +93,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, entities.ToArray());
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_items_with_fragment_spread_and_children()
     {
         var query =

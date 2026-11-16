@@ -1,6 +1,6 @@
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task Filter_nullable_int_projection_with_value()
     {
         var query =
@@ -46,7 +46,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Filter_nullable_int_projection_is_null()
     {
         var query =
@@ -92,7 +92,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Filter_nullable_bool_projection()
     {
         var query =
@@ -145,7 +145,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3, entity4]);
     }
 
-    [Fact]
+    [Test]
     public async Task Filter_nullable_datetime_projection()
     {
         var query =
@@ -200,7 +200,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [entity1, entity2, entity3, entity4]);
     }
 
-    [Fact]
+    [Test]
     public async Task Filter_nullable_string_is_not_null()
     {
         var query =

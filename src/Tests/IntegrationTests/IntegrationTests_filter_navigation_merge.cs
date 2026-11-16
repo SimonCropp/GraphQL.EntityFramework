@@ -5,7 +5,7 @@ public partial class IntegrationTests
     /// When a filter accesses Parent.Property and the GraphQL query requests Parent.Id,
     /// both should be selected in the SQL query.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Filter_navigation_properties_merged_with_graphql_fields()
     {
         var query =

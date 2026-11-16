@@ -3,7 +3,7 @@ public partial class IntegrationTests
     // A navigation to an abstract type is projected as a chain of type tests, and the collection
     // under it is bound once to the result of that chain. The navigation used to be bound whole,
     // with what was requested under it loaded through includes applied alongside the select.
-    [Fact]
+    [Test]
     public async Task Navigation_under_abstract_navigation_is_loaded()
     {
         var query =

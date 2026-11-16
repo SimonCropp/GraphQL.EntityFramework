@@ -1,6 +1,6 @@
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task ReadOnly_circular_include_does_not_walkback()
     {
         var parent = new ReadOnlyParentEntity
@@ -36,7 +36,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child]);
     }
 
-    [Fact]
+    [Test]
     public async Task Single_child_to_parent_walkback_skipped()
     {
         var entity1 = new ParentEntity

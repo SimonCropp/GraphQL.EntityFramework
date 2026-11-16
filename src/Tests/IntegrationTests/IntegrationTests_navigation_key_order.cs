@@ -32,21 +32,21 @@ public partial class IntegrationTests
         return [parent, child];
     }
 
-    [Fact]
+    [Test]
     public async Task Navigation_without_orderBy_ordered_by_key()
     {
         await using var database = await sqlInstance.Build();
         await RunQuery(database, parentChildQuery, null, null, false, ParentWithChild());
     }
 
-    [Fact]
+    [Test]
     public async Task Navigation_without_orderBy_not_ordered_by_key()
     {
         await using var database = await sqlInstance.Build();
         await RunQuery(database, parentChildQuery, null, null, false, ParentWithChild(), orderNavigationsByKey: false);
     }
 
-    [Fact]
+    [Test]
     public async Task Navigation_with_orderBy_not_ordered_by_key()
     {
         var query =

@@ -1,6 +1,6 @@
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task Connection_with_read_only_property_and_navigation()
     {
         // ReadOnlyEntity has read-only properties (DisplayName, IsAdult, ComputedInDb)
@@ -33,7 +33,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_with_read_only_property_navigation_and_fragment()
     {
         var query =

@@ -1,6 +1,6 @@
 ﻿public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task Child_filtered()
     {
         var query =
@@ -61,7 +61,7 @@
         public string? Property { get; set; }
     }
 
-    [Fact]
+    [Test]
     public async Task RootList_filtered()
     {
         var query =
@@ -87,7 +87,7 @@
         await RunQuery(database, query, null, BuildFilters(), false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Root_connectionFiltered()
     {
         var query =
@@ -120,7 +120,7 @@
         await RunQuery(database, query, null, BuildFilters(), false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Connection_parent_child_Filtered()
     {
         var query =
@@ -167,7 +167,7 @@
         await RunQuery(database, query, null, BuildFilters(), false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Multiple_nested_Filtered()
     {
         var query =

@@ -2,7 +2,7 @@
 
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task Where_and_or_not()
     {
         var query =
@@ -47,7 +47,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, entity4]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_nested_navigation()
     {
         var query =
@@ -91,9 +91,9 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent1, parent2, child1, child2]);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
+    [Test]
+    [Arguments(true)]
+    [Arguments(false)]
     public async Task Where_navigation_is_null(bool isNull)
     {
         var query =
@@ -124,11 +124,11 @@ public partial class IntegrationTests
             Property = "Child2"
         };
 
-        await using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build(databaseSuffix: isNull.ToString());
         await RunQuery(database, query, null, null, false, [parent, withParent, orphan]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_is_null_at_root()
     {
         var query =
@@ -145,10 +145,10 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Theory]
-    [InlineData("any")]
-    [InlineData("all")]
-    [InlineData("none")]
+    [Test]
+    [Arguments("any")]
+    [Arguments("all")]
+    [Arguments("none")]
     public async Task Where_collection(string quantifier)
     {
         var query =
@@ -211,11 +211,11 @@ public partial class IntegrationTests
             Property = "NoChildren"
         };
 
-        await using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build(databaseSuffix: quantifier);
         await RunQuery(database, query, null, null, false, [allMatch, someMatch, noneMatch, noChildren]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_collection_any_without_conditions()
     {
         var query =
@@ -253,7 +253,7 @@ public partial class IntegrationTests
     }
 
     // The value arrives as a GraphQL Decimal, so the server culture plays no part
-    [Fact]
+    [Test]
     public async Task Where_typed_value_is_culture_independent()
     {
         var query =
@@ -291,7 +291,7 @@ public partial class IntegrationTests
         }
     }
 
-    [Fact]
+    [Test]
     public async Task Where_typed_comparisons()
     {
         var query =
@@ -354,7 +354,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [match, tooOld, inactive, wrongStatus]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_in_with_null()
     {
         var query =
@@ -381,7 +381,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [one, two, none]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_with_typed_variable()
     {
         var query =
@@ -424,7 +424,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, inputs, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_empty_applies_no_filter()
     {
         var query =
@@ -450,7 +450,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_unknown_property()
     {
         var query =
@@ -467,7 +467,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_value_of_wrong_type()
     {
         var query =
@@ -484,7 +484,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_comparison_not_available_for_type()
     {
         var query =
@@ -501,7 +501,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_owned()
     {
         var query =
@@ -547,7 +547,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [match, other]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_collection_on_navigation_list()
     {
         var query =

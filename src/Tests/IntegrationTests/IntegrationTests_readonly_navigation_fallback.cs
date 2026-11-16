@@ -3,7 +3,7 @@ public partial class IntegrationTests
     // displayName is expression bodied: it has no column to select and no field to bind, so the
     // navigation is bound whole. A get only property that is mapped, such as computedInDb, is
     // bound through its backing field and no longer causes this.
-    [Fact]
+    [Test]
     public async Task Collection_navigation_to_entity_with_readonly_property_falls_back_to_full_include()
     {
         var parent = new ReadOnlyParentEntity
@@ -39,7 +39,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child]);
     }
 
-    [Fact]
+    [Test]
     public async Task Single_query_with_collection_navigation_to_readonly_entity()
     {
         var parent = new ReadOnlyParentEntity
@@ -76,8 +76,8 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child]);
     }
 
-    [Fact]
-    public void Projection_with_readonly_scalar_on_collection_navigation_builds_expression()
+    [Test]
+    public async Task Projection_with_readonly_scalar_on_collection_navigation_builds_expression()
     {
         // When a collection navigation target has a read-only property,
         // TryBuild should succeed by falling back to including the full navigation entity.
@@ -104,12 +104,12 @@ public partial class IntegrationTests
 
         var result = SelectExpressionBuilder.TryBuild<ReadOnlyParentEntity>(projection, keyNames, out var expression);
 
-        Assert.True(result);
-        Assert.NotNull(expression);
+        await Assert.That(result).IsTrue();
+        await Assert.That(expression).IsNotNull();
     }
 
-    [Fact]
-    public void Projection_with_readonly_scalar_on_single_navigation_builds_expression()
+    [Test]
+    public async Task Projection_with_readonly_scalar_on_single_navigation_builds_expression()
     {
         // When a single navigation target has a read-only property,
         // TryBuild should succeed by falling back to including the full navigation entity.
@@ -136,12 +136,12 @@ public partial class IntegrationTests
 
         var result = SelectExpressionBuilder.TryBuild<ReadOnlyEntity>(projection, keyNames, out var expression);
 
-        Assert.True(result);
-        Assert.NotNull(expression);
+        await Assert.That(result).IsTrue();
+        await Assert.That(expression).IsNotNull();
     }
 
-    [Fact]
-    public void Projection_with_readonly_scalar_at_root_still_returns_null()
+    [Test]
+    public async Task Projection_with_readonly_scalar_at_root_still_returns_null()
     {
         // A read-only property at the ROOT entity level
         // still causes TryBuild to return null (load full entity).
@@ -158,7 +158,7 @@ public partial class IntegrationTests
 
         var result = SelectExpressionBuilder.TryBuild<ReadOnlyEntity>(projection, keyNames, out var expression);
 
-        Assert.False(result);
-        Assert.Null(expression);
+        await Assert.That(result).IsFalse();
+        await Assert.That(expression).IsNull();
     }
 }

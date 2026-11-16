@@ -4,7 +4,7 @@
     // causing a circular include (e.g. TravelRequest -> Attachment -> BaseRequest).
     // The include path skips the inverse of the navigation it came through, which is the one
     // nested include EF rejects in a no tracking query.
-    [Fact]
+    [Test]
     public async Task Tph_base_type_include_skipped_with_filter()
     {
         var leaf = new TphLeafEntity
@@ -43,7 +43,7 @@
         await RunQuery(database, query, null, BuildTphFilters(), false, [leaf, attachment]);
     }
 
-    [Fact]
+    [Test]
     public async Task Tph_base_type_single_include_skipped_with_filter()
     {
         var leaf = new TphLeafEntity

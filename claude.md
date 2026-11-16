@@ -22,16 +22,18 @@ dotnet build src --configuration Release
 
 ### Running Tests
 ```bash
-dotnet test src --configuration Release --no-build --no-restore
+dotnet test --solution src/GraphQL.EntityFramework.slnx --configuration Release --no-build --no-restore
 ```
+
+Tests run on Microsoft.Testing.Platform (see `global.json`), so filtering uses TUnit's `--treenode-filter` (`/Assembly/Namespace/Class/Test`) rather than VSTest's `--filter`.
 
 ### Running a Single Test
 ```bash
-# Run a specific test by fully qualified name
-dotnet test src --filter "FullyQualifiedName~TestNamespace.TestClass.TestMethod"
+# Run a specific test
+dotnet test --project src/Tests --treenode-filter "/*/*/TestClass/TestMethod"
 
 # Run all tests in a class
-dotnet test src --filter "FullyQualifiedName~TestNamespace.TestClass"
+dotnet test --project src/Tests --treenode-filter "/*/*/TestClass/*"
 ```
 
 ### Documentation Generation
@@ -200,8 +202,8 @@ The analyzer automatically runs during build and in IDEs (Visual Studio, Rider, 
 ## Testing
 
 Tests use:
-- xUnit v3
-- Verify.XunitV3 for snapshot testing
+- TUnit (`[Test]`, `[Arguments]`, `await Assert.That(...)`)
+- Verify.TUnit for snapshot testing
 - EfLocalDb for in-memory SQL Server testing
 - SQL Server LocalDB for integration tests
 

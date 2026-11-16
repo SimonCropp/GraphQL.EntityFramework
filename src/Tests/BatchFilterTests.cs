@@ -1,7 +1,7 @@
 // Outside an execution there is no batch to share, so a batch filter runs over the items it is given
 public class BatchFilterTests
 {
-    [Fact]
+    [Test]
     public async Task ApplyFilter_passes_the_items_in_one_call()
     {
         var calls = new List<List<string?>>();
@@ -28,12 +28,13 @@ public class BatchFilterTests
 
         var result = await filters.ApplyFilter(items, new(), null!, null);
 
-        Assert.Equal(["Value1", "Value1", "Value2"], result.Select(_ => _.Property));
-        var call = Assert.Single(calls);
-        Assert.Equal(["Ignore", "Value1", "Value2"], call);
+        await Assert.That(result.Select(_ => _.Property))
+            .IsEquivalentTo((string?[]) ["Value1", "Value1", "Value2"], CollectionOrdering.Matching);
+        var call = await Assert.That(calls).HasSingleItem();
+        await Assert.That(call).IsEquivalentTo((string?[]) ["Ignore", "Value1", "Value2"], CollectionOrdering.Matching);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldInclude_passes_the_item()
     {
         var calls = new List<List<string?>>();
@@ -56,9 +57,11 @@ public class BatchFilterTests
                 Property = "Ignore"
             });
 
-        Assert.True(kept);
-        Assert.False(ignored);
-        Assert.Equal([["Value1"], ["Ignore"]], calls);
+        await Assert.That(kept).IsTrue();
+        await Assert.That(ignored).IsFalse();
+        await Assert.That(calls).Count().IsEqualTo(2);
+        await Assert.That(calls[0]).IsEquivalentTo((string?[]) ["Value1"], CollectionOrdering.Matching);
+        await Assert.That(calls[1]).IsEquivalentTo((string?[]) ["Ignore"], CollectionOrdering.Matching);
     }
 
     static Filters<IntegrationDbContext> BuildFilters(List<List<string?>> calls)

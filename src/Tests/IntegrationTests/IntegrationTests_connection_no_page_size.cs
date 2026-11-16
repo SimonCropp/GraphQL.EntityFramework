@@ -2,7 +2,7 @@ public partial class IntegrationTests
 {
     // With neither first nor last, and no page size on the field, first defaulted to zero and the
     // connection came back with the total count but no edges. It now returns everything.
-    [Fact]
+    [Test]
     public async Task Connection_without_first_or_last_returns_everything()
     {
         var query =

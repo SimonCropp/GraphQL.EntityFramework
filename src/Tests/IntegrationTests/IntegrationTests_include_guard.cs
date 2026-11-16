@@ -5,7 +5,7 @@ public partial class IntegrationTests
     // never included, and came back null. Only the inverse of the navigation just traversed is
     // skipped now, which is the one nested include EF rejects. summary is read only, so cannot be
     // bound by a select, which is what puts these queries on the includes path.
-    [Fact]
+    [Test]
     public async Task Unrelated_navigation_to_base_type_is_included()
     {
         var related = new TphLeafEntity
@@ -50,7 +50,7 @@ public partial class IntegrationTests
     }
 
     // The inverse skip has to hold in a no tracking query, where EF rejects the cycle outright
-    [Fact]
+    [Test]
     public async Task Tph_base_type_include_skipped_with_filter_no_tracking()
     {
         var leaf = new TphLeafEntity

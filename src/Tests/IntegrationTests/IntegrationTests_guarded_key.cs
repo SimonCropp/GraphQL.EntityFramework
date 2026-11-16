@@ -1,6 +1,6 @@
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task Query_entity_with_guarded_key_setter()
     {
         var entity = new GuardedKeyEntity("test@example.com");
@@ -20,7 +20,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
+    [Test]
     public async Task Single_entity_with_guarded_key_setter()
     {
         var entity = new GuardedKeyEntity("test@example.com");
@@ -40,8 +40,8 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
-    public void Projection_with_guarded_key_setter_returns_null()
+    [Test]
+    public async Task Projection_with_guarded_key_setter_returns_null()
     {
         // When a key property has a custom (non-auto) setter,
         // TryBuild should return null to fall back to full entity loading,
@@ -59,7 +59,7 @@ public partial class IntegrationTests
 
         var result = SelectExpressionBuilder.TryBuild<GuardedKeyEntity>(projection, keyNames, out var expression);
 
-        Assert.False(result);
-        Assert.Null(expression);
+        await Assert.That(result).IsFalse();
+        await Assert.That(expression).IsNull();
     }
 }

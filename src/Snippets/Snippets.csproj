@@ -1,23 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net11.0</TargetFramework>
-    <NoWarn>$(NoWarn);xUnit1051</NoWarn>
-    <IsTestProject>false</IsTestProject>
-    <IsTestingPlatformApplication>false</IsTestingPlatformApplication>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL" />
     <PackageReference Include="MarkdownSnippets.MsBuild" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
-    <PackageReference Include="xunit.v3" />
-    <PackageReference Include="Verify.XunitV3" />
-    <PackageReference Include="Argon" />
-    <PackageReference Include="DiffEngine" />
-    <PackageReference Include="EmptyFiles" />
-    <PackageReference Include="SimpleInfoName" />
-    <PackageReference Include="Verify" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
   </ItemGroup>

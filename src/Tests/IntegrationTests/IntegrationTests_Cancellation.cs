@@ -1,7 +1,7 @@
 public partial class IntegrationTests
 {
 
-    [Fact]
+    [Test]
     public async Task QueryConnection_WithCancelledToken_ThrowsOperationCanceledException()
     {
         var query =
@@ -54,11 +54,11 @@ public partial class IntegrationTests
         };
 
         // Should throw OperationCanceledException (or derived TaskCanceledException) without wrapping
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
+        await Assert.ThrowsAsync<OperationCanceledException>(async () =>
             await executer.ExecuteAsync(options));
     }
 
-    [Fact]
+    [Test]
     public async Task QueryConnection_WithOperationCancelled_ThrowsOperationCanceledException()
     {
         var query =
@@ -111,7 +111,7 @@ public partial class IntegrationTests
         // Cancel immediately to trigger OperationCanceledException
         await cts.CancelAsync();
 
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
+        await Assert.ThrowsAsync<OperationCanceledException>(async () =>
             await executer.ExecuteAsync(options));
     }
 }

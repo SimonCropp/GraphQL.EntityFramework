@@ -3,7 +3,7 @@ public partial class IntegrationTests
     // A member init creates the type it names, so projecting a concrete base type materialized
     // every row as the base and derived rows lost their identity: the derived fragment matched
     // nothing and __typename was wrong. Types with derived types now load the full entity instead.
-    [Fact]
+    [Test]
     public async Task Concrete_tph_base_keeps_derived_identity()
     {
         var query =
@@ -35,7 +35,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [baseEntity, derivedEntity]);
     }
 
-    [Fact]
+    [Test]
     public async Task Concrete_tph_base_keeps_derived_identity_single()
     {
         var derivedEntity = new ConcreteTphDerivedEntity
