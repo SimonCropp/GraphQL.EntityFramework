@@ -2,7 +2,7 @@ public partial class IntegrationTests
 {
     // The same navigation selected under two aliases. Whichever selection was processed first
     // used to win, so the fields asked for by the other came back as defaults.
-    [Fact]
+    [Test]
     public async Task Aliased_navigation_selections_merge()
     {
         var query =
@@ -42,7 +42,7 @@ public partial class IntegrationTests
     // A navigation field and a projection based field that projects the same navigation, selected
     // side by side. The navigation field was processed first, and the projection based field was
     // then skipped, so the fields it selected were never projected.
-    [Fact]
+    [Test]
     public async Task Projection_based_field_merges_with_navigation_field()
     {
         var query =
@@ -79,7 +79,7 @@ public partial class IntegrationTests
     }
 
     // Navigations below the aliased selections are merged as well
-    [Fact]
+    [Test]
     public async Task Aliased_navigation_selections_merge_nested_navigations()
     {
         var query =

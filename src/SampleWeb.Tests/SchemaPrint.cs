@@ -2,7 +2,7 @@ using GraphQL;
 
 public class SchemaPrint
 {
-    [Fact]
+    [Test]
     public async Task Print()
     {
         var services = new ServiceCollection();

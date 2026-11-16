@@ -1,6 +1,6 @@
 ﻿public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task FieldBuilder_int_value_type_projection()
     {
         var query =
@@ -25,7 +25,7 @@
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_bool_value_type_projection()
     {
         var query =
@@ -55,7 +55,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_datetime_value_type_projection()
     {
         var query =
@@ -80,7 +80,7 @@
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_decimal_value_type_projection()
     {
         var query =
@@ -105,7 +105,7 @@
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_double_value_type_projection()
     {
         var query =
@@ -130,7 +130,7 @@
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_long_value_type_projection()
     {
         var query =
@@ -155,7 +155,7 @@
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_async_bool_value_type_projection()
     {
         var query =
@@ -184,7 +184,7 @@
         await RunQuery(database, query, null, null, false, [entity, parent]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_async_int_value_type_projection()
     {
         var query =
@@ -225,7 +225,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3, parent]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_string_reference_type_projection()
     {
         var query =
@@ -248,7 +248,7 @@
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_navigation_property_projection()
     {
         var query =
@@ -282,7 +282,7 @@
         await RunQuery(database, query, null, null, false, [entityWithParent, entityWithoutParent, parent]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_multiple_value_types_combined()
     {
         var query =
@@ -318,7 +318,7 @@
         await RunQuery(database, query, null, null, false, [entity]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_enum_scalar_projection()
     {
         var query =
@@ -353,7 +353,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_enum_projection_through_navigation()
     {
         // This test verifies that scalar enum projections work correctly when navigating through relationships
@@ -403,7 +403,7 @@
         await RunQuery(database, query, null, null, false, [parent, child1, child2]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_WithProjection_scalar_field_included_in_select()
     {
         // Verifies that WithProjection (metadata-only, no resolver wrapping)
@@ -434,7 +434,7 @@
         await RunQuery(database, query, null, null, false, [entity1, entity2]);
     }
 
-    [Fact]
+    [Test]
     public async Task FieldBuilder_WithProjection_twice_includes_both_in_select()
     {
         // Both projections of a field are loaded. The second replaced the first, so the resolver

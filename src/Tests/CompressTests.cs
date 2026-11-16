@@ -1,6 +1,6 @@
 ﻿public class CompressTests
 {
-    [Fact]
+    [Test]
     public Task Simple()
     {
         var query =
@@ -17,7 +17,7 @@
             .Snapshot("query($id:String!){companies(ids:[$id]){id}}");
     }
 
-    [Fact]
+    [Test]
     public Task StringLiteralIsPreserved()
     {
         // whitespace inside a literal is significant, and stripping it silently queried for
@@ -27,7 +27,7 @@
             .Snapshot("""{users(where:{path:"name",comparison:equal,value:"Smith, John: Jr"}){id}}""");
     }
 
-    [Fact]
+    [Test]
     public Task EscapedQuoteDoesNotEndTheLiteral()
     {
         var query = """{users(where: {value: "a \" b,  c"}){id}}""";
@@ -35,7 +35,7 @@
             .Snapshot("""{users(where:{value:"a \" b,  c"}){id}}""");
     }
 
-    [Fact]
+    [Test]
     public Task BlockStringIsPreserved()
     {
         var query = "{users(where: {value: \"\"\"a,  b: c\"\"\"}){id}}";
@@ -43,7 +43,7 @@
             .Snapshot("{users(where:{value:\"\"\"a,  b: c\"\"\"}){id}}");
     }
 
-    [Fact]
+    [Test]
     public Task CommentIsRemovedWithoutSwallowingTheQuery()
     {
         // collapsing the newline into a space would pull the rest of the query into the comment
@@ -60,7 +60,7 @@
             .Snapshot("{users{id}}");
     }
 
-    [Fact]
+    [Test]
     public Task NamesStaySeparated() =>
         Verify(Compress.Query("query Named { users { id name } }"))
             .Snapshot("query Named{users{id name}}");

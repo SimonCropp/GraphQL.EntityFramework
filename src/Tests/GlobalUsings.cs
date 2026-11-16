@@ -3,3 +3,4 @@ global using System.Text.RegularExpressions;
 global using EfOrderBy;
 global using GraphQL.Execution;
 global using Polyfills;
+global using TUnit.Assertions.Enums;

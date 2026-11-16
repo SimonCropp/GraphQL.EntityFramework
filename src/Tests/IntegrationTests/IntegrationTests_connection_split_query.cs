@@ -1,7 +1,7 @@
 public partial class IntegrationTests
 {
     // The resolver's AsSplitQuery is removed, since no collection is selected
-    [Fact]
+    [Test]
     public async Task Connection_split_query_without_collection()
     {
         var query =
@@ -24,7 +24,7 @@ public partial class IntegrationTests
 
     // The resolver's AsSplitQuery is removed from a connection over a type with derived types,
     // since no collection is selected
-    [Fact]
+    [Test]
     public async Task Connection_split_query_with_derived_types_without_collection()
     {
         var query =
@@ -53,7 +53,7 @@ public partial class IntegrationTests
     }
 
     // The resolver's AsSplitQuery is kept, since the children are selected
-    [Fact]
+    [Test]
     public async Task Connection_split_query_with_collection()
     {
         var query =

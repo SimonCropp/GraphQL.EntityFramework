@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <NoWarn>$(NoWarn);EF1000;xUnit1051</NoWarn>
+    <TargetFramework>net11.0</TargetFramework>
+    <NoWarn>$(NoWarn);EF1000</NoWarn>
     <OutputType>Exe</OutputType>
     <RootNamespace>testing</RootNamespace>
     <AssemblyName>GraphQL.EntityFramework.Tests</AssemblyName>
@@ -15,15 +15,13 @@
     <PackageReference Include="Verify.EntityFramework" />
     <PackageReference Include="Verify.GraphQL" />
     <PackageReference Include="Verify.SqlServer" />
-    <PackageReference Include="xunit.v3" />
-    <PackageReference Include="Verify.XunitV3" />
+    <PackageReference Include="TUnit" />
+    <PackageReference Include="Verify.TUnit" />
     <PackageReference Include="Argon" />
     <PackageReference Include="DiffEngine" />
     <PackageReference Include="EmptyFiles" />
     <PackageReference Include="SimpleInfoName" />
     <PackageReference Include="Verify" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="coverlet.collector" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <ProjectReference Include="..\GraphQL.EntityFramework\GraphQL.EntityFramework.csproj" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
     <PackageReference Include="GraphQL.MicrosoftDI" />

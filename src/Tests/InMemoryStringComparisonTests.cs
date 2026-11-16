@@ -4,35 +4,36 @@
 // like, which threw outside a query, matches the pattern in memory.
 public class InMemoryStringComparisonTests
 {
-    [Theory]
-    [InlineData(Comparison.Equal, "VALUE", "Value")]
-    [InlineData(Comparison.StartsWith, "VAL", "Value")]
-    [InlineData(Comparison.EndsWith, "LUE", "Value")]
-    [InlineData(Comparison.Contains, "ALU", "Value")]
-    [InlineData(Comparison.In, "VALUE", "Value")]
-    [InlineData(Comparison.Like, "%ALU%", "Value")]
-    [InlineData(Comparison.Like, "V_LUE", "Value")]
-    [InlineData(Comparison.Like, "[A-Z]alue", "Value")]
-    public void Matches_ignoring_case(Comparison comparison, string value, string property)
+    [Test]
+    [Arguments(Comparison.Equal, "VALUE", "Value")]
+    [Arguments(Comparison.StartsWith, "VAL", "Value")]
+    [Arguments(Comparison.EndsWith, "LUE", "Value")]
+    [Arguments(Comparison.Contains, "ALU", "Value")]
+    [Arguments(Comparison.In, "VALUE", "Value")]
+    [Arguments(Comparison.Like, "%ALU%", "Value")]
+    [Arguments(Comparison.Like, "V_LUE", "Value")]
+    [Arguments(Comparison.Like, "[A-Z]alue", "Value")]
+    public async Task Matches_ignoring_case(Comparison comparison, string value, string property)
     {
         var result = Apply(comparison, value, new ParentEntity {Property = property}, new ParentEntity {Property = "Other"});
 
-        Assert.Equal([property], result.Select(_ => _.Property));
+        await Assert.That(result.Select(_ => _.Property))
+            .IsEquivalentTo((string?[]) [property], CollectionOrdering.Matching);
     }
 
-    [Theory]
-    [InlineData(Comparison.Like, "Val", "Value")]
-    [InlineData(Comparison.Like, "V_LUE", "Vaalue")]
-    [InlineData(Comparison.Like, "%.%", "Value")]
-    public void Like_does_not_match(Comparison comparison, string value, string property)
+    [Test]
+    [Arguments(Comparison.Like, "Val", "Value")]
+    [Arguments(Comparison.Like, "V_LUE", "Vaalue")]
+    [Arguments(Comparison.Like, "%.%", "Value")]
+    public async Task Like_does_not_match(Comparison comparison, string value, string property)
     {
         var result = Apply(comparison, value, new ParentEntity {Property = property});
 
-        Assert.Empty(result);
+        await Assert.That(result).IsEmpty();
     }
 
-    [Fact]
-    public void Negated_equal_ignores_case()
+    [Test]
+    public async Task Negated_equal_ignores_case()
     {
         var context = BuildContext(
             new()
@@ -51,16 +52,17 @@ public class InMemoryStringComparisonTests
             .ApplyGraphQlArguments(true, context, false)
             .ToList();
 
-        Assert.Equal(["Other"], result.Select(_ => _.Property));
+        await Assert.That(result.Select(_ => _.Property))
+            .IsEquivalentTo((string?[]) ["Other"], CollectionOrdering.Matching);
     }
 
     // The where has no null check on a non nullable string, and the member can still be null in
     // memory, for example when it was not loaded
-    [Theory]
-    [InlineData(Comparison.StartsWith)]
-    [InlineData(Comparison.EndsWith)]
-    [InlineData(Comparison.Contains)]
-    public void Null_in_non_nullable_string_does_not_match(Comparison comparison)
+    [Test]
+    [Arguments(Comparison.StartsWith)]
+    [Arguments(Comparison.EndsWith)]
+    [Arguments(Comparison.Contains)]
+    public async Task Null_in_non_nullable_string_does_not_match(Comparison comparison)
     {
         var context = BuildContext(
             new()
@@ -78,7 +80,7 @@ public class InMemoryStringComparisonTests
             .ApplyGraphQlArguments(false, context, false)
             .ToList();
 
-        Assert.Equal(["A"], result.Select(_ => _.Member));
+        await Assert.That(result.Select(_ => _.Member)).IsEquivalentTo(["A"], CollectionOrdering.Matching);
     }
 
     public class WithNonNullable

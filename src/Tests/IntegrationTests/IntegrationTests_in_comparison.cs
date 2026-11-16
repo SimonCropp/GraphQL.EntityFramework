@@ -2,7 +2,7 @@ public partial class IntegrationTests
 {
     // The `in` comparison was limited to a fixed set of types for the list Contains lookup, which
     // did not include Date and Time even though their values could be converted.
-    [Fact]
+    [Test]
     public async Task Where_in_on_date()
     {
         var query =
@@ -32,7 +32,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [entity1, entity2, entity3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Where_in_on_time()
     {
         var query =
@@ -59,7 +59,7 @@ public partial class IntegrationTests
     }
 
     // decimal had neither a list converter nor a Contains entry
-    [Fact]
+    [Test]
     public async Task Where_in_on_decimal()
     {
         var query =

@@ -3,7 +3,7 @@ public partial class IntegrationTests
     // The resolver-less navigation overloads on an object type fell back to GraphQL.NET's name
     // resolver, which returned the raw property, ignored the arguments and applied no filters.
     // They now get the same resolver AutoMap uses.
-    [Fact]
+    [Test]
     public async Task Resolverless_list_applies_arguments_and_filters()
     {
         var query =
@@ -51,7 +51,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, filters, false, [parent, child1, child2, child3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Resolverless_connection_pages()
     {
         var query =
@@ -92,7 +92,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child1, child2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Resolverless_single_applies_filters()
     {
         var query =
@@ -141,7 +141,7 @@ public partial class IntegrationTests
 
     // The field's selection set went to the first path in the projection expression, so with
     // `new { _.Child2, _.Child1 }` resolving Child1, nothing under Child1 was projected
-    [Fact]
+    [Test]
     public async Task Selection_applies_to_navigation_of_field_type()
     {
         var query =

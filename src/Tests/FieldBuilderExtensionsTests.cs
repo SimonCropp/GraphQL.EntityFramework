@@ -11,94 +11,94 @@ public class FieldBuilderExtensionsTests
     // Identity projections are rejected before the service is touched, so no real service is required
     static readonly IEfGraphQLService<TestDbContext> graphQlService = null!;
 
-    [Fact]
-    public void Resolve_ThrowsArgumentException_WhenIdentityProjectionUsed()
+    [Test]
+    public async Task Resolve_ThrowsArgumentException_WhenIdentityProjectionUsed()
     {
         var graphType = new ObjectGraphType<TestEntity>();
         var field = graphType.Field<int>("test");
 
-        var exception = Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.ThrowsExactly<ArgumentException>(() =>
             field.Resolve(
                 graphQlService,
                 projection: _ => _,
                 resolve: _ => _.Projection.Id));
 
-        Assert.Contains("Identity projection", exception.Message);
-        Assert.Contains("_ => _", exception.Message);
+        await Assert.That(exception.Message).Contains("Identity projection");
+        await Assert.That(exception.Message).Contains("_ => _");
     }
 
-    [Fact]
-    public void Resolve_ThrowsArgumentException_WhenIdentityProjectionUsedWithDiscardVariable()
+    [Test]
+    public async Task Resolve_ThrowsArgumentException_WhenIdentityProjectionUsedWithDiscardVariable()
     {
         var graphType = new ObjectGraphType<TestEntity>();
         var field = graphType.Field<int>("test");
 
-        var exception = Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.ThrowsExactly<ArgumentException>(() =>
             field.Resolve(
                 graphQlService,
                 projection: _ => _,
                 resolve: _ => _.Projection.Id));
 
-        Assert.Contains("Identity projection", exception.Message);
+        await Assert.That(exception.Message).Contains("Identity projection");
     }
 
-    [Fact]
-    public void ResolveAsync_ThrowsArgumentException_WhenIdentityProjectionUsed()
+    [Test]
+    public async Task ResolveAsync_ThrowsArgumentException_WhenIdentityProjectionUsed()
     {
         var graphType = new ObjectGraphType<TestEntity>();
         var field = graphType.Field<int>("test");
 
-        var exception = Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.ThrowsExactly<ArgumentException>(() =>
             field.ResolveAsync(
                 graphQlService,
                 projection: _ => _,
                 resolve: _ => Task.FromResult(_.Projection.Id)));
 
-        Assert.Contains("Identity projection", exception.Message);
+        await Assert.That(exception.Message).Contains("Identity projection");
     }
 
-    [Fact]
-    public void ResolveList_ThrowsArgumentException_WhenIdentityProjectionUsed()
+    [Test]
+    public async Task ResolveList_ThrowsArgumentException_WhenIdentityProjectionUsed()
     {
         var graphType = new ObjectGraphType<TestEntity>();
         var field = graphType.Field<IEnumerable<int>>("test");
 
-        var exception = Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.ThrowsExactly<ArgumentException>(() =>
             field.ResolveList(
                 graphQlService,
                 projection: _ => _,
                 resolve: _ => [_.Projection.Id]));
 
-        Assert.Contains("Identity projection", exception.Message);
+        await Assert.That(exception.Message).Contains("Identity projection");
     }
 
-    [Fact]
-    public void ResolveListAsync_ThrowsArgumentException_WhenIdentityProjectionUsed()
+    [Test]
+    public async Task ResolveListAsync_ThrowsArgumentException_WhenIdentityProjectionUsed()
     {
         var graphType = new ObjectGraphType<TestEntity>();
         var field = graphType.Field<IEnumerable<int>>("test");
 
-        var exception = Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.ThrowsExactly<ArgumentException>(() =>
             field.ResolveListAsync(
                 graphQlService,
                 projection: _ => _,
                 resolve: _ => Task.FromResult<IEnumerable<int>>([_.Projection.Id])));
 
-        Assert.Contains("Identity projection", exception.Message);
+        await Assert.That(exception.Message).Contains("Identity projection");
     }
 
-    [Fact]
-    public void FieldBuilderEx_Resolve_ThrowsException()
+    [Test]
+    public async Task FieldBuilderEx_Resolve_ThrowsException()
     {
         // Arrange
         var fieldType = new FieldType { Name = "test", Type = typeof(StringGraphType) };
         var builder = new FieldBuilderEx<object, string>(fieldType);
 
         // Assert - Calling Resolve should throw
-        var exception = Assert.Throws<Exception>(() =>
+        var exception = Assert.ThrowsExactly<Exception>(() =>
             builder.Resolve(_ => "test"));
 
-        Assert.Contains("resolve has already been configured", exception.Message);
+        await Assert.That(exception.Message).Contains("resolve has already been configured");
     }
 
     enum TestEnum

@@ -6,7 +6,7 @@ public partial class IntegrationTests
     // Selected on the interface it was not: the field of the interface carries no projection, and
     // only that field was looked at.
 
-    [Fact]
+    [Test]
     public async Task Interface_field_uses_projection_of_implementing_types()
     {
         var query =
@@ -26,7 +26,7 @@ public partial class IntegrationTests
 
     // A fragment at the root of an interface typed query is not among the sub fields, so its
     // fields were recorded by name alone and their projections never read.
-    [Fact]
+    [Test]
     public async Task Interface_field_in_root_fragment_uses_its_projection()
     {
         var query =
@@ -51,7 +51,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, InterfaceProjectionEntities());
     }
 
-    [Fact]
+    [Test]
     public async Task Interface_field_in_connection_uses_projection_of_implementing_types()
     {
         var query =
@@ -72,7 +72,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, InterfaceProjectionEntities());
     }
 
-    [Fact]
+    [Test]
     public async Task Interface_field_under_navigation_uses_projection_of_implementing_types()
     {
         var query =

@@ -41,13 +41,13 @@
     Text:
 select   c.Id,
          case when p.Id is null then cast (1 as bit) else cast (0 as bit) end,
-         p.Id,
          s.Id,
          s.c,
          s.Id0,
          s.Property,
          s.ParentId,
          s.Property0,
+         p.Id,
          p.Property,
          c.ParentId,
          c.Property
@@ -69,7 +69,6 @@ from     ChildEntities as c
          on p.Id = s.ParentId
 order by c.Property,
          c.Id,
-         p.Id,
          s.Id
   },
   childBatch: [

@@ -3,7 +3,7 @@ public partial class IntegrationTests
     // A field named items, edges or node was taken for a connection wrapper by its name alone,
     // so a navigation named Items was never projected and came back empty. The wrapper is now
     // recognised by the graph type the field is selected from.
-    [Fact]
+    [Test]
     public async Task Navigation_named_items_is_projected()
     {
         var query =

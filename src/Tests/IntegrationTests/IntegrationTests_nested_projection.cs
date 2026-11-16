@@ -3,7 +3,7 @@ public partial class IntegrationTests
     // Below the root, the edges/items/node wrappers of a connection were recorded as scalar fields
     // named after the wrapper, so only the keys of the nodes were projected and every other
     // scalar came back null.
-    [Fact]
+    [Test]
     public async Task Nested_connection_projects_scalars()
     {
         var query =
@@ -56,7 +56,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child1, child2]);
     }
 
-    [Fact]
+    [Test]
     public async Task Nested_connection_under_root_connection_projects_scalars()
     {
         var query =
@@ -97,7 +97,7 @@ public partial class IntegrationTests
     // Projection metadata was only looked up for the root sub fields. A projection based field
     // below a navigation was matched against the entity by its GraphQL name, found nothing, and
     // so the navigation it projects was never loaded.
-    [Fact]
+    [Test]
     public async Task Nested_projection_based_navigation_field()
     {
         var query =
@@ -133,7 +133,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child]);
     }
 
-    [Fact]
+    [Test]
     public async Task Nested_projection_based_scalar_fields()
     {
         var query =

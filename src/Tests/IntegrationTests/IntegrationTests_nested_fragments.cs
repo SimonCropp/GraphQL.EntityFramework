@@ -2,7 +2,7 @@ public partial class IntegrationTests
 {
     // Below the root, fragments were followed one level down only, so a fragment that spread
     // another fragment contributed nothing to the projection.
-    [Fact]
+    [Test]
     public async Task Fragment_spread_inside_fragment_spread()
     {
         var query =
@@ -44,7 +44,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child]);
     }
 
-    [Fact]
+    [Test]
     public async Task Fragment_spread_inside_inline_fragment()
     {
         var query =
@@ -86,7 +86,7 @@ public partial class IntegrationTests
 
     // The root is abstract, so this takes the include path. The navigation on the derived type is
     // selected by an inline fragment that sits inside a fragment spread, which was not followed.
-    [Fact]
+    [Test]
     public async Task Derived_navigation_inline_fragment_inside_fragment_spread()
     {
         var category = new CategoryEntity

@@ -3,7 +3,7 @@
 // many calls the items shared.
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task Batch_filter_root_list()
     {
         var query =
@@ -34,7 +34,7 @@ public partial class IntegrationTests
     }
 
     // Two root fields returning the same type share the call
-    [Fact]
+    [Test]
     public async Task Batch_filter_fields_share_one_call()
     {
         var query =
@@ -69,7 +69,7 @@ public partial class IntegrationTests
     }
 
     // The children of each parent resolve separately, and are filtered in one call
-    [Fact]
+    [Test]
     public async Task Batch_filter_navigation_list_rows_share_one_call()
     {
         var query =
@@ -93,7 +93,7 @@ public partial class IntegrationTests
     }
 
     // The parent of each child resolves separately, and is filtered in one call
-    [Fact]
+    [Test]
     public async Task Batch_filter_navigation_rows_share_one_call()
     {
         var query =
@@ -138,7 +138,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, BuildBatchFilters(), [kept, ignored, child1, child2, child3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_navigation_connection_rows_share_one_call()
     {
         var query =
@@ -166,7 +166,7 @@ public partial class IntegrationTests
     }
 
     // The total count is taken before any filter runs, as it is for a per item filter
-    [Fact]
+    [Test]
     public async Task Batch_filter_root_connection()
     {
         var query =
@@ -193,7 +193,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, BuildBatchFilters(), entities);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_resolve_list_rows_share_one_call()
     {
         var query =
@@ -216,7 +216,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, BuildBatchFilters(), entities);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_resolve_rows_share_one_call()
     {
         var query =
@@ -257,7 +257,7 @@ public partial class IntegrationTests
     }
 
     // Each depth of the query shares one call per batch filter, however many rows it has
-    [Fact]
+    [Test]
     public async Task Batch_filter_one_call_per_depth()
     {
         var query =
@@ -288,7 +288,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, BuildBatchFilters(), entities);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_single()
     {
         var (entities, kept, _) = BuildParentsWithChildren();
@@ -310,7 +310,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, BuildBatchFilters(), entities);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_single_excluded()
     {
         var (entities, _, ignored) = BuildParentsWithChildren();
@@ -328,7 +328,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, BuildBatchFilters(), entities);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_single_nullable_excluded()
     {
         var (entities, _, ignored) = BuildParentsWithChildren();
@@ -346,7 +346,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, BuildBatchFilters(), entities);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_first()
     {
         var (entities, kept, _) = BuildParentsWithChildren();
@@ -364,7 +364,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, BuildBatchFilters(), entities);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_first_excluded()
     {
         var (entities, _, ignored) = BuildParentsWithChildren();
@@ -382,7 +382,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, BuildBatchFilters(), entities);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_first_nullable_excluded()
     {
         var (entities, _, ignored) = BuildParentsWithChildren();
@@ -401,7 +401,7 @@ public partial class IntegrationTests
     }
 
     // Items a per item filter excludes are not passed to the batch filter
-    [Fact]
+    [Test]
     public async Task Batch_filter_runs_after_per_item_filters()
     {
         var query =
@@ -436,7 +436,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, filters, [parent1, parent2, parent3]);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_on_derived_type_applies_to_base_typed_list()
     {
         var query =
@@ -471,7 +471,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, filters, [derived, derivedKept, derivedWithNavigation]);
     }
 
-    [Fact]
+    [Test]
     public async Task Batch_filter_exception()
     {
         var query =

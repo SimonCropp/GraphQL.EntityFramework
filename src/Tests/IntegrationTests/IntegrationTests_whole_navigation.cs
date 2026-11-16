@@ -2,7 +2,7 @@ public partial class IntegrationTests
 {
     // A filter whose projection is the navigation itself had that navigation skipped when merging
     // its requirements, so the filter saw null. It is now loaded whole.
-    [Fact]
+    [Test]
     public async Task Filter_reading_whole_navigation_sees_its_properties()
     {
         var allowParent = new ParentEntity

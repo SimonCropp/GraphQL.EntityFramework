@@ -3,7 +3,7 @@ public partial class IntegrationTests
     // Field<TGraphType> returns an object typed builder. The filter lookup used the static type,
     // so no filter matched object and a denied parent was returned through parentObject while the
     // typed parentAlias next to it was correctly null.
-    [Fact]
+    [Test]
     public async Task Filter_applies_to_object_typed_projection_field()
     {
         var query =
@@ -46,7 +46,7 @@ public partial class IntegrationTests
 
     // A filter registered for a derived type was only applied to fields typed as that derived
     // type. Derived instances returned by a base typed field went unfiltered.
-    [Fact]
+    [Test]
     public async Task Filter_on_derived_type_applies_to_base_typed_list()
     {
         var query =
@@ -82,7 +82,7 @@ public partial class IntegrationTests
     }
 
     // The single field variant, so the runtime type is used for a lone item as well as a list
-    [Fact]
+    [Test]
     public async Task Filter_on_derived_type_applies_to_base_typed_single()
     {
         var leaf = new TphLeafEntity
@@ -113,7 +113,7 @@ public partial class IntegrationTests
     // A result is only filtered when a filter applies to one of its items, and finding that walks
     // every item. The first item here is of a type with no filter, so a walk that stopped at the
     // first item, or the first type, would return the filtered item unfiltered.
-    [Fact]
+    [Test]
     public async Task Filter_on_derived_type_applies_when_not_first_in_list()
     {
         var query =
@@ -151,7 +151,7 @@ public partial class IntegrationTests
     // The navigation variant. The navigation is typed as the abstract base, so whether a filter
     // applies has to be decided from the runtime type of the parent it returns, not the navigation's
     // type, which no filter is registered for.
-    [Fact]
+    [Test]
     public async Task Filter_on_derived_type_applies_to_base_typed_navigation()
     {
         var query =
@@ -207,7 +207,7 @@ public partial class IntegrationTests
 
     // The projection requirements of a derived type filter are loaded by a base typed query, so
     // the filter can read them from the derived items it is applied to.
-    [Fact]
+    [Test]
     public async Task Filter_on_derived_type_requirements_loaded_by_base_typed_query()
     {
         var query =

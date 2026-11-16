@@ -1,7 +1,7 @@
 ﻿public class PropertyCacheTests
 {
-    [Fact]
-    public void Property()
+    [Test]
+    public async Task Property()
     {
         var target = new TargetForProperty
         {
@@ -10,7 +10,7 @@
 
         var property = PropertyCache<TargetForProperty>.GetProperty("Member");
         var result = property.Func(target);
-        Assert.Equal("Value1", result);
+        await Assert.That(result).IsEqualTo("Value1");
     }
 
     public class TargetForProperty
@@ -18,8 +18,8 @@
         public string? Member;
     }
 
-    [Fact]
-    public void PropertyNested()
+    [Test]
+    public async Task PropertyNested()
     {
         var target = new TargetForPropertyNested
         {
@@ -31,7 +31,7 @@
 
         var property = PropertyCache<TargetForPropertyNested>.GetProperty("Child.Member");
         var result = property.Func(target);
-        Assert.Equal("Value1", result);
+        await Assert.That(result).IsEqualTo("Value1");
     }
 
     public class TargetForPropertyNested
@@ -44,8 +44,8 @@
         public string? Member;
     }
 
-    [Fact]
-    public void PropertyOnInheritedInterface()
+    [Test]
+    public async Task PropertyOnInheritedInterface()
     {
         var target = new MultiInterfaceTarget
         {
@@ -60,29 +60,29 @@
         var a = PropertyCache<IMultiInterface>.GetProperty("A").Func(target);
         var b = PropertyCache<IMultiInterface>.GetProperty("B").Func(target);
 
-        Assert.Equal("valueA", a);
-        Assert.Equal("valueB", b);
+        await Assert.That(a).IsEqualTo("valueA");
+        await Assert.That(b).IsEqualTo("valueB");
     }
 
-    [Fact]
-    public void DeepPathIsRejected()
+    [Test]
+    public async Task DeepPathIsRejected()
     {
         // paths come from the client, and each segment becomes a join on the queryable paths
         var path = string.Join('.', Enumerable.Repeat("Self", 11)) + ".Public";
-        var exception = Assert.Throws<Exception>(() => PropertyCache<SelfReferencing>.GetProperty(path));
-        Assert.Contains("exceeds the maximum depth", exception.Message);
+        var exception = Assert.ThrowsExactly<Exception>(() => PropertyCache<SelfReferencing>.GetProperty(path));
+        await Assert.That(exception.Message).Contains("exceeds the maximum depth");
     }
 
-    [Fact]
-    public void PathAtMaximumDepthIsAllowed()
+    [Test]
+    public async Task PathAtMaximumDepthIsAllowed()
     {
         var path = string.Join('.', Enumerable.Repeat("Self", 9)) + ".Public";
         var property = PropertyCache<SelfReferencing>.GetProperty(path);
-        Assert.Equal(typeof(string), property.PropertyType);
+        await Assert.That(property.PropertyType).IsEqualTo(typeof(string));
     }
 
-    [Fact]
-    public void CacheDoesNotGrowWithoutBound()
+    [Test]
+    public async Task CacheDoesNotGrowWithoutBound()
     {
         // a self referencing navigation can mint unlimited distinct valid paths
         for (var i = 1; i <= 3000; i++)
@@ -95,13 +95,11 @@
             PropertyCache<SelfReferencing>.GetProperty(path.Replace("Self", i % 2 == 0 ? "self" : "SELF"));
         }
 
-        Assert.True(
-            PropertyCache<SelfReferencing>.CachedCount <= 1000,
-            $"cache grew to {PropertyCache<SelfReferencing>.CachedCount}");
+        await Assert.That(PropertyCache<SelfReferencing>.CachedCount).IsLessThanOrEqualTo(1000);
     }
 
-    [Fact]
-    public void FuncStillWorksAfterBeingCompiledLazily()
+    [Test]
+    public async Task FuncStillWorksAfterBeingCompiledLazily()
     {
         var target = new SelfReferencing
         {
@@ -114,8 +112,8 @@
         var property = PropertyCache<SelfReferencing>.GetProperty("Self.Public");
 
         // invoked twice to cover the memoised path as well as the first compile
-        Assert.Equal("Value1", property.Func(target));
-        Assert.Equal("Value1", property.Func(target));
+        await Assert.That(property.Func(target)).IsEqualTo("Value1");
+        await Assert.That(property.Func(target)).IsEqualTo("Value1");
     }
 
     public class SelfReferencing
@@ -124,23 +122,23 @@
         public string? Public { get; set; }
     }
 
-    [Theory]
+    [Test]
     // paths come from the client, so non public members must not be resolvable
-    [InlineData("secretField")]
-    [InlineData("SecretProperty")]
+    [Arguments("secretField")]
+    [Arguments("SecretProperty")]
     // resolution is case insensitive, so casing must not be a way around it
-    [InlineData("SECRETFIELD")]
-    [InlineData("secretproperty")]
+    [Arguments("SECRETFIELD")]
+    [Arguments("secretproperty")]
     // nor may they be reached through a nested path
-    [InlineData("Child.secretField")]
-    public void NonPublicMembersAreNotResolved(string path)
+    [Arguments("Child.secretField")]
+    public async Task NonPublicMembersAreNotResolved(string path)
     {
-        var exception = Assert.Throws<Exception>(() => PropertyCache<TargetWithNonPublicMembers>.GetProperty(path));
-        Assert.Contains("Failed to create a member expression", exception.Message);
+        var exception = Assert.ThrowsExactly<Exception>(() => PropertyCache<TargetWithNonPublicMembers>.GetProperty(path));
+        await Assert.That(exception.Message).Contains("Failed to create a member expression");
     }
 
-    [Fact]
-    public void PublicMembersStillResolveOnTypeWithNonPublicMembers()
+    [Test]
+    public async Task PublicMembersStillResolveOnTypeWithNonPublicMembers()
     {
         var target = new TargetWithNonPublicMembers
         {
@@ -148,7 +146,7 @@
         };
 
         var property = PropertyCache<TargetWithNonPublicMembers>.GetProperty("Public");
-        Assert.Equal("Value1", property.Func(target));
+        await Assert.That(property.Func(target)).IsEqualTo("Value1");
     }
 
     public class TargetWithNonPublicMembers

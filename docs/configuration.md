@@ -444,6 +444,8 @@ The `GraphQlController` can be tested using the [ASP.NET Integration tests](http
 <!-- snippet: GraphQlControllerTests -->
 <a id='snippet-GraphQlControllerTests'></a>
 ```cs
+// The tests share one web host and database connection, so run them one at a time
+[NotInParallel]
 public class GraphQlControllerTests
 {
     static HttpClient client;
@@ -465,7 +467,7 @@ public class GraphQlControllerTests
         clientQueryExecutor = new(JsonConvert.SerializeObject);
     }
 
-    [Fact]
+    [Test]
     public async Task Get()
     {
         var query =
@@ -482,7 +484,7 @@ public class GraphQlControllerTests
         await Verify(await response.Content.ReadAsStringAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task Post()
     {
         var query =
@@ -499,7 +501,7 @@ public class GraphQlControllerTests
         await Verify(await response.Content.ReadAsStringAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task Single()
     {
         var query =
@@ -532,7 +534,7 @@ public class GraphQlControllerTests
                 """);
     }
 
-    [Fact]
+    [Test]
     public async Task First()
     {
         var query =
@@ -555,7 +557,7 @@ public class GraphQlControllerTests
         await Verify(await response.Content.ReadAsStringAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task Single_not_found()
     {
         var query =
@@ -584,7 +586,7 @@ public class GraphQlControllerTests
                 """);
     }
 
-    [Fact]
+    [Test]
     public async Task First_not_found()
     {
         var query =
@@ -603,10 +605,10 @@ public class GraphQlControllerTests
         };
 
         var response = await clientQueryExecutor.ExecuteGet(client, query, variables);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [Test]
     public async Task Variable()
     {
         var query =
@@ -641,7 +643,7 @@ public class GraphQlControllerTests
                 """);
     }
 
-    [Fact]
+    [Test]
     public async Task Companies_paging()
     {
         var after = 1;
@@ -666,7 +668,7 @@ public class GraphQlControllerTests
         await Verify(await response.Content.ReadAsStringAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task Employee_summary()
     {
         var query =
@@ -683,7 +685,7 @@ public class GraphQlControllerTests
         await Verify(await response.Content.ReadAsStringAsync());
     }
 
-    [Fact]
+    [Test]
     public async Task Complex_query_result()
     {
         var query =
@@ -709,7 +711,7 @@ public class GraphQlControllerTests
     }
 }
 ```
-<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L6-L273' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SampleWeb.Tests/GraphQlControllerTests.cs#L6-L275' title='Snippet source file'>snippet source</a> | <a href='#snippet-GraphQlControllerTests' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

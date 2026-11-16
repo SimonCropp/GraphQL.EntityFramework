@@ -64,8 +64,6 @@ from     TphDerivedNavOwners as t
                  on t0.CategoryId = c.Id) as s
          on t.Id = s.OwnerId
 order by t.Id,
-         s.Property,
-         s.Id,
-         s.Id0
+         s.Property
   }
 }

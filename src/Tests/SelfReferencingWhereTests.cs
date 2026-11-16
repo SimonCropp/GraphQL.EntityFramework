@@ -31,7 +31,7 @@ public class SelfReferencingWhereTests
         },
         constructInstance: builder => new(builder.ThrowOnAntiPatterns().Options));
 
-    [Fact]
+    [Test]
     public async Task List_path_into_same_type()
     {
         await using var database = await sqlInstance.Build();
@@ -40,10 +40,10 @@ public class SelfReferencingWhereTests
             .Where(predicate)
             .Select(_ => _.Name)
             .ToListAsync();
-        Assert.Equal(["root"], names);
+        await Assert.That(names).IsEquivalentTo((string?[]) ["root"], CollectionOrdering.Matching);
     }
 
-    [Fact]
+    [Test]
     public async Task List_path_into_same_type_negated()
     {
         await using var database = await sqlInstance.Build();
@@ -53,7 +53,7 @@ public class SelfReferencingWhereTests
             .OrderBy(_ => _.Name)
             .Select(_ => _.Name)
             .ToListAsync();
-        Assert.Equal(["a", "b", "c", "other"], names);
+        await Assert.That(names).IsEquivalentTo((string?[]) ["a", "b", "c", "other"], CollectionOrdering.Matching);
     }
 
     public class Node

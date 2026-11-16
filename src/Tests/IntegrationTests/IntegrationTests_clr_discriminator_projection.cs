@@ -5,7 +5,7 @@ public partial class IntegrationTests
     /// discriminator property, the discriminator column is included in the SQL SELECT projection
     /// even when it is not explicitly requested in the GraphQL query.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task CLR_discriminator_included_in_single_field_projection()
     {
         var entity = new DiscriminatorDerivedAEntity
@@ -34,7 +34,7 @@ public partial class IntegrationTests
     /// Without the fix, the projected entity would have EntityType = TypeA (default 0)
     /// regardless of the actual discriminator value.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task CLR_discriminator_returns_correct_value_when_queried()
     {
         var entityA = new DiscriminatorDerivedAEntity
@@ -68,7 +68,7 @@ public partial class IntegrationTests
     /// a list of derived entities, ensuring all returned entities have the correct
     /// discriminator value.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task CLR_discriminator_included_in_query_field_projection()
     {
         var entity1 = new DiscriminatorDerivedAEntity

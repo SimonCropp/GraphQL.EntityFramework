@@ -2,65 +2,65 @@
 
 public class TypeConverterTests
 {
-    [Theory]
-    [InlineData(typeof(int), "12", 12)]
-    [InlineData(typeof(int?), null, null)]
-    public void ConvertStringToType(Type type, string? value, object? expected)
+    [Test]
+    [Arguments(typeof(int), "12", 12)]
+    [Arguments(typeof(int?), null, null)]
+    public async Task ConvertStringToType(Type type, string? value, object? expected)
     {
         var result = TypeConverter.ConvertStringToType(value, type);
-        Assert.Equal(expected, result);
+        await Assert.That(result).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void ConvertStringToGuid()
+    [Test]
+    public async Task ConvertStringToGuid()
     {
         var guid = Guid.NewGuid();
         var value = guid.ToString();
         var result = TypeConverter.ConvertStringToType(value, typeof(Guid));
-        Assert.Equal(guid, result);
+        await Assert.That(result).IsEqualTo(guid);
     }
 
-    [Fact]
-    public void ConvertStringToDatetime()
+    [Test]
+    public async Task ConvertStringToDatetime()
     {
         var dateTime = DateTime.UtcNow.Date;
         var value = dateTime.ToString("o");
         var result = TypeConverter.ConvertStringToType(value, typeof(DateTime));
-        Assert.Equal(dateTime, result);
+        await Assert.That(result).IsEqualTo(dateTime);
     }
 
-    [Fact]
-    public void ConvertStringToDate()
+    [Test]
+    public async Task ConvertStringToDate()
     {
         var date = new Date(2020,10,1);
         var result = TypeConverter.ConvertStringToType(date.ToString("yyyy-MM-dd"), typeof(Date));
-        Assert.Equal(date, result);
+        await Assert.That(result).IsEqualTo(date);
     }
 
-    [Fact]
-    public void ConvertStringToTime()
+    [Test]
+    public async Task ConvertStringToTime()
     {
         var time = new Time(10,1);
         var result = TypeConverter.ConvertStringToType("10:01", typeof(Time));
-        Assert.Equal(time, result);
+        await Assert.That(result).IsEqualTo(time);
     }
 
-    [Fact]
-    public void ConvertStringToEnum()
+    [Test]
+    public async Task ConvertStringToEnum()
     {
         var day = DayOfWeek.Thursday;
         var value = day.ToString();
         var result = TypeConverter.ConvertStringToType(value, typeof(DayOfWeek));
-        Assert.Equal(day, result);
+        await Assert.That(result).IsEqualTo(day);
     }
 
-    [Fact]
-    public void ConvertUppercaseStringToEnum()
+    [Test]
+    public async Task ConvertUppercaseStringToEnum()
     {
         var day = DayOfWeek.Thursday;
         var value = day.ToString().ToUpperInvariant();
         var result = TypeConverter.ConvertStringToType(value, typeof(DayOfWeek));
-        Assert.Equal(day, result);
+        await Assert.That(result).IsEqualTo(day);
     }
 
     // Where values are query text, so they parse the same under every server culture, and a
@@ -92,22 +92,22 @@ public class TypeConverterTests
         }
     }
 
-    [Theory]
-    [MemberData(nameof(CultureCases))]
-    public void Parses_invariant_of_culture(string culture, Type type, string value, object expected)
+    [Test]
+    [MethodDataSource(nameof(CultureCases))]
+    public async Task Parses_invariant_of_culture(string culture, Type type, string value, object expected)
     {
         var original = CultureInfo.CurrentCulture;
         CultureInfo.CurrentCulture = new(culture);
         try
         {
             var single = TypeConverter.ConvertStringToType(value, type);
-            Assert.Equal(expected, single);
+            await Assert.That(single).IsEqualTo(expected);
 
             var member = typeof(NullableHolder).GetProperty(type.Name)!;
             var list = TypeConverter.ConvertToList([value, null], member);
-            Assert.Equal(2, list.Count);
-            Assert.Equal(expected, list[0]);
-            Assert.Null(list[1]);
+            await Assert.That(list.Count).IsEqualTo(2);
+            await Assert.That(list[0]).IsEqualTo(expected);
+            await Assert.That(list[1]).IsNull();
         }
         finally
         {
@@ -115,20 +115,20 @@ public class TypeConverterTests
         }
     }
 
-    [Fact]
-    public void List_of_non_nullable_member_type()
+    [Test]
+    public async Task List_of_non_nullable_member_type()
     {
         var list = TypeConverter.ConvertToList(["1", "2"], typeof(Holder).GetProperty(nameof(Holder.Value))!);
-        Assert.IsType<List<int>>(list);
-        Assert.Equal([1, 2], list.Cast<int>());
+        await Assert.That(list).IsTypeOf<List<int>>();
+        await Assert.That(list.Cast<int>()).IsEquivalentTo([1, 2], CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void List_of_nullable_member_type()
+    [Test]
+    public async Task List_of_nullable_member_type()
     {
         var list = TypeConverter.ConvertToList(["1", null], typeof(Holder).GetProperty(nameof(Holder.Nullable))!);
-        Assert.IsType<List<int?>>(list);
-        Assert.Equal([1, null], list.Cast<int?>());
+        await Assert.That(list).IsTypeOf<List<int?>>();
+        await Assert.That(list.Cast<int?>()).IsEquivalentTo((int?[]) [1, null], CollectionOrdering.Matching);
     }
 
     class Holder

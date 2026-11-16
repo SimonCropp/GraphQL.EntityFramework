@@ -2,7 +2,7 @@ public partial class IntegrationTests
 {
     // Derived type navigations under a fragment were collected for the root selection only, so
     // below a navigation the derived navigation fell through to the scalar path and was dropped
-    [Fact]
+    [Test]
     public async Task Derived_navigation_under_fragment_below_reference_navigation()
     {
         var category = new CategoryEntity
@@ -41,7 +41,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [category, item, owner]);
     }
 
-    [Fact]
+    [Test]
     public async Task Derived_navigations_under_fragments_below_collection_navigation()
     {
         var category = new CategoryEntity

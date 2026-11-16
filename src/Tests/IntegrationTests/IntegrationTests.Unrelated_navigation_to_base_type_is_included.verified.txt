@@ -49,7 +49,6 @@ from     TphRootEntities as t
 where    t.Property = @p
 order by t.Property,
          t.Id,
-         s.Id,
     Parameters: {
       @p: {
         Value: TheRequest,

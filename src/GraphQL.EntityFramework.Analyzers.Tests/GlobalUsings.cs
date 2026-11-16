@@ -8,4 +8,3 @@ global using Microsoft.CodeAnalysis.CodeFixes;
 global using Microsoft.CodeAnalysis.CSharp;
 global using Microsoft.CodeAnalysis.Diagnostics;
 global using Microsoft.EntityFrameworkCore;
-global using Xunit;

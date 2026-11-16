@@ -1,6 +1,6 @@
 ﻿public class MultiContextTests
 {
-    [Fact]
+    [Test]
     public async Task Run()
     {
         var sqlInstance1 = new SqlInstance<DbContext1>(constructInstance: builder => new(builder.ThrowOnAntiPatterns().Options));

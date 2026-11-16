@@ -54,6 +54,7 @@ where    exists (select 1
 order by m.Id,
          s.Id,
          s.ManyToManyLeftEntityId,
+         s.ManyToManyRightEntityId,
     Parameters: {
       @p: {
         Value: Right2,

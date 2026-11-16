@@ -79,23 +79,23 @@ public class ExpressionBuilderTypedTests
             ]
         };
 
-    [Theory]
-    [InlineData(Quantifier.Any, false, "AllYoung,Mixed")]
-    [InlineData(Quantifier.All, false, "AllYoung,Empty")]
-    [InlineData(Quantifier.None, false, "AllOld,Empty")]
-    [InlineData(Quantifier.Any, true, "AllOld,Empty")]
-    public void Quantifiers(Quantifier quantifier, bool negate, string expected)
+    [Test]
+    [Arguments(Quantifier.Any, false, "AllYoung,Mixed")]
+    [Arguments(Quantifier.All, false, "AllYoung,Empty")]
+    [Arguments(Quantifier.None, false, "AllOld,Empty")]
+    [Arguments(Quantifier.Any, true, "AllOld,Empty")]
+    public async Task Quantifiers(Quantifier quantifier, bool negate, string expected)
     {
         var predicate = ExpressionBuilder<ExpressionBuilderTests.Company>.BuildPredicate(Collection(quantifier, negate));
         var names = Companies()
             .AsQueryable()
             .Where(predicate)
             .Select(_ => _.Name);
-        Assert.Equal(expected, string.Join(",", names));
+        await Assert.That(string.Join(",", names)).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void Quantifier_without_conditions_is_has_items()
+    [Test]
+    public async Task Quantifier_without_conditions_is_has_items()
     {
         var predicate = ExpressionBuilder<ExpressionBuilderTests.Company>.BuildPredicate(
             new WhereExpression
@@ -108,11 +108,11 @@ public class ExpressionBuilderTypedTests
             .AsQueryable()
             .Where(predicate)
             .Select(_ => _.Name);
-        Assert.Equal("AllYoung,Mixed,AllOld", string.Join(",", names));
+        await Assert.That(string.Join(",", names)).IsEqualTo("AllYoung,Mixed,AllOld");
     }
 
-    [Fact]
-    public void Typed_values()
+    [Test]
+    public async Task Typed_values()
     {
         var guid = new Guid("00000000-0000-0000-0000-000000000001");
         var date = new DateTime(2020, 10, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -173,12 +173,12 @@ public class ExpressionBuilderTypedTests
             .AsQueryable()
             .Where(predicate)
             .Single();
-        Assert.Equal(guid, result.Id);
+        await Assert.That(result.Id).IsEqualTo(guid);
     }
 
     // A value of a compatible type, such as an int for a long, is converted
-    [Fact]
-    public void Compatible_value_is_converted()
+    [Test]
+    public async Task Compatible_value_is_converted()
     {
         var targets = new List<Target>
         {
@@ -202,13 +202,13 @@ public class ExpressionBuilderTypedTests
             .AsQueryable()
             .Where(predicate)
             .Single();
-        Assert.Equal(10, result.Big);
+        await Assert.That(result.Big).IsEqualTo(10);
     }
 
-    [Fact]
-    public void Duplicate_typed_values_throw()
+    [Test]
+    public async Task Duplicate_typed_values_throw()
     {
-        var exception = Assert.Throws<Exception>(() =>
+        var exception = Assert.ThrowsExactly<Exception>(() =>
             ExpressionBuilder<Target>.BuildPredicate(
                 new WhereExpression
                 {
@@ -216,7 +216,7 @@ public class ExpressionBuilderTypedTests
                     Comparison = Comparison.In,
                     Value = [10, 10]
                 }));
-        Assert.Contains("Duplicates", exception.InnerException!.Message);
+        await Assert.That(exception.InnerException!.Message).Contains("Duplicates");
     }
 
     public class Target

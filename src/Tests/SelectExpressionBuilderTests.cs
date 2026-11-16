@@ -22,12 +22,16 @@
             ["Id"],
             null,
             null);
-        Assert.True(SelectExpressionBuilder.TryBuild<Target>(projection, keyNames, out var expression));
+        if (!SelectExpressionBuilder.TryBuild<Target>(projection, keyNames, out var expression))
+        {
+            throw new InvalidOperationException("Failed to build the select expression");
+        }
+
         return expression;
     }
 
-    [Fact]
-    public void FieldOrderDoesNotChangeTheExpression()
+    [Test]
+    public async Task FieldOrderDoesNotChangeTheExpression()
     {
         // The same fields requested in a different order must produce the same tree, otherwise EF
         // caches a separate compiled query for identical work.
@@ -35,13 +39,11 @@
         var reversed = Build("Gamma", "Beta", "Alpha");
         var shuffled = Build("Beta", "Gamma", "Alpha");
 
-        Assert.Equal(forward.ToString(), reversed.ToString());
-        Assert.Equal(forward.ToString(), shuffled.ToString());
+        await Assert.That(reversed.ToString()).IsEqualTo(forward.ToString());
+        await Assert.That(shuffled.ToString()).IsEqualTo(forward.ToString());
     }
 
-    [Fact]
-    public void DifferentFieldSetsStillDiffer() =>
-        Assert.NotEqual(
-            Build("Alpha", "Beta").ToString(),
-            Build("Alpha", "Gamma").ToString());
+    [Test]
+    public async Task DifferentFieldSetsStillDiffer() =>
+        await Assert.That(Build("Alpha", "Gamma").ToString()).IsNotEqualTo(Build("Alpha", "Beta").ToString());
 }

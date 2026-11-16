@@ -14,8 +14,8 @@ public class EfFieldBuilderTests
     // The service is not touched when defining fields, so none is required
     static TestGraphType BuildGraphType() => new(null!);
 
-    [Fact]
-    public void Field_returns_EfFieldBuilder_through_fluent_chain()
+    [Test]
+    public async Task Field_returns_EfFieldBuilder_through_fluent_chain()
     {
         var graphType = BuildGraphType();
 
@@ -25,28 +25,32 @@ public class EfFieldBuilderTests
             .Argument<IntGraphType>("argument")
             .Configure(_ => _.Metadata["key"] = "value");
 
-        Assert.IsType<EfFieldBuilder<TestDbContext, TestEntity, int>>(builder);
-        Assert.Equal("description", builder.FieldType.Description);
-        Assert.Equal("reason", builder.FieldType.DeprecationReason);
-        Assert.Equal("value", builder.FieldType.Metadata["key"]);
-        Assert.NotNull(builder.FieldType.Arguments?.Find("argument"));
+        await Assert.That(builder).IsTypeOf<EfFieldBuilder<TestDbContext, TestEntity, int>>();
+        await Assert.That(builder.FieldType.Description).IsEqualTo("description");
+        await Assert.That(builder.FieldType.DeprecationReason).IsEqualTo("reason");
+        await Assert.That(builder.FieldType.Metadata["key"]).IsEqualTo("value");
+        await Assert.That(builder.FieldType.Arguments?.Find("argument")).IsNotNull();
     }
 
-    [Fact]
-    public void Field_overloads_return_EfFieldBuilder()
+    [Test]
+    public async Task Field_overloads_return_EfFieldBuilder()
     {
         var graphType = BuildGraphType();
 
-        Assert.IsType<EfFieldBuilder<TestDbContext, TestEntity, int>>(graphType.Field<IntGraphType, int>("a"));
-        Assert.IsType<EfFieldBuilder<TestDbContext, TestEntity, object>>(graphType.Field<IntGraphType>("b"));
-        Assert.IsType<EfFieldBuilder<TestDbContext, TestEntity, object>>(graphType.Field("c", typeof(IntGraphType)));
-        Assert.IsType<EfFieldBuilder<TestDbContext, TestEntity, object>>(graphType.Field("d", new IntGraphType()));
-        Assert.IsType<EfFieldBuilder<TestDbContext, TestEntity, int>>(graphType.Field("e", _ => _.Id));
-        Assert.IsType<EfFieldBuilder<TestDbContext, TestEntity, int>>(graphType.Field(_ => _.Id));
+        await Assert.That(graphType.Field<IntGraphType, int>("a"))
+            .IsTypeOf<EfFieldBuilder<TestDbContext, TestEntity, int>>();
+        await Assert.That(graphType.Field<IntGraphType>("b"))
+            .IsTypeOf<EfFieldBuilder<TestDbContext, TestEntity, object>>();
+        await Assert.That(graphType.Field("c", typeof(IntGraphType)))
+            .IsTypeOf<EfFieldBuilder<TestDbContext, TestEntity, object>>();
+        await Assert.That(graphType.Field("d", new IntGraphType()))
+            .IsTypeOf<EfFieldBuilder<TestDbContext, TestEntity, object>>();
+        await Assert.That(graphType.Field("e", _ => _.Id)).IsTypeOf<EfFieldBuilder<TestDbContext, TestEntity, int>>();
+        await Assert.That(graphType.Field(_ => _.Id)).IsTypeOf<EfFieldBuilder<TestDbContext, TestEntity, int>>();
     }
 
-    [Fact]
-    public void Resolve_with_projection_after_fluent_chain()
+    [Test]
+    public async Task Resolve_with_projection_after_fluent_chain()
     {
         var graphType = BuildGraphType();
 
@@ -57,36 +61,36 @@ public class EfFieldBuilderTests
                 resolve: _ => _.Projection?.Id ?? 0)
             .DeprecationReason("reason");
 
-        Assert.True(builder.FieldType.Metadata.ContainsKey("_EF_Projection"));
-        Assert.NotNull(builder.FieldType.Resolver);
-        Assert.Equal("reason", builder.FieldType.DeprecationReason);
+        await Assert.That(builder.FieldType.Metadata.ContainsKey("_EF_Projection")).IsTrue();
+        await Assert.That(builder.FieldType.Resolver).IsNotNull();
+        await Assert.That(builder.FieldType.DeprecationReason).IsEqualTo("reason");
     }
 
-    [Fact]
-    public void Resolve_rejects_identity_projection()
+    [Test]
+    public async Task Resolve_rejects_identity_projection()
     {
         var graphType = BuildGraphType();
 
-        var exception = Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.ThrowsExactly<ArgumentException>(() =>
             graphType.Field<int>("test")
                 .Resolve(
                     projection: _ => _,
                     resolve: _ => _.Projection.Id));
 
-        Assert.Contains("Identity projection", exception.Message);
+        await Assert.That(exception.Message).Contains("Identity projection");
     }
 
-    [Fact]
-    public void ResolveAsync_rejects_identity_projection()
+    [Test]
+    public async Task ResolveAsync_rejects_identity_projection()
     {
         var graphType = BuildGraphType();
 
-        var exception = Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.ThrowsExactly<ArgumentException>(() =>
             graphType.Field<int>("test")
                 .ResolveAsync(
                     projection: _ => _,
                     resolve: _ => Task.FromResult(_.Projection.Id)));
 
-        Assert.Contains("Identity projection", exception.Message);
+        await Assert.That(exception.Message).Contains("Identity projection");
     }
 }

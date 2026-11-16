@@ -1,6 +1,6 @@
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task OrderBy_two_keys()
     {
         var query =
@@ -38,7 +38,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child1, child2, child3]);
     }
 
-    [Fact]
+    [Test]
     public async Task OrderBy_nested_descending()
     {
         var query =
@@ -83,7 +83,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent1, parent2, child1, child2, child3]);
     }
 
-    [Fact]
+    [Test]
     public async Task OrderBy_item_with_two_properties()
     {
         var query =
@@ -100,7 +100,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task OrderBy_empty_item()
     {
         var query =
@@ -117,7 +117,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, []);
     }
 
-    [Fact]
+    [Test]
     public async Task OrderBy_with_typed_variable()
     {
         var query =

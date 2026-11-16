@@ -6,7 +6,7 @@ public partial class IntegrationTests
     /// ChildEntity.Parent is a ParentEntity with only Id and Property, but in a real scenario
     /// the navigation entity would have many more columns that shouldn't be selected.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Named_record_filter_projection_should_select_minimal_columns()
     {
         var query =
@@ -57,7 +57,7 @@ public partial class IntegrationTests
     ///
     /// Actual behavior (BUG): SQL includes ALL parent fields because Include() is used.
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Filter_projection_should_not_select_all_navigation_fields()
     {
         var query =
@@ -121,7 +121,7 @@ public partial class IntegrationTests
     /// Expected: SQL should only select BaseEntity.CommonProperty (required by filter)
     /// Actual (BUG): SQL includes ALL fields (Field1-Field10) due to Include() being used
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Filter_projection_with_TPH_inheritance_should_not_select_all_fields()
     {
         var query =
@@ -188,7 +188,7 @@ public partial class IntegrationTests
     /// - The filter projection accesses properties through the abstract navigation
     /// - e.g. _.Parent.Property where Parent is of abstract type BaseEntity
     /// </summary>
-    [Fact]
+    [Test]
     public async Task Filter_projection_with_abstract_navigation_should_not_throw()
     {
         var query =

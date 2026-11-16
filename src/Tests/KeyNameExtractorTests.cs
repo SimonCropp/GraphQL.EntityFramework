@@ -6,8 +6,8 @@ public class KeyNameExtractorTests
     // Entities were skipped when their assembly name started with System, meant for the
     // Dictionary<string, object> join entity of a shadow many to many. A user assembly named
     // that way lost every key, so ids disappeared from the schema.
-    [Fact]
-    public void Entity_in_assembly_named_like_system_keeps_its_key()
+    [Test]
+    public async Task Entity_in_assembly_named_like_system_keeps_its_key()
     {
         var entityType = BuildEntityType("Systemic.Domain", "Entity");
 
@@ -16,11 +16,11 @@ public class KeyNameExtractorTests
         var model = builder.FinalizeModel();
 
         var keyNames = model.GetKeyNames();
-        Assert.Equal(["Id"], keyNames[entityType]);
+        await Assert.That(keyNames[entityType]).IsEquivalentTo(["Id"], CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void Shadow_many_to_many_join_entity_is_skipped()
+    [Test]
+    public async Task Shadow_many_to_many_join_entity_is_skipped()
     {
         var builder = SqlServerConventionSetBuilder.CreateModelBuilder();
         builder.Entity<Left>()
@@ -30,9 +30,9 @@ public class KeyNameExtractorTests
         var model = builder.FinalizeModel();
 
         var keyNames = model.GetKeyNames();
-        Assert.Equal(["Id"], keyNames[typeof(Left)]);
-        Assert.Equal(["Id"], keyNames[typeof(Right)]);
-        Assert.DoesNotContain(typeof(Dictionary<string, object>), keyNames.Keys);
+        await Assert.That(keyNames[typeof(Left)]).IsEquivalentTo(["Id"], CollectionOrdering.Matching);
+        await Assert.That(keyNames[typeof(Right)]).IsEquivalentTo(["Id"], CollectionOrdering.Matching);
+        await Assert.That(keyNames.Keys).DoesNotContain(typeof(Dictionary<string, object>));
     }
 
     static Type BuildEntityType(string assemblyName, string typeName)

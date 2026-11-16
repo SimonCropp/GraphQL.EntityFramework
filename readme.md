@@ -29,7 +29,8 @@ Add [EntityFramework Core IQueryable](https://docs.microsoft.com/en-us/dotnet/ap
 
 ## Sponsors
 
-### Entity Framework Extensions<!-- include: sponsors. path: /docs/mdsource/sponsors.include.md -->
+<!-- include: sponsors. path: /docs/mdsource/sponsors.include.md -->
+### Entity Framework Extensions
 
 [Entity Framework Extensions](https://entityframework-extensions.net/?utm_source=simoncropp&utm_medium=GraphQL.EntityFramework) is a major sponsor and is proud to contribute to the development this project.
 

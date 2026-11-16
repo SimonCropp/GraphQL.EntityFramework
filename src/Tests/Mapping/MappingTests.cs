@@ -20,7 +20,7 @@ public class MappingTests
         });
     }
 
-    [Fact]
+    [Test]
     public async Task SchemaPrint()
     {
         var services = new ServiceCollection();
@@ -36,7 +36,7 @@ public class MappingTests
         await Verify(print);
     }
 
-    [Fact]
+    [Test]
     public async Task Resolve()
     {
         await using var database = await sqlInstance.Build();
@@ -76,7 +76,7 @@ public class MappingTests
                 """);
     }
 
-    [Fact]
+    [Test]
     public async Task PropertyToObject()
     {
         var expression = Mapper<MappingContext>.PropertyToObject<MappingParent>("Property");
@@ -99,7 +99,7 @@ public class MappingTests
                 """);
     }
 
-    [Fact]
+    [Test]
     public async Task NavigationProperty()
     {
         var child = new MappingChild();

@@ -2,7 +2,7 @@ public class FilterIdentityProjectionAnalyzerTests
 {
     // GQLEF004 Tests - Suggest simplified API
 
-    [Fact]
+    [Test]
     public async Task GQLEF004_SuggestsSimplifiedAPI_ForIdentityProjectionWithPKAccess()
     {
         var source = """
@@ -30,11 +30,11 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF004", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF004");
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF004_SuggestsSimplifiedAPI_ForIdentityProjectionWithFKAccess()
     {
         var source = """
@@ -62,11 +62,11 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF004", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF004");
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF004_SuggestsSimplifiedAPI_ForIdentityProjectionWithMultipleFKAccess()
     {
         var source = """
@@ -95,11 +95,11 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF004", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF004");
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF004_NoWarning_ForNonIdentityProjection()
     {
         var source = """
@@ -127,12 +127,12 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
     // GQLEF005 Tests - Invalid simplified API usage
 
-    [Fact]
+    [Test]
     public async Task GQLEF005_Error_ForSimplifiedAPIAccessingScalarProperty()
     {
         var source = """
@@ -159,12 +159,12 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF005", diagnostics[0].Id);
-        Assert.Contains("Name", diagnostics[0].GetMessage());
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF005");
+        await Assert.That(diagnostics[0].GetMessage()).Contains("Name");
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF005_Error_ForSimplifiedAPIAccessingNavigationProperty()
     {
         var source = """
@@ -193,12 +193,12 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF005", diagnostics[0].Id);
-        Assert.Contains("Parent", diagnostics[0].GetMessage());
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF005");
+        await Assert.That(diagnostics[0].GetMessage()).Contains("Parent");
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF005_NoError_ForSimplifiedAPIAccessingPK()
     {
         var source = """
@@ -225,10 +225,10 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF005_NoError_ForSimplifiedAPIAccessingFK()
     {
         var source = """
@@ -255,10 +255,10 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF005_NoError_ForSimplifiedAPIAccessingNullableFK()
     {
         var source = """
@@ -285,12 +285,12 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
     // GQLEF006 Tests - Invalid identity projection with existing API
 
-    [Fact]
+    [Test]
     public async Task GQLEF006_Error_ForIdentityProjectionAccessingScalarProperty()
     {
         var source = """
@@ -318,12 +318,12 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF006", diagnostics[0].Id);
-        Assert.Contains("City", diagnostics[0].GetMessage());
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF006");
+        await Assert.That(diagnostics[0].GetMessage()).Contains("City");
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF006_Error_ForIdentityProjectionAccessingNavigationProperty()
     {
         var source = """
@@ -352,14 +352,14 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF006", diagnostics[0].Id);
-        Assert.Contains("Parent", diagnostics[0].GetMessage());
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF006");
+        await Assert.That(diagnostics[0].GetMessage()).Contains("Parent");
     }
 
     // Edge Cases
 
-    [Fact]
+    [Test]
     public async Task EdgeCase_DiscardParameter()
     {
         var source = """
@@ -385,10 +385,10 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task EdgeCase_TypeNameWithEntitySuffix()
     {
         var source = """
@@ -415,10 +415,10 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task EdgeCase_ComplexExpression()
     {
         var source = """
@@ -447,10 +447,10 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task EdgeCase_MultiplePropertyAccess()
     {
         var source = """
@@ -481,12 +481,12 @@ public class FilterIdentityProjectionAnalyzerTests
 
         var diagnostics = await GetDiagnosticsAsync(source);
         // Should report error for Name access (first non-key property encountered)
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF006", diagnostics[0].Id);
-        Assert.Contains("Name", diagnostics[0].GetMessage());
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF006");
+        await Assert.That(diagnostics[0].GetMessage()).Contains("Name");
     }
 
-    [Fact]
+    [Test]
     public async Task EdgeCase_AsyncFilter()
     {
         var source = """
@@ -518,7 +518,7 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
     static async Task<Diagnostic[]> GetDiagnosticsAsync(string source)
@@ -540,11 +540,11 @@ public class FilterIdentityProjectionAnalyzerTests
         {
             typeof(Guid).Assembly,
             // System.Runtime
-            Assembly.Load("System.Runtime"),
+            System.Reflection.Assembly.Load("System.Runtime"),
             // System.Linq.Expressions
             typeof(IQueryable<>).Assembly,
             // System.Security.Claims
-            Assembly.Load("System.Security.Claims"),
+            System.Reflection.Assembly.Load("System.Security.Claims"),
         };
 
         foreach (var assembly in requiredAssemblies)
@@ -563,9 +563,8 @@ public class FilterIdentityProjectionAnalyzerTests
                 references.All(_ => _.Display != assembly.Location))
             {
                 var name = assembly.GetName().Name ?? "";
-                if ((!name.StartsWith("System.") &&
-                     !name.StartsWith("Microsoft.")) ||
-                    name.Contains("xunit", StringComparison.OrdinalIgnoreCase))
+                if (!name.StartsWith("System.") &&
+                    !name.StartsWith("Microsoft."))
                 {
                     continue;
                 }
@@ -610,7 +609,7 @@ public class FilterIdentityProjectionAnalyzerTests
 
     // GQLEF007 Tests - Identity projection with abstract navigation access
 
-    [Fact]
+    [Test]
     public async Task GQLEF007_Reports_IdentityProjection_WithAbstractNavigationAccess()
     {
         var source = """
@@ -647,12 +646,12 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF007", diagnostics[0].Id);
-        Assert.Contains("Parent", diagnostics[0].GetMessage());
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF007");
+        await Assert.That(diagnostics[0].GetMessage()).Contains("Parent");
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF007_Reports_FourParamFilter_WithAbstractNavigationAccess()
     {
         var source = """
@@ -685,11 +684,11 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF007", diagnostics[0].Id);
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF007");
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF007_NoReport_ConcreteNavigationAccess()
     {
         var source = """
@@ -724,10 +723,10 @@ public class FilterIdentityProjectionAnalyzerTests
 
         var diagnostics = await GetDiagnosticsAsync(source);
         // Should report GQLEF006 (non-key property access) but not GQLEF007
-        Assert.DoesNotContain(diagnostics, d => d.Id == "GQLEF007");
+        await Assert.That(diagnostics).DoesNotContain(d => d.Id == "GQLEF007");
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF007_NoReport_ExplicitProjection_WithAbstractNavigation()
     {
         var source = """
@@ -762,10 +761,10 @@ public class FilterIdentityProjectionAnalyzerTests
 
         var diagnostics = await GetDiagnosticsAsync(source);
         // Explicit projection - analyzer doesn't catch this (runtime does)
-        Assert.Empty(diagnostics);
+        await Assert.That(diagnostics).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task GQLEF007_Reports_NestedAbstractNavigationAccess()
     {
         var source = """
@@ -800,8 +799,8 @@ public class FilterIdentityProjectionAnalyzerTests
             """;
 
         var diagnostics = await GetDiagnosticsAsync(source);
-        Assert.Single(diagnostics);
-        Assert.Equal("GQLEF007", diagnostics[0].Id);
-        Assert.Contains("Parent", diagnostics[0].GetMessage());
+        await Assert.That(diagnostics).HasSingleItem();
+        await Assert.That(diagnostics[0].Id).IsEqualTo("GQLEF007");
+        await Assert.That(diagnostics[0].GetMessage()).Contains("Parent");
     }
 }

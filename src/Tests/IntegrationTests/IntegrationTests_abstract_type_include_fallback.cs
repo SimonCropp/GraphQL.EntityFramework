@@ -2,7 +2,7 @@ public partial class IntegrationTests
 {
     // An abstract type is projected as a chain of type tests, each creating a concrete derived
     // type. It used to be loaded whole through includes.
-    [Fact]
+    [Test]
     public async Task Abstract_root_type_query_is_projected()
     {
         var derivedEntity = new DerivedEntity
@@ -36,7 +36,7 @@ public partial class IntegrationTests
     // A collection selected on a type with derived types is bound once, to whichever type the
     // chain of type tests created. Bound inside each type's member init it was joined once per
     // concrete type.
-    [Fact]
+    [Test]
     public async Task Abstract_root_type_collection_is_loaded_once()
     {
         var parent = new DerivedEntity
@@ -83,7 +83,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [parent, child1, child2, other]);
     }
 
-    [Fact]
+    [Test]
     public async Task Navigation_to_abstract_type_is_projected()
     {
         var parent = new DerivedEntity
@@ -119,7 +119,7 @@ public partial class IntegrationTests
 
     // displayName is expression bodied, so the select cannot bind it and the query falls back to
     // includes. A mapped get only property, such as computedInDb, no longer causes this.
-    [Fact]
+    [Test]
     public async Task Readonly_root_with_navigation_falls_back_to_include()
     {
         var parent = new ReadOnlyParentEntity

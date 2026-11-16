@@ -2,7 +2,7 @@ public partial class IntegrationTests
 {
     // A null ids argument was dereferenced for its type name while building the unsupported
     // type error. It is now the same as not passing ids.
-    [Fact]
+    [Test]
     public async Task Null_ids_returns_everything()
     {
         var query =

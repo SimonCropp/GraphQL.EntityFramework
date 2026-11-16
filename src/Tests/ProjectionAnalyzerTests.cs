@@ -36,70 +36,70 @@ public class ProjectionAnalyzerTests
         public Nav? Nav { get; set; }
     }
 
-    [Fact]
-    public void SimpleProperty()
+    [Test]
+    public async Task SimpleProperty()
     {
         Expression<Func<BaseEntity, string>> projection = e => e.Name;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
-        Assert.Contains("Name", paths);
+        await Assert.That(paths).Contains("Name");
     }
 
-    [Fact]
-    public void CastToBaseType()
+    [Test]
+    public async Task CastToBaseType()
     {
         Expression<Func<DerivedEntity, int>> projection = e => e.Status;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
-        Assert.Contains("Status", paths);
+        await Assert.That(paths).Contains("Status");
     }
 
-    [Fact]
-    public void CastToInterface()
+    [Test]
+    public async Task CastToInterface()
     {
         Expression<Func<ConcreteEntity, string>> projection = e => e.Name;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
-        Assert.Contains("Name", paths);
+        await Assert.That(paths).Contains("Name");
     }
 
-    [Fact]
-    public void CastInNewExpression()
+    [Test]
+    public async Task CastInNewExpression()
     {
         Expression<Func<DerivedEntity, object>> projection = e => new { e.Status, e.Name };
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
-        Assert.Contains("Status", paths);
-        Assert.Contains("Name", paths);
+        await Assert.That(paths).Contains("Status");
+        await Assert.That(paths).Contains("Name");
     }
 
-    [Fact]
-    public void AsCast()
+    [Test]
+    public async Task AsCast()
     {
         Expression<Func<DerivedEntity, string?>> projection = e => e.Name;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
-        Assert.Contains("Name", paths);
+        await Assert.That(paths).Contains("Name");
     }
 
-    [Fact]
-    public void NavigationThroughCast()
+    [Test]
+    public async Task NavigationThroughCast()
     {
         Expression<Func<EntityWithNav, string>> projection = e => e.Nav!.Value;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
-        Assert.Contains("Nav.Value", paths);
+        await Assert.That(paths).Contains("Nav.Value");
     }
 
-    [Fact]
-    public void MultipleCasts()
+    [Test]
+    public async Task MultipleCasts()
     {
         Expression<Func<DerivedEntity, int>> projection = _ => _.Status;
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
-        Assert.Contains("Status", paths);
+        await Assert.That(paths).Contains("Status");
     }
 
-    [Fact]
-    public void NoCast()
+    [Test]
+    public async Task NoCast()
     {
         Expression<Func<BaseEntity, object>> projection = e => new { e.Name, e.Status };
         var paths = ProjectionAnalyzer.ExtractPropertyPaths(projection);
-        Assert.Contains("Name", paths);
-        Assert.Contains("Status", paths);
+        await Assert.That(paths).Contains("Name");
+        await Assert.That(paths).Contains("Status");
     }
 
     class Item
@@ -115,21 +115,20 @@ public class ProjectionAnalyzerTests
         public List<Item> Items { get; set; } = null!;
     }
 
-    static void AssertPaths(Expression<Func<EntityWithItems, object?>> projection, params string[] expected) =>
-        Assert.Equal(
-            expected.Order(),
-            ProjectionAnalyzer.ExtractPropertyPaths(projection).Order());
+    static async Task AssertPaths(Expression<Func<EntityWithItems, object?>> projection, params string[] expected) =>
+        await Assert.That(ProjectionAnalyzer.ExtractPropertyPaths(projection).Order())
+            .IsEquivalentTo(expected.Order(), CollectionOrdering.Matching);
 
     // The properties are read off the lambda's own parameter, so were not recorded, and the
     // collection was loaded whole
-    [Fact]
-    public void CollectionSelect() =>
+    [Test]
+    public Task CollectionSelect() =>
         AssertPaths(
             _ => _.Items.Select(item => item.Id).ToList(),
             "Items", "Items.Id");
 
-    [Fact]
-    public void CollectionChain() =>
+    [Test]
+    public Task CollectionChain() =>
         AssertPaths(
             _ => _.Items
                 .Where(item => item.Active)
@@ -138,8 +137,8 @@ public class ProjectionAnalyzerTests
                 .ToList(),
             "Items", "Items.Active", "Items.Name", "Items.Id");
 
-    [Fact]
-    public void CollectionAggregate() =>
+    [Test]
+    public Task CollectionAggregate() =>
         AssertPaths(
             _ => new
             {
@@ -149,40 +148,40 @@ public class ProjectionAnalyzerTests
             "Items", "Items.Active", "Items.Name");
 
     // The items come out, so whatever uses them can read any property
-    [Fact]
-    public void CollectionReturningItemsIsWhole() =>
+    [Test]
+    public Task CollectionReturningItemsIsWhole() =>
         AssertPaths(
             _ => _.Items.Where(item => item.Active).ToList(),
             "Items");
 
-    [Fact]
-    public void CollectionReturningAnItemIsWhole() =>
+    [Test]
+    public Task CollectionReturningAnItemIsWhole() =>
         AssertPaths(
             _ => _.Items.FirstOrDefault(item => item.Active),
             "Items");
 
-    [Fact]
-    public void CollectionSelectingTheItemIsWhole() =>
+    [Test]
+    public Task CollectionSelectingTheItemIsWhole() =>
         AssertPaths(
             _ => _.Items.Select(item => new { item, item.Name }).ToList(),
             "Items");
 
     // A navigation of an item is not a column of it
-    [Fact]
-    public void CollectionReadingItemNavigationIsWhole() =>
+    [Test]
+    public Task CollectionReadingItemNavigationIsWhole() =>
         AssertPaths(
             _ => _.Items.Select(item => item.Nav!.Value).ToList(),
             "Items");
 
-    [Fact]
-    public void CollectionPassingItemToMethodIsWhole() =>
+    [Test]
+    public Task CollectionPassingItemToMethodIsWhole() =>
         AssertPaths(
             _ => _.Items.Select(Describe).ToList(),
             "Items");
 
     // Nothing says which properties a count needs, so this is unchanged
-    [Fact]
-    public void CollectionWithNoLambdaIsWhole() =>
+    [Test]
+    public Task CollectionWithNoLambdaIsWhole() =>
         AssertPaths(
             _ => _.Items.Count(),
             "Items");

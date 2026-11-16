@@ -1,6 +1,6 @@
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task Tph_derived_navigation_via_inline_fragments()
     {
         var category = new CategoryEntity { Name = "Science" };
@@ -38,7 +38,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [category, region, categoryItem, regionItem]);
     }
 
-    [Fact]
+    [Test]
     public async Task Tph_derived_navigation_via_inline_fragments_single()
     {
         var category = new CategoryEntity { Name = "History" };
@@ -65,7 +65,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [category, categoryItem]);
     }
 
-    [Fact]
+    [Test]
     public async Task Tph_derived_navigation_base_fields_still_work()
     {
         var categoryItem = new TphDerivedNavCategoryEntity { Property = "BaseOnly" };
@@ -86,7 +86,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [categoryItem, regionItem]);
     }
 
-    [Fact]
+    [Test]
     public async Task Tph_derived_navigation_mixed_with_base_scalars()
     {
         var category = new CategoryEntity { Name = "Art" };

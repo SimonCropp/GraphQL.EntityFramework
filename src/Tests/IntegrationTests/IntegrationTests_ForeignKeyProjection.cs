@@ -2,7 +2,7 @@
 // https://github.com/SimonCropp/GraphQL.EntityFramework/issues/XXX
 public partial class IntegrationTests
 {
-    [Fact]
+    [Test]
     public async Task ForeignKey_CustomField_UsesProjectedForeignKey()
     {
         var query =
@@ -62,7 +62,7 @@ public partial class IntegrationTests
         await RunQuery(database, query, null, null, false, [activeDepartment, inactiveDepartment, employee1, employee2, employee3]);
     }
 
-    [Fact]
+    [Test]
     public async Task ForeignKey_NestedNavigation_IncludesForeignKeyInProjection()
     {
         // This test verifies that foreign keys are included in nested navigation projections

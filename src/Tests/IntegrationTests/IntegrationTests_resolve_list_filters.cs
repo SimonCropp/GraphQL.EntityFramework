@@ -2,9 +2,9 @@ public partial class IntegrationTests
 {
     // ResolveList and ResolveListAsync returned their items as is, while every other list path
     // applies the filters, so a filter that excluded an item elsewhere let it through here
-    [Theory]
-    [InlineData("childrenViaResolveList")]
-    [InlineData("childrenViaResolveListAsync")]
+    [Test]
+    [Arguments("childrenViaResolveList")]
+    [Arguments("childrenViaResolveListAsync")]
     public async Task Resolve_list_applies_filters(string fieldName)
     {
         var query =
@@ -42,7 +42,7 @@ public partial class IntegrationTests
             projection: _ => _.Property,
             filter: (_, _, _, property) => property != "Denied");
 
-        await using var database = await sqlInstance.Build();
+        await using var database = await sqlInstance.Build(databaseSuffix: fieldName);
         await RunQuery(database, query, null, filters, false, [parent, allowed, denied]);
     }
 }

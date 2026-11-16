@@ -1,6 +1,6 @@
 public class AbstractNavigationProjectionCodeFixProviderTests
 {
-    [Fact]
+    [Test]
     public async Task ConvertsIdentityProjectionToExplicitProjection()
     {
         var source = """
@@ -112,9 +112,9 @@ public class AbstractNavigationProjectionCodeFixProviderTests
         var requiredAssemblies = new[]
         {
             typeof(Guid).Assembly,
-            Assembly.Load("System.Runtime"),
+            System.Reflection.Assembly.Load("System.Runtime"),
             typeof(IQueryable<>).Assembly,
-            Assembly.Load("System.Security.Claims"),
+            System.Reflection.Assembly.Load("System.Security.Claims"),
         };
 
         foreach (var assembly in requiredAssemblies)
@@ -132,9 +132,8 @@ public class AbstractNavigationProjectionCodeFixProviderTests
                 references.All(_ => _.Display != assembly.Location))
             {
                 var name = assembly.GetName().Name ?? "";
-                if ((!name.StartsWith("System.") &&
-                     !name.StartsWith("Microsoft.")) ||
-                    name.Contains("xunit", StringComparison.OrdinalIgnoreCase))
+                if (!name.StartsWith("System.") &&
+                    !name.StartsWith("Microsoft."))
                 {
                     continue;
                 }
