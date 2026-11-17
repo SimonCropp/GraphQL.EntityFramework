@@ -30,7 +30,7 @@
     <PackageVersion Include="Verify.EntityFramework" Version="17.0.0" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
     <PackageVersion Include="Verify.SqlServer" Version="12.5.0" />
-    <PackageVersion Include="TUnit" Version="1.85.7" />
+    <PackageVersion Include="TUnit" Version="1.86.0" />
     <PackageVersion Include="Verify.TUnit" Version="33.5.0" />
     <PackageVersion Include="Argon" Version="0.38.2" />
     <PackageVersion Include="DiffEngine" Version="21.0.0" />
