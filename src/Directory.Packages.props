@@ -23,7 +23,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="11.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="11.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="11.0.0" />
-    <PackageVersion Include="Polyfill" Version="11.4.5" />
+    <PackageVersion Include="Polyfill" Version="12.0.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.191" />
     <PackageVersion Include="Sbom" Version="1.0.0" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="11.0.0" />
