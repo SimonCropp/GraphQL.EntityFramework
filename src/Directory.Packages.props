@@ -36,7 +36,7 @@
     <PackageVersion Include="DiffEngine" Version="21.2.0" />
     <PackageVersion Include="EmptyFiles" Version="8.20.1" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.1" />
-    <PackageVersion Include="Verify" Version="33.7.1" />
+    <PackageVersion Include="Verify" Version="33.7.2" />
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="11.0.0" />
   </ItemGroup>
 </Project>
