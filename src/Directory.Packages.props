@@ -24,7 +24,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="11.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="11.0.0" />
     <PackageVersion Include="Polyfill" Version="11.4.5" />
-    <PackageVersion Include="ProjectDefaults" Version="1.0.190" />
+    <PackageVersion Include="ProjectDefaults" Version="1.0.191" />
     <PackageVersion Include="Sbom" Version="1.0.0" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="11.0.0" />
     <PackageVersion Include="Verify.EntityFramework" Version="17.0.0" />
