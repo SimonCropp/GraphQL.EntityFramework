@@ -5,13 +5,13 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
-    <PackageVersion Include="BlazorQL" Version="1.0.2" />
+    <PackageVersion Include="BlazorQL" Version="2.0.0" />
     <PackageVersion Include="EfLocalDb" Version="28.1.0" />
     <PackageVersion Include="EfOrderBy" Version="2.0.0" />
     <PackageVersion Include="GraphQL" Version="8.8.5" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.5" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.5" />
-    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="29.0.0" />
+    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="30.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="11.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="11.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="11.0.0" />
@@ -23,20 +23,20 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="11.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="11.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="11.0.0" />
-    <PackageVersion Include="Polyfill" Version="11.4.5" />
-    <PackageVersion Include="ProjectDefaults" Version="1.0.190" />
+    <PackageVersion Include="Polyfill" Version="12.0.0" />
+    <PackageVersion Include="ProjectDefaults" Version="1.0.191" />
     <PackageVersion Include="Sbom" Version="1.0.0" />
     <PackageVersion Include="System.Text.Encodings.Web" Version="11.0.0" />
     <PackageVersion Include="Verify.EntityFramework" Version="17.0.0" />
     <PackageVersion Include="Verify.GraphQL" Version="0.1.1" />
     <PackageVersion Include="Verify.SqlServer" Version="12.5.0" />
     <PackageVersion Include="TUnit" Version="1.87.12" />
-    <PackageVersion Include="Verify.TUnit" Version="33.7.1" />
+    <PackageVersion Include="Verify.TUnit" Version="33.7.2" />
     <PackageVersion Include="Argon" Version="0.38.2" />
-    <PackageVersion Include="DiffEngine" Version="21.2.0" />
+    <PackageVersion Include="DiffEngine" Version="21.2.1" />
     <PackageVersion Include="EmptyFiles" Version="8.20.1" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.1" />
-    <PackageVersion Include="Verify" Version="33.7.1" />
+    <PackageVersion Include="Verify" Version="33.7.2" />
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="11.0.0" />
   </ItemGroup>
 </Project>
