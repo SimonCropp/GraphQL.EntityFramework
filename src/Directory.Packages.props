@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
-    <PackageVersion Include="BlazorQL" Version="2.0.0" />
+    <PackageVersion Include="BlazorQL" Version="2.0.1" />
     <PackageVersion Include="EfLocalDb" Version="28.1.0" />
     <PackageVersion Include="EfOrderBy" Version="2.0.0" />
     <PackageVersion Include="GraphQL" Version="8.8.5" />
